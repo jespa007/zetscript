@@ -42,6 +42,7 @@ namespace zetscript{
 			o1->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 	}
+
 	//
 	// Helpers
 	//

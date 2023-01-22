@@ -12,5 +12,4 @@ namespace zetscript{
 	ObjectIteratorScriptObject * 	ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *oo);
 	void						 	ObjectScriptObjectWrap_append(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 
-
 }

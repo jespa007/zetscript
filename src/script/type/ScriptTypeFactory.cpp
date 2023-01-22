@@ -288,7 +288,8 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("endsWith",StringScriptObjectWrap_endsWith);
 		bindMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int,zs_int )>(&StringScriptObjectWrap_substring));
 		bindMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_substring));
-		bindMemberFunction<StringScriptObject>("append",StringScriptObjectWrap_append);
+		bindMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, StringScriptObject *)>(&StringScriptObjectWrap_append));
+		bindMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, zs_int )>(&StringScriptObjectWrap_append));
 		bindMemberFunction<StringScriptObject>("toLowerCase",StringScriptObjectWrap_toLowerCase);
 		bindMemberFunction<StringScriptObject>("toUpperCase",StringScriptObjectWrap_toUpperCase);
 

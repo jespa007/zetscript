@@ -6,9 +6,7 @@ v2.0, January 30,2023
 :icons:
 :lang: en
 :language: zetscript
-:sectnums:
-:stylesheet: caca.css
-
+:sectnums:s :stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
 
 [preface]
 include::prefaces/preface_2_acknowledgment.adoc[]

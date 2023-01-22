@@ -25,6 +25,8 @@ namespace zetscript{
 	bool 							StringScriptObjectWrap_endsWith(ZetScript *_zs,StringScriptObject *so,zs_string *suffix);
 
 	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *_str_append);
+	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,zs_int _ch);
+
 	StringScriptObject * 			StringScriptObjectWrap_toUpperCase(ZetScript *_zs,StringScriptObject *so);
 	StringScriptObject * 			StringScriptObjectWrap_toLowerCase(ZetScript *_zs,StringScriptObject *so);
 

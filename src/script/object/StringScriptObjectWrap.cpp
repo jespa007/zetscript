@@ -139,7 +139,12 @@ namespace zetscript{
 
 	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *str_append){
 		ZS_UNUSUED_PARAM(_zs);
-		*(str_in->str_ptr)+=*(str_append->str_ptr);
+		(str_in->str_ptr)->append(*(str_append->str_ptr));
+	}
+
+	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,zs_int _ch){
+		ZS_UNUSUED_PARAM(_zs);
+		(str_in->str_ptr)->append(_ch);
 	}
 
 	StringScriptObject * 	StringScriptObjectWrap_toLowerCase(ZetScript *_zs,StringScriptObject *so){

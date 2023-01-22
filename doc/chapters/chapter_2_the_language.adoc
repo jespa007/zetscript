@@ -1,5 +1,8 @@
 :source-highlighter: highlight.js
 :highlightjs-languages: cpp, javascript
+
+
+
 :sectnums:
 
 == The language
@@ -315,14 +318,14 @@ Integer as parsed value
 
 [source,javascript]
 ----
-include::../examples/the_language/integer_parse.zs[]
+include::../examples/the_language/string/integer_parse.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/integer_parse_out.txt[]
+include::../examples/the_language/string/integer_parse_out.txt[]
 ----
 
 ==== Float
@@ -407,14 +410,14 @@ Float as parsed value
 
 [source,javascript]
 ----
-include::../examples/the_language/float_parse.zs[]
+include::../examples/the_language/string/float_parse.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/float_parse_out.txt[]
+include::../examples/the_language/string/float_parse_out.txt[]
 ----
 
 ==== Boolean
@@ -457,14 +460,14 @@ The length of the string
 
 [source,javascript]
 ----
-include::../examples/the_language/string_length.zs[]
+include::../examples/the_language/string/string_length.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_length_out.txt[]
+include::../examples/the_language/string/string_length_out.txt[]
 ----
 
 ===== Static functions
@@ -499,43 +502,48 @@ Formated string
 
 [source,javascript]
 ----
-include::../examples/the_language/string_format.zs[]
+include::../examples/the_language/string/string_format.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/string_format_out.txt[]
+include::../examples/the_language/string/string_format_out.txt[]
 ----
 
 ===== Member functions
 
-====== *String::insertAt(_pos,_value)
+====== String::insertAt(_index,_value)
 
-Inserts a character or string into the string at index
+Inserts character into string at defined index
+
+*Parameters*
+
+- _index: index where insert
+- _value: character or string
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/string_insert_at.zs[]
+include::../examples/the_language/string/string_insert_at.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_insert_at_out.txt[]
+include::../examples/the_language/string/string_insert_at_out.txt[]
 ----
 
 ====== String::eraseAt(_pos)
 
-_String::eraseAt_ removes the character right before the character indicated by _pos
+Erases value from defined index
 
-*Parameters:* 
+*Parameters*
 
-None
+- _index:  index where remove
 
 *Return* 
 
@@ -545,22 +553,23 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/string_erase_at.zs[]
+include::../examples/the_language/string/string_erase_at.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_erase_at_out.txt[]
+include::../examples/the_language/string/string_erase_at_out.txt[]
 ----
 
 ====== String::toUpperCase()
 
 Returns the calling string value converted to uppercase
 
+
 *Parameters*
- 
+
 None
 
 *Return*
@@ -571,14 +580,14 @@ It returns the String, converted to uppercase
 
 [source,javascript]
 ----
-include::../examples/the_language/string_to_upper_case.zs[]
+include::../examples/the_language/string/string_to_upper_case.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_to_upper_case_out.txt[]
+include::../examples/the_language/string/string_to_upper_case_out.txt[]
 ----
 
 ====== String::toLowerCase()
@@ -597,73 +606,133 @@ It returns the String, converted to lowercase
 
 [source,javascript]
 ----
-include::../examples/the_language/string_to_lower_case.zs[]
+include::../examples/the_language/string/string_to_lower_case.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_to_lower_case_out.txt[]
+include::../examples/the_language/string/string_to_lower_case_out.txt[]
 ----
 
 ====== String::clear()
 
+Clears all values in the string
+
 *Parameters*
 
-*Return* 
+None
+
+*Return*
+
+None 
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_clear.zs[]
 ----
 
-====== String::replace()
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/string/string_clear_out.txt[]
+----
+
+
+====== String::replace(_old_string, _new_string)
+
+Returns a new string replaced by a replacement 
 
 *Parameters*
 
+- _old_string: The old string to be replaced 
+- _new_string: The new string to be replaced
+
 *Return* 
+
+A new string where the specified values has been replaced
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_replace.zs[]
 ----
 
-====== String::split()
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/string/string_replace_out.txt[]
+----
+
+====== String::split(_separator)
+
+Splits the string into a vector of strings using a separator
 
 *Parameters*
 
+- _separator : separator value as character or string
+
 *Return* 
+
+Returns a vector of strings 
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_split.zs[]
 ----
 
-====== String::contains()
+Output:
+
+[source,text]
+----
+include::../examples/the_language/string/string_split_out.txt[]
+----
+
+====== String::contains(_value)
+
+Tells whether a value is contained in the string or not
 
 *Parameters*
 
-*Return* 
+- _value: a value to find
+
+*Return*
+
+Boolean value telling if the _value exist or not in the string 
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_contains.zs[]
 ----
 
-====== String::indexOf()
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/string/string_contains_out.txt[]
+----
+
+====== String::indexOf(_search_value)
+
+Returns the position of the first occurrence of a value in a string
 
 *Parameters*
 
+- __search_value_ : string to search for
+
 *Return* 
+
+Returns the position of the first occurrence or returns -1 if is not present.
 
 *Example*
 
@@ -681,23 +750,20 @@ Checks whether a string starts with the specified string passed by __value_
 
 *Return* 
 
-Returns a Boolean value:
-
-- true :  if the string starts with the specified string passed by __value_
-- false:  if the string does not starts with the specified string passed by __value_
+Returns a Boolean value telling whether the string starts with the specified _value or not
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/string_starts_with.zs[]
+include::../examples/the_language/string/string_starts_with.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_starts_with_out.txt[]
+include::../examples/the_language/string/string_starts_with_out.txt[]
 ----
 
 ====== String::endsWith(_value)
@@ -710,60 +776,75 @@ Checks whether a string ends with the specified string passed by __value_
 
 *Return* 
 
-Returns a Boolean value:
-
-- true :  if the string ends with the specified string passed by __value_
-- false:  if the string does not ends with the specified string passed by __value_
+Returns a Boolean value telling whether the string ends with the specified string or not
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/string_ends_with.zs[]
+include::../examples/the_language/string/string_ends_with.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/string_ends_with_out.txt[]
+include::../examples/the_language/string/string_ends_with_out.txt[]
 ----
 
-====== String::substring(_start_index, _end_index=-1)
+====== String::substring(_start_index, _end_index)
 
-Returns the part of the string from the start index and, optionally, a second parameter to specify the end index. If the end index is not provided it sets as -1 as default that means that will copy till string end
+Returns the part of the string from the start index  up to and excluding the end index, or to the end of the string if no end index is supplied.
 
 *Parameters*
 
-*Return* 
+- _start_index: The index of the first character to include in the returned substring.
+- _end_index (optional): The index of the first character to exclude from the returned substring.
+
+*Returns*
+
+ A new string containing the specified part of the given string.
 
 *Example*
 
-
 [source,javascript]
 ----
-include::../examples/the_language/string_substring.zs[]
+include::../examples/the_language/string/string_substring.zs[]
 ----
 
 Ouput:
 
 [source,txt]
 ----
-include::../examples/the_language/string_substring_out.txt[]
+include::../examples/the_language/string/string_substring_out.txt[]
 ----
 
-====== String::append()
+====== String::append(_value)
+
+Extends the string by appending additional characters or string at the end of its current value
 
 *Parameters*
 
+- _value_ : String or character
+
 *Return* 
+
+None
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_append.zs[]
 ----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/string/string_append_out.txt[]
+----
+
 
 === Vector
 
