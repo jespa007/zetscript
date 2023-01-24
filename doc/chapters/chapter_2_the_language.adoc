@@ -318,14 +318,14 @@ Integer as parsed value
 
 [source,javascript]
 ----
-include::../examples/the_language/string/integer_parse.zs[]
+include::../examples/the_language/integer/integer_parse.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/string/integer_parse_out.txt[]
+include::../examples/the_language/integer/integer_parse_out.txt[]
 ----
 
 ==== Float
@@ -410,14 +410,14 @@ Float as parsed value
 
 [source,javascript]
 ----
-include::../examples/the_language/string/float_parse.zs[]
+include::../examples/the_language/float/float_parse.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/string/float_parse_out.txt[]
+include::../examples/the_language/float/float_parse_out.txt[]
 ----
 
 ==== Boolean
