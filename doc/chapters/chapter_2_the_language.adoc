@@ -298,21 +298,17 @@ var j=i--;//j=0;i=-1;
 
 ===== Static functions
 
-
 ====== Integer::parse(_value)
 
-
-*Description*
-
-Converts input value as Integer
+Converts Float or String to Integer value
 
 *Parameters*
 
-- __value_ : String or Float literal or datatype to parse
+- __value_ : String or Float value
 
 *Returns*
 
-Integer as parsed value
+Integer parsed from the given value
 
 *Example*
 
@@ -392,19 +388,17 @@ var j=i--;//j=0.5;i=-0.5;
 
 ===== Static functions
 
-
 ====== Float::parse(_value)
 
-Converts input as Float value
-
+Converts Integer or String to Float value
 
 *Parameters*
 
-- __value_ : Input value
+- __value_ : String or Integer value
 
 *Returns*
 
-Float as parsed value
+Float as parsed from given value
 
 *Example*
 
@@ -444,7 +438,7 @@ var s="this is a string";
 
 ===== Properties
  
-====== String::length
+====== String::length()
 
 Returns the length of the string
 
@@ -474,7 +468,7 @@ include::../examples/the_language/string/string_length_out.txt[]
  
 ====== String::format(_string,..._args)
 
-Builds a string placing formated values in {} as string with a serie of variable args. The possible formats is described below,
+Formats a String from a String with a serie of args. The input String has curly brackets (i.e {} ) that specify the argument and/or its format. The description of possible formats are defined below,
 
 
 [cols="1m,3d"]
@@ -490,13 +484,13 @@ Builds a string placing formated values in {} as string with a serie of variable
 
 *Parameters*
 
-- __string_ : string value with 
+- __string_ : String representation with specified arguments and/or its format
 
-- __args_ : variable args
+- __args_ : variable args to be replaced in the string representation
 
 *Returns*
 
-Formated string
+Formated String
 
 *Example*
 
@@ -514,14 +508,14 @@ include::../examples/the_language/string/string_format_out.txt[]
 
 ===== Member functions
 
-====== String::insertAt(_index,_value)
+====== String::insertAt(_position,_value)
 
-Inserts character into string at defined index
+Inserts String or Integer value into String variable at defined position
 
 *Parameters*
 
-- _index: index where insert
-- _value: character or string
+- __position_: Integer that represents the position where to insert. The position ranges within 0 to the length-1 of the String
+- __value_: Integer or String value
 
 *Example*
 
@@ -537,13 +531,13 @@ Output:
 include::../examples/the_language/string/string_insert_at_out.txt[]
 ----
 
-====== String::eraseAt(_pos)
+====== String::eraseAt(_position)
 
-Erases value from defined index
+Removes the value at defined position
 
 *Parameters*
 
-- _index:  index where remove
+- __position_:  Integer that represents the position where to remove .
 
 *Return* 
 
@@ -565,8 +559,7 @@ include::../examples/the_language/string/string_erase_at_out.txt[]
 
 ====== String::toUpperCase()
 
-Returns the calling string value converted to uppercase
-
+Returns String value converted to uppercase
 
 *Parameters*
 
@@ -574,7 +567,7 @@ None
 
 *Return*
 
-It returns the String, converted to uppercase
+Returns the calling string converted to uppercase
 
 *Example*
 
@@ -618,7 +611,7 @@ include::../examples/the_language/string/string_to_lower_case_out.txt[]
 
 ====== String::clear()
 
-Clears all values in the string
+Clears all values in the String
 
 *Parameters*
 

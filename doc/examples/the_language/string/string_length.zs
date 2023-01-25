@@ -1,2 +1,4 @@
 var s="hello world";
-Console::outln("The length of '{0}' is '{1}'",s,s.length)
+
+Console::outln("s => '{0}'",s)
+Console::outln("s.length() => {0}",s.length)

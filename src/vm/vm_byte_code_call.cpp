@@ -495,10 +495,12 @@ execute_function:
 							(
 								_script_function->name_script_function=="assert"
 							||  _script_function->name_script_function=="error"
+							||  _script_function->name_script_function=="outln"
 							)
 							&&
 							(
 								sf_call_script_function->name_script_function=="errorNative"
+							 || sf_call_script_function->name_script_function=="outlnNative"
 							)
 						)
 						||

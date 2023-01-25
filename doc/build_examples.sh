@@ -1,13 +1,13 @@
 #!/bin/bash
 
-dirs=("string")
+dirs=(integer float string)
 
-for i in ${dirs[@]}
+for i in "${dirs[@]}"
 do
-	for j in "examples/the_language/"$i"/*.zs"
+	dir="examples/the_language/"$i"/*.zs"
+	for j in $dir
 	do
 		base_file="$(basename $j .zs)"
-		echo "$base_file"
 		../build/gcc/Release/zs --no-execution-time "examples/the_language/"$i"/"$base_file".zs" > "examples/the_language/"$i"/"$base_file"_out.txt"
 		
 	done

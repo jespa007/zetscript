@@ -260,7 +260,7 @@ namespace zetscript{
 							}
 						}else{
 							error=true;
-							sprintf(str_error,"Cannot convert '%s' to number",str_num_aux.c_str());
+							sprintf(str_error,"Invalid argument number '%s' for format in string representation",str_num_aux.c_str());
 							break;
 						}
 						// INDEX ...
