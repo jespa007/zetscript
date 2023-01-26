@@ -269,6 +269,11 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// String
+
+		// properties
+		bindMemberPropertyGetter<StringScriptObject>("length",StringScriptObjectWrap_length);
+
+		// members
 		bindStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
 		bindMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectWrap_eraseAt);
 		bindMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObjectWrap_insertAt));
@@ -277,7 +282,6 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
 		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
 		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
-		bindMemberPropertyGetter<StringScriptObject>("length",StringScriptObjectWrap_length);
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));
 
@@ -302,18 +306,19 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// Vector
+
+		// properties
 		bindMemberPropertyGetter<VectorScriptObject>("length",&VectorScriptObjectWrap_length);
 
+		// members
 		bindMemberFunction<VectorScriptObject>("push",&VectorScriptObjectWrap_push);
 		bindMemberFunction<VectorScriptObject>("pop",&VectorScriptObjectWrap_pop);
 		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
 		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
 		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
 		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
-		bindStaticMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
-		bindStaticMemberFunction<VectorScriptObject>("contains",&VectorScriptObjectWrap_contains);
-
-
+		bindMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
+		bindMemberFunction<VectorScriptObject>("contains",&VectorScriptObjectWrap_contains);
 
 		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
 		bindStaticMemberFunction<VectorScriptObject>("_equ",&VectorScriptObjectWrap_equal);

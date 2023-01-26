@@ -438,17 +438,9 @@ var s="this is a string";
 
 ===== Properties
  
-====== String::length()
+====== String::length
 
 Returns the length of the string
-
-*Parameters*
-
-None
-
-*Returns*
-
-The length of the string
 
 *Example*
 
@@ -611,7 +603,7 @@ include::../examples/the_language/string/string_to_lower_case_out.txt[]
 
 ====== String::clear()
 
-Clears all values in the String
+Erases the contents of the string
 
 *Parameters*
 
@@ -874,23 +866,15 @@ Example,
 
 [source,javascript]
 ----
-var v=[1,"this is a string",true,2.0]; // variable 'v' has 4 elements where its access exist in [0..3]
-v[1]; // It access vector's second element (i.e "this is a string")
+var v=[1,"string",true,2.0]; // variable 'v' has 4 elements where its access exist in [0..3]
+v[1]; // It access vector's second element (i.e "string")
 ----
 
 ===== Properties
 
-====== Vector::length()
+====== Vector::length
 
-Returns the length of the vector
-
-*Parameters*
-
-None
-
-*Returns*
-
-The length of the vector
+Returns the number of elements in the vector
 
 *Example*
 
@@ -909,28 +893,111 @@ include::../examples/the_language/vector/vector_length_out.txt[]
 ===== Member functions
 
 ====== Vector::push(_value)
+
+Adds a new element at the end of the vector
+
+*Parameters*
+
+- __value__ : value to be added
+
+*Returns* 
+
+None
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_push.zs[]
 ----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_push_out.txt[]
+----
+
 ====== Vector::pop()
+
+Removes the last element in the vector
+
+*Parameters*
+
+None
+
+*Returns* 
+
+Last value of the vector before be removed
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_pop.zs[]
 ----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_pop_out.txt[]
+----
+
 ====== Vector::insertAt(_pos,_value)
+
+
+Inserts element in the vector at defined position
+
+*Parameters*
+
+- __position_: Position where to insert. The position ranges within 0 to the length-1 of the vector
+- __value_: value to insert
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_insert_at.zs[]
 ----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/string/string_insert_at_out.txt[]
+----
+
+
 ====== Vector::eraseAt(_pos)
+
+Removes the value at defined position
+
+*Parameters*
+
+- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the vector
+
+*Return* 
+
+None
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_erase_at.zs[]
 ----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_erase_at_out.txt[]
+----
+
 ====== Vector::clear()
 
-Clears all values in the vector
+Clears all elements in the vector
 
 *Parameters*
 
@@ -978,6 +1045,32 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/vector/vector_join_out.txt[]
+----
+
+====== Vector::contains(_value)
+
+Tells whether a value is contained in the vector or not
+
+*Parameters*
+
+- __value_: a value to find
+
+*Return*
+
+A boolean value telling if the value exist or not in the vector 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/vector/vector_contains.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/vector/vector_contains_out.txt[]
 ----
 
 
