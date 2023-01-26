@@ -1,3 +1,3 @@
-var s="Hello Here 1 Hello Here 2 Hello Word 3"
+var s="My blue car with blue door and blue wheel"
 Console::outln("s => '{0}'",s)
-Console::outln("s.replace(\"Here\",\"World\") => '{0}'",s.replace("Here","World"))
+Console::outln("s.replace(\"blue\",\"green\") => '{0}'",s.replace("blue","green"))

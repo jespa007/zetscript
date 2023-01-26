@@ -490,7 +490,7 @@ Formats a String from a String with a serie of args. The input String has curly 
 
 *Returns*
 
-Formated String
+A formated string
 
 *Example*
 
@@ -510,11 +510,11 @@ include::../examples/the_language/string/string_format_out.txt[]
 
 ====== String::insertAt(_position,_value)
 
-Inserts String or Integer value into String variable at defined position
+Inserts string or integer value into String variable at defined position
 
 *Parameters*
 
-- __position_: Integer that represents the position where to insert. The position ranges within 0 to the length-1 of the String
+- __position_: Position where to insert. The position ranges within 0 to the length-1 of the String
 - __value_: Integer or String value
 
 *Example*
@@ -537,7 +537,7 @@ Removes the value at defined position
 
 *Parameters*
 
-- __position_:  Integer that represents the position where to remove .
+- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the String
 
 *Return* 
 
@@ -559,15 +559,15 @@ include::../examples/the_language/string/string_erase_at_out.txt[]
 
 ====== String::toUpperCase()
 
-Returns String value converted to uppercase
+Returns the calling string value converted to uppercase
 
 *Parameters*
 
 None
 
-*Return*
+*Returns*
 
-Returns the calling string converted to uppercase
+An string value converted to uppercase
 
 *Example*
 
@@ -593,7 +593,7 @@ None
 
 *Return* 
 
-It returns the String, converted to lowercase
+A string value converted to lowercase
 
 *Example*
 
@@ -638,16 +638,16 @@ include::../examples/the_language/string/string_clear_out.txt[]
 
 ====== String::replace(_old_string, _new_string)
 
-Returns a new string replaced by a replacement 
+Returns a string replaced by a replacement 
 
 *Parameters*
 
-- _old_string: The old string to be replaced 
-- _new_string: The new string to be replaced
+- __old_string_: The old string to be replaced 
+- __new_string_: The new string to be replaced
 
 *Return* 
 
-A new string where the specified values has been replaced
+A string where the specified values has been replaced
 
 *Example*
 
@@ -669,11 +669,11 @@ Splits the string into a vector of strings using a separator
 
 *Parameters*
 
-- _separator : separator value as character or string
+- __separator_ : separator value
 
 *Return* 
 
-Returns a vector of strings 
+A vector of strings 
 
 *Example*
 
@@ -695,11 +695,11 @@ Tells whether a value is contained in the string or not
 
 *Parameters*
 
-- _value: a value to find
+- __value_: a value to find
 
 *Return*
 
-Boolean value telling if the _value exist or not in the string 
+A boolean value telling if the value exist or not in the string 
 
 *Example*
 
@@ -723,27 +723,36 @@ Returns the position of the first occurrence of a value in a string
 
 - __search_value_ : string to search for
 
-*Return* 
+*Returns* 
 
-Returns the position of the first occurrence or returns -1 if is not present.
+- A value >= 0 indicating the position of the first occurrence found
+- -1 if the value is not present.
 
 *Example*
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string/string_index_of.zs[]
 ----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/string/string_index_of_out.txt[]
+----
+
 ====== String::startsWith(_value)
 
-Checks whether a string starts with the specified string passed by __value_
+Checks whether a string starts with the specified string passed by value
 
 *Parameters*
 
 - __value_ :  A string representing the value to check for
 
-*Return* 
+*Returns* 
 
-Returns a Boolean value telling whether the string starts with the specified _value or not
+A boolean value telling whether the string starts with the specified value or not
 
 *Example*
 
@@ -761,15 +770,15 @@ include::../examples/the_language/string/string_starts_with_out.txt[]
 
 ====== String::endsWith(_value)
 
-Checks whether a string ends with the specified string passed by __value_
+Checks whether a string ends with the specified string passed by value
 
 *Parameters*
 
 - __value_ :  A string representing the value to check for
 
-*Return* 
+*Returns* 
 
-Returns a Boolean value telling whether the string ends with the specified string or not
+A Boolean value telling whether the string ends with the specified string or not
 
 *Example*
 
@@ -787,16 +796,16 @@ include::../examples/the_language/string/string_ends_with_out.txt[]
 
 ====== String::substring(_start_index, _end_index)
 
-Returns the part of the string from the start index  up to and excluding the end index, or to the end of the string if no end index is supplied.
+Returns a substring of the string value from string within a the start and end indexes
 
 *Parameters*
 
-- _start_index: The index of the first character to include in the returned substring.
-- _end_index (optional): The index of the first character to exclude from the returned substring.
+- __start_index_: The index of the first character to include in the returned substring.
+- __end_index_ (optional): The index of the first character to exclude from the returned substring.
 
 *Returns*
 
- A new string containing the specified part of the given string.
+A string containing the specified part of the given string.
 
 *Example*
 
@@ -814,13 +823,13 @@ include::../examples/the_language/string/string_substring_out.txt[]
 
 ====== String::append(_value)
 
-Extends the string by appending additional characters or string at the end of its current value
+Extends the string by appending additional value at the end of its current string.
 
 *Parameters*
 
-- _value_ : String or character
+- __value__ : value to be appended
 
-*Return* 
+*Returns* 
 
 None
 
@@ -871,13 +880,31 @@ v[1]; // It access vector's second element (i.e "this is a string")
 
 ===== Properties
 
-====== Vector::length
+====== Vector::length()
+
+Returns the length of the vector
+
+*Parameters*
+
+None
+
+*Returns*
+
+The length of the vector
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_length.zs[]
 ----
 
-===== Static functions
+Output:
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_length_out.txt[]
+----
 
 ===== Member functions
 
@@ -902,14 +929,55 @@ v[1]; // It access vector's second element (i.e "this is a string")
 
 ----
 ====== Vector::clear()
+
+Clears all values in the vector
+
+*Parameters*
+
+None
+
+*Returns*
+
+None 
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/vector/vector_clear.zs[]
 ----
-====== Vector::join(_vector)
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/vector/vector_clear_out.txt[]
+----
+
+====== Vector::join(_separator)
+
+Concatenates all elements of the vector into a string using a separator
+
+*Parameters*
+
+- __separator_ : separator value
+
+*Return* 
+
+A string of all concatenated vector's elements 
+
+*Example*
+
 [source,javascript]
 ----
+include::../examples/the_language/vector/vector_join.zs[]
+----
 
+Output:
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_join_out.txt[]
 ----
 
 

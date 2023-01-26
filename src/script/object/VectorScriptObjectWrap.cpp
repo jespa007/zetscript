@@ -67,6 +67,11 @@ namespace zetscript{
 		return ZS_NEW_OBJECT_ITERATOR_VECTOR(_zs,so);
 	}
 
+	VectorScriptObject 			*	VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2){
+		ZS_UNUSUED_PARAM(_zs);
+		return VectorScriptObject::newVectorScriptObjectAdd(_zs,_so1, _so2);
+	}
+
 	bool 							VectorScriptObjectWrap_contains(ZetScript *_zs,VectorScriptObject *sv, StackElement *stk_to_compare){
 		ZS_UNUSUED_PARAM(_zs);
 		bool found=false;
