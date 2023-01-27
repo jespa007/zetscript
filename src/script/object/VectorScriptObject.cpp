@@ -14,24 +14,18 @@ namespace zetscript{
 		return new VectorScriptObject(_zs);
 	}
 
-	VectorScriptObject * VectorScriptObject::newVectorScriptObjectAdd(
+	VectorScriptObject * VectorScriptObject::concat(
 			ZetScript *zs
 			,VectorScriptObject *v1
 			,VectorScriptObject *v2
 	){
 		VectorScriptObject *so_vector = ZS_NEW_VECTOR_OBJECT(zs);
 
-		for(int i=0; i < v1->stk_user_elements.size();i++){
-			so_vector->push((StackElement *)v1->stk_user_elements.items[i]);
-		}
-
-		for(int i=0; i < v2->stk_user_elements.size();i++){
-			so_vector->push((StackElement *)v2->stk_user_elements.items[i]);
-		}
+		so_vector->concat(v1);
+		so_vector->concat(v2);
 
 		return so_vector;
 	}
-
 
 
 	//
@@ -112,6 +106,13 @@ namespace zetscript{
 		// push current vm
 		vm_push_stack_element(vm,stk_element);
 	}
+
+	void VectorScriptObject::concat(VectorScriptObject *_v){
+		for(int i=0; i < _v->stk_user_elements.size();i++){
+			this->push((StackElement *)_v->stk_user_elements.items[i]);
+		}
+	}
+
 
 	zs_string VectorScriptObject::toString(){
 		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};

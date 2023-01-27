@@ -15,7 +15,8 @@ namespace zetscript{
 	StringScriptObject			*	VectorScriptObjectWrap_join(ZetScript *_zs,VectorScriptObject *sv, zs_int idx_char);
 	VectorIteratorScriptObject 	* 	VectorScriptObjectWrap_iter(ZetScript *_zs,VectorScriptObject *so);
 	bool 							VectorScriptObjectWrap_contains(ZetScript *_zs,VectorScriptObject *so, StackElement *stk);
-	VectorScriptObject 			*	VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2);
+	VectorScriptObject 			*	VectorScriptObjectWrap_concat_static(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2);
+	void 							VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2);
 	bool 							VectorScriptObjectWrap_equal(ZetScript *_zs,VectorScriptObject *so, VectorScriptObject *stk);
 
 }

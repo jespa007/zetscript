@@ -318,6 +318,7 @@ namespace zetscript{
 		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
 		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
 		bindMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
+		bindStaticMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat_static);
 		bindMemberFunction<VectorScriptObject>("contains",&VectorScriptObjectWrap_contains);
 
 		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);

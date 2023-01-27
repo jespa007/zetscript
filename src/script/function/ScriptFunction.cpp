@@ -491,7 +491,7 @@ namespace zetscript{
 				}
 
 				if(same_signature){
-					ZS_THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
 										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()

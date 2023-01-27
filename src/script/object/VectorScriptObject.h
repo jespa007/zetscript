@@ -17,7 +17,7 @@ namespace zetscript{
 		// Helpers
 		//
 		static VectorScriptObject * newVectorScriptObject(ZetScript *zs);
-		static VectorScriptObject * newVectorScriptObjectAdd(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2);
+		static VectorScriptObject * concat(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2);
 
 
 
@@ -28,25 +28,27 @@ namespace zetscript{
 
 		VectorScriptObject(ZetScript *_zs);
 
-		virtual StackElement * 	getUserElementAt(int idx);
-		bool 				eraseUserElementAt(int idx);
-		void				eraseAllUserElements();
+		virtual StackElement * 				getUserElementAt(int idx);
+		bool 								eraseUserElementAt(int idx);
+		void								eraseAllUserElements();
 
 		virtual int length();
 		virtual zs_vector<StackElement *> * getStkUserListElements();
 
-		bool exists(StackElement  * stk);
+		bool 								exists(StackElement  * stk);
+
+		void 								concat(VectorScriptObject *_v);
 
 		/**
 		 * creates and insert new StackElement at the end of the vector
 		 * @Return: New StackElement created
 		 */
-		StackElement *			newSlot();
+		StackElement *						newSlot();
 
-		void 					push(StackElement  * stk);
-		void 					pop();
-		virtual zs_string toString();
-		virtual ~VectorScriptObject();
+		void 								push(StackElement  * stk);
+		void 								pop();
+		virtual 							zs_string toString();
+		virtual 							~VectorScriptObject();
 	protected:
 		zs_vector<StackElement *> 			stk_user_elements;
 

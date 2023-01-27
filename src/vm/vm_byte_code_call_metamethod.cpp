@@ -47,7 +47,7 @@ namespace zetscript{
 						&&\
 					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 			){\
-				script_object=VectorScriptObject::newVectorScriptObjectAdd(\
+				script_object=VectorScriptObject::concat(\
 							data->zs\
 							,(VectorScriptObject *)stk_result_op1->value\
 							,(VectorScriptObject *)stk_result_op2->value\
