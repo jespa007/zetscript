@@ -56,7 +56,7 @@ namespace zetscript{
 		return ZS_NEW_OBJECT_ITERATOR_OBJECT(_zs,_oo);
 	}
 
-	void						 	ObjectScriptObjectWrap_append(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+	void						 	ObjectScriptObjectWrap_extend(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		ObjectScriptObject::append(_zs,o1,o2);
 	}
 

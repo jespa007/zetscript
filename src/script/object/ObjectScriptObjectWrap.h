@@ -10,6 +10,6 @@ namespace zetscript{
 	void 							ObjectScriptObjectWrap_clear(ZetScript *_zs,ObjectScriptObject *o1);
 	void 							ObjectScriptObjectWrap_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key);
 	ObjectIteratorScriptObject * 	ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *oo);
-	void						 	ObjectScriptObjectWrap_append(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
+	void						 	ObjectScriptObjectWrap_extend(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 
 }

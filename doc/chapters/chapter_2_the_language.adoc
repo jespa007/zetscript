@@ -840,7 +840,7 @@ include::../examples/the_language/string/string_append_out.txt[]
 ----
 
 
-=== Vector
+==== Vector
 
 Vector type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Vector_ once it assings a open/closed square brackets (i.e '[]' ), 
 
@@ -889,6 +889,36 @@ Output:
 ----
 include::../examples/the_language/vector/vector_length_out.txt[]
 ----
+
+===== Properties
+
+====== Vector::concat(_v1, _v2)
+
+Creates a new vector as a result of merge all elements from two vectors
+
+*Parameters*
+
+- __v1_ : First vector to concatenate into the new vector
+- __v2_ : Second vector to concatenate into the new vector
+
+*Returns* 
+
+A new vector as a result of merge all elements from the vectors
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/vector/vector_concat.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_concat_out.txt[]
+----
+
 
 ===== Member functions
 
@@ -946,7 +976,6 @@ include::../examples/the_language/vector/vector_pop_out.txt[]
 
 ====== Vector::insertAt(_pos,_value)
 
-
 Inserts element in the vector at defined position
 
 *Parameters*
@@ -967,7 +996,6 @@ Output:
 ----
 include::../examples/the_language/string/string_insert_at_out.txt[]
 ----
-
 
 ====== Vector::eraseAt(_pos)
 
@@ -1073,8 +1101,34 @@ Output:
 include::../examples/the_language/vector/vector_contains_out.txt[]
 ----
 
+====== Vector::extend(_v)
 
-==== Object type
+Extends the calling vector by appending all elements from a vector
+
+*Parameters*
+
+- __v_ : Vector type which all elements will appended into the vector
+
+*Returns* 
+
+None
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/vector/vector_extend.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/vector/vector_extend_out.txt[]
+----
+
+
+===== Object
 
 Object type is a anonymous container type to store values through attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
 
@@ -1102,52 +1156,175 @@ To acces to its elements is done through the variable name followed by '.' and a
 
 var o={
   i:1
- ,s:"this is a string"
+ ,s:"string"
  ,b:true
  ,f:2.0
 };
 
-var o_i=o.i; // get value 'i' by '.'
-var o_i=o["i"]; // get value 'i' by '[]'
+o.i; // get contens of attribute 'i' by '.'
+o["i"]; // gets the contents of attribute 'i' by '[]'
 ----
 
 ===== Static functions
 
-====== Object::clear()
+====== Object::clear(_o)
+
+Clears all elements of an object
+
+*Parameters*
+
+None
+
+*Returns*
+
+None 
+
+*Example*
 
 [source,javascript]
 ----
+include::../examples/the_language/object/object_clear.zs[]
 ----
 
-====== Object::erase(_id)
+Output:
 
-[source,javascript]
+[source,txt]
 ----
-----
-
-====== Object::contains()
-
-[source,javascript]
-----
+include::../examples/the_language/object/object_clear_out.txt[]
 ----
 
-====== Object::append()
+====== Object::erase(_key_id)
 
-[source,javascript]
-----
-----
+Removes an attribute of an object
 
-====== Object::concat()
+*Parameters*
 
-[source,javascript]
-----
-----
+- __key_id_:  The key id of the attribute to remove
 
-====== Object::keys()
+*Return* 
+
+None
+
+*Example*
 
 [source,javascript]
 ----
+include::../examples/the_language/object/object_erase.zs[]
 ----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/object/object_erase_out.txt[]
+----
+
+====== Object::contains(_key_id)
+
+Tells whether a key is contained in an object or not
+
+*Parameters*
+
+- __key_: a key to find
+
+*Return*
+
+A boolean value telling if the attribute with __key_id_ exist or not in the object 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/object/object_contains.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/object/object_contains_out.txt[]
+----
+
+====== Object::extend(_o1,_o2)
+
+Extends an object by the content of other object
+
+*Parameters*
+
+- __o1_ : Object where to be extended
+- __o2_ : Object where to copy the extension
+
+*Returns* 
+
+None
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/object/object_extend.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/object/object_extend_out.txt[]
+----
+
+====== Object::concat(_o1, _o2)
+
+Creates a new object as a result of merge all elements from two objects
+
+*Parameters*
+
+- __o1_ : First object to concatenate into the new object
+- __o2_ : Second object to concatenate into the new object
+
+*Returns* 
+
+A new object as a result of merge all elements from the two objects
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/object/object_concat.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/object/object_concat_out.txt[]
+----
+
+====== Object::keys(_o)
+
+Returns a vector of string representing its key names
+
+*Parameters*
+
+- __o_ : Object
+
+*Returns* 
+
+Returns a vector of string representing its key names
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/object/object_keys.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/object/object_keys_out.txt[]
+----
+
 
 ==== Function
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs=(integer float string vector)
+dirs=(integer float string vector object)
 
 for i in "${dirs[@]}"
 do

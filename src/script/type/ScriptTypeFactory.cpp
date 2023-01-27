@@ -317,8 +317,8 @@ namespace zetscript{
 		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
 		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
 		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
-		bindMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
-		bindStaticMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat_static);
+		bindMemberFunction<VectorScriptObject>("extend",&VectorScriptObjectWrap_extend);
+		bindStaticMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
 		bindMemberFunction<VectorScriptObject>("contains",&VectorScriptObjectWrap_contains);
 
 		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
@@ -336,7 +336,7 @@ namespace zetscript{
 		bindStaticMemberFunction<ObjectScriptObject>("clear",&ObjectScriptObjectWrap_clear);
 		bindStaticMemberFunction<ObjectScriptObject>("erase",&ObjectScriptObjectWrap_erase);
 		bindStaticMemberFunction<ObjectScriptObject>("contains",&ObjectScriptObjectWrap_contains);
-		bindStaticMemberFunction<ObjectScriptObject>("append",&ObjectScriptObjectWrap_append);
+		bindStaticMemberFunction<ObjectScriptObject>("extend",&ObjectScriptObjectWrap_extend);
 		bindStaticMemberFunction<ObjectScriptObject>("concat",ObjectScriptObject::concat);
 		bindStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObjectWrap_keys);
 		bindStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectWrap_iter);

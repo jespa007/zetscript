@@ -67,12 +67,12 @@ namespace zetscript{
 		return ZS_NEW_OBJECT_ITERATOR_VECTOR(_zs,so);
 	}
 
-	VectorScriptObject 			*	VectorScriptObjectWrap_concat_static(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2){
+	VectorScriptObject 			*	VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2){
 
 		return VectorScriptObject::concat(_zs,_so1, _so2);
 	}
 
-	void 							VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_this, VectorScriptObject *_sv_extend){
+	void 							VectorScriptObjectWrap_extend(ZetScript *_zs,VectorScriptObject *_this, VectorScriptObject *_sv_extend){
 		ZS_UNUSUED_PARAM(_zs);
 		_this->concat(_sv_extend);
 	}
