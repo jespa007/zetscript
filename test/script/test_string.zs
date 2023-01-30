@@ -60,7 +60,9 @@ System::assert("hello world".startsWith("hello"),"\"hello world\".startsWith(\"h
 System::assert("hello world".endsWith("world"),"\"hello world\".endsWith(\"world\")");
 
 // Test substring. Check whether substring == "hello world" 
-System::assert("!!!hello world!!!".substring(3,"hello world".length)=="hello world","\"hello world\".substring(3,\"hello world\".length)!=\"hello world\"");
+System::assert("!!!hello world!!!".substring(3)=="hello world!!!","\"!!!hello world!!!\".substring(3)!=\"hello world!!!\"");
+System::assert("!!!hello world!!!".substring(2,4)=="!he","\"!!!hello world!!!\".substring(2,4)!=\"!he\"");
+System::assert("!!!hello world!!!".substring(3,-4)=="hello world","\"!!!hello world!!!\".substring(3,-3)!=\"hello world\"");
 
 // Test replace string "world" by "people"
 System::assert("hello world world".replace("world","people")=="hello people people","\"hello world\".replace(\"world\",\"people\")!=\"hello people people\"")

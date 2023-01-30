@@ -130,16 +130,16 @@ namespace zetscript{
 		return this->map_user_properties->count();
 	}
 
-	bool ObjectScriptObject::eraseUserProperty(const zs_string &  property_name/*, const ScriptFunction *info_function*/){
+	bool ObjectScriptObject::eraseUserProperty(const zs_string &  _property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
-		StackElement *stk_user_element = (StackElement *)map_user_properties->get(property_name.c_str(),&exists);
+		StackElement *stk_user_element = (StackElement *)map_user_properties->get(_property_name.c_str(),&exists);
 		if(!exists){
-			ZS_VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
+			ZS_VM_SET_USER_ERROR(vm,"Property %s not exist",_property_name.c_str());
 			return false;
 		}
 
-		free(stk_user_element);
-		map_user_properties->erase(property_name.c_str()); // erase also property key
+		map_user_properties->erase(_property_name.c_str()); // erase also property key
+		ScriptObject::unrefAndFreeStackElementContainer(stk_user_element);
 		return true;
 	}
 
@@ -154,7 +154,7 @@ namespace zetscript{
 
 	zs_string ObjectScriptObject::toString(){
 		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};
-		return json::serialize(zs,&stk,true,false);
+		return json::serialize(zs,&stk,false,false);
 	}
 
 	ObjectScriptObject::~ObjectScriptObject(){

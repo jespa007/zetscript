@@ -231,8 +231,6 @@ namespace zetscript{
 
 		// erase item from lookup list
 		// free allocated mem
-		free(this->items[idx].key);
-
 		for (int i = idx; i < (int)((this->_count-1)); i++) {
 			this->items[i] = this->items[i+1];
 		}

@@ -1143,7 +1143,7 @@ Optionally we can init with some values with its attributes,
 ----
 {
   i:1
- ,s:"this is a string"
+ ,s:"string"
  ,b:true
  ,f:2.0
 };
@@ -1360,7 +1360,7 @@ The following operators it does evaluates arithmetic expressions,
 |Operator |Symbol |Description |Example
 |Add 
 |+
-|It performs a add operation between two integer or number values or concatenates strings with other values
+|It performs a add operation between two integer or float values or concatenates strings with other values
 |
 [source,javascript]
 5+10; // = 15
@@ -1369,7 +1369,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Subtract
 |-
-|It performs a sub operation between two integer or number values
+|It performs a sub operation between two integer or float values
 |
 [source,javascript]
 10-5; // = 5
@@ -1377,7 +1377,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Multiply 
 |* 
-|It performs a multiplication between two integer or number values
+|It performs a multiplication between two integer or float values
 |
 [source,javascript]
 10*5; //= 50
@@ -1385,7 +1385,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Divide 
 |/ 
-|It performs a division between two integer or number values
+|It performs a division between two integer or float values
 |
 [source,javascript]
 10/2; // = 5
@@ -1393,7 +1393,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Modulus 
 |% 
-|It performs a division between two integer or number values
+|It performs a division between two integer or float values
 |
 [source,javascript]
 3%2; //it results 1
@@ -2405,7 +2405,7 @@ var n2 = new MyNumber (0x0f);
 var n3 =n1|n2;
 ----
 
-=====_xor (aka ^)
+===== _xor (aka ^)
 
 @Description: Performs a binary xor operation between two integer
 operands.
@@ -2565,9 +2565,9 @@ var n2 = new MyNumber (10);
 var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
 ----
 
-==== Properties
+==== Custom properties
 
-A property is a member that defines a set of metamethods that to operate with. 
+A custom property is a member that defines a set of metamethods that to operate with. 
 
 
 

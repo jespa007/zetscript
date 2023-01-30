@@ -12,9 +12,13 @@ object.k=false;
 
 System::assert(object.k==false,"object.k!=false")
 
-// check it can also add properties through []
+// check it can also add property through []
 object["general.info"]=false;
 System::assert(object["general.info"]==false,"object[\"general.info\"]!=false");
+
+// check object erases a property
+Object::erase(object,"k");
+System::assert(Object::contains(object,"k")==false,"Object::contains(o,\"k\")!=false");
 
 var obj1={a:1,b:2}
 var obj2={c:3,d:4}
