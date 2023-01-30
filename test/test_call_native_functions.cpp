@@ -51,6 +51,10 @@ public:
     }
 };
 
+void setNumRef(Num *_num){
+	num_ref=_num;
+}
+
 
 struct ParamA{zetscript::zs_string _s;ParamA(){_s="";}};
 struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
@@ -276,7 +280,7 @@ void ParamBWrap_delete(zetscript::ZetScript *_zs,ParamB *_this){
 void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true){
 
 	Num num;
-	num_ref=&num;
+	setNumRef(&num);
 
 	// ensure working doing various clear-eval
 	for(int i=0; i < 5; i++){
