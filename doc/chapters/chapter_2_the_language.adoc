@@ -1342,34 +1342,47 @@ f(); // it prints "Call from function object"
 ----
 
 
-=== Operations
+=== Operators
 
-ZetScript has the following type of expressions
+ZetScript has the following type of operators
 
-* Arithmetic operations
-* Relational operations
-* Logical operations
-* Bit operations
+* Arithmetic operators
+* Relational operators
+* Logical operators
+* Bit operators
 
-==== Arithmetic expressions
+==== Arithmetic operators
 
-The following operators it does evaluates arithmetic expressions,
+Arithmetic operators performs arithmetic operations between two values. The arithmetic operators are the following,
 
-[cols="1d,1m,2d,2a"]
+[cols="2d,1m,3d,6a"]
 |====
 |Operator |Symbol |Description |Example
 |Add 
 |+
-|It performs a add operation between two integer or float values or concatenates strings with other values
+a|
+
+It performs a these operations:
+
+* Add operation between two integer or float values 
+* Concatenates between two strings or other values
+* Concatenates between two vectors 
+* Concatenates between two objects 
+
 |
 [source,javascript]
-5+10; // = 15
-1.5+6; // = 7.5
-"string_"+1;// ="string_1"
+----
+ 5+10; // = 15
+ 1.5+6;// = 7.5
+ "string_"+"string";// ="string_string"
+ "string_"+1;// ="string_1"
+ [1]+[2,3];// [1,2,3]
+ {a:1}+{b:2,c:3}; //{a:1,b:2,c:3}
+----
 
 |Subtract
 |-
-|It performs a sub operation between two integer or float values
+|Performs a substract operation between two integer/float values
 |
 [source,javascript]
 10-5; // = 5
@@ -1377,7 +1390,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Multiply 
 |* 
-|It performs a multiplication between two integer or float values
+|Performs a multiplication between two integer/float values
 |
 [source,javascript]
 10*5; //= 50
@@ -1385,7 +1398,7 @@ The following operators it does evaluates arithmetic expressions,
 
 |Divide 
 |/ 
-|It performs a division between two integer or float values
+|Performs a division between two integer/float values
 |
 [source,javascript]
 10/2; // = 5
@@ -1393,18 +1406,18 @@ The following operators it does evaluates arithmetic expressions,
 
 |Modulus 
 |% 
-|It performs a division between two integer or float values
+|Performs a division between two integer/float values
 |
 [source,javascript]
 3%2; //it results 1
 10%2.5; // it results
 |====
 
-==== Relational expressions
+==== Relational operators
 
-The following operators it does evaluates relational expressions,
+Relational operators evaluates relations through two values. The relational operators are the following,
 
-[cols="1d,1m,2d,2a"]
+[cols="2d,1m,3d,6a"]
 |====
 |Operator |symbol |Description |Example
 
@@ -1441,7 +1454,7 @@ The following operators it does evaluates relational expressions,
 20>10; // = true
 
 |Less equal than 
-| <= 
+| \<= 
 |Checks whether first value is less equal than second value
 |
 [source,javascript]
@@ -1463,22 +1476,39 @@ The following operators it does evaluates relational expressions,
 [source,javascript]
 0 instanceof Integer; //= true
 "hello" instanceof Integer;//= false
+
+|in 
+|in 
+a|
+Performs the following operations:
+
+* Checks if a value exist in a string or vector
+* Checks a key exist in object
+|
+[source,javascript]
+'a' in "abc" // true
+'d' in "abc" // false
+"string" in [1,"string",false,10.5] // true
+10       in [1,"string",false,10.5] // false
+"a" in {a:1,b:2,c:3} // true
+"d" in {a:1,b:2,c:3} // false
+
+
 |====
 
-Note: You cannot mix different types for relational expressions. For example, doing a
-relational expression with boolean and integer values is incompatible. 
 
-==== Logic expressions
 
-Logic expressions are the ones that combines operations through boolean values,
+==== Logic operators
 
-[cols="1d,1m,2d,2a"]
+Logic operators combines operations between two boolean values. The logic operators are the following,
+
+[cols="2d,1m,3d,6a"]
 |====
 |Operator |symbol |Description |Example
 
 |Logic And 
 |&& 
-|it performs an AND operation between two Boolean values
+|Performs an AND operation between two boolean values
 |
 [source,javascript]
 true && true;// = true
@@ -1486,7 +1516,7 @@ true&& false;// = false
 
 |Logic Or 
 | \|\|
-|It performs an OR operation between two Boolean values
+|Performs an OR operation between two Boolean values
 |
 [source,javascript]
 true \|\| false;// = true
@@ -1494,18 +1524,20 @@ false \|\| false;// = false
 
 |Logic Not 
 |! 
-|Negates Boolean value
+|Negates boolean value
 |
 [source,javascript]
 !true; // = false
 !false; // = true
+!(true || false) // = false 
+!(true && false) // = true
 |====
 
 ==== Binary operations
 
-Binary operations are the ones that combines bit operations through integer values,
+Binary operators combines operations between two integer values. The binary operators are the following,
 
-[cols="1d,1m,2d,2a"]
+[cols="2d,1m,3d,6a"]
 |====
 |Operator |symbol |Description |Example
 
@@ -1535,23 +1567,31 @@ Binary operations are the ones that combines bit operations through integer valu
 
 |Binary shift left
 |<< 
-|Performs binary shift left
+|Performs binary shift left between two integers
 |
 [source,javascript]
 0x1 << 2; // = 0x4
 
 |Binary shift right
 |>> 
-|Performs binary shift right 
+|Performs binary shift right between two integers
 |
 [source,javascript]
 0xff >> 1; // = 0x7f
+
+|Bitwise complement
+|~
+|Performs bitwise complement operation from integer value
+|
+[source,javascript]
+~0xa; // = 0x7f
+
 |====
 
 ==== Priority operations
 Each operator it has priority of evaluation. ZetScript it has the following operator order priority,
 
-*,/,%,!=,+,-,^,&,|,<<,>>,==,<=,>=,>,<,||,&&
+<<,>>,&,|,^,*,/,%,+,-,in,instanceof,==,!=,>=,\<=,>,<,&&,||
 
 For example this expression,
 
@@ -1580,7 +1620,7 @@ A conditional statement are used to perform different actions based on different
 
 ==== if-else statement
 
-_If_ statement is used to specify a block of ZetScript code to be executed if a condition is 'true'.
+_If_ statement is used to specify a block of code to be executed if a condition is 'true'.
 
 Syntax,
 
@@ -1600,7 +1640,7 @@ if(n < 10) {
 }
 ----
 
-It can use _Else_ statement  is used to specify a block of code to be executed if the condition is 'false'.
+It can use _else_ statement  is used to specify a block of code to be executed if the condition is 'false'.
 
 Syntax,
 
@@ -1766,7 +1806,7 @@ do {
 
 ==== for
 
-The for loop is often the tool you will use when you want to create a loop.
+The for loop performs an iteration with 3 optional statements:
 
 Syntax,
 
@@ -1788,6 +1828,33 @@ Example,
 for(var i=0; i < 5; i++) {
 	print("The number is "+i);
 } 
+----
+
+
+==== for-in
+
+The loop for-in works as for loop but simplifies the iteration over containers like string, object or vectors. Per each iteration it returns its value or a pair key-value,
+
+Example,
+
+Syntax using value as iteration result value,
+
+[source,javascript]
+----
+for(var v in vector){
+	// code block to be executed
+}
+----
+
+Using a pair key-value as iteration result value,
+
+[source,javascript]
+----
+
+
+for(var v in vector){
+	// code block to be executed
+}
 ----
 
 
@@ -1878,6 +1945,16 @@ var add=function(op1, op2){
 var j=add(2,5); // j=5
 ----
 
+==== Default args
+
+bla,bla,bla
+
+==== Variable args
+
+bla,bla,bla
+
+
+
 === Class
 
 A class is a custom type that contains variables and functions that operates with its variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
@@ -1889,23 +1966,6 @@ Example,
 class Test{
 
 };
-----
-
-==== Post add function/variable member
-
-In ZetScrip is possible to add more class member through "::" punctuator.
-
-Example,
-
-[source,javascript]
-----
-	// post declaration of variable member
-	const Test::data2;
-	
-	// post declaration of function member
-	function Test::function2(){
- 		this.data2="a string";
-	}
 ----
 
 ==== Instance class
@@ -1949,23 +2009,38 @@ class Test{
 }
 ----
 
-==== Inheritance
+==== Post declare function member
 
-ZetScript supports inheritance through ":" punctuator after the name of the class followed the class name to be extended. The new extended class will inheritance all variable/functions members from base class.
+Is possible to add more class member through "::" punctuator.
 
 Example,
 
 [source,javascript]
 ----
-class TestExtended: Test{
+	
+	// post declaration of function member
+	function Test::function2(){
+ 		this.data2="a string";
+	}
+----
+
+==== Inheritance
+
+A class can inherit another class through "extends". The new extended class will inheritance all variable/functions members from base class.
+
+Example,
+
+[source,javascript]
+----
+class TestExtended extends Test{
 	function3(){
 		this.data3=this.data1+this.function1(10);
 	}
 };
 ----
-===== Call parent functions (super keyword)
+===== Call parent functions
 
-The extended class can call parent functions through super keyword.
+The extended class can call parent functions through _super_ keyword.
 
 Example,
 
@@ -2028,14 +2103,20 @@ ZetScript supports the following metamethods:
 
 
 
-===== _equ (aka ==)
+===== _equ(_v1,_v2) (aka ==)
 
-@Description: Performs relational equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if equal, false otherwise.
+Defines relational equal operator.
 
-Example how to use _equ metamethod within script class,
+*Parameters*
+
+- __v1_ : 1st operand.
+- __v2_ : 2nd operand.
+
+*Returns*
+
+true if equal, false otherwise.
+
+*Example*
 
 [source,javascript]
 ----

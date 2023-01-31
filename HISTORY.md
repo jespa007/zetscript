@@ -21,6 +21,7 @@ Main improvements:
 - Implements builtin modules: 'System', 'Math', 'Json' and 'String'
 - The use of "function" keyword on class function members are not mandatory
 - switch-case eval expressions
+- Implements builtin concatenation with vector and object types through operator '+' 
 
 Solved issues
  

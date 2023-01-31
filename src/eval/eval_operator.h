@@ -4,6 +4,7 @@
  */
 #pragma once
 
+// group 0 is the most candidate split it will do in the eval expression (less priority)
 #define PREFERENCE_OPERATOR_GROUP_0(_operator) \
 (\
   (_operator) == OPERATOR_LOGIC_OR \
@@ -23,14 +24,14 @@
 || 	(_operator) == OPERATOR_LTE \
 || 	(_operator) == OPERATOR_GT \
 || 	(_operator) == OPERATOR_LT \
+||	(_operator) == OPERATOR_IN \
+|| 	(_operator) == OPERATOR_INSTANCEOF \
 )
 
 #define PREFERENCE_OPERATOR_GROUP_3(_operator) \
 ( \
-(_operator) == OPERATOR_ADD \
+    (_operator) == OPERATOR_ADD \
 || 	(_operator) == OPERATOR_SUB \
-||	(_operator) == OPERATOR_IN \
-|| 	(_operator) == OPERATOR_INSTANCEOF \
 )
 
 #define PREFERENCE_OPERATOR_GROUP_4(_operator) \
@@ -57,6 +58,8 @@
 (_operator) == OPERATOR_SHIFT_LEFT \
 || 	(_operator) == OPERATOR_SHIFT_RIGHT \
 )
+
+// group 7 is the less candidate split it will do in the eval expression (more priority)
 
 #define PREFERENCE_OPERATOR_GROUP_MAX	7
 
