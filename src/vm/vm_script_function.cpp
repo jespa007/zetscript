@@ -201,6 +201,7 @@ namespace zetscript{
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
 						,NULL
+						,false
 					)==false){
 						return;
 					}
@@ -220,6 +221,7 @@ namespace zetscript{
 							,BYTE_CODE_METAMETHOD_NEG
 							,stk_result_op1
 							,NULL
+							,false
 					)){
 						return;
 					}
@@ -237,6 +239,7 @@ namespace zetscript{
 							,BYTE_CODE_METAMETHOD_BWC
 							,stk_result_op1
 							,NULL
+							,false
 					)){
 						return;
 					}

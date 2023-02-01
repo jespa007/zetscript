@@ -505,11 +505,15 @@ namespace zetscript{
 
 
 
+							list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)+"'\n";
+							list_valid_metamethods+=zs_string("- '_get'\n");
 
 							// get all member list
 							const ByteCodeMetamethod *it_mm=MetamethodMembers::byte_code_metamethod_member_list;
 							while(*it_mm!=0){
-								list_valid_metamethods+=zs_string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
+								if(*it_mm!=BYTE_CODE_METAMETHOD_SET){
+									list_valid_metamethods+=zs_string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
+								}
 								it_mm++;
 							}
 
@@ -517,7 +521,9 @@ namespace zetscript{
 							// get all member setter listMetamethodMembers::byte_code_metamethod_member_setter_list
 							const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
 							while(*it_setters!=0){
-								list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
+								if(*it_setters!=BYTE_CODE_METAMETHOD_SET){
+									list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
+								}
 								it_setters++;
 							}
 

@@ -77,14 +77,15 @@ namespace zetscript{
 		stk_args=data->vm_stk_current;
 
 		// op1/op2 should be the object that have the metamethod
+
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
 			str_script_type_object_found=script_object->getTypeName();
 		}else if ((_is_static==true) && (stk_result_op2!=NULL && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT))){
 			script_object=(ScriptObject *)stk_result_op2->value;
 			str_script_type_object_found=script_object->getTypeName();
-
 		}
+
 
 		if(script_object == NULL){ // cannot perform operation
 			if(str_script_type_object_found.empty()){ // not any object found
@@ -109,7 +110,7 @@ namespace zetscript{
 			*data->vm_stk_current++=*stk_result_op1;
 			*data->vm_stk_current++=*stk_result_op2;
 		}else{
-			*data->vm_stk_current++=*stk_result_op2;
+			*data->vm_stk_current++=*stk_result_op1;
 		}
 		//------------------------------------
 
@@ -166,9 +167,11 @@ namespace zetscript{
 				}
 			}
 
-			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value)==false){
-					goto apply_metamethod_error;
+			if(stk_result_op2!=NULL){
+				if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value)==false){
+						goto apply_metamethod_error;
+					}
 				}
 			}
 

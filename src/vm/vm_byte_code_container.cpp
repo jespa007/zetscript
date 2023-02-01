@@ -42,8 +42,7 @@ namespace zetscript{
 			VM_POP_STK_ONE; // get var op1 and symbol op2
 		}
 
-		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)) == 0)
-		{
+		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)) == 0){
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
@@ -198,6 +197,7 @@ namespace zetscript{
 			 ){
 				stk_mp_aux=(StackMemberProperty *)stk_var->value;
 
+				// calls getter if defined
 				if(stk_mp_aux->member_property->metamethod_members.getter!=NULL){
 					ZS_VM_INNER_CALL(
 							stk_mp_aux->so_object
@@ -207,7 +207,7 @@ namespace zetscript{
 					);
 
 					if(
-							// Pass the object if the value is object type >= TYPE_SCRIPT_OBJECT_CLASS ...
+							// If return value is object pass it if  >= TYPE_SCRIPT_OBJECT_CLASS ...
 							STK_IS_SCRIPT_OBJECT_CLASS(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store
@@ -215,13 +215,23 @@ namespace zetscript{
 									(instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)
 								||	(instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 								)
-								&& ((instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0)
+								&& ((instruction->properties & INSTRUCTION_PROPERTY_FOR_STORE)==0)
 						  )
 
 					){
 						data->vm_stk_current++;
 						goto lbl_exit_function_ok;
 					}
+				}else{
+					// if use for store send the metamethod itself
+					if((instruction->properties & INSTRUCTION_PROPERTY_FOR_STORE)==0){
+					   // show error that getter is not defined so the property cannot be readed
+						ZS_VM_STOP_EXECUTE("Property '%s:%s' is not readable or '_get' metamethod is not implemented"
+							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
+							,(const char *)str_symbol_aux1
+						);
+					}
+
 				}
 
 			}
@@ -240,12 +250,17 @@ namespace zetscript{
 			// instruction indicates that stk_var will be a target to store
 			(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE)
 								&&
-			// if stk_var is container slot only has to be readed because ContainerSlot itself it contains all information for storage
-			((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)
+			// Check if stk_var is NOT a STK_PROPERTY_CONTAINER_SLOT because it has already a container slot that contains all information for storage
+			((stk_var->properties & (STK_PROPERTY_CONTAINER_SLOT))!=STK_PROPERTY_CONTAINER_SLOT
+		)
 		){
 			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 					&&
 				ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+					&&
+				// A member property container cannot be a slot assignment because it has not effect due is not saved in a real member property, it will saved through '_set' metamethod
+				(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=STK_PROPERTY_MEMBER_PROPERTY
+
 			){
 				VM_PUSH_NEW_CONTAINER_SLOT(
 					(ContainerScriptObject *)so_aux

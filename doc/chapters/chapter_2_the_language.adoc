@@ -1953,6 +1953,9 @@ bla,bla,bla
 
 bla,bla,bla
 
+==== Args by reference
+
+bla,bla,bla
 
 
 === Class
@@ -1967,6 +1970,12 @@ class Test{
 
 };
 ----
+
+==== Members
+
+Functions and variable members
+
+bla bla bla
 
 ==== Instance class
 
@@ -2064,15 +2073,14 @@ Metamethods are special functions members that links with operators seen on sect
 
 ZetScript supports the following metamethods:
 
+* _set
+* _get
 * _equ
 * _nequ
 * _lt
 * _lte
-* _not
 * _gt
 * _gte
-* _neg
-* _btw
 * _add
 * _sub
 * _div
@@ -2083,7 +2091,6 @@ ZetScript supports the following metamethods:
 * _xor
 * _shl
 * _shr
-* _set
 * _add_set
 * _sub_set
 * _mul_set
@@ -2100,42 +2107,37 @@ ZetScript supports the following metamethods:
 * _pre_inc
 * _pre_dec
 * _in
+* _not
+* _neg
+* _btw
 
 
+===== _equ(_op1,_op2) (aka ==)
 
-===== _equ(_v1,_v2) (aka ==)
-
-Defines relational equal operator.
+Implements relational equal (aka == ) operator between first operand and second operand 
 
 *Parameters*
 
-- __v1_ : 1st operand.
-- __v2_ : 2nd operand.
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
 
 *Returns*
 
-true if equal, false otherwise.
+true if op1 and op2 are equal, false otherwise.
 
 *Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
-	}
- 	_equ(op1, op2){
- 		return op1.num==op2.num;
- 	}
-};
+include::../examples/the_language/class/class_metamethod_equal.zs[]
 ----
 
-var n1 = new MyNumber (1), n2=new MyNumber (1);
+Output:
 
-if(n1==n2){ // we use here the metamethod ==
- print("n1 ("+n1.num+") is equal to n2 ("+n2.num+")");
-} 
-
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_equal_out.txt[]
+----
 
 ===== _nequ (aka !=)
 
