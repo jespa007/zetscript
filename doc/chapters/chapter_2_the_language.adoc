@@ -2112,9 +2112,38 @@ ZetScript supports the following metamethods:
 * _btw
 
 
-===== _equ(_op1,_op2) (aka ==)
 
-Implements relational equal (aka == ) operator between first operand and second operand 
+===== _set(_value)
+
+Performs a set operation
+
+*Parameters
+
+- __value_ : value to set.
+
+*Returns*
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_set_out.txt[]
+----
+
+If variable is undefined ZetScript will assign reference object, in the case is not
+defined it will do a set operation (if it is implemented). 
+
+===== _equ(_op1,_op2)
+
+Implements _equal_ operator (aka == ) between first operand and second operand 
 
 *Parameters*
 
@@ -2123,534 +2152,718 @@ Implements relational equal (aka == ) operator between first operand and second 
 
 *Returns*
 
-true if op1 and op2 are equal, false otherwise.
+- True if op1 and op2 are EQUAL
+- False if op1 and op2 are NOT EQUAL
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_equal.zs[]
+include::../examples/the_language/class/class_metamethod_equ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_equal_out.txt[]
+include::../examples/the_language/class/class_metamethod_equ_out.txt[]
 ----
 
-===== _nequ (aka !=)
+===== _nequ(_op1,_op2)
 
-@Description: Performs relational not equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if not equal, false otherwise.
+Implements _not equal_ operator (aka != ) between first operand and second operand 
 
-Example how to use _nequ metamethod within script class,
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- True if op1 and op2 are NOT EQUAL
+- False if op1 and op2 are EQUAL
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	
- 	_nequ(op1, op2){
- 		return op1.num!=op2.num;
- 	}
-};
+include::../examples/the_language/class/class_metamethod_nequ.zs[]
+----
 
-var n1 = new MyNumber (1), n2=new MyNumber (0);
-if(n1!=n2){
- 	Console::outln("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
-}
----- 
+Output:
 
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
+----
 
-===== _lt (aka <)
+===== _lt(_op1,_op2)
 
-@Description: Performs relational less equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if less equal, false otherwise.
+Implements _less than_ operator (aka < ) between first operand and second operand 
 
-Example how to use _lt metamethod within script class,
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- True if op1 is LESS THAN op2
+- False if op1 is GRATHER EQUAL THAN op2
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
- 	static _lt(op1, op2){
- 		return op1.num<op2.num;
- 	}
-};
-
-
-var n1 = new MyNumber (0), n2=new MyNumber (1);
-if(n1<n2){
-	Console::outln("n1 < n2");
-} 
+include::../examples/the_language/class/class_metamethod_lt.zs[]
 ----
 
-===== _lte (aka <=)
+Output:
 
-@Description: Performs relational less equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if less equal, false otherwise.
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_lt_out.txt[]
+----
 
-Example how to use _lte metamethod within script class,
+===== _lte(_op1,_op2)
+
+Implements _less than or equal_ operator (aka <= ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- True if op1 is LESS THAN OR EQUAL op2
+- False if op1 is GRATHER THAN op2
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
-	static _lte(op1, op2){
-		return op1.num<=op2.num;
-	}
-};
+include::../examples/the_language/class/class_metamethod_lte.zs[]
+----
 
+Output:
 
-var n1 = new MyNumber (1), n2=new MyNumber (1);
-if(n1<=n2){
-	System::outln("n1 <= n2");
-}
----- 
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_lte_out.txt[]
+----
 
-===== _gt (aka >)
+===== _gt(_op1,_op2) (aka >)
 
-@Description: Performs relational greater operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if greater, false otherwise.
+Implements _greather than_ operator (aka > ) between first operand and second operand 
 
+*Parameters*
 
-Example how to use _gt metamethod within script class,
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- True if op1 is GREATHER THAN op2
+- False if op1 is LESS OR EQUAL THAN op2
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
-	static _gt(op1, op2){
-		return op1.num>op2.num;
-	}
-};
-
-var n1 = new MyNumber (1), n2=new MyNumber (0);
-if(n1>n2){
-	Console::outln("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
-}
+include::../examples/the_language/class/class_metamethod_gt.zs[]
 ----
 
-===== _gte (aka >=)
+Output:
 
-@Description: Performs relational greater equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if greater equal, false otherwise.
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_gt_out.txt[]
+----
 
-Example how to use _gte metamethod within script class,
+===== _gte(_op1,_op2) (aka >=)
+
+Implements _greather than or equal_ operator (aka >= ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- True if op1 is GREATHER THAN OR EQUAL op2
+- False if op1 is LESS THAN op2
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
- 	static _gte(op1, op2){
- 		return op1.num>=op2.num;
- 	}
-};
+include::../examples/the_language/class/class_metamethod_gte.zs[]
+----
 
-var n1 = new MyNumber (2), n2=new MyNumber (1);
-if(n1>=n2){
- 	Console::outln("n1 >= n2");
-} 
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_gte_out.txt[]
 ----
 
 
-===== _not (aka !)
+===== _not()
 
-@Description: Performs a not operation.
-@Param1 : Object custom class type.
-@Returns : A Boolean type as a result of not operation.
+Implements _not_ pre operator (aka !)  
 
-Example how to use _not metamethod within script class,
+*Parameters*
 
+None
+
+*Returns*
+
+- Boolean value as a result of not operation
+
+*Example*
 
 [source,javascript]
 ----
-class MyBoolean{
-	constructor(_b){
-		this.b=_b;
-	}
- 	_not(){
- 		return !_op.b;
- 	}
-};
+include::../examples/the_language/class/class_metamethod_not.zs[]
+----
 
-var b = new MyBoolean (true);
-if(!b){
-	Console::outln("b was false");
-}
+Output:
 
----- 
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_not_out.txt[]
+----
 
-===== _neg (aka -)
+===== _neg()
 
-@Description: Performs negate operation.
-@Param1 : operand to negate.
-@Returns : A new object custom class type with result of negate operation.
+Implements _negate_ pre operator (aka - ) 
 
-Example how to use _neg metamethod within script class,
+*Parameters*
+
+None
+
+*Returns*
+
+- A new object as result of negate operation
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
-	
-	_neg(){
-		return new MyNumber(-op1.num);
-	}
-};
+include::../examples/the_language/class/class_metamethod_negt.zs[]
+----
 
-var n1 = new MyNumber (1);
-var n2 = -n1;
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_not_neg.txt[]
 ----
  
 
-===== _add (aka +)
+===== _add(_op1,_op2)
 
-@Description: Performs add operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result add operation.
+Implements _add_ operator (aka + ) between first operand and second operand 
 
-Example how to use _add metamethod within script class,
+*Parameters*
 
-[source,javascript]
-----
-class MyNumber{
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
 
-	constructor(_n){
-		this.num=_n;
-	}
- 	static _add(op1,op2){
- 		return new MyNumber(op1.num+op2.num);
- 	}
-};
+*Returns*
 
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (10);
-var n3 =n1+n2;
+- A new object as a result of add operation 
 
-print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);
-----
-
-===== _div (aka /)
-
-@Type: Static
-@Description: Performs divide operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result divide
-operation.
-
-Example how to use metamethod _div within script class,
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
-	static _div(op1,op2){
-		return new MyNumber(op1.num/op2.num);
- 	}
-};
-
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (10);
-var n3 =n1/n2;
+include::../examples/the_language/class/class_metamethod_add.zs[]
 ----
 
+Output:
 
-===== _mul (aka *)
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_add_out.txt[]
+----
 
-@Type: Static
-@Description: Performs multiply operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result multiply operation.
+===== _div(_op1,_op2)
 
-Example how to use _mul metamethod within script class,
+Implements _division_ operator (aka / ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of division operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
- 
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	static _mul(op1,op2){
- 		return new MyNumber(op1.num*op2.num);
- 	}
-};
-
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (10);
-var n3 = n1*n2;
+include::../examples/the_language/class/class_metamethod_div.zs[]
 ----
 
-===== _mod (aka %)
+Output:
 
-@Description: Performs modulus operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result modulus operation.
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_div_out.txt[]
+----
 
-Example how to use _mod metamethod within script class,
+
+===== _mul(_op1,_op2)
+
+Implements _multiplication_ operator (aka * ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of multiplication operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	_mod(op1,op2){
- 		return new MyNumber(op1.num%op2.num);
- 	}
-};
-
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (15);
-var n3 = n1%n2;
+include::../examples/the_language/class/class_metamethod_mul.zs[]
 ----
 
+Output:
 
-===== _and (aka &)
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+----
 
-@Description: Performs binary and operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary and operation.
+===== _mod(_op1,_op2)
 
-Example how to use _and metamethod within script class,
+Implements _modulus_ operator (aka * ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of modulus operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
-	static _and(op1,op2){
-		return new MyNumber(op1.num&op2.num);
-	}
-};
+include::../examples/the_language/class/class_metamethod_mod.zs[]
+----
 
-var n1 = new MyNumber (0xff);
-var n2 = new MyNumber (0x0f);
-var n3 =n1&n2;
----- 
+Output:
 
-===== _or (aka |)
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+----
 
-@Description: Performs binary or operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary or operation.
+===== _and(_op1,_op2)
 
-Example how to use _or metamethod within script class,
+Implements _bitwise and_ operator (aka & ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of bitwise and operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	static _or(op1,op2){
- 		return new MyNumber(op1.num|op2.num);
- 	}
-};
-
-var n1 = new MyNumber (0xf0);
-var n2 = new MyNumber (0x0f);
-var n3 =n1|n2;
+include::../examples/the_language/class/class_metamethod_and.zs[]
 ----
 
-===== _xor (aka ^)
+Output:
 
-@Description: Performs a binary xor operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary xor operation.
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_and_out.txt[]
+----
 
-Example how to use _xor metamethod within script class,
+===== _or(_op1,_op2)
+
+
+Implements _bitwise or_ operator (aka | ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of bitwise or operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	static _xor(op1,op2){
- 		return new MyNumber(op1.num^op2.num);
- 	}
-};
-var n1 = new MyNumber (0xf1);
-var n2 = new MyNumber (0x0f);
-var n3 =n1^n2;
+include::../examples/the_language/class/class_metamethod_or.zs[]
 ----
 
-===== _shl (aka <<)
+Output:
 
-@Description: Performs shift left operation.
-@Param1 : Variable to apply shift left.
-@Param2 : Tells number shifts to the left.
-@Returns : A new object custom class type with n shifts left operation.
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_or_out.txt[]
+----
 
-Example how to use _shl metamethod within script class,
+===== _xor(_op1,_op2)
+
+
+Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of bitwise xor operation 
+
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
-		this.num=_n;
-	}
- 	static _shl(op1, n_shifts){
- 		return new MyNumber(op1.num<< n_shifts);
- 	}
-};
+include::../examples/the_language/class/class_metamethod_xor.zs[]
+----
 
-var n1 = new MyNumber (0x1);
-var n2 = n1 << 3;
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_xor_out.txt[]
+----
+===== _shl(_op1,_op2)
+
+Implements _bitwise shift left_ operator (aka << ) between first operand and second operand 
+
+*Parameters*
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+*Returns*
+
+- A new object as a result of bitwise shift left operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shl.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shl_out.txt[]
 ----
 
 
 ===== _shr (aka >>)
 
-@Description: Performs shift right operation.
-@Param1 : Variable to apply shift right.
-@Param2 : Tells number shifts to the right.
-@Returns : A new object custom class type with n shifts right operation.
 
-Example how to use _shr metamethod within script class,
+Implements _bitwise shift right_ operator (aka << ) between first operand and second operand 
 
-[source,javascript]
-----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
- 	}
- 	static _shr(op1,n_shifts){
- 		return new MyNumber(op1.num>>n_shifts);
- 	}
-};
+*Parameters*
 
-var n1 = new MyNumber (0xf);
-var n2 = n1 >> 2;
-----
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
 
-===== _set (aka =)
+*Returns*
 
-@Description: Performs a set operation6.
-@Param1 : Source variable to set.
-@Returns : None.
+- A new object as a result of bitwise shift right operation 
 
-We present a simple example how to use set metamethod within script class. In the set metamethod we can filter which type of parameter input is to perform the right operation and stop execution with error function if is required.
+*Example*
 
 [source,javascript]
 ----
-class MyNumber{
-	constructor(_n){
- 		this.num=_n;
-	} 
- 	_set(v){
- 		if(v instanceof Integer){
- 			this.num = v;
- 		}else if(v instanceof MyNumber){
- 			this.num = v.num;
- 		}else{
- 			error("parameter not supported");
- 		}
- 	}
-};
-
-var n1 = new MyNumber (10);
-var n2; // n3 is undefined!
-n2 = n1; // it assigns n1=n2.
-n2 = 50; // n3 now values 50
+include::../examples/the_language/class/class_metamethod_shr.zs[]
 ----
 
-If variable is undefined ZetScript will assign reference object, in the case is not
-defined it will do a set operation (if it is implemented). 
+Output:
 
-
-===== Mixing operand types
-
-Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.The following example performs a sums of a combination of object, integers or floats.
-
-[source,javascript]
+[source,text]
 ----
-var num1= new MyNumber(1), num2=new MyNumber(2);
-var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;
+include::../examples/the_language/class/class_metamethod_shr_out.txt[]
 ----
 
-The expression cannot be performed with only objects as we have been shown in the last sections. You can use instanceof operator to check each type of argument and perform the needed operation.
-
-We present an example for _add metamethod function that implements a support to operate with MyNumber object, integer or float. Other types will cause a execution
-error.
-
-Example,
-
-[source,javascript]
-----
-class MyNumber{
- 
-	constructor(_n){
-		this.num=_n;
-	}
-	static _add(op1,op2){
- 		var aux1, aux2;
- 		if(op1 instanceof MyNumber){
- 			aux1=op1.num;
- 		}else if(op1 instanceof Integer || op1 instanceof Float){
-			aux1=op1;
-		}else{
-			System::errorln("arg op1 is not supported");
-		}
-	
- 		if(op2 instanceof MyNumber){
- 			aux2=op2.num;
- 		}else if(op2 instanceof Integer || op2 instanceof Float){
- 			aux2=op2;
- 		}else{
- 			System::errorln("arg op2 is not supported ");
- 		}
-
- return new MyNumber(aux1+aux2);
- }
-};
-
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (10);
-var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
-----
 
 ==== Custom properties
 
-A custom property is a member that defines a set of metamethods that to operate with. 
+A custom property is a member that defines a set of metamethods that to operate with.
 
+_get
+_set
+_neg
+_not
+_post_inc
+_post_dec
+_pre_inc
+_pre_dec
+
+
+=== Modules
+
+Zetscript implements the following modules,
+
+* Console
+* System
+* Math
+* Json
+* DateTime
+
+
+==== Console
+
+Console module exposes the following set of functions,
+
+* outln
+* errorln
+* readChar
+
+===== Console::outln
+
+Console::outln prints message to the console.
+
+Syntax,
+
+[source,zetscript]
+Console::outln(object,...args)
+
+If _object_ is constant string it can be formated (see in table X.X)
+
+Example,
+
+[source,zetscript]
+----
+ // prints 'Hello world'
+ Console::outln("Hello world");
+ 
+ // prints 'Score:0001'
+ Console::outln("Score:{0:d4}",1);  
+  
+----
+
+===== Console::errorln
+
+Console::errorln prints an error message to the console.
+
+Syntax,
+
+[source,zetscript]
+Console::errorln(object,...args)
+
+If _object_ is constant string it can be formated (see in table X.X)
+
+Example,
+
+[source,zetscript]
+----
+ // prints 'Error'
+ Console::errorln("Error");
+ 
+ // prints 'Error:02'
+ Console::outln("Error:{0:d2}",2);  
+  
+----
+
+===== Console::readChar
+
+Console::readChar it waits untill reads a character from console
+
+Syntax,
+
+[source,zetscript]
+Console::readChar()
+
+Example,
+
+[source,zetscript]
+----
+ // waits until reads a char
+ var c=Console::readChar();
+ 
+ // prints readed char
+ Console::outln("Key pressed: {0}",c) 
+  
+----
+
+
+==== System
+
+System module exposes the following set of functions,
+
+* clock
+* eval
+* assert
+* error
+
+
+===== Clock
+
+Returns the amount of time in milliseconds
+
+Syntax,
+
+[source,zetscript]
+System::clock()
+
+Example,
+
+[source,zetscript]
+----
+ var start=System::clock()
+
+ // waste some time...
+ for(var i=0;i<1000; i++){
+ }
+
+ // print elapsed time in milliseconds
+ Console::outln("Elapsed time: {0} ms",System::clock()-start_time)
+----
+
+===== Eval
+
+
+===== Assert
+
+
+===== Error
+
+
+
+
+==== Math
+
+Math module exposes the following set of static members,
+
+* PI: PI number (i.e 3.14159265359)
+
+Math module exposes the following set of static functions,
+
+* sin
+* cos
+* abs
+* pow
+* degToRad
+* random
+* max
+* min
+* sqrt
+* floor
+* ceil
+* round
+
+
+===== Math::sin
+
+===== Math::cos
+
+===== Math::abs
+
+===== Math::pow
+
+===== Math::degToRad
+
+===== Math::random
+
+===== Math::max
+
+===== Math::min
+
+===== Math::sqrt
+
+===== Math::floor
+
+===== Math::ceil
+
+===== Math::round
+
+
+==== Json
+
+Json exposes the following set of static members,
+
+* serialize
+* deserialize
+
+===== Json::serialize
+
+===== Json::serialize
+
+==== DateTime
+
+Json exposes the following set of member variables,
+
+//-> maybe a table
+
+* week_day (zs_int): The week's day
+* month_day (zs_int): The month's day
+* year_day (zs_int): The year's day
+
+* second (zs_int): seconds
+* minute (zs_int): minutes
+* hour (zs_int): hours
+
+* day (zs_int): day
+* month (zs_int):month
+* year (zs_int): year
+
+
+Json exposes the following set of member functions,
+
+* addSeconds
+* addMinutes
+* addHours
+* addDays
+* addMonths
+* addYears
+
+Json exposes the following set of member metamethods,
+
+* _add
+* _sub
+* _toString
+
+===== DateTime::addSeconds
+
+===== DateTime::addMinutes
+
+===== DateTime::addHours
+
+===== DateTime::addDays
+
+===== DateTime::addMonths
+
+===== DateTime::addYears
+
+===== DateTime::_add
+
+===== DateTime::_sub
+
+===== DateTime::_toString
 
 
