@@ -1640,14 +1640,12 @@ if(condition){
 }
 ----
 
-Example,
+*Example*
 
-[source,javascript]
-----
-if(n < 10) {
-	// do something if condition is true
-}
-----
+
+Output:
+
+''''
 
 It can use _else_ statement  is used to specify a block of code to be executed if the condition is 'false'.
 
@@ -1655,29 +1653,44 @@ Syntax,
 
 [source,javascript]
 ----
-if(n < 10) {
+if(condition) {
 	// do something if condition is true
 }else{
 	// do something if condition is false
 } 
 ----
 
-==== if-else statement
+*Example*
 
-Use the else statement to specify a block of code to be executed if the condition is 'false'.
+Output:
+
+''''
+
+
+Is also possible to concatenate a series of if-else statement to evaluate a serie of conditions.
 
 Syntax,
 
 [source,javascript]
 ----
-if(n < 10) {
- 	// do something if condition is true
-}else if(n < 20){
-	// do something if condition is true
+if(condition 1) {
+ 	// do something if condition 1is true
+}else if(condition 2){
+	// do something if condition 2 is true
+	
+	...
+	
+}else if(condition n)
+	// do something if condition n is true
 }else{
 	// do something if none of above conditions are true
 }
 ----
+
+*Example*
+
+
+Output:
 
 ==== Ternary condition
 
@@ -1724,18 +1737,9 @@ Example,
 
 [source,javascript]
 ----
-switch (n) {
-	case 0:
-		// do something if n==0
-		break;
-	case 1:
-		// do something if n==1
-		break;
-	default:
-		// do something if n!=0 && n!=1
-		break;
-}
 ----
+
+Output:
 
 Switch can have common code blocks in different conditions
 
@@ -1743,19 +1747,12 @@ Example,
 
 [source,javascript]
 ----
-switch (n) {
-	case 0:
-	case 1:
-	 	// do something if n==0 or n==1
-		break;
-	case 2:
-	case 3:
-		// do something if n==2 or n==3
-	break;
-	default:
-		// do something if n!=0 && n!=1 && n!=2 && n!=3
-		break;
-}
+----
+
+Output:
+
+[source,text]
+----
 ----
 
 === Loops
@@ -1778,15 +1775,16 @@ while(condition){
 }
 ----
 
-Example,
+*Example*
 
 [source,javascript]
 ----
-var i = 0;
-while (i < 5){
-	// do something until i==5
-	i++;
-} 
+----
+
+Output:
+
+[source,text]
+----
 ----
 
 ==== do-while
@@ -1806,11 +1804,12 @@ Example,
 
 [source,javascript]
 ----
-var i = 0;
-do {
-	// do something until i==5
-	i++;
-} while (i < 5);
+----
+
+Output:
+
+[source,text]
+----
 ----
 
 ==== for
@@ -1842,7 +1841,7 @@ for(var i=0; i < 5; i++) {
 
 ==== for-in
 
-The loop for-in works as for loop but simplifies the iteration over containers like string, object or vectors. Per each iteration it returns its value or a pair key-value,
+The loop for-in works as for loop but simplifies the iteration over containers like string, object or vectors. Per each iteration it can  evaluate a value or a pair key-value,
 
 Example,
 
@@ -1855,16 +1854,25 @@ for(var v in vector){
 }
 ----
 
+*Example*
+
+Output:
+
+
 Using a pair key-value as iteration result value,
 
 [source,javascript]
 ----
 
-
 for(var v in vector){
 	// code block to be executed
 }
 ----
+
+*Example*
+
+Output:
+
 
 
 === Functions
@@ -1954,22 +1962,81 @@ var add=function(op1, op2){
 var j=add(2,5); // j=5
 ----
 
-==== Default args
+==== Default parameters
 
-bla,bla,bla
+Default function parameters allow named parameters to be initialized with default values if no value or undefined is passed.
 
-==== Variable args
+[source,javascript]
+----
+function fun(arg1, arg2,arg2=default_arg){
+	// ...
+};
+----
 
-bla,bla,bla
+*Example*
 
-==== Args by reference
+Output:
 
-bla,bla,bla
+==== Variable parameters
+
+The rest parameter (...) allows a function to treat an indefinite number of arguments as an array
+
+Syntax,
+
+[source,javascript]
+----
+function var_args(...args) {
+}
+----
+
+you can combine with other arguments but the array as variable parameter must be defined on the last one  
+
+Syntax,
+
+[source,javascript]
+----
+function var_args(op1, op2, ...args){
+}
+
+----
+
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/function/function_variable_parameter.zs[]
+----
+
+Ouput:
+
+[source,text]
+----
+include::../examples/the_language/function/function_variable_parameter_out.txt[]
+----
+
+==== Parameters by reference
+
+In Pass by Reference, a function is called by directly passing the reference of the variable as the argument
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/function/function_parameter_by_reference.zs[]
+----
+
+Ouput:
+
+[source,text]
+----
+include::../examples/the_language/function/function_parameter_by_reference_out.txt[]
+----
 
 
 === Class
 
-A class is a custom type that contains variables and functions that operates with its variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
+A class is a custom type that contains variables and functions that operates with its variables. 
 
 Example,
 
@@ -1979,6 +2046,27 @@ class Test{
 
 };
 ----
+
+A class is defined using keyword _class_ followed by the name. To access member variables and functions it uses _this_ keyword. 
+
+Example,
+
+[source,javascript]
+----
+class Test{
+
+   member_function(){
+        this.a=0; // member variable
+        
+        this.member_function
+
+
+};
+----
+
+In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
+
+
 
 ==== Members
 
@@ -2079,47 +2167,6 @@ class TestExtended extends Test{
 
 ==== Metamethods
 Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
-
-ZetScript supports the following metamethods:
-
-* _set
-* _get
-* _equ
-* _nequ
-* _lt
-* _lte
-* _gt
-* _gte
-* _add
-* _sub
-* _div
-* _mul
-* _mod
-* _and
-* _or
-* _xor
-* _shl
-* _shr
-* _add_set
-* _sub_set
-* _mul_set
-* _div_set
-* _mod_set
-* _and_set
-* _or_set
-* _xor_set
-* _shl_set
-* _shr_set
-* _toString
-* _post_inc
-* _post_dec
-* _pre_inc
-* _pre_dec
-* _in
-* _not
-* _neg
-* _btw
-
 
 
 ===== _set(_value)
