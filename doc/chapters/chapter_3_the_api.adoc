@@ -285,20 +285,20 @@ ZetScript it has a garbage collector to delete unreferenced script variables whe
 
 ==== Bind Function Member
 
-The binding of variable member is done like binding c function but in this case is done through the macro function register_C_FunctionMember. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
+The binding of variable member is done like binding c function but in this case is done through the macro function bindMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 
-register_C_FunctionMember<ObjectType>("function_name",&ObjectType::function_name);
+ bindMemberFunction<ObjectType>("function_name",&ObjectType::function_name);
 
 As an example, the following code registers function member MyClass::function1 seen on List 4.1
 
 [source,cpp]
 ----
-zs.bindFunctionMember<MyClass>("function1",&MyClass::function1);
+zs.bindFunctionMember<MyClass>("function1",&native_function1);
 ----
 
 And then it can access to function1 member through field access ('.')
 
-[source,javascript]
+[source,cpp]
 ----
 var myclass= new MyClass();
 ---- 
@@ -376,10 +376,16 @@ zs.bindStaticConstantVariableMember<ObjectType>("variable_name",&ObjectType::var
 
 As an example, the following code register variable member MyClass::data1 seen on
 List 4.1,
+
+
 register_C_VariableMember<MyClass>("data1",&MyClass::data1);
 And then it can access to data1 member through field access ('.')
+
+
 var myclass= new MyClass();
 print("data1"+myclass.data1);
+
+
  
  4.4 Inheritance script class from c++ class
 An important feature of ZetScript is that it supports c++ class inheritance for any in
@@ -387,72 +393,30 @@ script class and the this (section 3.9) and super (seccion 3.9.5.1) keywords wor
 normal behavior
 For example, we could inherit MyClassExtend from 4.2 that is shown in the following
 code,
-class ScriptMyClassExtended: MyClassExtend{
- function function1(arg1){
- print("script argument is "+arg1)
- super(this.data1+arg1); // calls function1 c++
+
+
+[source,javascript]
+----
+class ScriptMyClassExtended extends MyClassExtend{
+ function1(arg1){
+ 	Console::outln("script argument is "+arg1)
+ 	super(this.data1+arg1); // calls function1 c++
  }
 }
+
+
 var myclass=new ScriptMyClassExtend(10);
 Myclass.function1(5);
-It prints,
+
+----
+
 data1 is initialized as 10
 script argument is 5
 c++ argument is 15 
 
 Complete example
-#include "CZetScript.h"
-using namespace zetscript;
-class MyClass{
-public:
- int data1;
- void init(int arg){
- printf("data1 is initialized as %i\n",arg);
- this->data1=arg;
- }
- void function1(int arg){
- this->data1 = arg;
- printf("c++ argument is %i\n",this->data1);
- }
-};
-class MyClassExtend:public MyClass{
-public:
- float data2;
- void function2(float *arg){
- this->data2 = *arg;
- printf("Float argument is %.02f\n",this->data2);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance(); // instance zetscript
 
- register_C_Class<MyClass>("MyClass"); //register MyClass as MyClass in script side
- register_C_Class< MyClassExtend >("MyClassExtend"); // register MyClassExtend
- class_C_baseof<MyClassExtend,MyClass>();
 
- // register MyClass::constructor
- register_C_FunctionMember<MyClass>("MyClass",&MyClass::init);
- //reg MyClass:: data1
- register_C_VariableMember<MyClass>("data1",&MyClass::data1);
- //reg MyClass:: function1
- register_C_FunctionMember<MyClass>("function1",&MyClass::function1);
-
- // eval print
- if(!zs->eval(
- "class ScriptMyClassExtend: MyClassExtend{\n"
- "function function1(arg1){\n"
- "print(\"script argument is \"+arg1);\n"
- "super(this.data1+arg1); // calls function1 c++\n"
- "}\n"
- "};\n"
- "var myclass=new ScriptMyClassExtend(10);\n"
- "myclass.function1(5);\n"
- "delete myclass; // script and c variable is destroyed.\n"
- )){
- fprintf(stderr,CZetScript::getInstance()->getErrorMsg());
- }
- return 0;
-}
 
 4.5 Call script function in C++
 To bind script call in c++ it can be done through bind_function passing the function type
@@ -572,9 +536,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _equ as metamethod
- register_C_StaticFunctionMember<MyNumber>("_equ",&MyNumber::_equ);
+ bindStaticMemberFunction<MyNumber>("_equ",&MyNumber::_equ);
  if(!zs->eval(
 "var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
 "if(n1==n2){ // we use here the metamethod ==\n "
@@ -618,9 +582,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _not_equ as metamethod
- register_C_StaticFunctionMember<MyNumber>("_nequ",&MyNumber::_nequ);
+ bindStaticMemberFunction<MyNumber>("_nequ",&MyNumber::_nequ);
  if(!zs->eval(
 "var n1 = new MyNumber (1), n2=new MyNumber (0); \n "
 "if(n1!=n2){ // we use here the metamethod != \n "
@@ -665,9 +629,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _lt as metamethod
- register_C_StaticFunctionMember<MyNumber>("_lt",&MyNumber::_lt);
+ bindStaticMemberFunction<MyNumber>("_lt",&MyNumber::_lt);
  if(!zs->eval(
  "var n1 = new MyNumber (0), n2=new MyNumber (1);\n"
 "if(n1<n2){ \n "
@@ -712,9 +676,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _lte as metamethod
- register_C_StaticFunctionMember<MyNumber>("_lte",&MyNumber::_lte);
+ bindStaticMemberFunction<MyNumber>("_lte",&MyNumber::_lte);
  if(!zs->eval(
 "var n1 = new MyNumber (1), n2=new MyNumber (1);\n"
 "if(n1<=n2){\n"
@@ -757,9 +721,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _gt as metamethod
- register_C_StaticFunctionMember<MyNumber>("_gt",&MyNumber::_gt);
+ bindStaticMemberFunction<MyNumber>("_gt",&MyNumber::_gt);
  if(!zs->eval(
 "var n1 = new MyNumber (1), n2=new MyNumber (0);\n"
 "if(n1>n2){ \n"
@@ -804,9 +768,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _gte as metamethod
- register_C_StaticFunctionMember<MyNumber>("_gte",&MyNumber::_gte);
+ bindStaticMemberFunction<MyNumber>("_gte",&MyNumber::_gte);
  if(!zs->eval(
 "var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
 "if(n1>=n2){ \n "
@@ -850,9 +814,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyBoolean>("b", &MyBoolean::b);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyBoolean>("MyBoolean", &MyBoolean:: set);
+ bindMemberFunction<MyBoolean>("MyBoolean", &MyBoolean:: set);
  // register static function _not as metamethod
- register_C_StaticFunctionMember<MyBoolean>("_not", &MyBoolean::_not);
+ bindStaticMemberFunction<MyBoolean>("_not", &MyBoolean::_not);
  if(!zs->eval(
 "var b = new MyBoolean (false);\n"
 "if(!b){ \n"
@@ -898,9 +862,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _neg as metamethod
- register_C_StaticFunctionMember<MyNumber>("_neg",&MyNumber::_neg);
+ bindStaticMemberFunction<MyNumber>("_neg",&MyNumber::_neg);
  if(!zs->eval (
 "var n1 = new MyNumber (1);\n"
 "var n2 = -n1;\n"
@@ -945,9 +909,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _add as metamethod
- register_C_StaticFunctionMember<MyNumber>("_add",&MyNumber::_add);
+ bindStaticMemberFunction<MyNumber>("_add",&MyNumber::_add);
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"
 "var n2 = new MyNumber (10); \n"
@@ -994,9 +958,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _div as metamethod
- register_C_StaticFunctionMember<MyNumber>("_div",&MyNumber::_div);
+ bindStaticMemberFunction<MyNumber>("_div",&MyNumber::_div);
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"
 "var n2 = new MyNumber (10);\n"
@@ -1044,9 +1008,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _mul as metamethod
- register_C_StaticFunctionMember<MyNumber>("_mul",&MyNumber::_mul);
+ bindStaticMemberFunction<MyNumber>("_mul",&MyNumber::_mul);
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"
 "var n2 = new MyNumber (10);\n"
@@ -1095,9 +1059,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _mod as metamethod
- register_C_StaticFunctionMember<MyNumber>("_mod",&MyNumber::_mod);
+ bindStaticMemberFunction<MyNumber>("_mod",&MyNumber::_mod);
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"
 "var n2 = new MyNumber (15);\n"
@@ -1145,9 +1109,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _and as metamethod
- register_C_StaticFunctionMember<MyNumber>("_and",&MyNumber::_and);
+ bindStaticMemberFunction<MyNumber>("_and",&MyNumber::_and);
  if(!zs->eval(
 "var n1 = new MyNumber (0xff);\n"
 "var n2 = new MyNumber (0x0f);\n"
@@ -1197,9 +1161,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _or as metamethod
- register_C_StaticFunctionMember<MyNumber>("_or",&MyNumber::_or);
+ bindStaticMemberFunction<MyNumber>("_or",&MyNumber::_or);
  if(!zs->eval(
 "var n1 = new MyNumber (0xf0);\n"
 "var n2 = new MyNumber (0x0f);\n"
@@ -1247,9 +1211,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _xor as metamethod
- register_C_StaticFunctionMember<MyNumber>("_xor",&MyNumber::_xor);
+ bindStaticMemberFunction<MyNumber>("_xor",&MyNumber::_xor);
  if(!zs->eval(
 "var n1 = new MyNumber (0xf1);\n"
 "var n2 = new MyNumber (0x0f);\n"
@@ -1297,9 +1261,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _shl as metamethod
- register_C_StaticFunctionMember<MyNumber>("_shl",&MyNumber::_shl);
+ bindStaticMemberFunction<MyNumber>("_shl",&MyNumber::_shl);
  if(!zs->eval(
 "var n1 = new MyNumber (0x1);\n"
 "var n2 = n1 << 3;\n"
@@ -1346,9 +1310,9 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register static function _shr as metamethod
- register_C_StaticFunctionMember<MyNumber>("_shr",&MyNumber::_shr);
+ bindStaticMemberFunction<MyNumber>("_shr",&MyNumber::_shr);
  if(!zs->eval(
 "var n1 = new MyNumber (0xf);\n"
 "var n2 = n1 >> 2;\n"
@@ -1390,16 +1354,16 @@ int main(){
  // register variable member num
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::_set
- register_C_FunctionMember<MyNumber>(
+ bindMemberFunction<MyNumber>(
 "MyNumber"
 , static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
  );
  // register two types function _set as metamethod (same as constructor)
- register_C_FunctionMember<MyNumber>(
+ bindMemberFunction<MyNumber>(
 "_set"
 ,static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
  );
- register_C_FunctionMember<MyNumber>(
+ bindMemberFunction<MyNumber>(
 "_set"
 , static_cast<void (MyNumber::*)(MyNumber *)>(&MyNumber::_set)
  );
@@ -1479,17 +1443,17 @@ int main(){
  register_C_Class<MyNumber>("MyNumber");
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
- register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ bindMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
  // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combination�
- register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, MyNumber *)>(&MyNumber::_add));
+ bindStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, MyNumber *)>(&MyNumber::_add));
  // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combination�
- register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(int, MyNumber *)>(&MyNumber::_add));
+ bindStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(int, MyNumber *)>(&MyNumber::_add));
  // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combination�
- register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, int)> (&MyNumber::_add));
+ bindStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, int)> (&MyNumber::_add));
  // register 4th _add metamethod function to satisfy operand (float,MyNumber) combination�
- register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(float *, MyNumber *)>(&MyNumber::_add));
+ bindStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(float *, MyNumber *)>(&MyNumber::_add));
  // register 5th _add metamethod function to satisfy operand (MyNumber,float) combination�
- register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, float *)>(&MyNumber::_add));
+ bindStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, float *)>(&MyNumber::_add));
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"
 "var n2 = new MyNumber (10);\n"
