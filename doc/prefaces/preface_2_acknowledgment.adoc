@@ -1,5 +1,6 @@
-Acknowledgment 
---------------
+
+[dedication]
+= Dedication
 
 I will like to give my sincerely acknowledgment to my girlfriend Maria Portal who
 thanks to her I got inspired to do this interesting project and also for the time I needed

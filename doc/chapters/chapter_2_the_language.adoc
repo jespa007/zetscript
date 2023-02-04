@@ -1,9 +1,7 @@
 :source-highlighter: highlight.js
 :highlightjs-languages: cpp, javascript
-
-
-
 :sectnums:
+:stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
 
 == The language
 
@@ -1303,7 +1301,18 @@ include::../examples/the_language/object/object_concat_out.txt[]
 
 Returns a vector of string representing its key names
 
-*Parameters*
+Parameters
+
+''''
+
+The text [.overline]#overline me# is underlined.
+
+Type the word [.userinput]#asciidoctor# into the search bar.
+
+The __kernel qualifier can be used with the __attribute__ keyword...
+
+#`CB###2`# and #`CB###3`#
+
 
 - __o_ : Object
 

@@ -1,0 +1,5763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="author" content="Jordi Espada">
+<title>ZetScript 2.0.0</title>
+<style>
+
+</style>
+</head>
+<body class="book">
+<div id="header">
+<h1>ZetScript 2.0.0</h1>
+<div class="details">
+<span id="author" class="author">Jordi Espada</span><br>
+<span id="revnumber">version 2.0,</span>
+<span id="revdate">January 30,2023</span>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_acknowledgment">Acknowledgment</a></li>
+<li><a href="#_1_introduction">1. 1. Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#_compile">1.1. Compile</a></li>
+<li><a href="#_hello_world">1.2. Hello World</a></li>
+<li><a href="#_compile_2">1.3. Compile</a></li>
+</ul>
+</li>
+<li><a href="#_the_language">2. The language</a>
+<ul class="sectlevel2">
+<li><a href="#_statments">2.1. Statments</a></li>
+<li><a href="#_comments">2.2. Comments</a></li>
+<li><a href="#_literals">2.3. Literals</a></li>
+<li><a href="#_variables_and_constants">2.4. Variables and constants</a></li>
+<li><a href="#_data_types">2.5. Data types</a></li>
+<li><a href="#_vector">2.6. Vector</a></li>
+<li><a href="#_operations">2.7. Operations</a></li>
+<li><a href="#_conditionals">2.8. Conditionals</a></li>
+<li><a href="#_loops">2.9. Loops</a></li>
+<li><a href="#_functions">2.10. Functions</a></li>
+<li><a href="#_class">2.11. Class</a></li>
+</ul>
+</li>
+<li><a href="#_the_api">3. the API</a>
+<ul class="sectlevel2">
+<li><a href="#_bind_function">3.1. Bind function</a></li>
+<li><a href="#_bind_types">3.2. Bind types</a></li>
+<li><a href="#_bind_members">3.3. Bind members</a></li>
+<li><a href="#_bind_static_constant_variable">3.4. Bind static constant variable</a></li>
+</ul>
+</li>
+<li><a href="#_3_10_metamethods">4. 3.10 Metamethods</a>
+<ul class="sectlevel2">
+<li><a href="#_5_5_1_equ_aka">4.1. 5.5.1 _equ (aka ==)</a></li>
+<li><a href="#_5_5_2_nequ_aka">4.2. 5.5.2 _nequ (aka !=)</a></li>
+<li><a href="#_5_5_3_lt_aka">4.3. 5.5.3 _lt (aka &lt;)</a></li>
+<li><a href="#_5_5_4_lte_aka">4.4. 5.5.4 _lte (aka &#8656;)</a></li>
+<li><a href="#_5_5_5_gt_aka">4.5. 5.5.5 _gt (aka &gt;)</a></li>
+<li><a href="#_5_5_6_gte_aka">4.6. 5.5.6 _gte (aka &gt;=)</a></li>
+<li><a href="#_5_5_7_static_not_aka">4.7. 5.5.7 static _not (aka !)</a></li>
+<li><a href="#_5_5_8_neg_aka">4.8. 5.5.8 _neg (aka -)</a></li>
+<li><a href="#_5_5_9_add_aka">4.9. 5.5.9 _add (aka +)</a></li>
+<li><a href="#_5_5_10_div_aka">4.10. 5.5.10 _div (aka /)</a></li>
+<li><a href="#_5_5_11_mul_aka">4.11. 5.5.11 _mul (aka *)</a></li>
+<li><a href="#_5_5_12_mod_aka">4.12. 5.5.12 _mod (aka %)</a></li>
+<li><a href="#_5_5_13_and_aka">4.13. 5.5.13 _and (aka &amp;)</a></li>
+<li><a href="#_5_5_14_or_aka">4.14. 5.5.14 _or (aka |)</a></li>
+<li><a href="#_5_5_15_xor_aka">4.15. 5.5.15 _xor (aka ^)</a></li>
+<li><a href="#_5_5_16_shl_aka">4.16. 5.5.16 _shl (aka &lt;&lt;)</a></li>
+<li><a href="#_5_5_17_shr_aka">4.17. 5.5.17 _shr (aka &gt;&gt;)</a></li>
+<li><a href="#_5_5_19_set_aka">4.18. 5.5.19 _set (aka =)</a></li>
+<li><a href="#_5_5_20_mixing_operand_types">4.19. 5.5.20 Mixing operand types</a></li>
+</ul>
+</li>
+<li><a href="#_5_modules">5 Modules</a>
+<ul class="sectlevel1">
+<li><a href="#_5_1_string">5. 5.1 String</a>
+<ul class="sectlevel2">
+<li><a href="#_5_1_1_stringformat">5.1. 5.1.1 String::format</a></li>
+</ul>
+</li>
+<li><a href="#_5_2_console">6. 5.2 Console</a></li>
+<li><a href="#_5_2_1_consoleoutln">7. 5.2.1 Console::outln</a></li>
+<li><a href="#_5_2_2_consoleerrorln">8. 5.2.2 Console::errorln</a></li>
+<li><a href="#_5_2_3_consolereadchar">9. 5.2.3 Console::readChar</a></li>
+<li><a href="#_5_3_system">10. 5.3 System</a></li>
+<li><a href="#_5_3_1_clock">11. 5.3.1 Clock</a></li>
+<li><a href="#_5_3_2_eval">12. 5.3.2 Eval</a></li>
+<li><a href="#_5_3_3_assert">13. 5.3.3 Assert</a></li>
+<li><a href="#_5_3_4_error">14. 5.3.4 Error</a></li>
+<li><a href="#_5_4_math">15. 5.4 Math</a></li>
+<li><a href="#_5_4_1_mathsin">16. 5.4.1 Math::sin</a></li>
+<li><a href="#_5_4_2_mathcos">17. 5.4.2 Math::cos</a></li>
+<li><a href="#_5_4_3_mathabs">18. 5.4.3 Math::abs</a></li>
+<li><a href="#_5_4_4_mathpow">19. 5.4.4 Math::pow</a></li>
+<li><a href="#_5_4_5_mathdegtorad">20. 5.4.5 Math::degToRad</a></li>
+<li><a href="#_5_4_6_mathrandom">21. 5.4.6 Math::random</a></li>
+<li><a href="#_5_4_7_mathmax">22. 5.4.7 Math::max</a></li>
+<li><a href="#_5_4_8_mathmin">23. 5.4.8 Math::min</a></li>
+<li><a href="#_5_4_9_mathsqrt">24. 5.4.9 Math::sqrt</a></li>
+<li><a href="#_5_4_10_mathfloor">25. 5.4.10 Math::floor</a></li>
+<li><a href="#_5_4_11_mathceil">26. 5.4.11 Math::ceil</a></li>
+<li><a href="#_5_4_12_mathround">27. 5.4.12 Math::round</a></li>
+<li><a href="#_5_5_json">28. 5.5 Json</a></li>
+<li><a href="#_5_5_1_jsonserialize">29. 5.5.1 Json::serialize</a></li>
+<li><a href="#_5_5_2_jsonserialize">30. 5.5.2 Json::serialize</a></li>
+<li><a href="#_5_6_datetime">31. 5.6 DateTime</a></li>
+<li><a href="#_5_6_1_datetimeaddseconds">32. 5.6.1 DateTime::addSeconds</a></li>
+<li><a href="#_5_6_2_datetimeaddminutes">33. 5.6.2 DateTime::addMinutes</a></li>
+<li><a href="#_5_6_3_datetimeaddhours">34. 5.6.3 DateTime::addHours</a></li>
+<li><a href="#_5_6_4_datetimeadddays">35. 5.6.4 DateTime::addDays</a></li>
+<li><a href="#_5_6_5_datetimeaddmonths">36. 5.6.5 DateTime::addMonths</a></li>
+<li><a href="#_5_6_6_datetimeaddyears">37. 5.6.6 DateTime::addYears</a></li>
+<li><a href="#_5_6_7_datetime_add">38. 5.6.7 DateTime::_add</a></li>
+<li><a href="#_5_6_8_datetime_sub">39. 5.6.8 DateTime::_sub</a></li>
+<li><a href="#_5_6_9_datetime_tostring">40. 5.6.9 DateTime::_toString</a></li>
+</ul>
+</li>
+<li><a href="#_2_eval">Appendix A: 2. Eval</a></li>
+<li><a href="#_2_1_eval_string">41. 2.1. Eval string</a></li>
+<li><a href="#_2_2_eval_file">42. 2.2. Eval file</a></li>
+<li><a href="#_2_3_eval_options">43. 2.3 Eval options</a>
+<ul class="sectlevel2">
+<li><a href="#_2_3_1_no_execution">43.1. 2.3.1 No execution</a></li>
+<li><a href="#_2_3_2_show_byte_code">43.2. 2.3.2 Show byte code</a></li>
+</ul>
+</li>
+<li><a href="#_2_5_eval_exceptions">44. 2.5 Eval exceptions</a>
+<ul class="sectlevel2">
+<li><a href="#_2_5_1_script_exception">44.1. 2.5.1 Script exception</a></li>
+<li><a href="#_2_5_2_user_error">44.2. 2.5.2 User error</a></li>
+</ul>
+</li>
+<li><a href="#_2_6_saverestore_state">45. 2.6 Save/Restore state</a>
+<ul class="sectlevel2">
+<li><a href="#_2_6_1_save_state">45.1. 2.6.1 Save state</a></li>
+<li><a href="#_2_6_2_clear">45.2. 2.6.2 Clear</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_acknowledgment">Acknowledgment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I will like to give my sincerely acknowledgment to my girlfriend Maria Portal who
+thanks to her I got inspired to do this interesting project and also for the time I needed
+she give me the chance to finish it.</p>
+</div>
+<div class="paragraph">
+<p>Also the authors of many script engines they developed because, thanks to them, I
+learned how current scripts works and what actually what people is expecting for a
+script engine. This was like a orientation for the development of this project.</p>
+</div>
+<div class="paragraph">
+<p>Finally to StackOverflow community thanks of this I was able to solve some technical
+issues. I hope this community lives eternally whole-hearted!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_introduction">1. 1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but
+also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual
+machine so the execution is quite fast.
+Because ZetScript syntax is almost less or more equal to Javascript you can edit the
+code with any editor that supports Javascript syntax notation.</p>
+</div>
+<div class="sect2">
+<h3 id="_compile">1.1. Compile</h3>
+<div class="paragraph">
+<p>ZetScript has to be configured through (cmake,http://cmake.org) with the following compile toolchains,</p>
+</div>
+<div class="paragraph">
+<p>sing gnu toolchain, mingw, clang and Visual Studio through cmake</p>
+</div>
+<div class="paragraph">
+<p>To install ZetScript ,first download last source code from <a href="https://zetscript.org" class="bare">https://zetscript.org</a>
+Then it has to compile the project with the following steps,</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>First we have to configure the project using cmake application.</p>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>cmake CMakeLists.txt</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Second we have to compile and install the project. Using GNU tool chain is
+done through this command,</p>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>sudo <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup> make install</p>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hello_world">1.2. Hello World</h3>
+<div class="paragraph">
+<p>Once ZetScript is installed we present a quick sample of "HelloWorld" application,</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a filename named helloworld.zs and type the following sentence</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">Console::outln("Hello world!");</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Save the file and do the following at command line,</p>
+<div class="literalblock">
+<div class="content">
+<pre>zs helloworld.zs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the "Hello world" message at the command line.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_compile_2">1.3. Compile</h3>
+<div class="paragraph">
+<p>h1,h2,h3{
+	font-size:1px;
+}
+:sectnums:</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_language">2. The language</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_statments">2.1. Statments</h3>
+<div class="paragraph">
+<p>ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.</p>
+</div>
+<div class="paragraph">
+<p>Example of four statements,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var op1,op2,res;
+op1 = 5;
+op2 = 6;
+res = 5+6;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The last example can be executed within one line,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var op1,op2,res; op1=5; op2=6; res = 5+6;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_comments">2.2. Comments</h3>
+<div class="paragraph">
+<p>ZetScript support block and line comments.</p>
+</div>
+<div class="sect3">
+<h4 id="_block_comment">2.2.1. Block comment</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">/*
+this is a block comment
+*/</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_line_comment">2.2.2. Line comment</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">// This is a line comment</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_literals">2.3. Literals</h3>
+<div class="paragraph">
+<p>ZetScript supports the following literals,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Boolean</p>
+</li>
+<li>
+<p>Integer</p>
+</li>
+<li>
+<p>Float</p>
+</li>
+<li>
+<p>String</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_boolean">2.3.1. Boolean</h4>
+<div class="paragraph">
+<p>Boolean literals is represented as true or false.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">true // true value
+false // false value</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_integer">2.3.2. Integer</h4>
+<div class="paragraph">
+<p>Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10; // decimal value
+0x1a; // hexadecimal value
+11010b; // 0x1a as binary value
+'b'; // char value</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Integer literlas supports the following pre operators,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">Expression</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-integer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negated value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> -10</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bitwise complement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>~integer</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invert all bits</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">~011010b // (-27)</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_float">2.3.3. Float</h4>
+<div class="paragraph">
+<p>Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">1.2 // decimal form
+2.0e-2 // cientific notation form</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Float literals supports the following pre operators,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">Expression</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-float</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negated value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> -10.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_string">2.3.4. String</h4>
+<div class="paragraph">
+<p>String literal is represented as string within quotes (").</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">"this is a string"</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_variables_and_constants">2.4. Variables and constants</h3>
+<div class="sect3">
+<h4 id="_variable">2.4.1. Variable</h4>
+<div class="paragraph">
+<p>A variable is a kind of element that can hold a variable. Because ZetScript variables are <em>dynamically typed</em>, it can hold different type of values on its lifetime. A variable is declared as <strong>var</strong> and, by default, is initialized as <strong>undefined</strong> value (see 2.5.1).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i; // Declared variable 'i' with no inicialization (undefined value).</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A variable can be initialized with a proper type value through '=' operator. The follow example initializes a variable with integer value
+(see section 2.2),</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=10; // Declared variable 'i' and initialized as integer value.</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_constant">2.4.2. Constant</h4>
+<div class="paragraph">
+<p>A constant is a kind of element where its value is immutable on its in lifetime. A constant is declared as <strong>const</strong> and is mandatory to be initialized.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_scope">2.4.3. Scope</h4>
+<div class="paragraph">
+<p>In ZetScript we have two types of basic scopes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Global</p>
+</li>
+<li>
+<p>Local</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A ZetScript makes easy the concept of global local scope. Basically, variables declared on the main script are global and the others declared within a [block <sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>], are local.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">// Declares *i* variable as global
+var i;
+
+// block starts here
+{
+	// Declare *j* variable as local (you can also access to i).
+	var j;
+}
+// block ends here, so *j* variable doesn't exist anymore</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_types">2.5. Data types</h3>
+<div class="paragraph">
+<p>ZetScript supports the following builtin data types,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Undefined</p>
+</li>
+<li>
+<p>Null</p>
+</li>
+<li>
+<p>Integer</p>
+</li>
+<li>
+<p>Number</p>
+</li>
+<li>
+<p>Boolean</p>
+</li>
+<li>
+<p>String</p>
+</li>
+<li>
+<p>Vector</p>
+</li>
+<li>
+<p>Object</p>
+</li>
+<li>
+<p>Function</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_undefined">2.5.1. Undefined</h4>
+<div class="paragraph">
+<p>Undefined data type it defines a non initialized variable. A variable is instanced as <em>Undefined</em> once a its assings <strong>undefined</strong> value,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a; // 'a' is undefined as default
+var b=undefined; // assigns undefined value</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_null">2.5.2. Null</h4>
+<div class="paragraph">
+<p>Null data type it defines an empty or not valid variable. A variable is instanced as <em>Null</em> once a its assings <strong>null</strong> value,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=null;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_integer_2">2.5.3. Integer</h4>
+<div class="paragraph">
+<p>Integer data type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as <em>Integer</em> once it assigns decimal, hexadecimal,binary or char value.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a=10; // decimal value
+var b=0x1a; // hexadecimal value
+var c=01001b; // binary value
+var d='b'; //  char value</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_operators">Operators</h5>
+<div class="paragraph">
+<p>Integer data operators are applied on integer variables before or after its read. Integer operators are the following,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">Expression</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negates its value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> var i=10;
+ var j=-i; // j=-10</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bitwise complement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>~variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invert all bits</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> var i=00000011b;
+ var j=~i; // j=11111100b or -4 decimal</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PreIncrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>++variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Increments FIRST and THEN evaluates</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> var i=0;
+ var j=++i; // j=1, i =1</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PostIncrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variable++</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evaluates FIRST and THEN increments</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0;
+var j=i++; // j=0; i=1</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Predecrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Decrements FIRST and THEN evaluates</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0;
+var j=--i; // j=-1; i=-1</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Postdecrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variable--</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evaluates FIRST and THEN decrements</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0;
+var j=i--;//j=0;i=-1;</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_static_functions">Static functions</h5>
+<div class="sect5">
+<h6 id="_integerparse_value">Integer::parse(_value)</h6>
+<div class="paragraph">
+<p><strong>Description</strong></p>
+</div>
+<div class="paragraph">
+<p>Converts input value as Integer</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>_value</em> : String or Float literal or datatype to parse</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns</strong></p>
+</div>
+<div class="paragraph">
+<p>Integer as parsed value</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">Console::outln(Integer::parse("10"))
+Console::outln(Integer::parse(15.5))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-txt" data-lang="txt">10
+15</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_float_2">2.5.4. Float</h4>
+<div class="paragraph">
+<p>Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as <em>float</em> once it assigns a decimal or scientific value notation forms.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a=1.2 // decimal form value
+var b=2.0e-2 // cientific notation form value</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_operators_2">Operators</h5>
+<div class="paragraph">
+<p>Float operators are applied on float variables before or after its read. Float operators are the following,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Expression</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Result</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evaluates negated variable</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> var i=10.5;
+ var j=-i; // j=-10.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PreIncrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>++variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Increments FIRST and THEN evaluates</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0.5;
+var j=++i; // j=1.5, i =1.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PostIncrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variable++</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evaluates FIRST and THEN increments</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0.5;
+var j=i++; // j=0.5; i=1.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Predecrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--variable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Decrements FIRST and THEN evaluates</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0.5;
+var j=--i; // j=-0.5; i=-0.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Postdecrement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>variable--</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evaluates FIRST and THEN decrements</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=0.5;
+var j=i--;//j=0.5;i=-0.5;</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_static_functions_2">Static functions</h5>
+<div class="sect5">
+<h6 id="_floatparse_value">Float::parse(_value)</h6>
+<div class="paragraph">
+<p>Converts input as Float value</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>_value</em> : Input value</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns</strong></p>
+</div>
+<div class="paragraph">
+<p>Float as parsed value</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">Console::outln(Float::parse("10.5"))
+Console::outln(Float::parse(15))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-txt" data-lang="txt">10.500000
+15.000000</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_boolean_2">2.5.5. Boolean</h4>
+<div class="paragraph">
+<p>Boolean type it defines a boolean variable represented as <em>true</em> or <em>false</em>. A variable is initialized as <em>Boolean</em> once it assigns a boolean value.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var b=false;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_string_2">2.5.6. String</h4>
+<div class="paragraph">
+<p>String type it defines a string type represented as a sequence of chars. A variable is initialized as <em>String</em> once it assigns a string value.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s="this is a string";</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_properties">Properties</h5>
+<div class="sect5">
+<h6 id="_stringlength">String::length</h6>
+<div class="paragraph">
+<p>Returns the length of the string</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p>None</p>
+</div>
+<div class="paragraph">
+<p><strong>Returns</strong></p>
+</div>
+<div class="paragraph">
+<p>The length of the string</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s="hello world";
+Console::outln("The length of '{0}' is '{1}'",s,s.length)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">The length of 'hello world' is '11'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_static_functions_3">Static functions</h5>
+<div class="sect5">
+<h6 id="_stringformat_string_args">String::format(_string,&#8230;&#8203;_args)</h6>
+<div class="paragraph">
+<p>Builds a string placing formated values in {} as string with a serie of variable args. The possible formats is described below,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Format</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces {<em>n</em>} by the argument <em>n</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n:dm}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces the argument <em>n</em> padding <em>m</em> 0s on its left</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n,m}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces argument <em>n</em> padding <em>m</em> spaces on its left</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>_string</em> : string value with</p>
+</li>
+<li>
+<p><em>_args</em> : variable args</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns</strong></p>
+</div>
+<div class="paragraph">
+<p>Formated string</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">Console::outln(String::format("1st arg {0}",1))
+Console::outln(String::format("1st,2nd as {0} and {1}",1,2))
+Console::outln(String::format("1st,2nd same {0} and {0}",1))
+Console::outln(String::format("Score:{0:d1}",1))
+Console::outln(String::format("Score:{0:d4}",1))
+Console::outln(String::format("Score:{0,1}",1))
+Console::outln(String::format("One space:{0,4}",1))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-txt" data-lang="txt">1st arg 1
+1st,2nd as 1 and 2
+1st,2nd same 1 and 1
+Score:1
+Score:0001
+Score:1
+One space:   1</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_member_functions">Member functions</h5>
+<div class="sect5">
+<h6 id="_stringinsertat_pos_value">*String::insertAt(_pos,_value)</h6>
+<div class="paragraph">
+<p>Inserts a character or string into the string at index</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s="hell wd";
+
+// example insert character usign String::insertAt
+Console::outln(" Original string before insert character =&gt; '{0}'",s);
+s.insertAt(4,'o')
+Console::outln(" After insert character 'o' at position 4 =&gt; '{0}'",s)
+
+Console::outln()
+
+// example insert string usign String::insertAt
+Console::outln(" Original string before insert string =&gt; '{0}'",s);
+s.insertAt(7,"orl")
+Console::outln(" After insert string \"orl\" at position 7 =&gt; '{0}'",s)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text"> Original string before insert character =&gt; 'hell wd'
+ After insert character 'o' at position 4 =&gt; 'hello wd'
+
+ Original string before insert string =&gt; 'hello wd'
+ After insert string "orl" at position 7 =&gt; 'hello world'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringeraseat_pos">String::eraseAt(_pos)</h6>
+<div class="paragraph">
+<p><em>String::eraseAt</em> removes the character right before the character indicated by _pos</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters:</strong></p>
+</div>
+<div class="paragraph">
+<p>None</p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p>None</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s="helilo world";
+
+Console::outln(" Original string before erase character =&gt; '{0}'",s);
+s.eraseAt(3)
+Console::outln(" After erase character at position 3 =&gt; '{0}'",s)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text"> Original string before erase character =&gt; 'helilo world'
+ After erase character at position 3 =&gt; 'hello world'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringtouppercase">String::toUpperCase()</h6>
+<div class="paragraph">
+<p>Returns the calling string value converted to uppercase</p>
+</div>
+<h5 id="_parameters" class="discrete">Parameters</h5>
+<div class="paragraph">
+<p>None</p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p>It returns the String, converted to uppercase</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">Console::outln("\"Hello World\".toLowerCase() =&gt; \"{0}\"","Hello World".toLowerCase());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">"Hello World".toLowerCase() =&gt; "hello world"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringtolowercase">String::toLowerCase()</h6>
+<div class="paragraph">
+<p>Returns the calling string value converted to lowercase</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p>None</p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p>It returns the String, converted to lowercase</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">Console::outln("\"Hello World\".toLowerCase() =&gt; \"{0}\"","Hello World".toLowerCase());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">"Hello World".toLowerCase() =&gt; "hello world"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringclear">String::clear()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringreplace">String::replace()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringsplit">String::split()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringcontains">String::contains()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringindexof">String::indexOf()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringstartswith_value">String::startsWith(_value)</h6>
+<div class="paragraph">
+<p>Checks whether a string starts with the specified string passed by <em>_value</em></p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>_value</em> :  A string representing the value to check for</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p>Returns a Boolean value:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>true :  if the string starts with the specified string passed by <em>_value</em></p>
+</li>
+<li>
+<p>false:  if the string does not starts with the specified string passed by <em>_value</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s = "Hello";
+Console::outln("s.startsWith(\"Hel\") =&gt; {0}", s.startsWith("Hel"));
+Console::outln("s.startsWith(\"llo\") =&gt; {0}",s.startsWith("llo"));
+Console::outln("s.startsWith(\"o\") =&gt; {0}",s.startsWith("o"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">s.startsWith("Hel") =&gt; true
+s.startsWith("llo") =&gt; false
+s.startsWith("o") =&gt; false</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringendswith_value">String::endsWith(_value)</h6>
+<div class="paragraph">
+<p>Checks whether a string ends with the specified string passed by <em>_value</em></p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>_value</em> :  A string representing the value to check for</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p>Returns a Boolean value:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>true :  if the string ends with the specified string passed by <em>_value</em></p>
+</li>
+<li>
+<p>false:  if the string does not ends with the specified string passed by <em>_value</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s = "Hello";
+Console::outln("s.endsWith(\"Hel\") =&gt; {0}", s.endsWith("Hel"));
+Console::outln("s.endsWith(\"llo\") =&gt; {0}",s.endsWith("llo"));
+Console::outln("s.endsWith(\"o\") =&gt; {0}",s.endsWith("o"));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">s.endsWith("Hel") =&gt; false
+s.endsWith("llo") =&gt; true
+s.endsWith("o") =&gt; true</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringsubstring_start_index_end_index_1">String::substring(_start_index, _end_index=-1)</h6>
+<div class="paragraph">
+<p>Returns the part of the string from the start index and, optionally, a second parameter to specify the end index. If the end index is not provided it sets as -1 as default that means that will copy till string end</p>
+</div>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var s="hello world";
+Console::outln("s.substring(0) =&gt; {0} ",s.substring(0))
+Console::outln("s.substring(3) =&gt; {0} ",s.substring(3))
+Console::outln("s.substring(2,3) =&gt; {0} ",s.substring(2,3))
+Console::outln("s.substring(3,-2) =&gt; {0} ",s.substring(3,-2))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ouput:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-txt" data-lang="txt">s.substring(0) =&gt; hello world
+s.substring(3) =&gt; lo world
+s.substring(2,3) =&gt; ll
+s.substring(3,-2) =&gt; lo worl</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_stringappend">String::append()</h6>
+<div class="paragraph">
+<p><strong>Parameters</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Return</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_vector">2.6. Vector</h3>
+<div class="paragraph">
+<p>Vector type it defines a container type that stores values in a unidimensional array. A variable is initialized as <em>Vector</em> once it assings a open/closed square brackets (i.e '[]' ),</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">[]; // a vector</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Variable instanced as <em>Vector</em> can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">[1,"string",true,2.0]; // A vector with elements</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To access element vector is done through integer as a index.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var v=[1,"this is a string",true,2.0]; // variable 'v' has 4 elements where its access exist in [0..3]
+v[1]; // It access vector's second element (i.e "this is a string")</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_properties_2">Properties</h5>
+<div class="sect5">
+<h6 id="_vectorlength">Vector::length</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_static_functions_4">Static functions</h5>
+
+</div>
+<div class="sect4">
+<h5 id="_member_functions_2">Member functions</h5>
+<div class="sect5">
+<h6 id="_vectorpush_value">Vector::push(_value)</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_vectorpop">Vector::pop()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_vectorinsertat_pos_value">Vector::insertAt(_pos,_value)</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_vectoreraseat_pos">Vector::eraseAt(_pos)</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_vectorclear">Vector::clear()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_vectorjoin_vector">Vector::join(_vector)</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_object_type">2.6.4. Object type</h4>
+<div class="paragraph">
+<p>Object type is a anonymous container type to store values through attributes. A variable is initialized as <em>Object</em> once it assings a open/closed of curly brackets (i.e '{}'),</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">{}; // Object</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Optionally we can init with some values with its attributes,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">{
+  i:1
+ ,s:"this is a string"
+ ,b:true
+ ,f:2.0
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To acces to its elements is done through the variable name followed by '.' and attribute name or attribute name as string within brackets (i.e ["attribute_name"] ),</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var o={
+  i:1
+ ,s:"this is a string"
+ ,b:true
+ ,f:2.0
+};
+
+var o_i=o.i; // get value 'i' by '.'
+var o_i=o["i"]; // get value 'i' by '[]'</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_static_functions_5">Static functions</h5>
+<div class="sect5">
+<h6 id="_objectclear">Object::clear()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_objecterase_id">Object::erase(_id)</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_objectcontains">Object::contains()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_objectappend">Object::append()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_objectconcat">Object::concat()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_objectkeys">Object::keys()</h6>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_function">2.6.5. Function</h4>
+<div class="paragraph">
+<p>Function type is a anonymous function object to be assigned. A variable is initialized as <em>Function</em> once it assings an anonymous function (see section X.XX)</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var f=function(){
+	Console::outln("Call from function object")
+};
+
+f(); // it prints "Call from function object"</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_operations">2.7. Operations</h3>
+<div class="paragraph">
+<p>ZetScript has the following type of expressions</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Arithmetic operations</p>
+</li>
+<li>
+<p>Relational operations</p>
+</li>
+<li>
+<p>Logical operations</p>
+</li>
+<li>
+<p>Bit operations</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_arithmetic_expressions">2.7.1. Arithmetic expressions</h4>
+<div class="paragraph">
+<p>The following operators it does evaluates arithmetic expressions,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Symbol</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Example</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>+</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs a add operation between two integer or number values or concatenates strings with other values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">5+10; // = 15
+1.5+6; // = 7.5
+"string_"+1;// ="string_1"</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subtract</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs a sub operation between two integer or number values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10-5; // = 5
+2.5-1;// = 1.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiply</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>*</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs a multiplication between two integer or number values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10*5; //= 50
+1.5*2;//= 3.0</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Divide</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs a division between two integer or number values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10/2; // = 5
+3/2.0 // = 1.5</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modulus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>%</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs a division between two integer or number values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">3%2; //it results 1
+10%2.5; // it results</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_relational_expressions">2.7.2. Relational expressions</h4>
+<div class="paragraph">
+<p>The following operators it does evaluates relational expressions,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">symbol</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Equal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>==</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check whether two values are equal</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> 10==10;// = true
+"hello"=="bye"; // = false</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not equal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>!=</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check whether two values are not equal</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10!=10; // = false
+"hello"!="bye"; // = true</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less than</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks whether first value is less than second value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10&lt;20; // = true
+20&lt;10; // = false</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Greater than</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks whether first value is greater than second value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10&gt;20; // = false
+20&gt;10; // = true</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less equal than</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&#8656;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks whether first value is less equal than second value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10&lt;=10; //= true
+11&lt;=10; // = false</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Greater equal than</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&gt;=</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks whether first value is greater equal than second value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">10&gt;=11; // = false
+11&gt;=10; // = true</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instance of</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>instanceof</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Checks if a value is instance of a type.</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0 instanceof Integer; //= true
+"hello" instanceof Integer;//= false</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note: You cannot mix different types for relational expressions. For example, doing a
+relational expression with boolean and integer values is incompatible.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_logic_expressions">2.7.3. Logic expressions</h4>
+<div class="paragraph">
+<p>Logic expressions are the ones that combines operations through boolean values,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">symbol</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logic And</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&amp;&amp;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">it performs an AND operation between two Boolean values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">true &amp;&amp; true;// = true
+true&amp;&amp; false;// = false</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logic Or</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>||</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It performs an OR operation between two Boolean values</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">true || false;// = true
+false || false;// = false</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logic Not</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>!</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negates Boolean value</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">!true; // = false
+!false; // = true</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_binary_operations">2.7.4. Binary operations</h4>
+<div class="paragraph">
+<p>Binary operations are the ones that combines bit operations through integer values,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Operator</th>
+<th class="tableblock halign-left valign-top">symbol</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary And</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&amp;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs binary AND operation between two integers</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0xa &amp; 0x2; // = 0x2
+0xff &amp; 0xf0; // = 0xf0</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary Or</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>|</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs binary OR operation between two integers</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0xa | 0x5; // = 0xf
+0x1 | 0xe; // = 0xf</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary Xor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>^</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs binary XOR between two integers</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0xa ^ 0xa; // = 0x0
+0xa ^ 0x5; // = 0xf</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary shift left</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;&lt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs binary shift left</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0x1 &lt;&lt; 2; // = 0x4</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Binary shift right</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&gt;&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs binary shift right</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">0xff &gt;&gt; 1; // = 0x7f</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_priority_operations">2.7.5. Priority operations</h4>
+<div class="paragraph">
+<p>Each operator it has priority of evaluation. ZetScript it has the following operator order priority,</p>
+</div>
+<div class="paragraph">
+<p>*,/,%,!=,+,-,^,&amp;,|,&lt;&lt;,&gt;&gt;,==,&#8656;,&gt;=,&gt;,&lt;,||,&amp;&amp;</p>
+</div>
+<div class="paragraph">
+<p>For example this expression,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">2+4*5; // will result 22</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can change the evaluation priority usign parenthesis.</p>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">(2+4)*5; // will result 36</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_conditionals">2.8. Conditionals</h3>
+<div class="paragraph">
+<p>A conditional statement are used to perform different actions based on different conditions. In ZetScript we have the following conditional statement:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use if to specify a block of code to be executed, if a specified condition is true</p>
+</li>
+<li>
+<p>Use else to specify a block of code to be executed, if the same condition is false.</p>
+</li>
+<li>
+<p>Use ternary condition to have a short if/else statement into single statement.</p>
+</li>
+<li>
+<p>Use switch to specify manu alternative blocks of code to be executed</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_if_else_statement">2.8.1. if-else statement</h4>
+<div class="paragraph">
+<p><em>If</em> statement is used to specify a block of ZetScript code to be executed if a condition is 'true'.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">if(condition){
+	//Block of code to be executed if the condition is true
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">if(n &lt; 10) {
+	// do something if condition is true
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It can use <em>Else</em> statement  is used to specify a block of code to be executed if the condition is 'false'.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">if(n &lt; 10) {
+	// do something if condition is true
+}else{
+	// do something if condition is false
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_if_else_statement_2">2.8.2. if-else statement</h4>
+<div class="paragraph">
+<p>Use the else statement to specify a block of code to be executed if the condition is 'false'.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">if(n &lt; 10) {
+ 	// do something if condition is true
+}else if(n &lt; 20){
+	// do something if condition is true
+}else{
+	// do something if none of above conditions are true
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ternary_condition">2.8.3. Ternary condition</h4>
+<div class="paragraph">
+<p>Use ternary condition to have a short if/else statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">result = (condition)?first expression:2nd expression;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var j = 0&gt;1? 0:1; // j = 1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_switch">2.8.4. switch</h4>
+<div class="paragraph">
+<p>Switch statement is used to select one of many blocks of code to be executed.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">switch(expression) {
+	case value_0:
+		code block
+		break;
+	case value_1:
+		code block
+		break;
+	 	...
+		case value_n
+		default:
+		code block
+		break;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">switch (n) {
+	case 0:
+		// do something if n==0
+		break;
+	case 1:
+		// do something if n==1
+		break;
+	default:
+		// do something if n!=0 &amp;&amp; n!=1
+		break;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Switch can have common code blocks in different conditions</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">switch (n) {
+	case 0:
+	case 1:
+	 	// do something if n==0 or n==1
+		break;
+	case 2:
+	case 3:
+		// do something if n==2 or n==3
+	break;
+	default:
+		// do something if n!=0 &amp;&amp; n!=1 &amp;&amp; n!=2 &amp;&amp; n!=3
+		break;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_loops">2.9. Loops</h3>
+<div class="paragraph">
+<p>ZetScript supports the following loop types,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>While Loop</p>
+</li>
+<li>
+<p>For Loop</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_while">2.9.1. while</h4>
+<div class="paragraph">
+<p>The while loop loops through a block of code as long as a specified condition is true.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">while(condition){
+	// code block to be executed
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i = 0;
+while (i &lt; 5){
+	// do something until i==5
+	i++;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_do_while">2.9.2. do-while</h4>
+<div class="paragraph">
+<p>do-while loop is always be executed at least once, even if the condition is false, because the code block is executed before the condition is tested:</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">do{
+	// do-while body
+} while (condition);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i = 0;
+do {
+	// do something until i==5
+	i++;
+} while (i &lt; 5);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_for">2.9.3. for</h4>
+<div class="paragraph">
+<p>The for loop is often the tool you will use when you want to create a loop.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">for(stament1;statment2;statment3){
+	// code block to be executed
+}</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Statement 1 is executed before the loop (the code block) starts. Normally you will use statement 1 to initialize the variable used in the loop (for example var i = 0).</p>
+</li>
+<li>
+<p>Statement 2 defines the condition for running the loop.</p>
+</li>
+<li>
+<p>Statement 3 is executed each time after the code block has been executed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">for(var i=0; i &lt; 5; i++) {
+	print("The number is "+i);
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_functions">2.10. Functions</h3>
+<div class="paragraph">
+<p>Function is a block of code to perform a particular task and is executed when in some part of the code it calls it.</p>
+</div>
+<div class="sect3">
+<h4 id="_function_syntax">2.10.1. Function syntax</h4>
+<div class="paragraph">
+<p>A JavaScript function is defined with the function keyword, followed by a name, followed by parentheses ().</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function fun_name(arg1, arg2, ..., argn){
+	// code to be executed
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function add(op1, op2){
+	return op1+op2;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_call_a_function">2.10.2. Call a function</h4>
+<div class="paragraph">
+<p>The call of a function is done when in some part of the code it calls it as follow,</p>
+</div>
+<div class="paragraph">
+<p>Syntax</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">fun_name(arg1, arg2, arg3,..., argN);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: If a function is called with less than N args the rest of arguments will remain undefined.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function add(op1,op2){
+	return op1+op2;
+}
+
+var j=add(2,3); // calls add function. j=5</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_function_object">2.10.3. Function object</h4>
+<div class="paragraph">
+<p>A function can be stored in variables through its reference,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function add(op1, op2){
+	return op1+op2;
+}
+
+var fun_obj = add; // stored function add reference to fun_obj
+var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also is possible to create function objects,</p>
+</div>
+<div class="paragraph">
+<p>Syntax</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">function(arg1, arg2, ..., argN){
+	// code to be executed.
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var add=function(op1, op2){
+	return op1+op2;
+};
+
+var j=add(2,5); // j=5</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_class">2.11. Class</h3>
+<div class="paragraph">
+<p>A class is a custom type that contains variables and functions that operates with its variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class Test{
+
+};</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_post_add_functionvariable_member">2.11.1. Post add function/variable member</h4>
+<div class="paragraph">
+<p>In ZetScrip is possible to add more class member through "::" punctuator.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">	// post declaration of variable member
+	const Test::data2;
+
+	// post declaration of function member
+	function Test::function2(){
+ 		this.data2="a string";
+	}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_instance_class">2.11.2. Instance class</h4>
+<div class="paragraph">
+<p>To instance a class is done through the keyword new</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var t = new Test(); // Instantiate t as Test type.</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_accessing_to_class_functions">2.11.3. Accessing to class functions</h4>
+<div class="paragraph">
+<p>To access class variables/functions is done through "." operator.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var i=t.function1(2); // initializes data1 as 2 and return the value</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_constructor">2.11.4. Constructor</h4>
+<div class="paragraph">
+<p>Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">print("data1:"+t.data1); //  prints: data1:undefined"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The constructor is a function that is invoked automatically and with aim to initialize all member variables. To the define a constructor we have to define a function member with same name as the Class.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class Test{
+ 	// Constructor function
+	constructor(){
+ 		this.data1 =10; // instantiate data1 as integer
+ 	}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_inheritance">2.11.5. Inheritance</h4>
+<div class="paragraph">
+<p>ZetScript supports inheritance through ":" punctuator after the name of the class followed the class name to be extended. The new extended class will inheritance all variable/functions members from base class.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class TestExtended: Test{
+	function3(){
+		this.data3=this.data1+this.function1(10);
+	}
+};</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_call_parent_functions_super_keyword">Call parent functions (super keyword)</h5>
+<div class="paragraph">
+<p>The extended class can call parent functions through super keyword.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class TestExtended extends Test{
+	function1(a){
+ 		var t=super(a); // it calls Test::function1(2)
+ 		this.data1+=t; // Now data1=5+2 = 7
+ 		return this.data1+a;
+ 	}
+
+ 	function3(){
+ 		this.data3=this.data1+this.function1(5);
+ 	}
+};</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_metamethods">2.11.6. Metamethods</h4>
+<div class="paragraph">
+<p>Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function <sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup> depending whether the operation affects or not the object itself.</p>
+</div>
+<div class="paragraph">
+<p>ZetScript supports the following metamethods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>_equ</p>
+</li>
+<li>
+<p>_nequ</p>
+</li>
+<li>
+<p>_lt</p>
+</li>
+<li>
+<p>_lte</p>
+</li>
+<li>
+<p>_not</p>
+</li>
+<li>
+<p>_gt</p>
+</li>
+<li>
+<p>_gte</p>
+</li>
+<li>
+<p>_neg</p>
+</li>
+<li>
+<p>_btw</p>
+</li>
+<li>
+<p>_add</p>
+</li>
+<li>
+<p>_sub</p>
+</li>
+<li>
+<p>_div</p>
+</li>
+<li>
+<p>_mul</p>
+</li>
+<li>
+<p>_mod</p>
+</li>
+<li>
+<p>_and</p>
+</li>
+<li>
+<p>_or</p>
+</li>
+<li>
+<p>_xor</p>
+</li>
+<li>
+<p>_shl</p>
+</li>
+<li>
+<p>_shr</p>
+</li>
+<li>
+<p>_set</p>
+</li>
+<li>
+<p>_add_set</p>
+</li>
+<li>
+<p>_sub_set</p>
+</li>
+<li>
+<p>_mul_set</p>
+</li>
+<li>
+<p>_div_set</p>
+</li>
+<li>
+<p>_mod_set</p>
+</li>
+<li>
+<p>_and_set</p>
+</li>
+<li>
+<p>_or_set</p>
+</li>
+<li>
+<p>_xor_set</p>
+</li>
+<li>
+<p>_shl_set</p>
+</li>
+<li>
+<p>_shr_set</p>
+</li>
+<li>
+<p>_toString</p>
+</li>
+<li>
+<p>_post_inc</p>
+</li>
+<li>
+<p>_post_dec</p>
+</li>
+<li>
+<p>_pre_inc</p>
+</li>
+<li>
+<p>_pre_dec</p>
+</li>
+<li>
+<p>_in</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="_equ_aka">_equ (aka ==)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _equ metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+	}
+ 	_equ(op1, op2){
+ 		return op1.num==op2.num;
+ 	}
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>var n1 = new MyNumber (1), n2=new MyNumber (1);</p>
+</div>
+<div class="paragraph">
+<p>if(n1==n2){ // we use here the metamethod ==
+ print("n1 ("n1.num") is equal to n2 ("n2.num")");
+}</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_nequ_aka">_nequ (aka !=)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational not equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if not equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _nequ metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+
+ 	_nequ(op1, op2){
+ 		return op1.num!=op2.num;
+ 	}
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1!=n2){
+ 	Console::outln("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lt_aka">_lt (aka &lt;)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _lt metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _lt(op1, op2){
+ 		return op1.num&lt;op2.num;
+ 	}
+};
+
+
+var n1 = new MyNumber (0), n2=new MyNumber (1);
+if(n1&lt;n2){
+	Console::outln("n1 &lt; n2");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_lte_aka">_lte (aka &#8656;)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _lte metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+	static _lte(op1, op2){
+		return op1.num&lt;=op2.num;
+	}
+};
+
+
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+if(n1&lt;=n2){
+	System::outln("n1 &lt;= n2");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_gt_aka">_gt (aka &gt;)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational greater operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _gt metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+	static _gt(op1, op2){
+		return op1.num&gt;op2.num;
+	}
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1&gt;n2){
+	Console::outln("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_gte_aka">_gte (aka &gt;=)</h5>
+<div class="paragraph">
+<p>@Description: Performs relational greater equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _gte metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _gte(op1, op2){
+ 		return op1.num&gt;=op2.num;
+ 	}
+};
+
+var n1 = new MyNumber (2), n2=new MyNumber (1);
+if(n1&gt;=n2){
+ 	Console::outln("n1 &gt;= n2");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_not_aka">_not (aka !)</h5>
+<div class="paragraph">
+<p>@Description: Performs a not operation.
+@Param1 : Object custom class type.
+@Returns : A Boolean type as a result of not operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _not metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyBoolean{
+	constructor(_b){
+		this.b=_b;
+	}
+ 	_not(){
+ 		return !_op.b;
+ 	}
+};
+
+var b = new MyBoolean (true);
+if(!b){
+	Console::outln("b was false");
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_neg_aka">_neg (aka -)</h5>
+<div class="paragraph">
+<p>@Description: Performs negate operation.
+@Param1 : operand to negate.
+@Returns : A new object custom class type with result of negate operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _neg metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+
+	_neg(){
+		return new MyNumber(-op1.num);
+	}
+};
+
+var n1 = new MyNumber (1);
+var n2 = -n1;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_add_aka">_add (aka +)</h5>
+<div class="paragraph">
+<p>@Description: Performs add operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result add operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _add metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _add(op1,op2){
+ 		return new MyNumber(op1.num+op2.num);
+ 	}
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1+n2;
+
+print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_div_aka">_div (aka /)</h5>
+<div class="paragraph">
+<p>@Type: Static
+@Description: Performs divide operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result divide
+operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use metamethod _div within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+	static _div(op1,op2){
+		return new MyNumber(op1.num/op2.num);
+ 	}
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1/n2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_mul_aka">_mul (aka *)</h5>
+<div class="paragraph">
+<p>@Type: Static
+@Description: Performs multiply operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result multiply operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _mul metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _mul(op1,op2){
+ 		return new MyNumber(op1.num*op2.num);
+ 	}
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 = n1*n2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_mod_aka">_mod (aka %)</h5>
+<div class="paragraph">
+<p>@Description: Performs modulus operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result modulus operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _mod metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	_mod(op1,op2){
+ 		return new MyNumber(op1.num%op2.num);
+ 	}
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (15);
+var n3 = n1%n2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_and_aka">_and (aka &amp;)</h5>
+<div class="paragraph">
+<p>@Description: Performs binary and operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary and operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _and metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+	static _and(op1,op2){
+		return new MyNumber(op1.num&amp;op2.num);
+	}
+};
+
+var n1 = new MyNumber (0xff);
+var n2 = new MyNumber (0x0f);
+var n3 =n1&amp;n2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_or_aka">_or (aka |)</h5>
+<div class="paragraph">
+<p>@Description: Performs binary or operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary or operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _or metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _or(op1,op2){
+ 		return new MyNumber(op1.num|op2.num);
+ 	}
+};
+
+var n1 = new MyNumber (0xf0);
+var n2 = new MyNumber (0x0f);
+var n3 =n1|n2;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>=====_xor (aka ^)</p>
+</div>
+<div class="paragraph">
+<p>@Description: Performs a binary xor operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary xor operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _xor metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _xor(op1,op2){
+ 		return new MyNumber(op1.num^op2.num);
+ 	}
+};
+var n1 = new MyNumber (0xf1);
+var n2 = new MyNumber (0x0f);
+var n3 =n1^n2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_shl_aka">_shl (aka &lt;&lt;)</h5>
+<div class="paragraph">
+<p>@Description: Performs shift left operation.
+@Param1 : Variable to apply shift left.
+@Param2 : Tells number shifts to the left.
+@Returns : A new object custom class type with n shifts left operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _shl metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _shl(op1, n_shifts){
+ 		return new MyNumber(op1.num&lt;&lt; n_shifts);
+ 	}
+};
+
+var n1 = new MyNumber (0x1);
+var n2 = n1 &lt;&lt; 3;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_shr_aka">_shr (aka &gt;&gt;)</h5>
+<div class="paragraph">
+<p>@Description: Performs shift right operation.
+@Param1 : Variable to apply shift right.
+@Param2 : Tells number shifts to the right.
+@Returns : A new object custom class type with n shifts right operation.</p>
+</div>
+<div class="paragraph">
+<p>Example how to use _shr metamethod within script class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _shr(op1,n_shifts){
+ 		return new MyNumber(op1.num&gt;&gt;n_shifts);
+ 	}
+};
+
+var n1 = new MyNumber (0xf);
+var n2 = n1 &gt;&gt; 2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_set_aka">_set (aka =)</h5>
+<div class="paragraph">
+<p>@Description: Performs a set operation6.
+@Param1 : Source variable to set.
+@Returns : None.</p>
+</div>
+<div class="paragraph">
+<p>We present a simple example how to use set metamethod within script class. In the set metamethod we can filter which type of parameter input is to perform the right operation and stop execution with error function if is required.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+	constructor(_n){
+ 		this.num=_n;
+	}
+ 	_set(v){
+ 		if(v instanceof Integer){
+ 			this.num = v;
+ 		}else if(v instanceof MyNumber){
+ 			this.num = v.num;
+ 		}else{
+ 			error("parameter not supported");
+ 		}
+ 	}
+};
+
+var n1 = new MyNumber (10);
+var n2; // n3 is undefined!
+n2 = n1; // it assigns n1=n2.
+n2 = 50; // n3 now values 50</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If variable is undefined ZetScript will assign reference object, in the case is not
+defined it will do a set operation (if it is implemented).</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_mixing_operand_types">Mixing operand types</h5>
+<div class="paragraph">
+<p>Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.The following example performs a sums of a combination of object, integers or floats.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var num1= new MyNumber(1), num2=new MyNumber(2);
+var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The expression cannot be performed with only objects as we have been shown in the last sections. You can use instanceof operator to check each type of argument and perform the needed operation.</p>
+</div>
+<div class="paragraph">
+<p>We present an example for _add metamethod function that implements a support to operate with MyNumber object, integer or float. Other types will cause a execution
+error.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">class MyNumber{
+
+	constructor(_n){
+		this.num=_n;
+	}
+	static _add(op1,op2){
+ 		var aux1, aux2;
+ 		if(op1 instanceof MyNumber){
+ 			aux1=op1.num;
+ 		}else if(op1 instanceof Integer || op1 instanceof Float){
+			aux1=op1;
+		}else{
+			System::errorln("arg op1 is not supported");
+		}
+
+ 		if(op2 instanceof MyNumber){
+ 			aux2=op2.num;
+ 		}else if(op2 instanceof Integer || op2 instanceof Float){
+ 			aux2=op2;
+ 		}else{
+ 			System::errorln("arg op2 is not supported ");
+ 		}
+
+ return new MyNumber(aux1+aux2);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_properties_3">2.11.7. Properties</h4>
+<div class="paragraph">
+<p>A property is a member that defines a set of metamethods that to operate with.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_api">3. the API</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_bind_function">3.1. Bind function</h3>
+<div class="paragraph">
+<p>To bind a function first it has to declare a function with a signature compatible to ZetScript. All, functions will have ZetScript pointer as first parameter, and the others will be built-in types or types defined by the user.</p>
+</div>
+<div class="paragraph">
+<p>binding supports <strong>zs_int, zs_int *, zs_float *, bool *, char * and zs_string *</strong> as arguments types. For return values it supports the same basic types as arguments plus <strong>bool, zs_float and zs_string (no pointer)</strong>. Is also possible to pass custom registered types (see section 4.3).</p>
+</div>
+<div class="paragraph">
+<p>Is important to say that ZetScript has a constraint <strong>maximum of 8 parameters</strong> for any C function to be bind in the script engine. If a function more than 8 parameters is tried to be registered, ZetScript will throw an error. To bind C function is done through macro bindFunction. You have to provide the name that will be referenced in script side.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">zs.bindFunction("function_name", c_function);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include "ZetScript.h"
+
+zetscript::zs_int add(zetscript::zs_int  op1, zetscript::zs_int op2)
+{
+	return op1+op2;
+}
+
+int main(int argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+	// binds native function "add"
+	zs.bindFunction("add",add);
+
+ 	zs.eval(
+ 		"Console::outln(\"result:\"+add(5,4));" // prints "result: 9"
+ 	);
+
+ 	return 0;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ambiguities">3.1.1. Ambiguities</h4>
+<div class="paragraph">
+<p>If we try to register another function with the same name the c++ compiler will fail to register function.</p>
+</div>
+<div class="paragraph">
+<p>For instance,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">#include "ZetScript.h"
+
+// a function that adds two integers.
+zetscript::zs_int add(zetscript::zs_int op1, zetscript::zs_int op2)
+{
+	return op1+op2;
+}
+
+// a function that adds two floats return op1+op2;
+zetscript::zs_float add(zetscript::zs_float *op1, zetscript::zs_float *op2)
+{
+	return *op1+*op2;
+}
+
+int main(int argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+	// c++ compiler throws an error due function deduction.
+ 	zs.bindFunction("add",add);
+
+ 	return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For instance gnu c++ compiler throws this error,</p>
+</div>
+<div class="paragraph">
+<p>note: template argument deduction/substitution failed:</p>
+</div>
+<div class="paragraph">
+<p>That means that indeed there&#8217;re more than one function named 'add' and the compiler cannot deduce which function take to register. To achieve register more than a one function with the same name we have to make a cast to get the function we want with its signature.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include "ZetScript.h"
+
+// a function that adds two integers.
+zetscript::zs_int add(zetscript::zs_int op1, zetscript::zs_int op2)
+{
+	return op1+op2;
+}
+
+// a function that adds two floats return op1+op2;
+zetscript::zs_float add(zetscript::zs_float *op1, zetscript::zs_float *op2)
+{
+	return *op1+*op2;
+}
+
+int main(int argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+ 	// register function add(int,int)
+	zs.bindFunction("add",static_cast&lt;int (*)(int,int)&gt;(add));
+
+	 // register function add(float *,float *)
+ 	zs.bindFunction("add",static_cast&lt;float (*)(float *,float *)&gt;(add));
+
+ 	zs.eval(
+ 		"Console::outln(\"result:\"+add(5,4));" // prints "result:9"
+ 		"Console::outln(\"result:\"+add(0.5,4.6));" // prints "result:5.1"
+ 	);
+
+ 	return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bind_types">3.2. Bind types</h3>
+<div class="sect3">
+<h4 id="_bind_static_type">3.2.1. Bind static type</h4>
+<div class="paragraph">
+<p>Binding a native class or type as static it means it&#8217;s not instantiable in the script side , so it cannot use <strong>new</strong> keyword.
+To bind type as static is done through <strong>bindType</strong> function by passing the type as template and the name that will be referenced in the script.</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>zs.bindType&lt;type_class&gt;("name_class");</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following code shows an example of a registering a C++ class,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">class MyClass{
+public:
+	int data1;
+	void init(int arg){
+		printf("data1 is initialized as %i\n",arg);
+		this-&gt;data1=arg;
+	}
+
+	void function1(int arg){
+ 		this-&gt;data1 = arg;
+ 		printf("c++ argument is %i\n",this-&gt;data1);
+ 	}
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>List 4.1</p>
+</div>
+<div class="paragraph">
+<p>Using the list 4.1, to bind MyClass as static (i.e no instantiable) in script side is proceded as follows,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">void main(argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+ 	//register MyClass as static (i.e no instantiable) in script side.
+ 	zs.bindType&lt;MyClass&gt;("MyClass");
+
+ 	return 0;
+ }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the following example it evals a code to try instance MyClass type but it will throw an error that MyClass is not instanciable because is static,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">void main(argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+ 	//register MyClass as static (i.e no instantiable) in script side.
+ 	zs.bindType&lt;MyClass&gt;("MyClass");
+
+
+	// It throws an error that MyClass is not instanciable because is static
+ 	zs.eval(
+ 		"var myclass= new MyClass();"
+ 	);
+
+ 	return 0;
+ }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to use a MyClass instantiation it has to be done in the C++ aplication.</p>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">MyClass *my_class=NULL;
+
+// interface function to get MyClass instantiation
+MyClass *getMyClass(){
+	return 	my_class;
+}
+
+
+void main(argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+	// create MyClass instantiation from C++
+	my_class=new MyClass();
+
+
+ 	//register MyClass as static (i.e no instantiable) in script side.
+ 	zs.bindType&lt;MyClass&gt;("MyClass");
+
+ 	 //register function interface to get MyClass instantiation
+ 	zs.bindFunction("getMyClass",getMyClass);
+
+
+	// It get MyClass reference
+ 	zs.eval(
+ 		"var my_class= getMyClass();"
+ 	);
+
+ 	// delete MyClass instantiation from C++
+ 	delete my_class;
+
+ 	return 0;
+ }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: Is valuable to see that static types are safety because never are created in the script side, they are created by the C++ side</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bind_instantiable_type">3.2.2. Bind instantiable type</h4>
+<div class="paragraph">
+<p>Binding class or type as instantiable means that can it be instanced in the script side by using <strong>new</strong> keyword. To bind a instantiable type is done through <strong>bindType</strong> passing the type as template,the name and the interface new/delete functions,</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp"> zs.bindType&lt;MyClass&gt;("MyClass",new_function, delete_function);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using the list 4.1, to bind MyClass as instanciable in script side is proceded as follows,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">MyClass *MyClass_new(){
+	return new MyClass();
+}
+
+void MyClass_delete(MyClass *_this){
+	delete _this;
+}
+
+
+void main(argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+
+	//register MyClass as instantiable type in script side.
+	zs.bindType&lt;MyClass&gt;("MyClass",MyClass_new,MyClass_delete);
+
+	// It instances MyClass
+ 	zs.eval(
+ 		"var my_class= new MyClass();"
+ 	);
+
+	return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_delete_c_class">3.2.3. Delete C Class</h4>
+<div class="paragraph">
+<p>ZetScript it has a garbage collector to delete unreferenced script variables when the end of scope is reached but it keeps alive its internal native pointer to avoid unintended segmentation faults. So to avoid memory leaks due this issue, the user has to delete manually any instanced C Class variable with delete keyword. The following code shows an example of using delete keyword,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript"> delete myclass; // script and c variable is destroyed.</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bind_members">3.3. Bind members</h3>
+<div class="sect3">
+<h4 id="_bind_function_member">3.3.1. Bind Function Member</h4>
+<div class="paragraph">
+<p>The binding of variable member is done like binding c function but in this case is done through the macro function register_C_FunctionMember. You have to provide the type class, the string name that will be referenced in script side and the function object reference.</p>
+</div>
+<div class="paragraph">
+<p>register_C_FunctionMember&lt;ObjectType&gt;("function_name",&amp;ObjectType::function_name);</p>
+</div>
+<div class="paragraph">
+<p>As an example, the following code registers function member MyClass::function1 seen on List 4.1</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">zs.bindFunctionMember&lt;MyClass&gt;("function1",&amp;MyClass::function1);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then it can access to function1 member through field access ('.')</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var myclass= new MyClass();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>myclass.function1(10); // prints "c++ argument is10"</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bind_function_constructor">3.3.2. Bind function constructor</h4>
+<div class="paragraph">
+<p>ZetScript always calls default C constructor when a variable is instanced with C type. ZetScript has no support of parameterized constructors but, instead, it can be done by registering a function with same name as the class name registered. As an example, the following code registers function member MyClass::init seen on List 4.1 as constructor3,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">zs.bindFunctionMember&lt;MyClass&gt;("MyClass",&amp;MyClass::init);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then, when variable is intancedwe can instance the class passing a integer as parameter to the c contructor</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var myclass= new MyClass(10); // prints "data1 is initialized as 10"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>4.3.6 Inheritance</p>
+</div>
+<div class="paragraph">
+<p>Inherited classes needs to know its base classes in order to register its parent variables
+and symbols already registered with the functions already seen in the section 4.3.3 and
+4.3.4 respectively. To tell the which base class has an inherited class is done through
+class_C_baseof with two parameters: The first parameter as the inherited class type
+and second parameter as its base class type.
+Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">zs.extends&lt;class, base_class&gt;();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If for example we want to register MyClassExtend and tell that is base of MyClass Is
+done with the following snipped,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">class MyClassExtend:public MyClass{
+public:
+	float data2;
+	void function2(float * arg){
+ 		this-&gt;data2 = *arg;
+ 		printf("Float argument is %.02f\n",this-&gt;data2);
+ 	}
+};
+
+zs.bindType&lt;MyClassExtend&gt;("MyClassExtend"); // register MyClassExtend
+zs.extends&lt;MyClassExtend,MyClass&gt;();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>List 4.2</p>
+</div>
+<div class="paragraph">
+<p>3
+ Note that the name of the function is the same as the name of the class</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bind_static_constant_variable">3.4. Bind static constant variable</h3>
+<div class="paragraph">
+<p>The binding of variable member is done through the macro function <strong>bindMemberVariable</strong>. You have to provide the type class, the string name that
+will be referenced in script side and variable object reference.</p>
+</div>
+<div class="paragraph">
+<p>Sintax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cpp" data-lang="cpp">zs.bindStaticConstantVariableMember&lt;ObjectType&gt;("variable_name",&amp;ObjectType::variable_name);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As an example, the following code register variable member MyClass::data1 seen on
+List 4.1,
+register_C_VariableMember&lt;MyClass&gt;("data1",&amp;MyClass::data1);
+And then it can access to data1 member through field access ('.')
+var myclass= new MyClass();
+print("data1"+myclass.data1);</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> 4.4 Inheritance script class from c++ class
+An important feature of ZetScript is that it supports c++ class inheritance for any in
+script class and the this (section 3.9) and super (seccion 3.9.5.1) keywords works as a
+normal behavior
+For example, we could inherit MyClassExtend from 4.2 that is shown in the following
+code,
+class ScriptMyClassExtended: MyClassExtend{
+ function function1(arg1){
+ print("script argument is "+arg1)
+ super(this.data1+arg1); // calls function1 c++
+ }
+}
+var myclass=new ScriptMyClassExtend(10);
+Myclass.function1(5);
+It prints,
+data1 is initialized as 10
+script argument is 5
+c++ argument is 15</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Complete example
+#include "CZetScript.h"
+using namespace zetscript;
+class MyClass{
+public:
+ int data1;
+ void init(int arg){
+ printf("data1 is initialized as %i\n",arg);
+ this&#8594;data1=arg;
+ }
+ void function1(int arg){
+ this&#8594;data1 = arg;
+ printf("c++ argument is %i\n",this&#8594;data1);
+ }
+};
+class MyClassExtend:public MyClass{
+public:
+ float data2;
+ void function2(float *arg){
+ this&#8594;data2 = *arg;
+ printf("Float argument is %.02f\n",this&#8594;data2);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>register_C_Class&lt;MyClass&gt;("MyClass"); //register MyClass as MyClass in script side
+register_C_Class&lt; MyClassExtend &gt;("MyClassExtend"); // register MyClassExtend
+class_C_baseof&lt;MyClassExtend,MyClass&gt;();</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// register MyClass::constructor
+register_C_FunctionMember&lt;MyClass&gt;("MyClass",&amp;MyClass::init);
+//reg MyClass:: data1
+register_C_VariableMember&lt;MyClass&gt;("data1",&amp;MyClass::data1);
+//reg MyClass:: function1
+register_C_FunctionMember&lt;MyClass&gt;("function1",&amp;MyClass::function1);</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> // eval print
+ if(!zs-&gt;eval(
+ "class ScriptMyClassExtend: MyClassExtend{\n"
+ "function function1(arg1){\n"
+ "print(\"script argument is \"+arg1);\n"
+ "super(this.data1+arg1); // calls function1 c++\n"
+ "}\n"
+ "};\n"
+ "var myclass=new ScriptMyClassExtend(10);\n"
+ "myclass.function1(5);\n"
+ "delete myclass; // script and c variable is destroyed.\n"
+ )){
+ fprintf(stderr,CZetScript::getInstance()-&gt;getErrorMsg());
+ }
+ return 0;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>4.5 Call script function in C
+To bind script call in c it can be done through bind_function passing the function type
+as template parameter and the function name as parameter4
+. It can bind a script
+function member from an already instanced object.
+Example,
+#include "CZetScript.h"
+using namespace zetscript;
+int main(){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+ zs&#8594;eval(
+ "class Test{"
+ " var data1;"
+ " function function1(arg){"
+ " print(\"calling Test.Function:\"+arg);"
+ " }"
+ "};"
+ ""
+ "function delete_test(){"
+ " delete test;"
+ " print(\"test variable was deleted\");"
+ "}"
+ ""
+ "var test=new Test();"
+ );
+ // delete_test function is evaluated now test variable is instanced as Test type, so it can
+ // bind test.function1</p>
+</div>
+<div class="paragraph">
+<p>std::function&lt;void()&gt; * delete_test=bind_function&lt;void()&gt;("delete_test");
+std::function&lt;void(int)&gt; * test_function1=bind_function&lt;void (int)&gt;("test.function1");
+ (*test_function1)(10); // it calls "test.function" member function with 10 as parameter.
+ (*delete_test)(); // it calls "delete_test" function with no parameters
+ // delete functions when they are used anymore
+ delete test_function1;
+ delete delete_test;
+}</p>
+</div>
+<div class="paragraph">
+<p>4 C++ function binding is limited by a maximum of 6 parameters</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_10_metamethods">4. 3.10 Metamethods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function <sup class="footnote">[<a id="_footnoteref_4" class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup>  depending whether the operation affects or not the object itself.</p>
+</div>
+<div class="paragraph">
+<p>ZetScript supports the following metamethods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>_equ</p>
+</li>
+<li>
+<p>_not_equ</p>
+</li>
+<li>
+<p>_lt</p>
+</li>
+<li>
+<p>_lte</p>
+</li>
+<li>
+<p>_gt</p>
+</li>
+<li>
+<p>_gte</p>
+</li>
+<li>
+<p>_not</p>
+</li>
+<li>
+<p>_neg</p>
+</li>
+<li>
+<p>_add</p>
+</li>
+<li>
+<p>_div</p>
+</li>
+<li>
+<p>_mul</p>
+</li>
+<li>
+<p>_mod</p>
+</li>
+<li>
+<p>_and</p>
+</li>
+<li>
+<p>_or</p>
+</li>
+<li>
+<p>_xor</p>
+</li>
+<li>
+<p>_shl</p>
+</li>
+<li>
+<p>_shr</p>
+</li>
+<li>
+<p>_set</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_5_5_1_equ_aka">4.1. 5.5.1 _equ (aka ==)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if equal, false otherwise.
+Script Example
+Example how to use _equ metamethod within script class,</p>
+</div>
+<div class="paragraph">
+<p>class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _equ(op1, op2){
+ return op1.num==op2.num;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>var n1 = new MyNumber (1), n2=new MyNumber (1);</p>
+</div>
+<div class="paragraph">
+<p>if(n1==n2){ // we use here the metamethod ==
+ print("n1 ("n1.num") is equal to n2 ("n2.num")");
+}</p>
+</div>
+<div class="paragraph">
+<p>C Example
+The same it can be done with C. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _equ(MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num == op2&#8594;num;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _equ as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_equ",&amp;MyNumber::_equ);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
+"if(n1==n2){ // we use here the metamethod ==\n "
+" print(\"n1 (\"n1.num\") is equal to n2 (\"n2.num\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_2_nequ_aka">4.2. 5.5.2 _nequ (aka !=)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational not equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if not equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _nequ(MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num != op2&#8594;num;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _not_equ as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_nequ",&amp;MyNumber::_nequ);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (0); \n "
+"if(n1!=n2){ // we use here the metamethod != \n "
+" print(\"n1 (\"n1.num\") is not equal to n2 (\"n2.num\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_3_lt_aka">4.3. 5.5.3 _lt (aka &lt;)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _lt(MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num &lt; op2&#8594;num;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _lt as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_lt",&amp;MyNumber::_lt);
+ if(!zs&#8594;eval(
+ "var n1 = new MyNumber (0), n2=new MyNumber (1);\n"
+"if(n1&lt;n2){ \n "
+" print(\"n1 (\"n1.num\") is less than n2 (\"n2.num\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_4_lte_aka">4.4. 5.5.4 _lte (aka &#8656;)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>C Example
+The same it can be done with C. The C++ metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _lte (MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num &#8656; op2&#8594;num;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _lte as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_lte",&amp;MyNumber::_lte);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1);\n"
+"if(n1&#8656;n2){\n"
+" print(\"n1 (\"n1.num\") is less equal than n2 (\"n2.num\")\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_5_gt_aka">4.5. 5.5.5 _gt (aka &gt;)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational greater operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _gt(MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num &gt; op2&#8594;num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _gt as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_gt",&amp;MyNumber::_gt);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (0);\n"
+"if(n1&gt;n2){ \n"
+" print(\"n1 (\"n1.num\") is greater than n2 (\"n2.num\")\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_6_gte_aka">4.6. 5.5.6 _gte (aka &gt;=)</h3>
+<div class="paragraph">
+<p>@Description: Performs relational greater equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater equal, false otherwise.</p>
+</div>
+<div class="paragraph">
+<p>C++ Example</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static bool _gte(MyNumber *op1, MyNumber *op2){
+ return op1&#8594;num &gt;= op2&#8594;num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _gte as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_gte",&amp;MyNumber::_gte);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
+"if(n1&gt;=n2){ \n "
+" print(\"n1 (\"n1.num\") is greater equal than n2 (\"n2.num\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_7_static_not_aka">4.7. 5.5.7 static _not (aka !)</h3>
+<div class="paragraph">
+<p>@Description: Performs a not operation.
+@Param1 : Object custom class type.
+@Returns : A Boolean type as a result of not operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyBoolean{
+public:
+ bool b;
+ MyBoolean (){
+ this&#8594;b=false;
+ }
+ void set(bool _b){
+ this&#8594;b=_b;
+ }
+ static bool _not(MyBoolean *op1){
+ return !op1&#8594;b;
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt; MyBoolean &gt;("MyBoolean");
+ // register variable member num
+ register_C_VariableMember&lt;MyBoolean&gt;("b", &amp;MyBoolean::b);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyBoolean&gt;("MyBoolean", &amp;MyBoolean:: set);
+ // register static function _not as metamethod
+ register_C_StaticFunctionMember&lt;MyBoolean&gt;("_not", &amp;MyBoolean::_not);
+ if(!zs&#8594;eval(
+"var b = new MyBoolean (false);\n"
+"if(!b){ \n"
+" print(\"b was false\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_8_neg_aka">4.8. 5.5.8 _neg (aka -)</h3>
+<div class="paragraph">
+<p>@Description: Performs negate operation.
+@Param1 : operand to negate.
+@Returns : A new object custom class type with result of negate operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _num){
+ this&#8594;num=_num;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber * _neg(MyNumber *op1){
+ return new MyNumber(-op1&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _neg as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_neg",&amp;MyNumber::_neg);
+ if(!zs&#8594;eval (
+"var n1 = new MyNumber (1);\n"
+"var n2 = -n1;\n"
+"print(\"neg of n1 (\"n1.num\") is (\"n2.num\")\");\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_9_add_aka">4.9. 5.5.9 _add (aka +)</h3>
+<div class="paragraph">
+<p>@Description: Performs add operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result add operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber * _add(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num + op2&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _add as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",&amp;MyNumber::_add);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10); \n"
+"var n3 =n1+n2; \n "
+"print(\"n1 (\"n1.num\") + n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_10_div_aka">4.10. 5.5.10 _div (aka /)</h3>
+<div class="paragraph">
+<p>@Type: Static
+@Description: Performs divide operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result divide operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber *_div(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num / op2&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _div as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_div",&amp;MyNumber::_div);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =n1/n2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") / n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_11_mul_aka">4.11. 5.5.11 _mul (aka *)</h3>
+<div class="paragraph">
+<p>@Type: Static
+@Description: Performs multiply operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result multiply operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber *_mul(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num * op2&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _mul as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_mul",&amp;MyNumber::_mul);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =n1*n2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") * n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_12_mod_aka">4.12. 5.5.12 _mod (aka %)</h3>
+<div class="paragraph">
+<p>@Description: Performs modulus operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result modulus operation.</p>
+</div>
+<div class="paragraph">
+<p>C++ Example</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber *_mod(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num % op2&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _mod as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_mod",&amp;MyNumber::_mod);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (15);\n"
+"var n3 =n1%n2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") % n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_13_and_aka">4.13. 5.5.13 _and (aka &amp;)</h3>
+<div class="paragraph">
+<p>@Description: Performs binary and operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary and operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber * _and(MyNumber *op1, MyNumber *op2){
+ return new MyNumber (op1&#8594;num &amp; op2&#8594;num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _and as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_and",&amp;MyNumber::_and);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (0xff);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1&amp;n2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") &amp; n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_14_or_aka">4.14. 5.5.14 _or (aka |)</h3>
+<div class="paragraph">
+<p>@Description: Performs binary or operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary or operation.</p>
+</div>
+<div class="paragraph">
+<p>C Example
+The same it can be done with C. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber * _or(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num | op2&#8594;num);
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _or as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_or",&amp;MyNumber::_or);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (0xf0);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1|n2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") | n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_15_xor_aka">4.15. 5.5.15 _xor (aka ^)</h3>
+<div class="paragraph">
+<p>@Description: Performs a binary xor operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary xor operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber *_xor(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num ^ op2&#8594;num);
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _xor as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_xor",&amp;MyNumber::_xor);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (0xf1);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1^n2;"
+"\n"
+"print(\"n1 (\"n1.num\") ^ n2 (\"n2.num\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_16_shl_aka">4.16. 5.5.16 _shl (aka &lt;&lt;)</h3>
+<div class="paragraph">
+<p>@Description: Performs shift left operation.
+@Param1 : Variable to apply shift left.
+@Param2 : Tells number shifts to the left.
+@Returns : A new object custom class type with n shifts left operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber *_shl(MyNumber *op1, int n_shifts){
+ return new MyNumber(op1&#8594;num &lt;&lt; n_shifts);
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _shl as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_shl",&amp;MyNumber::_shl);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (0x1);\n"
+"var n2 = n1 &lt;&lt; 3;\n"
+"\n"
+"print(\"n1 (\"n1.num\") &lt;&lt; 3 = \"+n2.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_17_shr_aka">4.17. 5.5.17 _shr (aka &gt;&gt;)</h3>
+<div class="paragraph">
+<p>@Description: Performs shift right operation.
+@Param1 : Variable to apply shift right.
+@Param2 : Tells number shifts to the right.
+@Returns : A new object custom class type with n shifts right operation.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ static MyNumber * _shr(MyNumber *op1,int n_shifts){
+ return new MyNumber(op1&#8594;num &gt;&gt; n_shifts);
+ }
+};</p>
+</div>
+<div class="paragraph">
+<p>int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register static function _shr as metamethod
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_shr",&amp;MyNumber::_shr);
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (0xf);\n"
+"var n2 = n1 &gt;&gt; 2;\n"
+"\n"
+"print(\"n1 (\"n1.num\") &gt;&gt; 2 = \"+n2.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_19_set_aka">4.18. 5.5.19 _set (aka =)</h3>
+<div class="paragraph">
+<p>@Description: Performs a set operation6.
+@Param1 : Source variable to set.
+@Returns : None.</p>
+</div>
+<div class="paragraph">
+<p>The same it can be done with C. The C metamethod function associated with must be static.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ void _set(int _n){
+ this&#8594;num=_n;
+ }
+ void _set(MyNumber <strong>_n){
+ this&#8594;num=_n&#8594;num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ // register variable member num
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::_set
+ register_C_FunctionMember&lt;MyNumber&gt;(
+"MyNumber"
+, static_cast&lt;void (MyNumber::</strong>)(int)&gt;(&amp;MyNumber::_set)
+ );
+ // register two types function _set as metamethod (same as constructor)
+ register_C_FunctionMember&lt;MyNumber&gt;(
+"_set"
+,static_cast&lt;void (MyNumber::*)(int)&gt;(&amp;MyNumber::_set)
+ );
+ register_C_FunctionMember&lt;MyNumber&gt;(
+"_set"
+, static_cast&lt;void (MyNumber::*)(MyNumber *)&gt;(&amp;MyNumber::_set)
+ );
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (10);\n"
+"var n2 = new MyNumber (20); \n"
+"var n3; //  n3 is undefined! \n"
+"n3 = n2; //  it assigns n2 pointer. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=n1; //  n3.num = n2.num = n1.num. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=50; //  n3.num = n2.num = 10. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=false; //  stops execution with error because is not supported.\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_5_20_mixing_operand_types">4.19. 5.5.20 Mixing operand types</h3>
+<div class="paragraph">
+<p>Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.
+The following example performs a sums of a combination of object, integers or floats.</p>
+</div>
+<div class="paragraph">
+<p>var num1= new MyNumber(1), num2=new MyNumber(2);
+var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;</p>
+</div>
+<div class="paragraph">
+<p>The expression cannot be performed with only objects as we have been shown in the
+last sections. You can use instanceof operator to check each type of argument and
+perform the needed operation.</p>
+</div>
+<div class="paragraph">
+<p>We present an example for _add metamethod function that implements a support to
+operate with MyNumber object, integer or float. Other types will cause a execution
+error.</p>
+</div>
+<div class="paragraph">
+<p>The same example for C++ we can to do an extra effort. We have to implement all possibilities that operator contemplates with operation within MyNumber, int or float.</p>
+</div>
+<div class="paragraph">
+<p>#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ float num;
+ MyNumber(){
+ this&#8594;num=0;
+ }
+ MyNumber(int _n){
+ this&#8594;num=_n;
+ }
+ void set(int _n){
+ this&#8594;num=_n;
+ }
+ // MyNumber,MyNumber combination
+ static MyNumber * _add(MyNumber <strong>op1, MyNumber *op2){
+ return new MyNumber(op1&#8594;num + op2&#8594;num);
+ }
+ // int,MyNumber combination
+ static MyNumber * _add(int op1, MyNumber *op2){
+ return new MyNumber(op1 + op2&#8594;num);
+ }
+ // MyNumber,int combination
+ static MyNumber * _add( MyNumber *op1, int op2){
+ return new MyNumber(op1&#8594;num + op2);
+ }
+ // float,MyNumber combination
+ static MyNumber * _add(float *op1, MyNumber *op2){
+ return new MyNumber(*op1 + op2&#8594;num);
+ }
+ // MyNumber,float combination
+ static MyNumber * _add( MyNumber *op1, float *op2){
+ return new MyNumber(op1&#8594;num + *op2);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class&lt;MyNumber&gt;("MyNumber");
+ register_C_VariableMember&lt;MyNumber&gt;("num",&amp;MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember&lt;MyNumber&gt;("MyNumber",&amp;MyNumber:: set);
+ // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combination�
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",static_cast&lt; MyNumber * (</strong>)(MyNumber <strong>, MyNumber *)&gt;(&amp;MyNumber::_add));
+ // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combination�
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",static_cast&lt; MyNumber * (</strong>)(int, MyNumber <strong>)&gt;(&amp;MyNumber::_add));
+ // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combination�
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",static_cast&lt; MyNumber * (</strong>)(MyNumber <strong>, int)&gt; (&amp;MyNumber::_add));
+ // register 4th _add metamethod function to satisfy operand (float,MyNumber) combination�
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",static_cast&lt; MyNumber * (</strong>)(float <strong>, MyNumber *)&gt;(&amp;MyNumber::_add));
+ // register 5th _add metamethod function to satisfy operand (MyNumber,float) combination�
+ register_C_StaticFunctionMember&lt;MyNumber&gt;("_add",static_cast&lt; MyNumber * (</strong>)(MyNumber *, float *)&gt;(&amp;MyNumber::_add));
+ if(!zs&#8594;eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number\n"
+"print(\"n3:\"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}</p>
+</div>
+</div>
+</div>
+</div>
+<h1 id="_5_modules" class="sect0">5 Modules</h1>
+<div class="openblock partintro">
+<div class="content">
+<div class="paragraph">
+<p>Zetscript implements the following modules,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>String</p>
+</li>
+<li>
+<p>Console</p>
+</li>
+<li>
+<p>System</p>
+</li>
+<li>
+<p>Math</p>
+</li>
+<li>
+<p>Json</p>
+</li>
+<li>
+<p>DateTime</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_1_string">5. 5.1 String</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>String module exposes the following set of functions,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>String::format</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_5_1_1_stringformat">5.1. 5.1.1 String::format</h3>
+<div class="paragraph">
+<p>String::format formats a string</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">String::format("string", ...args)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The possible formats is described below,</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 37.5%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Format</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">description</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Example</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces {<em>n</em>} by the argument <em>n</em></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // prints '1st arg 1'
+ String::format("1st arg {0}",1)
+
+ // prints '1st,2nd as 1 and 2'
+ String::format("1st,2nd as {0} and {1}",1,2)
+
+ // prints '1st,2nd same 1 and 1'
+ String::format("1st,2nd same {0} and {0}",1)</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n:dm}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces the argument <em>n</em> padding <em>m</em> 0s on its left</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // out == 'Score:01'
+ String::format("Score:{0:d1}",1)
+
+ // out == 'Score:0001'
+ String::format("Score:{0:d4}",1)</code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{n,m}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It replaces argument <em>n</em> padding <em>m</em> spaces on its left</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // out == 'Score: 1'
+ var out=String::format("Score:{0,1}",1)
+ // out == 'Score:   1'
+ out=String::format("One space:{0,4}",1)</code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_console">6. 5.2 Console</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Console module exposes the following set of functions,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>outln</p>
+</li>
+<li>
+<p>errorln</p>
+</li>
+<li>
+<p>readChar</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_1_consoleoutln">7. 5.2.1 Console::outln</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Console::outln prints message to the console.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">Console::outln(object,...args)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <em>object</em> is constant string it can be formated (see in table X.X)</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // prints 'Hello world'
+ Console::outln("Hello world");
+
+ // prints 'Score:0001'
+ Console::outln("Score:{0:d4}",1);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_2_consoleerrorln">8. 5.2.2 Console::errorln</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Console::errorln prints an error message to the console.</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">Console::errorln(object,...args)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <em>object</em> is constant string it can be formated (see in table X.X)</p>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // prints 'Error'
+ Console::errorln("Error");
+
+ // prints 'Error:02'
+ Console::outln("Error:{0:d2}",2);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_2_3_consolereadchar">9. 5.2.3 Console::readChar</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Console::readChar it waits untill reads a character from console</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">Console::readChar()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> // waits until reads a char
+ var c=Console::readChar();
+
+ // prints readed char
+ Console::outln("Key pressed: {0}",c)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_system">10. 5.3 System</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>System module exposes the following set of functions,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>clock</p>
+</li>
+<li>
+<p>eval</p>
+</li>
+<li>
+<p>assert</p>
+</li>
+<li>
+<p>error</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_1_clock">11. 5.3.1 Clock</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Returns the amount of time in milliseconds</p>
+</div>
+<div class="paragraph">
+<p>Syntax,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">System::clock()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript"> var start=System::clock()
+
+ // waste some time...
+ for(var i=0;i&lt;1000; i++){
+ }
+
+ // print elapsed time in milliseconds
+ Console::outln("Elapsed time: {0} ms",System::clock()-start_time)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_2_eval">12. 5.3.2 Eval</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_3_assert">13. 5.3.3 Assert</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_4_error">14. 5.3.4 Error</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_math">15. 5.4 Math</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Math module exposes the following set of static members,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>PI: PI number (i.e 3.14159265359)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Math module exposes the following set of static functions,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>sin</p>
+</li>
+<li>
+<p>cos</p>
+</li>
+<li>
+<p>abs</p>
+</li>
+<li>
+<p>pow</p>
+</li>
+<li>
+<p>degToRad</p>
+</li>
+<li>
+<p>random</p>
+</li>
+<li>
+<p>max</p>
+</li>
+<li>
+<p>min</p>
+</li>
+<li>
+<p>sqrt</p>
+</li>
+<li>
+<p>floor</p>
+</li>
+<li>
+<p>ceil</p>
+</li>
+<li>
+<p>round</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_1_mathsin">16. 5.4.1 Math::sin</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_2_mathcos">17. 5.4.2 Math::cos</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_3_mathabs">18. 5.4.3 Math::abs</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_4_mathpow">19. 5.4.4 Math::pow</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_5_mathdegtorad">20. 5.4.5 Math::degToRad</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_6_mathrandom">21. 5.4.6 Math::random</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_7_mathmax">22. 5.4.7 Math::max</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_8_mathmin">23. 5.4.8 Math::min</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_9_mathsqrt">24. 5.4.9 Math::sqrt</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_10_mathfloor">25. 5.4.10 Math::floor</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_11_mathceil">26. 5.4.11 Math::ceil</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_4_12_mathround">27. 5.4.12 Math::round</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_5_json">28. 5.5 Json</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Json exposes the following set of static members,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>serialize</p>
+</li>
+<li>
+<p>deserialize</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_5_1_jsonserialize">29. 5.5.1 Json::serialize</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_5_2_jsonserialize">30. 5.5.2 Json::serialize</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_datetime">31. 5.6 DateTime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Json exposes the following set of member variables,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>week_day (zs_int): The week&#8217;s day</p>
+</li>
+<li>
+<p>month_day (zs_int): The month&#8217;s day</p>
+</li>
+<li>
+<p>year_day (zs_int): The year&#8217;s day</p>
+</li>
+<li>
+<p>second (zs_int): seconds</p>
+</li>
+<li>
+<p>minute (zs_int): minutes</p>
+</li>
+<li>
+<p>hour (zs_int): hours</p>
+</li>
+<li>
+<p>day (zs_int): day</p>
+</li>
+<li>
+<p>month (zs_int):month</p>
+</li>
+<li>
+<p>year (zs_int): year</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Json exposes the following set of member functions,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>addSeconds</p>
+</li>
+<li>
+<p>addMinutes</p>
+</li>
+<li>
+<p>addHours</p>
+</li>
+<li>
+<p>addDays</p>
+</li>
+<li>
+<p>addMonths</p>
+</li>
+<li>
+<p>addYears</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Json exposes the following set of member metamethods,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>_add</p>
+</li>
+<li>
+<p>_sub</p>
+</li>
+<li>
+<p>_toString</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_1_datetimeaddseconds">32. 5.6.1 DateTime::addSeconds</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_2_datetimeaddminutes">33. 5.6.2 DateTime::addMinutes</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_3_datetimeaddhours">34. 5.6.3 DateTime::addHours</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_4_datetimeadddays">35. 5.6.4 DateTime::addDays</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_5_datetimeaddmonths">36. 5.6.5 DateTime::addMonths</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_6_datetimeaddyears">37. 5.6.6 DateTime::addYears</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_7_datetime_add">38. 5.6.7 DateTime::_add</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_8_datetime_sub">39. 5.6.8 DateTime::_sub</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_6_9_datetime_tostring">40. 5.6.9 DateTime::_toString</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_eval">Appendix A: 2. Eval</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The source of evaluation can came from strings  or file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_1_eval_string">41. 2.1. Eval string</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To eval a string is proceed as follows,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">#include "ZetScript.h"
+
+int main(){
+
+	zetscript::ZetScript zs;
+
+	zs.eval(
+ 		"Console::outln( \"Hello world\")"
+	);
+
+	return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_2_eval_file">42. 2.2. Eval file</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Having a file called 'file.zs',</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">file.zs</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">Console::outln("Hello World");</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To eval a file is proceed as follow.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">#include "ZetScript.h"
+
+int main(){
+
+	zetscript::ZetScript zs;
+
+	zs.evalFile(
+		"file.zs"
+	);
+
+	return 0;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_3_eval_options">43. 2.3 Eval options</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_3_1_no_execution">43.1. 2.3.1 No execution</h3>
+<div class="paragraph">
+<p>By default, evaluation process compiles and execute but it can tell to not execute passing
+second parameter with 'EvalOption::EVAL_OPTION_NO_EXECUTE' value,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">	zs.eval(
+	 "Console::outln(\"Hello world\")"
+	 ,EvalOption::EVAL_OPTION_NO_EXECUTE
+	);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_3_2_show_byte_code">43.2. 2.3.2 Show byte code</h3>
+<div class="paragraph">
+<p>To show the current byte code after evaluate expression, pas&#8217;EvalOption::EVAL_OPTION_SHOW_BYTE_CODE' property option,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">	zs.eval(
+	 "var i=0;\n"
+	 "i=1;\n"
+	 ,EvalOption::EVAL_OPTION_SHOW_BYTE_CODE
+	);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the code in the list X.XX it&#8217;d show the following byte code,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code> Function: '@MainFunction'
+ Stack code: 2
+ Stack local vars: 1
+ Total stack required: 3
+
+ Scopes: 5
+ NUM |RS|AS|               INSTRUCTION
+----+--+--+--------------------------------------------------
+[0000| 1|01]    LOAD_INT                0
+[0001| 1|02]    PUSH_STK_LOCAL          i
+[0002|-1|00]    STORE                   n:1 [RST]
+[0003| 1|01]    LOAD_INT                1
+[0004| 1|02]    PUSH_STK_LOCAL          i
+[0005|-1|00]    STORE                   n:1 [RST]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Num: Instruction number</p>
+</li>
+<li>
+<p>RS: Required Stack</p>
+</li>
+<li>
+<p>AS: Acumulated Stack</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>TODO</strong> Explain the marks found in this type of output</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_5_eval_exceptions">44. 2.5 Eval exceptions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_5_1_script_exception">44.1. 2.5.1 Script exception</h3>
+<div class="paragraph">
+<p>To catch eval exceptions or runtime errors it can be done through c++ try/catch,
+Example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-c++" data-lang="c++">	try{
+		zs.evalFile(
+			"file.zs"
+		);
+	}catch(std::exception &amp; ex){
+		fprintf(stderr,"Error:%s\n", ex.what());
+	}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_5_2_user_error">44.2. 2.5.2 User error</h3>
+<div class="paragraph">
+<p>If the user wants to stop virtual machine execution due an unexpected value during part of the
+code, it can call 'System:error' function passing the error message as follows,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">if(n == undefined){
+	System::error("Unexpected error");
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_6_saverestore_state">45. 2.6 Save/Restore state</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ZetScript supports a way to save current compiled state. Save/restore operation is useful when, for instance, user wants to reload a expresions or files and keep previous state.</p>
+</div>
+<div class="sect2">
+<h3 id="_2_6_1_save_state">45.1. 2.6.1 Save state</h3>
+<div class="paragraph">
+<p>To save current state we have to invoke 'ZetScript::saveState'. This function returns an index that
+tells compiled state index saved.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">zs.saveState()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_6_2_clear">45.2. 2.6.2 Clear</h3>
+<div class="paragraph">
+<p>To clear and restore last state saved it&#8217;s done by calling 'ZetScript::clear',</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-zetscript" data-lang="zetscript">zs.clear(i)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>TODO: explain example save/restore state</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. sudo is required when the project is compiled in linux.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. A block is a statement that starts with '{' and ends with '}'
+</div>
+<div class="footnote" id="_footnotedef_3">
+<a href="#_footnoteref_3">3</a>. On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.
+</div>
+<div class="footnote" id="_footnotedef_4">
+<a href="#_footnoteref_4">4</a>. On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 2.0<br>
+Last updated 2023-01-20 19:37:01 +0100
+</div>
+</div>
+</body>
+</html>
