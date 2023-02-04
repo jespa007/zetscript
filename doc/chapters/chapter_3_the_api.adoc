@@ -5,11 +5,32 @@
 
 == the API
 
+=== Bind type
+
+[source,cpp]
+----
+include::../examples/the_api/type/type_bind_type.cpp[]
+----
+
 === Bind function
 
-To bind a function first it has to declare a function with a signature compatible to ZetScript. All, functions will have ZetScript pointer as first parameter, and the others will be built-in types or types defined by the user. 
+To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are built-in types or types binded by the user. 
 
-binding supports *zs_int, zs_int *, zs_float *, bool *, char * and zs_string ** as arguments types. For return values it supports the same basic types as arguments plus *bool, zs_float and zs_string (no pointer)*. Is also possible to pass custom registered types (see section 4.3).
+Example,
+
+
+
+Parameters
+
+ZetScript supports builtin *zs_int, zs_int *, zs_float *, bool *, char * and zs_string ** as arguments types or other types. 
+
+Example,
+
+Return
+
+For return values it supports the same basic types as arguments plus *bool, zs_float and zs_string (no pointer)*. Is also possible to pass custom registered types (see section 4.3).
+
+Example,
 
 Is important to say that ZetScript has a constraint *maximum of 8 parameters* for any C function to be bind in the script engine. If a function more than 8 parameters is tried to be registered, ZetScript will throw an error. To bind C function is done through macro bindFunction. You have to provide the name that will be referenced in script side.
 

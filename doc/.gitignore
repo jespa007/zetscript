@@ -2,4 +2,5 @@
 *.pdf
 *.exe
 *.obj
+examples/the_api/build
 

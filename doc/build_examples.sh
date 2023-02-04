@@ -21,8 +21,15 @@ do
 	done
 done
 
+
 #build output for api examples
-the_api_example_dirs=(function class)
+
+if ! [ -d examples/the_api/build ] 
+then
+	mkdir -p examples/the_api/build
+fi
+
+the_api_example_dirs=(function type)
 
 for i in "${the_api_example_dirs[@]}"
 do
@@ -30,13 +37,11 @@ do
 	for j in $dir
 	do
 		base_file="$(basename $j .cpp)"
-		g++ -std=gnu++0x -Wall -pedantic -O2 "examples/the_api/"$i"/"$base_file".cpp" ../build/gcc/Release/libzetscript-2-0-0-static.a -o "examples/the_api/"$i"/"$base_file$EXTENSION_EXE -I ../src
+		g++ -std=gnu++0x -Wall -pedantic -O2 "examples/the_api/"$i"/"$base_file".cpp" ../build/gcc/Release/libzetscript-2-0-0-static.a -o "examples/the_api/build/"$base_file$EXTENSION_EXE -I ../src
 		if [ $? -eq 0 ] 
 		then
-			"examples/the_api/"$i"/"$base_file > "examples/the_api/"$i"/"$base_file"_out.txt" 
+			"examples/the_api/build/"$base_file > "examples/the_api/"$i"/"$base_file"_out.txt" 
 		fi
-					
-		
 	done
 done
 	
