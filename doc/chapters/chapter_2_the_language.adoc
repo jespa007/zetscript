@@ -2168,6 +2168,31 @@ class TestExtended extends Test{
 ==== Metamethods
 Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
+===== _string()
+
+Returns custom when string operation operation is invoved
+
+*Parameters*
+None
+
+*Returns*
+Custom string defined by user
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_to_string.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_to_string_out.txt[]
+----
+
+
 
 ===== _set(_value)
 
@@ -2193,9 +2218,6 @@ Output:
 ----
 include::../examples/the_language/class/class_metamethod_set_out.txt[]
 ----
-
-If variable is undefined ZetScript will assign reference object, in the case is not
-defined it will do a set operation (if it is implemented). 
 
 ===== _equ(_op1,_op2)
 

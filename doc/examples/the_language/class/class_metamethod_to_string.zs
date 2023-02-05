@@ -2,7 +2,7 @@ class MyNumber{
 	constructor(_n){
  		this.num=_n;
 	}
- 	_string(){
+ 	_toString(){
  		return "Num: "+this.num;
  	}
 };
