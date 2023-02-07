@@ -296,9 +296,19 @@ var j=i--;//j=0;i=-1;
 
 ===== Static functions
 
-====== Integer::parse(_value)
+====== Integer::parse
 
 Converts Float or String to Integer value
+
+[discrete]
+
+[discrete]
+====== Syntax
+
+[source,javascript]
+----
+Integer::parse(_value)
+----
 
 *Parameters*
 
@@ -308,7 +318,8 @@ Converts Float or String to Integer value
 
 Integer parsed from the given value
 
-*Example*
+[discrete]
+====== Example
 
 [source,javascript]
 ----
