@@ -56,10 +56,9 @@ video {
 
 /*custom title with solid line bottom*/
 .discrete{
-	font-weight:600 !important;	
 	color:black !important;
 	border-bottom: solid 1px silver;
-	font-size: 1em !important;
+	font-size: 1.1em !important;
 }
 
 /* DO NOT PUT ANYTHING AFTER THIS LINE OR CSS HAS NOT EFFECT */
