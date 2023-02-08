@@ -392,17 +392,24 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-===== Static functions
+===== Static methods
 
-====== Float::parse(_value)
+====== Float::parse()
 
 Converts Integer or String to Float value
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+Float::parse(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value_ : String or Integer value
 
-*Returns*
++++<u>Returns</u>+++
 
 Float as parsed from given value
 
@@ -462,12 +469,22 @@ Output:
 include::../examples/the_language/string/string_length_out.txt[]
 ----
 
-===== Static functions
+===== Static methods
  
-====== String::format(_string,..._args)
+====== String::format()
 
-Formats a String from a String with a serie of args. The input String has curly brackets (i.e {} ) that specify the argument and/or its format. The description of possible formats are defined below,
+Formats a string from with a serie of args. 
 
+*Syntax*
+
+[source,javascript]
+----
+String::format(_string,..._args)
+----
+
++++<u>Parameters</u>+++
+
+- __string_ : String representation with specified arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format. The argument format is described below,
 
 [cols="1m,3d"]
 |====
@@ -480,13 +497,9 @@ Formats a String from a String with a serie of args. The input String has curly 
 |It replaces argument _n_ padding _m_ spaces on its left
 |====
 
-*Parameters*
-
-- __string_ : String representation with specified arguments and/or its format
-
 - __args_ : variable args to be replaced in the string representation
 
-*Returns*
++++<u>Returns</u>+++
 
 A formated string
 
@@ -504,16 +517,27 @@ Output:
 include::../examples/the_language/string/string_format_out.txt[]
 ----
 
-===== Member functions
+===== Member methods
 
-====== String::insertAt(_position,_value)
+====== String::insertAt()
 
 Inserts string or integer value into String variable at defined position
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::insertAt(_position,_value)
+----
+
++++<u>Parameters</u>+++
 
 - __position_: Position where to insert. The position ranges within 0 to the length-1 of the String
 - __value_: Integer or String value
+
++++<u>Returns</u>+++
+
+None
 
 *Example*
 
@@ -533,11 +557,11 @@ include::../examples/the_language/string/string_insert_at_out.txt[]
 
 Removes the value at defined position
 
-*Parameters*
++++<u>Parameters</u>+++
 
 - __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the String
 
-*Return* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -559,11 +583,18 @@ include::../examples/the_language/string/string_erase_at_out.txt[]
 
 Returns the calling string value converted to uppercase
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::toUpperCase()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns*
++++<u>Returns</u>+++
 
 An string value converted to uppercase
 
@@ -585,11 +616,18 @@ include::../examples/the_language/string/string_to_upper_case_out.txt[]
 
 Returns the calling string value converted to lowercase
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::toLowerCase()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Return* 
++++<u>Returns</u>+++ 
 
 A string value converted to lowercase
 
@@ -611,11 +649,18 @@ include::../examples/the_language/string/string_to_lower_case_out.txt[]
 
 Erases the contents of the string
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::clear()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Return*
++++<u>Returns</u>+++
 
 None 
 
@@ -634,16 +679,23 @@ include::../examples/the_language/string/string_clear_out.txt[]
 ----
 
 
-====== String::replace(_old_string, _new_string)
+====== String::replace()
 
 Returns a string replaced by a replacement 
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::replace(_old_string, _new_string)
+----
+
++++<u>Parameters</u>+++
 
 - __old_string_: The old string to be replaced 
 - __new_string_: The new string to be replaced
 
-*Return* 
++++<u>Returns</u>+++ 
 
 A string where the specified values has been replaced
 
@@ -661,15 +713,22 @@ Output:
 include::../examples/the_language/string/string_replace_out.txt[]
 ----
 
-====== String::split(_separator)
+====== String::split()
 
 Splits the string into a vector of strings using a separator
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::split(_separator)
+----
+
++++<u>Parameters</u>+++
 
 - __separator_ : separator value
 
-*Return* 
++++<u>Returns</u>+++ 
 
 A vector of strings 
 
@@ -687,15 +746,22 @@ Output:
 include::../examples/the_language/string/string_split_out.txt[]
 ----
 
-====== String::contains(_value)
+====== String::contains()
 
 Tells whether a value is contained in the string or not
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::contains(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value_: a value to find
 
-*Return*
++++<u>Returns</u>+++
 
 A boolean value telling if the value exist or not in the string 
 
@@ -713,15 +779,22 @@ Output:
 include::../examples/the_language/string/string_contains_out.txt[]
 ----
 
-====== String::indexOf(_search_value)
+====== String::indexOf()
 
 Returns the position of the first occurrence of a value in a string
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::indexOf(_search_value)
+----
+
++++<u>Parameters</u>+++
 
 - __search_value_ : string to search for
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 - A value >= 0 indicating the position of the first occurrence found
 - -1 if the value is not present.
@@ -740,15 +813,22 @@ Output:
 include::../examples/the_language/string/string_index_of_out.txt[]
 ----
 
-====== String::startsWith(_value)
+====== String::startsWith()
 
 Checks whether a string starts with the specified string passed by value
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::startsWidth(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value_ :  A string representing the value to check for
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 A boolean value telling whether the string starts with the specified value or not
 
@@ -766,15 +846,22 @@ Output:
 include::../examples/the_language/string/string_starts_with_out.txt[]
 ----
 
-====== String::endsWith(_value)
+====== String::endsWith()
 
 Checks whether a string ends with the specified string passed by value
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::endsWidth(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value_ :  A string representing the value to check for
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 A Boolean value telling whether the string ends with the specified string or not
 
@@ -792,16 +879,23 @@ Output:
 include::../examples/the_language/string/string_ends_with_out.txt[]
 ----
 
-====== String::substring(_start_index, _end_index)
+====== String::substring()
 
 Returns a substring of the string value from string within a the start and end indexes
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::substring(_start_index, _end_index)
+----
+
++++<u>Parameters</u>+++
 
 - __start_index_: The index of the first character to include in the returned substring.
 - __end_index_ (optional): The index of the first character to exclude from the returned substring.
 
-*Returns*
++++<u>Returns</u>+++
 
 A string containing the specified part of the given string.
 
@@ -819,15 +913,22 @@ Ouput:
 include::../examples/the_language/string/string_substring_out.txt[]
 ----
 
-====== String::append(_value)
+====== String::append()
 
 Extends the string by appending additional value at the end of its current string.
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+String::append(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value__ : value to be appended
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -844,7 +945,6 @@ Output
 ----
 include::../examples/the_language/string/string_append_out.txt[]
 ----
-
 
 ==== Vector
 
@@ -896,18 +996,25 @@ Output:
 include::../examples/the_language/vector/vector_length_out.txt[]
 ----
 
-===== Properties
+===== Static methods
 
-====== Vector::concat(_v1, _v2)
+====== Vector::concat()
 
 Creates a new vector as a result of merge all elements from two vectors
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+Vector::concat(_v1, _v2)
+----
+
++++<u>Parameters</u>+++
 
 - __v1_ : First vector to concatenate into the new vector
 - __v2_ : Second vector to concatenate into the new vector
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 A new vector as a result of merge all elements from the vectors
 
@@ -926,17 +1033,24 @@ include::../examples/the_language/vector/vector_concat_out.txt[]
 ----
 
 
-===== Member functions
+===== Member methods
 
-====== Vector::push(_value)
+====== Vector::push()
 
 Adds a new element at the end of the vector
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+Vector::push(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value__ : value to be added
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -958,11 +1072,16 @@ include::../examples/the_language/vector/vector_push_out.txt[]
 
 Removes the last element in the vector
 
-*Parameters*
+[source,javascript]
+----
+Vector::pop()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 Last value of the vector before be removed
 
@@ -984,7 +1103,12 @@ include::../examples/the_language/vector/vector_pop_out.txt[]
 
 Inserts element in the vector at defined position
 
-*Parameters*
+[source,javascript]
+----
+Vector::insertAt(_pos,_value)
+----
+
++++<u>Parameters</u>+++
 
 - __position_: Position where to insert. The position ranges within 0 to the length-1 of the vector
 - __value_: value to insert
@@ -1003,15 +1127,20 @@ Output:
 include::../examples/the_language/string/string_insert_at_out.txt[]
 ----
 
-====== Vector::eraseAt(_pos)
+====== Vector::eraseAt()
 
 Removes the value at defined position
 
-*Parameters*
+[source,javascript]
+----
+Vector::eraseAt(_pos)
+----
+
++++<u>Parameters</u>+++
 
 - __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the vector
 
-*Return* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -1033,11 +1162,16 @@ include::../examples/the_language/vector/vector_erase_at_out.txt[]
 
 Clears all elements in the vector
 
-*Parameters*
+[source,javascript]
+----
+Vector::clear()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns*
++++<u>Returns</u>+++
 
 None 
 
@@ -1059,11 +1193,16 @@ include::../examples/the_language/vector/vector_clear_out.txt[]
 
 Concatenates all elements of the vector into a string using a separator
 
-*Parameters*
+[source,javascript]
+----
+Vector::join(_separator)
+----
+
++++<u>Parameters</u>+++
 
 - __separator_ : separator value
 
-*Return* 
++++<u>Returns</u>+++ 
 
 A string of all concatenated vector's elements 
 
@@ -1085,11 +1224,16 @@ include::../examples/the_language/vector/vector_join_out.txt[]
 
 Tells whether a value is contained in the vector or not
 
-*Parameters*
+[source,javascript]
+----
+Vector::contains(_value)
+----
+
++++<u>Parameters</u>+++
 
 - __value_: a value to find
 
-*Return*
++++<u>Returns</u>+++
 
 A boolean value telling if the value exist or not in the vector 
 
@@ -1111,11 +1255,16 @@ include::../examples/the_language/vector/vector_contains_out.txt[]
 
 Extends the calling vector by appending all elements from a vector
 
-*Parameters*
+[source,javascript]
+----
+Vector::extend(_v)
+----
+
++++<u>Parameters</u>+++
 
 - __v_ : Vector type which all elements will appended into the vector
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -1134,7 +1283,7 @@ include::../examples/the_language/vector/vector_extend_out.txt[]
 ----
 
 
-===== Object
+==== Object
 
 Object type is a anonymous container type to store values through attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
 
@@ -1171,17 +1320,22 @@ o.i; // get contens of attribute 'i' by '.'
 o["i"]; // gets the contents of attribute 'i' by '[]'
 ----
 
-===== Static functions
+===== Static methods
 
-====== Object::clear(_o)
+====== Object::clear()
 
 Clears all elements of an object
 
-*Parameters*
+[source,javascript]
+----
+Object::clear(_o)
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns*
++++<u>Returns</u>+++
 
 None 
 
@@ -1203,11 +1357,16 @@ include::../examples/the_language/object/object_clear_out.txt[]
 
 Removes an attribute of an object
 
-*Parameters*
+[source,javascript]
+----
+Object::erase(_key_id)
+----
+
++++<u>Parameters</u>+++
 
 - __key_id_:  The key id of the attribute to remove
 
-*Return* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -1225,15 +1384,20 @@ Output:
 include::../examples/the_language/object/object_erase_out.txt[]
 ----
 
-====== Object::contains(_key_id)
+====== Object::contains()
 
 Tells whether a key is contained in an object or not
 
-*Parameters*
+[source,javascript]
+----
+Object::contains(_key_id)
+----
+
++++<u>Parameters</u>+++
 
 - __key_: a key to find
 
-*Return*
++++<u>Returns</u>+++
 
 A boolean value telling if the attribute with __key_id_ exist or not in the object 
 
@@ -1251,16 +1415,21 @@ Output:
 include::../examples/the_language/object/object_contains_out.txt[]
 ----
 
-====== Object::extend(_o1,_o2)
+====== Object::extend()
 
 Extends an object by the content of other object
 
-*Parameters*
+[source,javascript]
+----
+Object::extend(_o1,_o2)
+----
+
++++<u>Parameters</u>+++
 
 - __o1_ : Object where to be extended
 - __o2_ : Object where to copy the extension
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 None
 
@@ -1278,16 +1447,21 @@ Output:
 include::../examples/the_language/object/object_extend_out.txt[]
 ----
 
-====== Object::concat(_o1, _o2)
+====== Object::concat()
 
 Creates a new object as a result of merge all elements from two objects
 
-*Parameters*
+[source,javascript]
+----
+Object::concat(_o1, _o2)
+----
+
++++<u>Parameters</u>+++
 
 - __o1_ : First object to concatenate into the new object
 - __o2_ : Second object to concatenate into the new object
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 A new object as a result of merge all elements from the two objects
 
@@ -1309,22 +1483,16 @@ include::../examples/the_language/object/object_concat_out.txt[]
 
 Returns a vector of string representing its key names
 
-Parameters
+[source,javascript]
+----
+Object::keys(_o)
+----
 
-''''
-
-The text [.overline]#overline me# is underlined.
-
-Type the word [.userinput]#asciidoctor# into the search bar.
-
-The __kernel qualifier can be used with the __attribute__ keyword...
-
-#`CB###2`# and #`CB###3`#
-
++++<u>Parameters</u>+++ 
 
 - __o_ : Object
 
-*Returns* 
++++<u>Returns</u>+++ 
 
 Returns a vector of string representing its key names
 
@@ -1382,9 +1550,9 @@ a|
 It performs a these operations:
 
 * Add operation between two integer or float values 
-* Concatenates between two strings or other values
-* Concatenates between two vectors 
-* Concatenates between two objects 
+* Concatenates two strings or other values
+* Concatenates two vectors 
+* Concatenates two objects 
 
 |
 [source,javascript]
@@ -1546,11 +1714,11 @@ false \|\| false;// = false
 [source,javascript]
 !true; // = false
 !false; // = true
-!(true || false) // = false 
+!(true \|\| false) // = false 
 !(true && false) // = true
 |====
 
-==== Binary operations
+==== Binary operators
 
 Binary operators combines operations between two integer values. The binary operators are the following,
 
@@ -1605,10 +1773,12 @@ Binary operators combines operations between two integer values. The binary oper
 
 |====
 
-==== Priority operations
-Each operator it has priority of evaluation. ZetScript it has the following operator order priority,
+==== Operator priority
+Each operator it has priority in a evaluation. The priority of each operator in ZetScript is the following,
 
 <<,>>,&,|,^,*,/,%,+,-,in,instanceof,==,!=,>=,\<=,>,<,&&,||
+
+Starting from left to right, the most left operator is the more priority and the most right one the less priority
 
 For example this expression,
 
@@ -1637,9 +1807,11 @@ A conditional statement are used to perform different actions based on different
 
 ==== if-else statement
 
-_If_ statement is used to specify a block of code to be executed if a condition is 'true'.
+_if-else_ statement is used to specify a block of code to be executed if a condition is 'true' or execute a block of code if a condition is 'false'.
 
-Syntax,
+*Syntax*
+
+_if_ statement to execute block of code if the condition is _true_.
 
 [source,javascript]
 ----
@@ -1648,16 +1820,7 @@ if(condition){
 }
 ----
 
-*Example*
-
-
-Output:
-
-''''
-
-It can use _else_ statement  is used to specify a block of code to be executed if the condition is 'false'.
-
-Syntax,
+_if-else_ statement to execute a block of code when the condition is _true_ and a block of code when the condition is _false_.
 
 [source,javascript]
 ----
@@ -1668,16 +1831,7 @@ if(condition) {
 } 
 ----
 
-*Example*
-
-Output:
-
-''''
-
-
-Is also possible to concatenate a series of if-else statement to evaluate a serie of conditions.
-
-Syntax,
+It can concatenamte a series of _if-else_ statement to evaluate a serie of conditions.
 
 [source,javascript]
 ----
@@ -1702,27 +1856,27 @@ Output:
 
 ==== Ternary condition
 
-Use ternary condition to have a short if/else statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
+Use ternary condition to have a short _if-else_ statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
 
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
 result = (condition)?first expression:2nd expression;
 ----
 
-Example,
+*Example*
 
 [source,javascript]
 ----
 var j = 0>1? 0:1; // j = 1
 ----
 
-==== switch
+==== Switch
 
 Switch statement is used to select one of many blocks of code to be executed.
 
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
@@ -1735,23 +1889,29 @@ switch(expression) {
 		break;
 	 	...
 		case value_n
-		default:
+	default:
+		code block
+		break;
+}
+
+// Switch can have common code blocks in different conditions
+switch(expression) {
+	case value_0:
+	case value_1:
+		code block
+		break;
+	case value_1:
+		code block
+		break;
+	 	...
+	case value_n
+	default:
 		code block
 		break;
 }
 ----
 
-Example,
-
-[source,javascript]
-----
-----
-
-Output:
-
-Switch can have common code blocks in different conditions
-
-Example,
+*Example*
 
 [source,javascript]
 ----
@@ -1774,7 +1934,7 @@ ZetScript supports the following loop types,
 
 The while loop loops through a block of code as long as a specified condition is true.
 
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
@@ -1799,7 +1959,7 @@ Output:
 
 do-while loop is always be executed at least once, even if the condition is false, because the code block is executed before the condition is tested:
 
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
@@ -1824,7 +1984,7 @@ Output:
 
 The for loop performs an iteration with 3 optional statements:
 
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
@@ -1837,7 +1997,7 @@ for(stament1;statment2;statment3){
 * Statement 2 defines the condition for running the loop.
 * Statement 3 is executed each time after the code block has been executed.
 
-Example,
+*Example*
 
 [source,javascript]
 ----
@@ -1851,28 +2011,17 @@ for(var i=0; i < 5; i++) {
 
 The loop for-in works as for loop but simplifies the iteration over containers like string, object or vectors. Per each iteration it can  evaluate a value or a pair key-value,
 
-Example,
-
-Syntax using value as iteration result value,
+*Syntax*
 
 [source,javascript]
 ----
+// Syntax using value as iteration result value
 for(var v in vector){
 	// code block to be executed
 }
-----
 
-*Example*
-
-Output:
-
-
-Using a pair key-value as iteration result value,
-
-[source,javascript]
-----
-
-for(var v in vector){
+// Using a pair key-value as iteration result value
+for(var k,v in vector){
 	// code block to be executed
 }
 ----
@@ -2176,67 +2325,25 @@ class TestExtended extends Test{
 ==== Metamethods
 Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
-===== _string()
+===== Static methods
 
-Returns custom when string operation operation is invoved
+===== _equ()
 
-*Parameters*
-None
+Implements _equal_ operator (aka == ) between first operand and second operand
 
-*Returns*
-Custom string defined by user
-
-*Example*
+*Syntax*
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_to_string.zs[]
+_equ(_op1,_op2)
 ----
 
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_to_string_out.txt[]
-----
-
-
-
-===== _set(_value)
-
-Performs a set operation
-
-*Parameters
-
-- __value_ : value to set.
-
-*Returns*
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_set.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_set_out.txt[]
-----
-
-===== _equ(_op1,_op2)
-
-Implements _equal_ operator (aka == ) between first operand and second operand 
-
-*Parameters*
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 and op2 are EQUAL
 - False if op1 and op2 are NOT EQUAL
@@ -2255,16 +2362,23 @@ Output:
 include::../examples/the_language/class/class_metamethod_equ_out.txt[]
 ----
 
-===== _nequ(_op1,_op2)
+===== _nequ()
 
-Implements _not equal_ operator (aka != ) between first operand and second operand 
+Implements _not equal_ operator (aka != ) between first operand and second operand
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_nequ(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 and op2 are NOT EQUAL
 - False if op1 and op2 are EQUAL
@@ -2283,16 +2397,23 @@ Output:
 include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
 ----
 
-===== _lt(_op1,_op2)
+===== _lt()
 
-Implements _less than_ operator (aka < ) between first operand and second operand 
+Implements _less than_ operator (aka < ) between first operand and second operand
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_lt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 is LESS THAN op2
 - False if op1 is GRATHER EQUAL THAN op2
@@ -2311,16 +2432,23 @@ Output:
 include::../examples/the_language/class/class_metamethod_lt_out.txt[]
 ----
 
-===== _lte(_op1,_op2)
+===== _lte()
 
-Implements _less than or equal_ operator (aka <= ) between first operand and second operand 
+Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_lte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 is LESS THAN OR EQUAL op2
 - False if op1 is GRATHER THAN op2
@@ -2339,16 +2467,23 @@ Output:
 include::../examples/the_language/class/class_metamethod_lte_out.txt[]
 ----
 
-===== _gt(_op1,_op2) (aka >)
+===== _gt()
 
-Implements _greather than_ operator (aka > ) between first operand and second operand 
+Implements _greather than_ operator (aka > ) between first operand and second operand
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_gt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 is GREATHER THAN op2
 - False if op1 is LESS OR EQUAL THAN op2
@@ -2367,16 +2502,23 @@ Output:
 include::../examples/the_language/class/class_metamethod_gt_out.txt[]
 ----
 
-===== _gte(_op1,_op2) (aka >=)
+===== _gte(_op1,_op2)
 
-Implements _greather than or equal_ operator (aka >= ) between first operand and second operand 
+Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_gte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-*Returns*
++++<u>Returns</u>+++
 
 - True if op1 is GREATHER THAN OR EQUAL op2
 - False if op1 is LESS THAN op2
@@ -2395,16 +2537,396 @@ Output:
 include::../examples/the_language/class/class_metamethod_gte_out.txt[]
 ----
 
+===== _add()
+
+Implements _add_ operator (aka + ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_add(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of add operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_add.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_add_out.txt[]
+----
+
+===== _div()
+
+Implements _division_ operator (aka / ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_div(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of division operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_div.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_div_out.txt[]
+----
+
+
+===== _mul()
+
+Implements _multiplication_ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_mul(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of multiplication operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mul.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+----
+
+===== _mod()
+
+Implements _modulus_ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_mod(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of modulus operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mod.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+----
+
+===== _and()
+
+Implements _bitwise and_ operator (aka & ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_and(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise and operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_and.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_and_out.txt[]
+----
+
+===== _or()
+
+Implements _bitwise or_ operator (aka | ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_or(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise or operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_or.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_or_out.txt[]
+----
+
+===== _xor()
+
+Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_xor(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise xor operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_xor.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_xor_out.txt[]
+----
+===== _shl()
+
+Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shl(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift left operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shl.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shl_out.txt[]
+----
+
+===== _shr()
+
+Implements _bitwise shift right_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shr(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift right operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shr.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shr_out.txt[]
+----
+
+===== Member methods
+
+====== _toString()
+
+Returns custom when string operation operation is invoved
+
+*Syntax*
+
+[source,javascript]
+----
+_toString()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+Custom string defined by user
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_to_string.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_to_string_out.txt[]
+----
+
+===== _set()
+
+Performs a set operation
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : value to set.
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_set_out.txt[]
+----
 
 ===== _not()
 
 Implements _not_ pre operator (aka !)  
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns*
++++<u>Returns</u>+++
 
 - Boolean value as a result of not operation
 
@@ -2424,13 +2946,20 @@ include::../examples/the_language/class/class_metamethod_not_out.txt[]
 
 ===== _neg()
 
-Implements _negate_ pre operator (aka - ) 
+Implements _negate_ pre operator (aka -a ) 
 
-*Parameters*
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
 
 None
 
-*Returns*
++++<u>Returns</u>+++
 
 - A new object as result of negate operation
 
@@ -2447,345 +2976,563 @@ Output:
 ----
 include::../examples/the_language/class/class_metamethod_not_neg.txt[]
 ----
+
+===== _post_inc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_post_inc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_post_inc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_post_inc_out.txt[]
+----
+
+===== _post_dec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_post_dec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_post_dec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
+----
+
+===== _pre_inc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_inc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_pre_inc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_pre_inc_out.txt[]
+----
+
+===== _pre_dec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_dec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_pre_dec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_pre_dec_out.txt[]
+----
  
-
-===== _add(_op1,_op2)
-
-Implements _add_ operator (aka + ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of add operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_add.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_add_out.txt[]
-----
-
-===== _div(_op1,_op2)
-
-Implements _division_ operator (aka / ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of division operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_div.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_div_out.txt[]
-----
-
-
-===== _mul(_op1,_op2)
-
-Implements _multiplication_ operator (aka * ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of multiplication operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_mul.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_mul_out.txt[]
-----
-
-===== _mod(_op1,_op2)
-
-Implements _modulus_ operator (aka * ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of modulus operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_mod.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_mul_out.txt[]
-----
-
-===== _and(_op1,_op2)
-
-Implements _bitwise and_ operator (aka & ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of bitwise and operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_and.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_and_out.txt[]
-----
-
-===== _or(_op1,_op2)
-
-
-Implements _bitwise or_ operator (aka | ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of bitwise or operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_or.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_or_out.txt[]
-----
-
-===== _xor(_op1,_op2)
-
-
-Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of bitwise xor operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_xor.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_xor_out.txt[]
-----
-===== _shl(_op1,_op2)
-
-Implements _bitwise shift left_ operator (aka << ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of bitwise shift left operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_shl.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_shl_out.txt[]
-----
-
-
-===== _shr (aka >>)
-
-
-Implements _bitwise shift right_ operator (aka << ) between first operand and second operand 
-
-*Parameters*
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-*Returns*
-
-- A new object as a result of bitwise shift right operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_shr.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_shr_out.txt[]
-----
-
-
 ==== Custom properties
 
-A custom property is a member that defines a set of metamethods that to operate with.
+A custom property is and special property that operates with a set of metamethods.
 
-_get
-_set
-_neg
-_not
-_post_inc
-_post_dec
-_pre_inc
-_pre_dec
+*Syntax*
+
+[source,javascript]
+----
+class ClassWithVirtualProperty{
+
+	// custom property
+	prop{
+			...
+	}
+
+}
+----
+
+==== Member methods
+
+===== _get()
+
+Performs a get operation
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+None
+
++++<u>Returns</u>+++
+
+Returns the value of this property
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+----
+
+===== _set()
+
+Performs a set operation
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : value to set.
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+----
+
+===== _not()
+
+Implements _not_ pre operator (aka !)  
+
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- Boolean value as a result of not operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_not.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_not_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A new object as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_negt.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_not_neg.txt[]
+----
+
+===== _post_inc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_post_inc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_post_inc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_post_inc_out.txt[]
+----
+
+===== _post_dec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_post_dec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_post_dec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_post_dec_out.txt[]
+----
+
+===== _pre_inc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_inc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_pre_inc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_pre_inc_out.txt[]
+----
+
+===== _pre_dec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_dec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_pre_dec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_pre_dec_out.txt[]
+----
 
 
 === Modules
 
-Zetscript implements the following modules,
-
-* Console
-* System
-* Math
-* Json
-* DateTime
-
-
 ==== Console
 
-Console module exposes the following set of functions,
+`Console` module implements a set of functions for console
 
-* outln
-* errorln
-* readChar
+===== Console::out()
 
-===== Console::outln
-
-Console::outln prints message to the console.
-
-Syntax,
+Prints message to the console with a ending carry return
 
 [source,zetscript]
-Console::outln(object,...args)
+Console::out(_value,..._args)
 
-If _object_ is constant string it can be formated (see in table X.X)
++++<u>Parameters</u>+++
 
-Example,
+- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+
++++<u>Returns</u>+++
+
+*Example*
 
 [source,zetscript]
 ----
- // prints 'Hello world'
- Console::outln("Hello world");
- 
- // prints 'Score:0001'
- Console::outln("Score:{0:d4}",1);  
-  
+include::../examples/the_language/console/console_out.zs[]
 ----
 
-===== Console::errorln
+Output:
 
-Console::errorln prints an error message to the console.
+[source,txt]
+----
+include::../examples/the_language/console/console_out_out.txt[]
+----
 
-Syntax,
+
+===== Console::outln()
+
+Prints message to the console with a ending carry return
+
+*Syntax*
 
 [source,zetscript]
-Console::errorln(object,...args)
+Console::outln(_value,..._args)
 
-If _object_ is constant string it can be formated (see in table X.X)
++++<u>Parameters</u>+++
 
-Example,
+- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+
++++<u>Returns</u>+++
+
+*Example*
 
 [source,zetscript]
 ----
- // prints 'Error'
- Console::errorln("Error");
- 
- // prints 'Error:02'
- Console::outln("Error:{0:d2}",2);  
-  
+include::../examples/the_language/console/console_outln.zs[]
 ----
 
-===== Console::readChar
+Output:
 
-Console::readChar it waits untill reads a character from console
+[source,txt]
+----
+include::../examples/the_language/console/console_outln_out.txt[]
+----
 
-Syntax,
+===== Console::error()
+
+Prints error message to the console
+
+[source,zetscript]
+Console::out(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+
++++<u>Returns</u>+++
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_error.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_error_out.txt[]
+----
+
+===== Console::errorln()
+
+Prints error message to the console with a ending carry return
+
+*Syntax*
+
+[source,zetscript]
+Console::outln(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+
++++<u>Returns</u>+++
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_errorln.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_errorln_out.txt[]
+----
+
+===== Console::readChar()
+
+it waits untill reads a character from console
+
+*Syntax*
 
 [source,zetscript]
 Console::readChar()
 
-Example,
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+The integer as the equivalent character readed from console
+
+*Example*
 
 [source,zetscript]
 ----
@@ -2797,18 +3544,11 @@ Example,
   
 ----
 
-
 ==== System
 
-System module exposes the following set of functions,
+`System` module implements a set of functions for system
 
-* clock
-* eval
-* assert
-* error
-
-
-===== Clock
+===== System::clock()
 
 Returns the amount of time in milliseconds
 
@@ -2821,135 +3561,677 @@ Example,
 
 [source,zetscript]
 ----
- var start=System::clock()
-
- // waste some time...
- for(var i=0;i<1000; i++){
- }
-
- // print elapsed time in milliseconds
- Console::outln("Elapsed time: {0} ms",System::clock()-start_time)
+include::../examples/the_language/system/system_clock.zs[]
 ----
 
-===== Eval
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_clock_out.txt[]
+----
+
+===== System::eval
+
+Evals a expression
+
+Syntax,
+
+[source,zetscript]
+System::eval(_string,..._args)
+
+Example,
 
 
-===== Assert
+[source,zetscript]
+----
+include::../examples/the_language/system/system_eval.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_eval_out.txt[]
+----
+
+===== System::assert()
+
+Evals an assert and raise an error if the condition is false
+
+*Syntax*
+
+[source,zetscript]
+System::assert(_condition,_string)
+
+Example,
 
 
-===== Error
+[source,zetscript]
+----
+include::../examples/the_language/system/system_assert.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_assert_out.txt[]
+----
+
+===== System::error
+
+Raises an error by user
+
+Syntax,
+
+[source,zetscript]
+System::error(_string,..._args)
+
+Example,
 
 
+[source,zetscript]
+----
+include::../examples/the_language/system/system_error.zs[]
+----
 
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_error_out.txt[]
+----
 
 ==== Math
 
-Math module exposes the following set of static members,
+`Math` module implements a set of methods and properties related with maths
 
-* PI: PI number (i.e 3.14159265359)
+===== Static member properties
 
-Math module exposes the following set of static functions,
+====== Math::PI
 
-* sin
-* cos
-* abs
-* pow
-* degToRad
-* random
-* max
-* min
-* sqrt
-* floor
-* ceil
-* round
+The number PI
 
+*Syntax*
 
-===== Math::sin
+[source,zetscript]
+Math::PI
 
-===== Math::cos
+*Example*
 
-===== Math::abs
+[source,zetscript]
+----
+include::../examples/the_language/math/math_pi.zs[]
+----
 
-===== Math::pow
+Output:
 
-===== Math::degToRad
+[source,txt]
+----
+include::../examples/the_language/math/math_pi.txt[]
+----
 
-===== Math::random
+===== Static methods
 
-===== Math::max
+====== Math::sin()
 
-===== Math::min
+Performs a sinus
 
-===== Math::sqrt
+*Syntax*
 
-===== Math::floor
+[source,zetscript]
+Math::sin(_value)
 
-===== Math::ceil
+*Example*
 
-===== Math::round
+[source,zetscript]
+----
+include::../examples/the_language/math/math_sin.zs[]
+----
 
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_sin_out.txt[]
+----
+
+====== Math::cos()
+
+Performs a cosinus
+
+*Syntax*
+
+[source,zetscript]
+Math::cos(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_cos.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_cos_out.txt[]
+----
+
+====== Math::abs()
+
+Performs a absolute
+
+*Syntax*
+
+[source,zetscript]
+Math::abs(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_abs.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_abs_out.txt[]
+----
+
+====== Math::pow()
+
+Performs a power
+
+*Syntax*
+
+[source,zetscript]
+Math::pow(_base,_pow)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_pow.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_pow_out.txt[]
+----
+
+====== Math::degToRad()
+
+Converts degres to radiants
+
+*Syntax*
+
+[source,zetscript]
+Math::degToRad(_degres)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_deg_to_rad.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_deg_to_rad.txt[]
+----
+
+====== Math::random()
+
+Returns random float number between [0..1)
+
+*Syntax*
+
+[source,zetscript]
+Math::random()
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_random.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_random_out.txt[]
+----
+
+====== Math::max()
+
+Returns maximmum of two input values
+
+*Syntax*
+
+[source,zetscript]
+Math::max(_v1,_v2)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_max.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_max_out.txt[]
+----
+
+====== Math::min()
+
+Returns minimmum of two input values
+
+*Syntax*
+
+[source,zetscript]
+Math::min(_v1,_v2)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_min.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_min_out.txt[]
+----
+
+====== Math::sqrt()
+
+Performs the sqrt of input value
+
+*Syntax*
+
+[source,zetscript]
+Math::sqrt(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_sqrt.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_sqrt_out.txt[]
+----
+
+====== Math::floor()
+
+Returns the floor of input value
+
+*Syntax*
+
+[source,zetscript]
+Math::floor(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_floor.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_floor_out.txt[]
+----
+
+====== Math::ceil()
+
+Returns the ceil of input value
+
+*Syntax*
+
+[source,zetscript]
+Math::ceil(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_ceil.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_ceil_out.txt[]
+----
+
+====== Math::round()
+
+Returns the round of input value
+
+*Syntax*
+
+[source,zetscript]
+Math::round(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_round.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_round_out.txt[]
+----
 
 ==== Json
 
-Json exposes the following set of static members,
+`Json` module implements a set of methods to serialize and deserialize json format from/to zetscript types
 
-* serialize
-* deserialize
+===== Json::serialize()
 
-===== Json::serialize
+Serializes value or variable to json string
 
-===== Json::serialize
+*Syntax*
+
+[source,zetscript]
+Json::serialize(_value)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/json/json_serialize.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/json/json_serialize_out.tx[]
+----
+
+===== Json::deserialize()
+
+Deserializes json string to variable
+
+*Syntax*
+
+[source,zetscript]
+Json::deserialize(_string)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/json/json_deserialize.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/json/json_deserialize_out.tx[]
+----
 
 ==== DateTime
 
-Json exposes the following set of member variables,
+===== Operations
+ 
+====== _add
 
-//-> maybe a table
+Perform add operation (aka +) between two objects type DateTime
 
-* week_day (zs_int): The week's day
-* month_day (zs_int): The month's day
-* year_day (zs_int): The year's day
+*Example*
 
-* second (zs_int): seconds
-* minute (zs_int): minutes
-* hour (zs_int): hours
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_metamethods_add.zs[]
+----
 
-* day (zs_int): day
-* month (zs_int):month
-* year (zs_int): year
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_metamethods_add_out.txt[]
+----
+
+====== _sub
+
+Perform sub (aka -)  operation between two objects type DateTime
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_metamethods_sub.zs[]
+----
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_metamethods_sub_out.txt[]
+----
+
+====== _toString
+
+Returns formatted date
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_metamethods_to_string.zs[]
+----
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_metamethods_to_string_out.txt[]
+----
 
 
-Json exposes the following set of member functions,
+===== Member properties
 
-* addSeconds
-* addMinutes
-* addHours
-* addDays
-* addMonths
-* addYears
+Datetime has the following memeber properties,
 
-Json exposes the following set of member metamethods,
+[cols="1m,3d"]
+|====
+|Variable |description
+|week_day
+|The week's day
+|month_day
+|The month's day
+|year_day
+|The year's day
+|second
+|seconds
+|minute
+|minutes
+|hour 
+|hours
+|day
+|day
+|month
+|month
+|year
+|year
+|====
 
-* _add
-* _sub
-* _toString
+*Example*
 
-===== DateTime::addSeconds
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_member_properties.zs[]
+----
 
-===== DateTime::addMinutes
+Output:
 
-===== DateTime::addHours
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_member_properties_out.txt[]
+----
 
-===== DateTime::addDays
+===== Member methods
 
-===== DateTime::addMonths
+====== DateTime::addSeconds()
 
-===== DateTime::addYears
+Adds seconds to datetime object
 
-===== DateTime::_add
+*Syntax*
 
-===== DateTime::_sub
+[source,zetscript]
+DateTime::addSeconds(_seconds)
 
-===== DateTime::_toString
+*Example*
 
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_seconds.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_seconds_out.txt[]
+----
+
+====== DateTime::addMinutes()
+
+Adds minutes to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addMinutes(_minutes)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_minutes.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_minutes_out.txt[]
+----
+
+
+====== DateTime::addHours()
+
+Adds hours to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addHours(_hours)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_hours.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_hours_out.txt[]
+----
+
+====== DateTime::addDays()
+
+Adds days to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addDays(_days)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_days.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_days_out.txt[]
+----
+
+====== DateTime::addMonths()
+
+Adds months to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addMonths(_months)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_months.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_months_out.txt[]
+----
+
+====== DateTime::addYears()
+
+Adds years to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addYears(_years)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_years.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_years_out.txt[]
+----
 
