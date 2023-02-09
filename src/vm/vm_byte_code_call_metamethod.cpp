@@ -43,7 +43,7 @@ namespace zetscript{
 					vm_create_shared_script_object(_vm,so_string);\
 					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 					return true;
-			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)\
 						&&\
 					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 			){\
@@ -55,7 +55,7 @@ namespace zetscript{
 					vm_create_shared_script_object(_vm,script_object);\
 					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
 					return true;
-			}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+			}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op1)\
 						&&\
 					STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
 			){\
@@ -307,7 +307,7 @@ namespace zetscript{
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
-			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)\
 						&&\
 					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 			){\

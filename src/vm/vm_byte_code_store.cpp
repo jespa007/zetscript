@@ -76,7 +76,7 @@ namespace zetscript{
 			}
 		}else if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
 			stk_mp_aux=(StackMemberProperty *)stk_dst->value;\
-			if(stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
+			if(stk_mp_aux->member_property!=NULL && stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
