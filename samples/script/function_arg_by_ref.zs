@@ -1,5 +1,5 @@
 class A{
-	_toString(){
+	_to_string(){
 		return "custom string";
 	}
 };

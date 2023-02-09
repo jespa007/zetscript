@@ -230,7 +230,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
 			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "+=";		// _set_add
 			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "-=";		// _set_sub
-			case 	BYTE_CODE_METAMETHOD_MUL_SET:   return  "*=";		// _mul_set
+			case 	BYTE_CODE_METAMETHOD_MUL_SET:   return  "*=";		// _mulset
 			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "/=";		// _set_div
 			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "%=";		// _set_mod
 			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "&=";		// _set_and
@@ -240,7 +240,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  ">>=";		// _set_shr
 			case	BYTE_CODE_METAMETHOD_BTW_SET:	return  "~=";		// _set_btw
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
-			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
+			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_to_string";// _to_string
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "++";		// i++
 			case 	BYTE_CODE_METAMETHOD_POST_DEC: 	return  "--";		//  i--
 			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "++";		// ++i
@@ -276,24 +276,24 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// bitwise shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// bitwise shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
-			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_add_set";	// _set_add
-			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_sub_set";	// _set_sub
-			case	BYTE_CODE_METAMETHOD_MUL_SET:	return  "_mul_set";	// _mul_set
-			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_div_set";	// _set_div
-			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_mod_set";	// _set_mod
-			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_and_set";	// _set_and
-			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "_or_set"; 	// _set_or
-			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "_xor_set";	// _set_xor
-			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "_shl_set";	// _set_shl
-			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  "_shr_set";	// _set_shr
+			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_addset";	// _set_add
+			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_subset";	// _set_sub
+			case	BYTE_CODE_METAMETHOD_MUL_SET:	return  "_mulset";	// _mulset
+			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_divset";	// _set_div
+			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_modset";	// _set_mod
+			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_andset";	// _set_and
+			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "_orset"; 	// _set_or
+			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "_xorset";	// _set_xor
+			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "_shlset";	// _set_shl
+			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  "_shrset";	// _set_shr
 			case	BYTE_CODE_METAMETHOD_BTW_SET:	return  "_btw_set";	// _set_btw
 
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
-			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
-			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "_post_inc";// i++
-			case 	BYTE_CODE_METAMETHOD_POST_DEC:	return  "_post_dec";// i--
-			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "_pre_inc";	// ++i
-			case 	BYTE_CODE_METAMETHOD_PRE_DEC:	return  "_pre_dec";	// --i
+			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_to_string";// _to_string
+			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "_postinc";// i++
+			case 	BYTE_CODE_METAMETHOD_POST_DEC:	return  "_postdec";// i--
+			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "_preinc";	// ++i
+			case 	BYTE_CODE_METAMETHOD_PRE_DEC:	return  "_predec";	// --i
 			case 	BYTE_CODE_METAMETHOD_IN: 		return  "_in";		// 	_in
 		}
 

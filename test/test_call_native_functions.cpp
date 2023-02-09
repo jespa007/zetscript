@@ -435,8 +435,8 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	_zs->bindMemberFunction<ClassC>("newNum",ClassCWrap_newNum);
 
 	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
-	_zs->bindMemberFunction<Num>("_pre_inc",NumWrap_pre_increment);
-	_zs->bindMemberFunction<Num>("_pre_dec",NumWrap_pre_decrement);
+	_zs->bindMemberFunction<Num>("_preinc",NumWrap_pre_increment);
+	_zs->bindMemberFunction<Num>("_predec",NumWrap_pre_decrement);
 
 	_zs->bindMemberPropertyGetter<Num>("x",NumWrap_x_getter);
 	_zs->bindMemberFunction<Num>("setPosition",NumWrap_setPosition);

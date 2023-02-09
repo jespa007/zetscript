@@ -418,7 +418,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(name_script_function == "_post_inc"){
+					}else if(name_script_function == "_postinc"){
 						if(mp->metamethod_members.post_inc==NULL){
 							mp->metamethod_members.post_inc=symbol;
 						}else{
@@ -429,7 +429,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(name_script_function == "_post_dec"){
+					}else if(name_script_function == "_postdec"){
 						if(mp->metamethod_members.post_dec==NULL){
 							mp->metamethod_members.post_dec=symbol;
 						}else{
@@ -440,7 +440,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(name_script_function == "_pre_inc"){
+					}else if(name_script_function == "_preinc"){
 						if(mp->metamethod_members.pre_inc==NULL){
 							mp->metamethod_members.pre_inc=symbol;
 						}else{
@@ -451,7 +451,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(name_script_function == "_pre_dec"){
+					}else if(name_script_function == "_predec"){
 						if(mp->metamethod_members.pre_dec==NULL){
 							mp->metamethod_members.pre_dec=symbol;
 						}else{

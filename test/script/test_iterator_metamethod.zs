@@ -8,7 +8,7 @@ class CustomObjectIterator{
 		return this.cv.data[this.idx]
 	}
 	
-	_post_inc(){
+	_postinc(){
 		if(this._end() == false){
 			this.idx++;
 		}

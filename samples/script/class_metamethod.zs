@@ -41,12 +41,12 @@ class Vector2{
 				,v1.y+v2.y);
 	}
 	
-	_post_inc(){
+	_postinc(){
 		this.x++;
 		this.y++;
 	}
 
-	_toString(){ // a way to have a custom string output
+	_to_string(){ // a way to have a custom string output
 		return "["+this.x+","+this.y+"]";
 	}
 };

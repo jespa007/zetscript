@@ -11,7 +11,7 @@ class MyNumber{
  			error("parameter not supported");
  		}
  	}
- 	_toString(){
+ 	_to_string(){
  		return "Num:"+this.num;
  	}
 };

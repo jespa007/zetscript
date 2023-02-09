@@ -102,8 +102,8 @@ namespace zetscript{
 				return false;
 			}
 
-			if(sc->getSymbolMemberFunction("_post_inc")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName());
+			if(sc->getSymbolMemberFunction("_postinc")==NULL){
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_postinc' function",obj->getTypeName());
 				return false;
 			}
 
