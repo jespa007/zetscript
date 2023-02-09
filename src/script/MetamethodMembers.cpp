@@ -18,7 +18,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_XOR_SET
 			,BYTE_CODE_METAMETHOD_SHL_SET
 			,BYTE_CODE_METAMETHOD_SHR_SET
-			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
+			,BYTE_CODE_METAMETHOD_EQU //--> BYTE_CODE_METAMETHOD_EQU is special mark defined as 0 (end of elements)
 	};
 
 	const ByteCodeMetamethod MetamethodMembers::byte_code_metamethod_member_list[]={
@@ -38,7 +38,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_POST_DEC
 			,BYTE_CODE_METAMETHOD_PRE_INC
 			,BYTE_CODE_METAMETHOD_PRE_DEC
-			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
+			,BYTE_CODE_METAMETHOD_EQU //--> BYTE_CODE_METAMETHOD_EQU is special mark defined as 0  (end of elements)
 	};
 
 	MetamethodMembers::MetamethodMembers(){

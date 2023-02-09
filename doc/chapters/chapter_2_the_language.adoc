@@ -2193,56 +2193,95 @@ include::../examples/the_language/function/function_parameter_by_reference_out.t
 
 === Class
 
-A class is a custom type that contains variables and functions that operates with its variables. 
+A class is a template for create objects wiith its own variables and methods. A class is defined using keyword _class_ followed by the name. 
 
-Example,
+A class is a type of structure that contains properties and methods that operates with this properties. A class is defined in ZetScript using keyword class followed by the name of class. To access class properties within methods use the this keyword in
+order to access to propertie or methods inside class. In a class we can find member methods (methods that affects to class property) or static methods (helper method of generic purposes about the class type). 
 
-[source,javascript]
-----
-class Test{
-
-};
-----
-
-A class is defined using keyword _class_ followed by the name. To access member variables and functions it uses _this_ keyword. 
-
-Example,
+*Syntax*
 
 [source,javascript]
 ----
 class Test{
-
-   member_function(){
-        this.a=0; // member variable
-        
-        this.member_function
-
-
+	// initialized member property
+	var num1=10;
+	
+	// constructor
+	constructor(){
+		this.num2=20; // creates and initiales variable
+	}
+	
+	// member function
+	add(_op1){
+		this.num1 =a;
+		Console::outln("function1:"+this.data1);
+		return this.property;
+	}
+	// static function that performs an add operation between two Test type objects
+	function add_test (a,b){
+	return a.data1+b.data1;
+	}
 };
 ----
 
-In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
+Within a class we can find the following,
+
+- Class instantiation
+- Inicialization
+- Member properties 
+- Member methods
+- Const properties
 
 
+==== Class instantiantion
 
-==== Members
+A class instantiation is done through the keyword _new_
 
-Functions and variable members
-
-bla bla bla
-
-==== Instance class
-
-To instance a class is done through the keyword new
-
-Example,
+*Example*
 
 [source,javascript]
 var t = new Test(); // Instantiate t as Test type.
 
-==== Accessing to class functions
+==== Member initialization
 
-To access class variables/functions is done through "." operator.
+In a class the first thing that it happens is initialization, if initialization does not ocur, then all member properties will be defined. Member initialization can be done through _constructor_ method or via initialize properties
+
+===== Constructor
+
+The constructor method is a special method that aims to execute when class is instanced. The definition and initialization of a member property is done through a keyword _this_. 
+
+*Example*
+[source,javascript]
+----
+class Test{
+
+ 	// Constructor method
+	constructor(){
+		this.a=0; // initialize field a=0
+ 	}
+}
+----
+
+
+===== Property initialization
+
+A property initialization is a way to define and initialize properties outside of _constructor_ 
+
+*Example*
+[source,javascript]
+----
+class Test{
+ 	
+ 	var a=0
+ 	
+}
+----
+
+
+
+==== Member methods
+
+Member methods are methods defined in the class. The method can acceded throught To access class variables/functions is done through "." operator.
 
 Example,
 
@@ -2251,26 +2290,6 @@ Example,
 var i=t.function1(2); // initializes data1 as 2 and return the value
 ----
 
-==== Constructor
-
-Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
-
-[source,javascript]
-print("data1:"+t.data1); //  prints: data1:undefined"
-
-The constructor is a function that is invoked automatically and with aim to initialize all member variables. To the define a constructor we have to define a function member with same name as the Class.
-
-Example,
-
-[source,javascript]
-----
-class Test{
- 	// Constructor function
-	constructor(){
- 		this.data1 =10; // instantiate data1 as integer
- 	}
-}
-----
 
 ==== Post declare function member
 

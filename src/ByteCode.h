@@ -264,6 +264,7 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_XOR_SET, // set '^='
 		BYTE_CODE_METAMETHOD_SHL_SET, // set '<<'
 		BYTE_CODE_METAMETHOD_SHR_SET, // set '>>'
+		BYTE_CODE_METAMETHOD_BTW_SET, // set '~'
 
 		//BYTE_CODE_METAMETHOD_GET, // get '='
 		BYTE_CODE_METAMETHOD_NOT, // !
