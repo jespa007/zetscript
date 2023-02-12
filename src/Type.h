@@ -10,6 +10,7 @@
 #define ZS_TYPE_NAME_BOOL 						"Boolean"
 #define ZS_TYPE_NAME_STACK_ELEMENT 				"StackElement"
 #define ZS_TYPE_NAME_FLOAT 						"Float"
+#define ZS_TYPE_NAME_FUNCTION					"Function"
 #define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
 #define ZS_TYPE_NAME_OBJECT_STRING 				"String"
 #define ZS_TYPE_NAME_OBJECT_VECTOR 				"Vector"

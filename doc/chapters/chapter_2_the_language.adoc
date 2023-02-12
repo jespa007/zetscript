@@ -294,7 +294,7 @@ var i=0;
 var j=i--;//j=0;i=-1;
 |====
 
-===== Static methods
+===== Static functions
 
 ====== Integer::parse()
 
@@ -392,7 +392,7 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-===== Static methods
+===== Static functions
 
 ====== Float::parse()
 
@@ -469,7 +469,7 @@ Output:
 include::../examples/the_language/string/string_length_out.txt[]
 ----
 
-===== Static methods
+===== Static functions
  
 ====== String::format()
 
@@ -517,7 +517,7 @@ Output:
 include::../examples/the_language/string/string_format_out.txt[]
 ----
 
-===== Member methods
+===== Member functions
 
 ====== String::insertAt()
 
@@ -996,7 +996,7 @@ Output:
 include::../examples/the_language/vector/vector_length_out.txt[]
 ----
 
-===== Static methods
+===== Static functions
 
 ====== Vector::concat()
 
@@ -1033,7 +1033,7 @@ include::../examples/the_language/vector/vector_concat_out.txt[]
 ----
 
 
-===== Member methods
+===== Member functions
 
 ====== Vector::push()
 
@@ -1320,11 +1320,13 @@ o.i; // get contens of attribute 'i' by '.'
 o["i"]; // gets the contents of attribute 'i' by '[]'
 ----
 
-===== Static methods
+===== Static functions
 
 ====== Object::clear()
 
 Clears all elements of an object
+
+*Syntax*
 
 [source,javascript]
 ----
@@ -1333,7 +1335,7 @@ Object::clear(_o)
 
 +++<u>Parameters</u>+++
 
-None
+- __o_: The object to clear elements
 
 +++<u>Returns</u>+++
 
@@ -1357,6 +1359,8 @@ include::../examples/the_language/object/object_clear_out.txt[]
 
 Removes an attribute of an object
 
+*Syntax*
+
 [source,javascript]
 ----
 Object::erase(_key_id)
@@ -1364,6 +1368,7 @@ Object::erase(_key_id)
 
 +++<u>Parameters</u>+++
 
+- __o_: The object to erase element
 - __key_id_:  The key id of the attribute to remove
 
 +++<u>Returns</u>+++ 
@@ -1388,6 +1393,8 @@ include::../examples/the_language/object/object_erase_out.txt[]
 
 Tells whether a key is contained in an object or not
 
+*Syntax*
+
 [source,javascript]
 ----
 Object::contains(_key_id)
@@ -1395,6 +1402,7 @@ Object::contains(_key_id)
 
 +++<u>Parameters</u>+++
 
+- __o_: The object to check
 - __key_: a key to find
 
 +++<u>Returns</u>+++
@@ -1418,6 +1426,8 @@ include::../examples/the_language/object/object_contains_out.txt[]
 ====== Object::extend()
 
 Extends an object by the content of other object
+
+*Syntax*
 
 [source,javascript]
 ----
@@ -1451,6 +1461,8 @@ include::../examples/the_language/object/object_extend_out.txt[]
 
 Creates a new object as a result of merge all elements from two objects
 
+*Syntax*
+
 [source,javascript]
 ----
 Object::concat(_o1, _o2)
@@ -1483,6 +1495,8 @@ include::../examples/the_language/object/object_concat_out.txt[]
 
 Returns a vector of string representing its key names
 
+*Syntax*
+
 [source,javascript]
 ----
 Object::keys(_o)
@@ -1490,11 +1504,11 @@ Object::keys(_o)
 
 +++<u>Parameters</u>+++ 
 
-- __o_ : Object
+- __o_ : Object from get the keys
 
 +++<u>Returns</u>+++ 
 
-Returns a vector of string representing its key names
+A vector of strings of its key names
 
 *Example*
 
@@ -1513,17 +1527,60 @@ include::../examples/the_language/object/object_keys_out.txt[]
 
 ==== Function
 
-Function type is a anonymous function object to be assigned. A variable is initialized as _Function_ once it assings an anonymous function (see section X.XX)
+Function type is a type that contains function information to be invoqued at some place through paranthesis (). A variable is initialized as _Function_ once it assings an a function or anonymous function
 
-Example,
+*Example*
+
+Assing normal function to variable
 
 [source,javascript]
 ----
-var f=function(){
-	Console::outln("Call from function object")
+
+// function add
+function add(_a,_b){
+	return _a+_b
+}
+
+// function add assigned to fun
+var fun=add;
+
+...
+
+Console::outln(fun(5,5)); // it prints "10"
+
+----
+
+Also it assing anonymous function to variable
+
+[source,javascript]
+----
+
+// anonymous function assigned to fun
+var fun=function(_a,_b){
+	return _a+_b
 };
 
-f(); // it prints "Call from function object"
+...
+
+Console::outln(fun(5,5)); // it prints "10"
+----
+
+==== The typeof operator
+
+The _typeof_ operator returns the type of operand's value.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/object/object_keys.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/object/object_keys_out.txt[]
 ----
 
 
@@ -2298,10 +2355,10 @@ include::../examples/the_language/function/function_parameter_by_reference_out.t
 
 === Class
 
-A class is a template for create objects wiith its own variables and methods. A class is defined using keyword _class_ followed by the name. 
+A class is a template for create objects wiith its own variables and functions. A class is defined using keyword _class_ followed by the name. 
 
-A class is a type of structure that contains properties and methods that operates with this properties. A class is defined in ZetScript using keyword class followed by the name of class. To access class properties within methods use the this keyword in
-order to access to propertie or methods inside class. In a class we can find member methods (methods that affects to class property) or static methods (helper method of generic purposes about the class type). 
+A class is a type of structure that contains properties and functions that operates with this properties. A class is defined in ZetScript using keyword class followed by the name of class. To access class properties within functions use the this keyword in
+order to access to propertie or functions inside class. In a class we can find member functions (functions that affects to class property) or static functions (helper function of generic purposes about the class type). 
 
 *Syntax*
 
@@ -2334,7 +2391,7 @@ Within a class we can find the following,
 - Class instantiation
 - Inicialization
 - Member properties 
-- Member methods
+- Member functions
 - Const properties
 
 
@@ -2349,18 +2406,18 @@ var t = new Test(); // Instantiate t as Test type.
 
 ==== Member initialization
 
-In a class the first thing that it happens is initialization, if initialization does not ocur, then all member properties will be defined. Member initialization can be done through _constructor_ method or via initialize properties
+In a class the first thing that it happens is initialization, if initialization does not ocur, then all member properties will be defined. Member initialization can be done through _constructor_ function or via initialize properties
 
 ===== Constructor
 
-The constructor method is a special method that aims to execute when class is instanced. The definition and initialization of a member property is done through a keyword _this_. 
+The constructor function is a special function that aims to execute when class is instanced. The definition and initialization of a member property is done through a keyword _this_. 
 
 *Example*
 [source,javascript]
 ----
 class Test{
 
- 	// Constructor method
+ 	// Constructor function
 	constructor(){
 		this.a=0; // initialize field a=0
  	}
@@ -2384,9 +2441,9 @@ class Test{
 
 
 
-==== Member methods
+==== Member functions
 
-Member methods are methods defined in the class. The method can acceded throught To access class variables/functions is done through "." operator.
+Member functions are functions defined in the class. The function can acceded throught To access class variables/functions is done through "." operator.
 
 Example,
 
@@ -2446,10 +2503,10 @@ class TestExtended extends Test{
 }; 
 ----
 
-==== Metamethods
-Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+==== Metafunctions
+Metafunctions are special functions members that links with operators seen on section section 3.6. ZetScript metafunctions can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
-===== Static methods
+===== Static functions
 
 ===== _equ()
 
@@ -2476,14 +2533,14 @@ _equ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_equ.zs[]
+include::../examples/the_language/class/class_metafunction_equ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_equ_out.txt[]
+include::../examples/the_language/class/class_metafunction_equ_out.txt[]
 ----
 
 ===== _nequ()
@@ -2511,14 +2568,14 @@ _nequ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_nequ.zs[]
+include::../examples/the_language/class/class_metafunction_nequ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
+include::../examples/the_language/class/class_metafunction_nequ_out.txt[]
 ----
 
 ===== _lt()
@@ -2546,14 +2603,14 @@ _lt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_lt.zs[]
+include::../examples/the_language/class/class_metafunction_lt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_lt_out.txt[]
+include::../examples/the_language/class/class_metafunction_lt_out.txt[]
 ----
 
 ===== _lte()
@@ -2581,14 +2638,14 @@ _lte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_lte.zs[]
+include::../examples/the_language/class/class_metafunction_lte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_lte_out.txt[]
+include::../examples/the_language/class/class_metafunction_lte_out.txt[]
 ----
 
 ===== _gt()
@@ -2616,14 +2673,14 @@ _gt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_gt.zs[]
+include::../examples/the_language/class/class_metafunction_gt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_gt_out.txt[]
+include::../examples/the_language/class/class_metafunction_gt_out.txt[]
 ----
 
 ===== _gte(_op1,_op2)
@@ -2651,14 +2708,14 @@ _gte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_gte.zs[]
+include::../examples/the_language/class/class_metafunction_gte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_gte_out.txt[]
+include::../examples/the_language/class/class_metafunction_gte_out.txt[]
 ----
 
 ===== _add()
@@ -2685,14 +2742,14 @@ _add(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_add.zs[]
+include::../examples/the_language/class/class_metafunction_add.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_add_out.txt[]
+include::../examples/the_language/class/class_metafunction_add_out.txt[]
 ----
 
 ===== _div()
@@ -2719,14 +2776,14 @@ _div(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_div.zs[]
+include::../examples/the_language/class/class_metafunction_div.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_div_out.txt[]
+include::../examples/the_language/class/class_metafunction_div_out.txt[]
 ----
 
 
@@ -2754,14 +2811,14 @@ _mul(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_mul.zs[]
+include::../examples/the_language/class/class_metafunction_mul.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+include::../examples/the_language/class/class_metafunction_mul_out.txt[]
 ----
 
 ===== _mod()
@@ -2788,14 +2845,14 @@ _mod(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_mod.zs[]
+include::../examples/the_language/class/class_metafunction_mod.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+include::../examples/the_language/class/class_metafunction_mul_out.txt[]
 ----
 
 ===== _and()
@@ -2822,14 +2879,14 @@ _and(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_and.zs[]
+include::../examples/the_language/class/class_metafunction_and.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_and_out.txt[]
+include::../examples/the_language/class/class_metafunction_and_out.txt[]
 ----
 
 ===== _or()
@@ -2856,14 +2913,14 @@ _or(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_or.zs[]
+include::../examples/the_language/class/class_metafunction_or.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_or_out.txt[]
+include::../examples/the_language/class/class_metafunction_or_out.txt[]
 ----
 
 ===== _xor()
@@ -2890,14 +2947,14 @@ _xor(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_xor.zs[]
+include::../examples/the_language/class/class_metafunction_xor.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_xor_out.txt[]
+include::../examples/the_language/class/class_metafunction_xor_out.txt[]
 ----
 ===== _shl()
 
@@ -2923,14 +2980,14 @@ _shl(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_shl.zs[]
+include::../examples/the_language/class/class_metafunction_shl.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_shl_out.txt[]
+include::../examples/the_language/class/class_metafunction_shl_out.txt[]
 ----
 
 ===== _shr()
@@ -2957,17 +3014,17 @@ _shr(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_shr.zs[]
+include::../examples/the_language/class/class_metafunction_shr.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_shr_out.txt[]
+include::../examples/the_language/class/class_metafunction_shr_out.txt[]
 ----
 
-===== Member methods
+===== Member functions
 
 ====== _toString()
 
@@ -2992,14 +3049,14 @@ Custom string defined by user
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_to_string.zs[]
+include::../examples/the_language/class/class_metafunction_to_string.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_to_string_out.txt[]
+include::../examples/the_language/class/class_metafunction_to_string_out.txt[]
 ----
 
 ===== _set()
@@ -3025,14 +3082,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_set.zs[]
+include::../examples/the_language/class/class_metafunction_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_set_out.txt[]
+include::../examples/the_language/class/class_metafunction_set_out.txt[]
 ----
 
 ===== _not()
@@ -3058,14 +3115,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_not.zs[]
+include::../examples/the_language/class/class_metafunction_not.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_not_out.txt[]
+include::../examples/the_language/class/class_metafunction_not_out.txt[]
 ----
 
 ===== _neg()
@@ -3091,14 +3148,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_negt.zs[]
+include::../examples/the_language/class/class_metafunction_negt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_not_neg.txt[]
+include::../examples/the_language/class/class_metafunction_not_neg.txt[]
 ----
 
 ===== _post_inc()
@@ -3125,14 +3182,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_post_inc.zs[]
+include::../examples/the_language/class/class_metafunction_post_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_post_inc_out.txt[]
+include::../examples/the_language/class/class_metafunction_post_inc_out.txt[]
 ----
 
 ===== _post_dec()
@@ -3158,14 +3215,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_post_dec.zs[]
+include::../examples/the_language/class/class_metafunction_post_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
+include::../examples/the_language/class/class_metafunction_post_dec_out.txt[]
 ----
 
 ===== _pre_inc()
@@ -3191,14 +3248,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_pre_inc.zs[]
+include::../examples/the_language/class/class_metafunction_pre_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_pre_inc_out.txt[]
+include::../examples/the_language/class/class_metafunction_pre_inc_out.txt[]
 ----
 
 ===== _pre_dec()
@@ -3224,19 +3281,19 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_pre_dec.zs[]
+include::../examples/the_language/class/class_metafunction_pre_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_pre_dec_out.txt[]
+include::../examples/the_language/class/class_metafunction_pre_dec_out.txt[]
 ----
  
 ==== Custom properties
 
-A custom property is and special property that operates with a set of metamethods.
+A custom property is and special property that operates with a set of metafunctions.
 
 *Syntax*
 
@@ -3252,7 +3309,7 @@ class ClassWithVirtualProperty{
 }
 ----
 
-==== Member methods
+==== Member functions
 
 ===== _get()
 
@@ -3277,14 +3334,14 @@ Returns the value of this property
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_set.zs[]
+include::../examples/the_language/class/class_property_metafunction_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_set_out.txt[]
 ----
 
 ===== _set()
@@ -3310,14 +3367,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_set.zs[]
+include::../examples/the_language/class/class_property_metafunction_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_set_out.txt[]
 ----
 
 ===== _not()
@@ -3343,14 +3400,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_not.zs[]
+include::../examples/the_language/class/class_property_metafunction_not.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_not_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_not_out.txt[]
 ----
 
 ===== _neg()
@@ -3376,14 +3433,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_negt.zs[]
+include::../examples/the_language/class/class_property_metafunction_negt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_not_neg.txt[]
+include::../examples/the_language/class/class_property_metafunction_not_neg.txt[]
 ----
 
 ===== _post_inc()
@@ -3410,14 +3467,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_inc.zs[]
+include::../examples/the_language/class/class_property_metafunction_post_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_inc_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_post_inc_out.txt[]
 ----
 
 ===== _post_dec()
@@ -3443,14 +3500,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_dec.zs[]
+include::../examples/the_language/class/class_property_metafunction_post_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_dec_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_post_dec_out.txt[]
 ----
 
 ===== _pre_inc()
@@ -3476,14 +3533,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_inc.zs[]
+include::../examples/the_language/class/class_property_metafunction_pre_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_inc_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_pre_inc_out.txt[]
 ----
 
 ===== _pre_dec()
@@ -3509,14 +3566,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_dec.zs[]
+include::../examples/the_language/class/class_property_metafunction_pre_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_dec_out.txt[]
+include::../examples/the_language/class/class_property_metafunction_pre_dec_out.txt[]
 ----
 
 
@@ -3769,7 +3826,7 @@ include::../examples/the_language/system/system_error_out.txt[]
 
 ==== Math
 
-`Math` module implements a set of methods and properties related with maths
+`Math` module implements a set of functions and properties related with maths
 
 ===== Static member properties
 
@@ -3796,7 +3853,7 @@ Output:
 include::../examples/the_language/math/math_pi.txt[]
 ----
 
-===== Static methods
+===== Static functions
 
 ====== Math::sin()
 
@@ -4076,7 +4133,7 @@ include::../examples/the_language/math/math_round_out.txt[]
 
 ==== Json
 
-`Json` module implements a set of methods to serialize and deserialize json format from/to zetscript types
+`Json` module implements a set of functions to serialize and deserialize json format from/to zetscript types
 
 ===== Json::serialize()
 
@@ -4136,12 +4193,12 @@ Perform add operation (aka +) between two objects type DateTime
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_add.zs[]
+include::../examples/the_language/datetime/datetime_metafunctions_add.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_add_out.txt[]
+include::../examples/the_language/datetime/datetime_metafunctions_add_out.txt[]
 ----
 
 ====== _sub
@@ -4152,12 +4209,12 @@ Perform sub (aka -)  operation between two objects type DateTime
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_sub.zs[]
+include::../examples/the_language/datetime/datetime_metafunctions_sub.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_sub_out.txt[]
+include::../examples/the_language/datetime/datetime_metafunctions_sub_out.txt[]
 ----
 
 ====== _toString
@@ -4168,12 +4225,12 @@ Returns formatted date
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_to_string.zs[]
+include::../examples/the_language/datetime/datetime_metafunctions_to_string.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metamethods_to_string_out.txt[]
+include::../examples/the_language/datetime/datetime_metafunctions_to_string_out.txt[]
 ----
 
 
@@ -4218,7 +4275,7 @@ Output:
 include::../examples/the_language/datetime/datetime_member_properties_out.txt[]
 ----
 
-===== Member methods
+===== Member functions
 
 ====== DateTime::addSeconds()
 
