@@ -90,8 +90,12 @@ namespace zetscript{
 		return stk;
 	}
 
-	void VectorScriptObject::push(StackElement  * _stk){
+	void VectorScriptObject::push(const StackElement  * _stk){
 		stk_assign(zs,newSlot(),_stk);
+	}
+
+	void VectorScriptObject::push(const StackElement  & _stk){
+		stk_assign(zs,newSlot(),&_stk);
 	}
 
 	void VectorScriptObject::pop(){

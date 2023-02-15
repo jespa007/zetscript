@@ -8,6 +8,19 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
+	StackElement   stk_int(zs_int _value){
+		return {_value,STK_PROPERTY_ZS_INT};
+	}
+
+	StackElement   stk_float(zs_float _value){
+		StackElement stk;
+
+		ZS_WRITE_INTPTR_FLOAT(&stk.value,_value);
+
+		return stk;
+	}
+
+
 	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
@@ -147,7 +160,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src){
+	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, const StackElement *_stk_src){
 		*_stk_dst=*_stk_src;
 
 		if(_stk_dst->properties & STK_PROPERTY_PTR_STK){

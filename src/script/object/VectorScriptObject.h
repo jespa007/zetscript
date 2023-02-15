@@ -45,7 +45,11 @@ namespace zetscript{
 		 */
 		StackElement *						newSlot();
 
-		void 								push(StackElement  * stk);
+		void 								push(const StackElement  * stk);
+		void 								push(const StackElement  & stk);
+		void 								push(zs_int _value);
+		void 								push(zs_float _value);
+		void 								push(bool _value);
 		void 								pop();
 		virtual 							zs_string toString();
 		virtual 							~VectorScriptObject();
