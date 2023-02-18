@@ -1573,14 +1573,14 @@ The _typeof_ operator returns the type of operand's value.
 
 [source,javascript]
 ----
-include::../examples/the_language/object/object_keys.zs[]
+include::../examples/the_language/type/type_typeof.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/object/object_keys_out.txt[]
+include::../examples/the_language/type/type_typeof_out.txt[]
 ----
 
 
@@ -1976,6 +1976,7 @@ switch(expression) {
 		code block
 		break;
 }
+----
 
 *Example*
 
@@ -2042,7 +2043,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/lopp/loop_while_out.txt[]
+include::../examples/the_language/loop/loop_while_out.txt[]
 ----
 
 ==== do-while loop
@@ -2069,7 +2070,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/lopp/loop_do_while_out.txt[]
+include::../examples/the_language/loop/loop_do_while_out.txt[]
 ----
 
 ==== The for loop
@@ -2100,7 +2101,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/lopp/loop_for_out.txt[]
+include::../examples/the_language/loop/loop_for_out.txt[]
 ----
 
 
@@ -2134,7 +2135,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/lopp/loop_for_in_out.txt[]
+include::../examples/the_language/loop/loop_for_in_out.txt[]
 ----
 
 ==== The break and continue

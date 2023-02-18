@@ -12,6 +12,27 @@ namespace zetscript{
 		return new zs_datetime();
 	}
 
+	void DateTimeModule_constructor(
+			ZetScript *_zs
+			,zs_datetime * _this
+			,zs_int _year
+			,zs_int _month
+			,zs_int _day
+			,zs_int _hour
+			,zs_int _minute
+			,zs_int _second
+	){
+		ZS_UNUSUED_PARAM(_zs);
+		*_this=zs_datetime(
+			_year
+			,_month
+			,_day
+			,_hour
+			,_minute
+			,_second
+		);
+	}
+
 	/*zs_datetime * 			DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2){
 
 		zs_datetime *dt=new zs_datetime;

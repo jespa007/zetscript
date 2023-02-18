@@ -79,7 +79,7 @@ namespace zetscript{
 		//---------------------------------------------
 		// DateTime
 		cl=bindType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
-
+		bindConstructor<zs_datetime>(DateTimeModule_constructor);
 		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);
 		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);*/
 

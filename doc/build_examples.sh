@@ -7,7 +7,7 @@ then
 	EXTENSION_EXE=".exe"
 fi
 
-the_language_example_dirs=(integer float string function vector object class type)
+the_language_example_dirs=(integer float string function vector object class type loop)
 
 # build output for language examples
 for i in "${the_language_example_dirs[@]}"

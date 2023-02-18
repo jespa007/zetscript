@@ -8,6 +8,16 @@ namespace zetscript{
 
 	// member functions
 	zs_datetime * 		DateTimeModule_new(ZetScript *_zs);
+	void DateTimeModule_constructor(
+			ZetScript *_zs
+			,zs_datetime * _this
+			,zs_int _year
+			,zs_int _month
+			,zs_int _day
+			,zs_int _hour
+			,zs_int _minute
+			,zs_int _second
+	);
 	/*zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);
 	zs_datetime * 		DateTimeModule_sub(zs_datetime *dt1,zs_datetime *dt2);*/
 

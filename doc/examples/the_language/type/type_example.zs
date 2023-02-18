@@ -1,8 +1,0 @@
-Console::outln(typeof 10)
-Console::outln(typeof 10==Integer)
-Console::outln(typeof 10.5==Integer)
-Console::outln(typeof 10.5==Float)
-Console::outln(typeof "string"==String)
-Console::outln(typeof []==Vector)
-Console::outln(typeof {}==Object)
-Console::outln(typeof function(){})
