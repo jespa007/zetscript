@@ -151,7 +151,15 @@ A variable is a kind of element that can hold a variable. Because ZetScript vari
 var i; // Declared variable 'i' with no inicialization (undefined value).
 ----
 
-A variable can be initialized with a proper type value through '=' operator. The follow example initializes a variable with integer value
+A variable can be declared and assigned with a proper type value through '=' operator. The follow example assigns a variable with integer value
+(see section 2.2),
+
+[source,javascript]
+----
+var i=0; // Declared variable 'i' and initialized as integer value.
+----
+
+It can also declare multiple variable separated by coma (,) and assigned with a proper type value through '=' operator. The follow example shows a multiple variable ded
 (see section 2.2),
 
 [source,javascript]
