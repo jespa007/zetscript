@@ -144,27 +144,35 @@ Example,
 
 ==== Variable
 
-A variable is a kind of element that can hold a variable. Because ZetScript variables are _dynamically typed_, it can hold different type of values on its lifetime. A variable is declared as *var* and, by default, is initialized as *undefined* value (see 2.5.1). 
+A variable is a kind of element that can hold a variable. A variable is declared with *var* keyword.
 
 [source,javascript]
 ----
-var i; // Declared variable 'i' with no inicialization (undefined value).
+var i; // Declared variable
 ----
 
-A variable can be declared and assigned with a proper type value through '=' operator. The follow example assigns a variable with integer value
-(see section 2.2),
-
-[source,javascript]
-----
-var i=0; // Declared variable 'i' and initialized as integer value.
-----
-
-It can also declare multiple variable separated by coma (,) and assigned with a proper type value through '=' operator. The follow example shows a multiple variable ded
-(see section 2.2),
+By default, any declared variable is set as *undefined*, that tells a variable was not properly initialized. A variable can be initialized through operator assignment (=). 
 
 [source,javascript]
 ----
-var i=10; // Declared variable 'i' and initialized as integer value.
+var i=0; // Declared variable with initialization
+----
+
+It can also declare multiple variables separated by coma (,) with or without initialization.
+
+[source,javascript]
+----
+var i=10, j=5, k; // Multiple declaration
+----
+
+It can also perform multiple assigment between declared variables, 
+
+[source,javascript]
+----
+var i=10, j=5; // i=10, j=5
+
+i,j=j,i; // i=5, j=10
+
 ----
 
 ==== Constant
