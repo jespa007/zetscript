@@ -50,7 +50,7 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-					,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+					,stk_result_op1->properties & STK_PROPERTY_TYPE? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
