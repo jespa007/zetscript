@@ -94,8 +94,29 @@ namespace zetscript{
 		stk_assign(zs,newSlot(),_stk);
 	}
 
-	void VectorScriptObject::push(const StackElement  & _stk){
-		stk_assign(zs,newSlot(),&_stk);
+	void 	VectorScriptObject::pushInteger(zs_int _value){
+		StackElement stk={_value,STK_PROPERTY_ZS_INT};
+		stk_assign(zs,newSlot(),&stk);
+	}
+
+	void 	VectorScriptObject::pushFloat(zs_float _value){
+		zs_int dst;
+		StackElement stk;
+		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
+		stk={dst,STK_PROPERTY_ZS_FLOAT};
+		stk_assign(zs,newSlot(),&stk);
+	}
+
+	void 	VectorScriptObject::pushBoolean(bool _value){
+		StackElement stk={_value,STK_PROPERTY_BOOL};
+		stk_assign(zs,newSlot(),&stk);
+	}
+
+	void	VectorScriptObject::pushString(const zs_string & _value){
+		StringScriptObject *so=this->zs->newStringScriptObject();
+		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
+		so->set(_value);
+		stk_assign(zs,newSlot(),&stk);
 	}
 
 	void VectorScriptObject::pop(){

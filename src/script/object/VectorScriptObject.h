@@ -46,10 +46,10 @@ namespace zetscript{
 		StackElement *						newSlot();
 
 		void 								push(const StackElement  * stk);
-		void 								push(const StackElement  & stk);
-		void 								push(zs_int _value);
-		void 								push(zs_float _value);
-		void 								push(bool _value);
+		void 								pushInteger(zs_int _value);
+		void 								pushFloat(zs_float _value);
+		void 								pushBoolean(bool _value);
+		void 								pushString(const zs_string & _value);
 		void 								pop();
 		virtual 							zs_string toString();
 		virtual 							~VectorScriptObject();

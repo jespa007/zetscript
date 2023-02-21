@@ -35,6 +35,26 @@ namespace zetscript{
 				,StackElement * stk_element = NULL
 		);
 
+		StackElement * addPropertyInteger(
+				const zs_string &  symbol_value
+				,zs_int _value
+		);
+
+		StackElement * addPropertyFloat(
+				const zs_string &  symbol_value
+				,zs_float _value
+		);
+
+		StackElement * addPropertyBoolean(
+				const zs_string &  symbol_value
+				,bool _value
+		);
+
+		StackElement * addPropertyString(
+				const zs_string &  symbol_value
+				,const zs_string & _value
+		);
+
 		StackElement * addUserProperty(
 				const zs_string &  symbol_value
 						,zs_string & error

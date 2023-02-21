@@ -106,6 +106,52 @@ namespace zetscript{
 		return addUserProperty(symbol_value,_error,stk_element);
 	}
 
+	StackElement * ObjectScriptObject::addPropertyInteger(
+			const zs_string &  symbol_value
+			,zs_int _value
+	){
+		zs_string  error;
+		StackElement stk={_value,STK_PROPERTY_ZS_INT};
+
+		return addProperty(symbol_value,error,&stk);
+	}
+
+	StackElement * ObjectScriptObject::addPropertyFloat(
+			const zs_string &  symbol_value
+			,zs_float _value
+	){
+		zs_int dst;
+		zs_string  error;
+		StackElement stk;
+		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
+		stk={dst,STK_PROPERTY_ZS_FLOAT};
+
+		return addProperty(symbol_value,error,&stk);
+	}
+
+	StackElement * ObjectScriptObject::addPropertyBoolean(
+			const zs_string &  symbol_value
+			,bool _value
+	){
+		zs_string  error;
+		StackElement stk={_value,STK_PROPERTY_BOOL};
+
+		return addProperty(symbol_value,error,&stk);
+	}
+
+	StackElement * ObjectScriptObject::addPropertyString(
+			const zs_string &  symbol_value
+			,const zs_string & _value
+	){
+		zs_string  error;
+		StringScriptObject *so=this->zs->newStringScriptObject();
+		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
+
+		so->set(_value);
+
+		return addProperty(symbol_value,error,&stk);
+	}
+
 	StackElement 	* ObjectScriptObject::getProperty(const zs_string &  property_name){
 		StackElement *stk=getBuiltinProperty(property_name);
 		if(stk==NULL){
