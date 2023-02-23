@@ -1,4 +1,6 @@
 var s0="1,2,3";
+System::assert(s0.length==5,"s0.length != 5");
+
 var v0=s0.split(",")
 System::assert(v0.length==3,"v0.length != 3");
 System::assert(v0[0]=="1","v0[0] != \"1\"");
