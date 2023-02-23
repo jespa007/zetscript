@@ -119,15 +119,29 @@ namespace zetscript{
 				 // that symbols are ordered
 				 if(instruction->value_op2!=ZS_IDX_UNDEFINED){
 					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
-				 }
-				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
-					 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
-							,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+					 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
+					 /*if(symbol_aux==NULL){ // it calls overrided function (top-most)
+						 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+								,_this_object->getScriptType()->str_script_type.c_str()
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+						);
+					 }*/
+
+				 }else{ // Member function not exist try to get variable to call if exist
+					 sf_call_stk_function_ref=_this_object->getProperty(SFI_GET_SYMBOL_NAME(_script_function,instruction));
+					 sf_call_is_member_function=false;
+					 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
+						 ZS_VM_STOP_EXECUTE("Error calling 'this.%s': member variable or function '%s::%s' not exist"
+							, SFI_GET_SYMBOL_NAME(_script_function,instruction)
 							,_this_object->getScriptType()->str_script_type.c_str()
-							,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					);
+							, SFI_GET_SYMBOL_NAME(_script_function,instruction)
+						);
+					 }
+					 goto load_function;
 				 }
-				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
+
+				 //sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 				 goto execute_function;
 			case BYTE_CODE_INDIRECT_THIS_CALL:
 				 sf_call_calling_object = _this_object;

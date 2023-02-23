@@ -236,7 +236,7 @@ namespace zetscript{
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
-						 zs_strutils::starts_with(local_sf->name_script_function,"_@afun_defval")
+						 zs_strutils::starts_with(local_sf->name_script_function,"@_afun_defval")
 				)){
 					 show_function=false;
 				 }

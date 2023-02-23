@@ -110,7 +110,7 @@ namespace zetscript{
 			*data->vm_stk_current++=*stk_result_op1;
 			*data->vm_stk_current++=*stk_result_op2;
 		}else{
-			*data->vm_stk_current++=*stk_result_op1;
+			*data->vm_stk_current++=*stk_result_op2;
 		}
 		//------------------------------------
 

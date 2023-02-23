@@ -9,7 +9,7 @@ namespace zetscript{
 	static int k_n_anonymous_iterator=0;
 
 	zs_string eval_anonymous_iterator_name(){
-		return "_@iter_"+zs_strutils::zs_int_to_str(k_n_anonymous_iterator++);
+		return "@_iter_"+zs_strutils::zs_int_to_str(k_n_anonymous_iterator++);
 	}
 
 

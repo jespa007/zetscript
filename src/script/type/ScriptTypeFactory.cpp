@@ -663,7 +663,7 @@ namespace zetscript{
 
 				symbol_field_initializer=sc->registerMemberFunction(
 					zs_strutils::format(
-						"__@field_initializer_%s_@__"
+						"@__field_initializer_%s_@__"
 						,sc->str_script_type.c_str()
 					)
 				);
