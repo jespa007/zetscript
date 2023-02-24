@@ -283,7 +283,7 @@ namespace zetscript{
 
 		//--------------------------------------------------------------
 		// operator assign = found --> assign operators, load identifiers first
-		for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
+		for(int i=idx_start-2; i >= 0; i-=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 			EvalInstruction *eval_instruction=NULL;
 			TokenNode * token_node_symbol = (TokenNode *)token_nodes->items[i];
 			TokenNode * token_node_operator = (TokenNode *)token_nodes->items[i+1];
@@ -300,7 +300,7 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,token_node_operator->line
 					,eval_error_byte_code
-					,"Operation '%s' in assignment is not allowed"
+					,"Unexpected operator '%s' with assignment"
 					,eval_data_operators[operator_type].str
 				);
 			}
