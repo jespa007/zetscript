@@ -515,19 +515,27 @@ namespace zetscript{
 
 		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
-			if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
-				Symbol *existing_symbol;
+			//if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){
+				Symbol *existing_symbol=NULL;
+				// we only search repeat symbols on this type because symbol cannot be repeated in the same class
 				if((existing_symbol=getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					ZS_THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
-						,_function_name.c_str()
-						//,zs_path::get_filename(_file).c_str()
-						//,_line
-						,zs_path::get_filename(existing_symbol->file).c_str()
-						,existing_symbol->line
-					);
+
+					ScriptFunction *existing_sf=(ScriptFunction *)existing_symbol->ref_ptr;
+
+					// check wether the function was declared at the same class
+					if(existing_sf->scope_script_function->script_type_owner == this){
+						ZS_THROW_EXCEPTION("Member function '%s' is already defined at [%s:%i]"
+							,_function_name.c_str()
+							//,zs_path::get_filename(_file).c_str()
+							//,_line
+							,zs_path::get_filename(existing_symbol->file).c_str()
+							,existing_symbol->line
+						);
+						return NULL;
+					}
 				}
-				return NULL;
-			}
+
+			//}
 		}else{ // native function, check parameter type ...
 
 			ScriptFunction::checkNativeFunctionParams(this->scope_script_type,_idx_return_type,_function_name,*_params,_params_len);
