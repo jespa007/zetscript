@@ -29,37 +29,37 @@ namespace zetscript{
 
 		ObjectScriptObject(ZetScript	*_zs);
 
-		virtual StackElement * addProperty(
-				const zs_string &  symbol_value
-				,zs_string & error
+		virtual StackElement * setProperty(
+				const zs_string &  _property_name
+				//,zs_string & error
 				,StackElement * stk_element = NULL
 		);
 
-		StackElement * addPropertyInteger(
-				const zs_string &  symbol_value
+		StackElement * setPropertyInteger(
+				const zs_string &  _property_name
 				,zs_int _value
 		);
 
-		StackElement * addPropertyFloat(
-				const zs_string &  symbol_value
+		StackElement * setPropertyFloat(
+				const zs_string &  _property_name
 				,zs_float _value
 		);
 
-		StackElement * addPropertyBoolean(
-				const zs_string &  symbol_value
+		StackElement * setPropertyBoolean(
+				const zs_string &  _property_name
 				,bool _value
 		);
 
-		StackElement * addPropertyString(
-				const zs_string &  symbol_value
+		StackElement * setPropertyString(
+				const zs_string &  _property_name
 				,const zs_string & _value
 		);
 
-		StackElement * addUserProperty(
+		/*StackElement * setUserProperty(
 				const zs_string &  symbol_value
 						,zs_string & error
 						,StackElement * stk_element = NULL
-				);
+				);*/
 
 		virtual StackElement 	* getProperty(const zs_string &  property_name);
 

@@ -402,8 +402,8 @@ namespace zetscript{
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// create property... //get c property
-					if((stk_element=so->addProperty(key_id.c_str(),error)) == NULL){
-						json_deserialize_error(data, str_current, line, error.c_str());
+					if((stk_element=so->setProperty(key_id.c_str())) == NULL){
+						json_deserialize_error(data, str_current, line, "Cannot setProperty '%s'",key_id.c_str());
 						return NULL;
 					}
 

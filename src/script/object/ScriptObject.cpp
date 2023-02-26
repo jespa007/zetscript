@@ -182,12 +182,11 @@ namespace zetscript{
 		return &stk_builtin_elements;
 	}
 
-	StackElement * ScriptObject::addProperty(
+	StackElement * ScriptObject::setProperty(
 		const zs_string & symbol_value
-		,zs_string & error
 		,StackElement * stk_element
 	){
-		ZS_UNUSUED_3PARAMS(symbol_value, error, stk_element);
+		ZS_UNUSUED_2PARAMS(symbol_value, stk_element);
 		ZS_VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
 		return NULL;
 	}

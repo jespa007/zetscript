@@ -1,10 +1,14 @@
-function calcule_area(width,height,ref area){
-	area=width*height
+function swap(ref _a, ref _b){
+	var tmp=_a
+	_a=_b;
+	_b=tmp;
 }
 
-var area;
+var i=5,j=10;
 
-calcule_area(10,10,area)
+Console::outln("i:{0} j:{1}",i,j)
 
-Console::outln("area:"+area)
+swap(i,j)
+
+Console::outln("swap(i,j) => i:{0} j:{1}",i,j)
 

@@ -15,19 +15,19 @@ namespace zetscript{
 	}
 
 	ObjectScriptObject * ObjectScriptObject::concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
-		zs_string error;
+		//zs_string error;
 		ObjectScriptObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 
 		// get properties from object o1
 		zs_map *map=o1->getMapUserProperties();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->addUserProperty(it.key,error,(StackElement *)it.value);
+			obj->setProperty(it.key,(StackElement *)it.value);
 		}
 
 		// get properties from object o2
 		map=o2->getMapUserProperties();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->addUserProperty(it.key,error,(StackElement *)it.value);
+			obj->setProperty(it.key,(StackElement *)it.value);
 		}
 		return obj;
 	}
@@ -39,7 +39,7 @@ namespace zetscript{
 		// get properties from object o2
 		zs_map *map=o2->getMapUserProperties();
 		for(auto it=map->begin(); !it.end();it.next()){
-			o1->addUserProperty(it.key,error,(StackElement *)it.value);
+			o1->setProperty(it.key,(StackElement *)it.value);
 		}
 	}
 
@@ -54,17 +54,23 @@ namespace zetscript{
 		map_user_properties=new zs_map();
 	}
 
-	StackElement * ObjectScriptObject::addUserProperty(
-			const zs_string &  symbol_value
-			,zs_string & error
+	StackElement * ObjectScriptObject::setProperty(
+			const zs_string &  _property_name
+			//,zs_string & error
 			,StackElement * sv
 		){
 		StackElement si;
 
-		if(map_user_properties->exist(symbol_value.c_str())){
-			error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
-			return NULL;
+		/*if(map_user_properties->exist(symbol_value.c_str())){
+			//error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
+			//return NULL;
+		}*/
+		bool exists=false;
+		StackElement *stk_user_element = (StackElement *)map_user_properties->get(_property_name.c_str(),&exists);
+		if(exists){
+			ScriptObject::unrefAndFreeStackElementContainer(stk_user_element);
 		}
+
 
 		if(sv != NULL){
 			si = *sv;
@@ -79,7 +85,7 @@ namespace zetscript{
 			si=k_stk_undefined;
 		}
 
-		zs_string key_value = symbol_value;
+		zs_string key_value = _property_name;
 		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		map_user_properties->set(key_value.c_str(),(zs_int)new_stk);
 
@@ -97,65 +103,61 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement * ObjectScriptObject::addProperty(
+	/*StackElement * ObjectScriptObject::setProperty(
 			const zs_string & symbol_value
 			,zs_string & _error
 			,StackElement * stk_element
 	){
 
-		return addUserProperty(symbol_value,_error,stk_element);
-	}
+		return setUserProperty(symbol_value,_error,stk_element);
+	}*/
 
-	StackElement * ObjectScriptObject::addPropertyInteger(
-			const zs_string &  symbol_value
+	StackElement * ObjectScriptObject::setPropertyInteger(
+			const zs_string &  _property_name
 			,zs_int _value
 	){
-		zs_string  error;
 		StackElement stk={_value,STK_PROPERTY_ZS_INT};
 
-		return addProperty(symbol_value,error,&stk);
+		return setProperty(_property_name,&stk);
 	}
 
-	StackElement * ObjectScriptObject::addPropertyFloat(
-			const zs_string &  symbol_value
+	StackElement * ObjectScriptObject::setPropertyFloat(
+			const zs_string &  _property_name
 			,zs_float _value
 	){
 		zs_int dst;
-		zs_string  error;
 		StackElement stk;
 		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
 		stk={dst,STK_PROPERTY_ZS_FLOAT};
 
-		return addProperty(symbol_value,error,&stk);
+		return setProperty(_property_name,&stk);
 	}
 
-	StackElement * ObjectScriptObject::addPropertyBoolean(
-			const zs_string &  symbol_value
+	StackElement * ObjectScriptObject::setPropertyBoolean(
+			const zs_string &  _property_name
 			,bool _value
 	){
-		zs_string  error;
 		StackElement stk={_value,STK_PROPERTY_BOOL};
 
-		return addProperty(symbol_value,error,&stk);
+		return setProperty(_property_name,&stk);
 	}
 
-	StackElement * ObjectScriptObject::addPropertyString(
-			const zs_string &  symbol_value
+	StackElement * ObjectScriptObject::setPropertyString(
+			const zs_string &  _property_name
 			,const zs_string & _value
 	){
-		zs_string  error;
 		StringScriptObject *so=this->zs->newStringScriptObject();
 		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
 
 		so->set(_value);
 
-		return addProperty(symbol_value,error,&stk);
+		return setProperty(_property_name,&stk);
 	}
 
-	StackElement 	* ObjectScriptObject::getProperty(const zs_string &  property_name){
-		StackElement *stk=getBuiltinProperty(property_name);
+	StackElement 	* ObjectScriptObject::getProperty(const zs_string &  _property_name){
+		StackElement *stk=getBuiltinProperty(_property_name);
 		if(stk==NULL){
-			stk=getUserProperty(property_name/*,idx*/);
+			stk=getUserProperty(_property_name/*,idx*/);
 		}
 		return stk;
 	}

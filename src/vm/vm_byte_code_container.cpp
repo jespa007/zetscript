@@ -151,8 +151,8 @@ namespace zetscript{
 				}
 
 				// create new property initialized as undefined
-				if((stk_var=so_aux->addProperty((const char *)str_symbol_aux1, data->vm_error_description))==NULL){
-					ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+				if((stk_var=so_aux->setProperty((const char *)str_symbol_aux1))==NULL){
+					ZS_VM_STOP_EXECUTE("Cannot setProperty '%s'",str_symbol_aux1);
 				}
 
 				// if it has to push container slot and slot itself is not container slot push new one
@@ -365,11 +365,11 @@ namespace zetscript{
 				);
 			}
 
-			if((stk_var =dst_container->addProperty(
+			if((stk_var =dst_container->setProperty(
 					((StringScriptObject *)stk_result_op1->value)->toString()
-					,data->vm_error_description)
+			)
 			)==NULL){
-				ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+				ZS_VM_STOP_EXECUTE("Cannot setProperty('%s')",((StringScriptObject *)stk_result_op1->value)->toString().c_str());
 			}
 
 			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
@@ -542,12 +542,11 @@ lbl_exit_function:
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
-							if((stk_var =((ObjectScriptObject *)so_aux)->addProperty(
-									((StringScriptObject *)(stk_result_op2->value))->get(),
-									data->vm_error_description
+							if((stk_var =((ObjectScriptObject *)so_aux)->setProperty(
+									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
 							)==NULL){
-								ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+								ZS_VM_STOP_EXECUTE("Cannot setPoperty('%s')",((StringScriptObject *)(stk_result_op2->value))->get().c_str());
 							}
 						}else{
 							ZS_VM_STOP_EXECUTE("property '%s' not exist in object",((StringScriptObject *)(stk_result_op2->value))->getConstChar());

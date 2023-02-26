@@ -1,9 +1,11 @@
-function sum(...args) {
+function sum(str,...args) {
   var sum = 0;
   for (var arg in args) {
   		sum += arg;
   }
-  return sum;
+  return str+sum;
 }
 
-Console::outln("sum = "+sum(4, 9, 16, 25, 29, 100, 66, 77));
+var res=sum("Total sum is = ",1, 10, 100, 1000, 10000);
+
+Console::outln(res)

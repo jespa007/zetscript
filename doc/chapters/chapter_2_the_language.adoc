@@ -171,7 +171,7 @@ It can also perform multiple assigment between declared variables,
 ----
 var i=10, j=5; // i=10, j=5
 
-i,j=j,i; // i=5, j=10
+i,j=j,i; // it does a swap ( i=5, j=10 )
 
 ----
 
@@ -2200,8 +2200,6 @@ A _function_ is a block of code to perform a particular task and is executed whe
 
 *Syntax*
 
-Syntax,
-
 [source,javascript]
 ----
 function fun_name(arg1, arg2, ..., argn){
@@ -2209,12 +2207,12 @@ function fun_name(arg1, arg2, ..., argn){
 }
 ----
 
-Example,
+*Example*
 
 [source,javascript]
 ----
-function add(op1, op2){
-	return op1+op2;
+function hello(_str){
+	Console::outln("Hello "+str)
 }
 ----
 
@@ -2231,40 +2229,23 @@ fun_name(arg1, arg2, arg3,..., argN);
 
 Note: If a function is called with less than N args the rest of arguments will remain undefined.
 
-Example,
-
-[source,javascript]
-----
-
-function add(op1,op2){
-	return op1+op2;
-}
-
-var j=add(2,3); // calls add function. j=5
-----
-
-==== Function return
-
-When JavaScript reaches a return statement, the function will stop executing.
-
-If the function was invoked from a statement, JavaScript will "return" to execute the code after the invoking statement.
-
-Functions often compute a return value. The return value is "returned" back to the "caller":
-
 *Example*
 
 [source,javascript]
 ----
-let x = myFunction(4, 3);   // Function is called, return value will end up in x
 
-function myFunction(a, b) {
-  return a * b;             // Function returns the product of a and b
+function hello(_str){
+	Console::outln("Hello "+str)
 }
+
+hello("World")  // Prints Hello World
 ----
 
-==== Function object
+==== Return statement
 
-A function can be stored in variables through its reference,
+The _return_ statement ends function execution and specifies a value to be returned to the function caller.
+
+*Example*
 
 [source,javascript]
 ----
@@ -2272,13 +2253,30 @@ function add(op1, op2){
 	return op1+op2;
 }
 
-var fun_obj = add; // stored function add reference to fun_obj
-var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
+add(4,5)  // returns 9
 ----
 
-Also is possible to create function objects,
+==== Function reference
 
-Syntax
+A function can be stored in variables through its reference
+
+*Example*
+
+[source,javascript]
+----
+function add(op1, op2){
+	return op1+op2;
+}
+
+var add_ref = add; // stored function add reference to fun_obj
+var j=add_ref(2,3);// calls fun_obj (aka add) function. J=5
+----
+
+==== Anonymous functions
+
+An _anonymous function_ is a function without a name
+
+*Syntax*
 
 [source,javascript]
 ----
@@ -2287,53 +2285,52 @@ function(arg1, arg2, ..., argN){
 };
 ----
 
-Example,
+*Example*
 
 [source,javascript]
 ----
-var add=function(op1, op2){
+var j=function(op1, op2){
 	return op1+op2;
-};
-
-var j=add(2,5); // j=5
+}(2,3); // j=5
 ----
 
 ==== Default parameters
 
-Default function parameters allow named parameters to be initialized with default values if no value or undefined is passed.
+Default function parameters allow named parameters to be initialized with default values if no value or _undefined_ is passed.
+
+*Syntax*
 
 [source,javascript]
 ----
-function fun(arg1, arg2,arg2=default_arg){
+function fun(param_1 = default_value_1, /* ...,*/ param_n = default_value_N){
 	// ...
 };
 ----
 
 *Example*
 
-Output:
+[source,javascript]
+----
+function sum(a, b = 1) {
+  return a + b;
+}
+
+var j=sum(5); // j=6
+----
 
 ==== Variable parameters
 
-The rest parameter (...) allows a function to treat an indefinite number of arguments as an array
+A variable parameters is declared by adding three dots (...) with the variable name. The variable parameter access are acceded as a vector.
 
-Syntax,
-
-[source,javascript]
-----
-function var_args(...args) {
-}
-----
-
-you can combine with other arguments but the array as variable parameter must be defined on the last one  
-
-Syntax,
+*Syntax*
 
 [source,javascript]
 ----
-function var_args(op1, op2, ...args){
+function var_args(a,b,...args) {
+	for(var arg in args){
+		//
+	}
 }
-
 ----
 
 
@@ -2341,19 +2338,28 @@ function var_args(op1, op2, ...args){
 
 [source,javascript]
 ----
-include::../examples/the_language/function/function_variable_parameter.zs[]
+include::../examples/the_language/function/function_variable_parameters.zs[]
 ----
 
 Ouput:
 
 [source,text]
 ----
-include::../examples/the_language/function/function_variable_parameter_out.txt[]
+include::../examples/the_language/function/function_variable_parameters_out.txt[]
 ----
 
-==== Parameters by reference
+==== Pass parameter by reference 
 
-In Pass by Reference, a function is called by directly passing the reference of the variable as the argument
+A parameter can be passed as reference by prepending _ref_ on argument. Parameter by reference allows write its reference content within the body function
+
+*Syntax*
+
+[source,javascript]
+----
+function(ref arg1, arg2, ..., ref arg_n){
+	// code to be executed.
+};
+----
 
 *Example*
 
