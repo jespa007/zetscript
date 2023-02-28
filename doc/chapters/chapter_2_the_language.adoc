@@ -2164,14 +2164,14 @@ The _break_ statement is used to jump out of body loop.
 
 [source,javascript]
 ----
-include::../examples/the_language/loop/loop_for_break.zs[]
+include::../examples/the_language/loop/loop_break.zs[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_language/loop/loop_for_break_out.txt[]
+include::../examples/the_language/loop/loop_break_out.txt[]
 ----
 
 
@@ -2183,14 +2183,14 @@ The _continue_ statement breaks one iteration and continues with the next iterat
 
 [source,javascript]
 ----
-include::../examples/the_language/loop/loop_for_continue.zs[]
+include::../examples/the_language/loop/loop_continue.zs[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_language/loop/loop_for_continue_out.txt[]
+include::../examples/the_language/loop/loop_continue_out.txt[]
 ----
 
 
