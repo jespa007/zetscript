@@ -2380,62 +2380,98 @@ include::../examples/the_language/function/function_parameter_by_reference_out.t
 
 A class is a template for create objects wiith its own variables and functions. A class is defined using keyword _class_ followed by the name. 
 
-A class is a type of structure that contains properties and functions that operates with this properties. A class is defined in ZetScript using keyword class followed by the name of class. To access class properties within functions use the this keyword in
-order to access to propertie or functions inside class. In a class we can find member functions (functions that affects to class property) or static functions (helper function of generic purposes about the class type). 
-
-*Syntax*
 
 [source,javascript]
 ----
 class Test{
-	// initialized member property
-	var num1=10;
 	
-	// constructor
-	constructor(){
-		this.num2=20; // creates and initiales variable
-	}
-	
-	// member function
-	add(_op1){
-		this.num1 =a;
-		Console::outln("function1:"+this.data1);
-		return this.property;
-	}
-	// static function that performs an add operation between two Test type objects
-	function add_test (a,b){
-	return a.data1+b.data1;
-	}
+
 };
 ----
 
-Within a class we can find the following,
-
-- Class instantiation
-- Inicialization
-- Member properties 
-- Member functions
-- Const properties
-
-
 ==== Class instantiantion
 
-A class instantiation is done through the keyword _new_
-
-*Example*
+To instanciate a class is done by the operator _new_
 
 [source,javascript]
-var t = new Test(); // Instantiate t as Test type.
+----
+class Test{
+	
 
-==== Member initialization
+};
 
-In a class the first thing that it happens is initialization, if initialization does not ocur, then all member properties will be defined. Member initialization can be done through _constructor_ function or via initialize properties
 
-===== Constructor
+var t= new Test(); // t instanced as class Test
 
-The constructor function is a special function that aims to execute when class is instanced. The definition and initialization of a member property is done through a keyword _this_. 
+----
 
-*Example*
+==== Member functions
+
+
+In a class it can have two types of member functions:
+
+- member functions: functions that affects to class property. It access through field '.' operator and preceded by _this_ keyword when is acceded within a member function. A member function can be implemented outside of the class 
+- static functions: helper function of generic purposes about the class type. It access through '::' operator
+
+
+[source,javascript]
+----
+class Test{
+	method3(){
+		Console::outln(" and method 3")
+	}
+
+	method1(){
+		Console::out("Access method 1")
+		
+		// call member function within a member function through 'this'
+		this.method3();
+	}
+	
+	static staticMethod(){
+		Console::outln("Access static method")
+	}
+
+};
+
+// function member Test::method2 implementation 
+function Test::method2(){
+	Console::outln("Access method 2")
+}
+
+var t=new Test()
+
+t.method1(); // prints "Access method 1 and method 3"
+t.method2(); // prints "Access method 2"
+
+Test::staticMethod(); // prints "Access static method"
+
+----
+
+==== Member variables
+
+Mamber variables are data that live within the instanced class. To access a member variable is done through field '.' operator and preceded by _this_ keyword when is acceded within the member function
+
+[source,javascript]
+----
+class Test{
+	method3(){
+		this.a=0;
+	}
+};
+
+
+var t=new Test(); // t.a==undefined
+t.method(); 	  // t.a==0
+t.a=10; 		  // t.a==10
+
+----
+
+==== Constructor
+
+A constructor is a special member function that aims to execute when class is instanced. The definition and initialization of a member variable is done through _this_ keyword. 
+
+
 [source,javascript]
 ----
 class Test{
@@ -2445,69 +2481,13 @@ class Test{
 		this.a=0; // initialize field a=0
  	}
 }
-----
 
-
-===== Property initialization
-
-A property initialization is a way to define and initialize properties outside of _constructor_ 
-
-*Example*
-[source,javascript]
-----
-class Test{
- 	
- 	var a=0
- 	
-}
-----
-
-
-
-==== Member functions
-
-Member functions are functions defined in the class. The function can acceded throught To access class variables/functions is done through "." operator.
-
-Example,
-
-[source,javascript]
-----
-var i=t.function1(2); // initializes data1 as 2 and return the value
-----
-
-
-==== Post declare function member
-
-Is possible to add more class member through "::" punctuator.
-
-Example,
-
-[source,javascript]
-----
-	
-	// post declaration of function member
-	function Test::function2(){
- 		this.data2="a string";
-	}
+var t=new Test(); // t.a==0
 ----
 
 ==== Inheritance
 
-A class can inherit another class through "extends". The new extended class will inheritance all variable/functions members from base class.
-
-Example,
-
-[source,javascript]
-----
-class TestExtended extends Test{
-	function3(){
-		this.data3=this.data1+this.function1(10);
-	}
-};
-----
-===== Call parent functions
-
-The extended class can call parent functions through _super_ keyword.
+A class can inherit another class through "extends". The new extended class will copy all functions from base class. The extended class can call parent functions through _super_ keyword.
 
 Example,
 
@@ -2526,12 +2506,13 @@ class TestExtended extends Test{
 }; 
 ----
 
-==== Metafunctions
-Metafunctions are special functions members that links with operators seen on section section 3.6. ZetScript metafunctions can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+==== Metamethods
+
+Metamethods are special member functions that links with operators seen on section section 3.6. ZetScript metafunctions can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
 ===== Static functions
 
-===== _equ()
+====== _equ()
 
 Implements _equal_ operator (aka == ) between first operand and second operand
 
@@ -3057,7 +3038,7 @@ Returns custom when string operation operation is invoved
 
 [source,javascript]
 ----
-_toString()
+_tostring()
 ----
 
 +++<u>Parameters</u>+++
@@ -3072,14 +3053,14 @@ Custom string defined by user
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_to_string.zs[]
+include::../examples/the_language/class/class_metafunction_tostring.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_to_string_out.txt[]
+include::../examples/the_language/class/class_metafunction_tostring_out.txt[]
 ----
 
 ===== _set()
@@ -3171,7 +3152,7 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_negt.zs[]
+include::../examples/the_language/class/class_metafunction_neg.zs[]
 ----
 
 Output:
@@ -3181,16 +3162,16 @@ Output:
 include::../examples/the_language/class/class_metafunction_not_neg.txt[]
 ----
 
-===== _post_inc()
+===== _postinc()
 
 
-Implements _post_increment_ operator (aka a++ ) 
+Implements _post increment_ operator (aka a++ ) 
 
 *Syntax*
 
 [source,javascript]
 ----
-_post_inc()
+_postinc()
 ----
 
 +++<u>Parameters</u>+++
@@ -3205,25 +3186,25 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_post_inc.zs[]
+include::../examples/the_language/class/class_metafunction_postinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_post_inc_out.txt[]
+include::../examples/the_language/class/class_metafunction_postinc_out.txt[]
 ----
 
-===== _post_dec()
+===== _postdec()
 
-Implements _post_decrement_ operator (aka a-- ) 
+Implements _post decrement_ operator (aka a-- ) 
 
 *Syntax*
 
 [source,javascript]
 ----
-_post_dec()
+_postdec()
 ----
 
 +++<u>Parameters</u>+++
@@ -3238,7 +3219,7 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_post_dec.zs[]
+include::../examples/the_language/class/class_metafunction_postdec.zs[]
 ----
 
 Output:
@@ -3248,9 +3229,9 @@ Output:
 include::../examples/the_language/class/class_metafunction_post_dec_out.txt[]
 ----
 
-===== _pre_inc()
+===== _preinc()
 
-Implements _pre_increment_ operator (aka ++a ) 
+Implements _pre increment_ operator (aka ++a ) 
 
 *Syntax*
 
@@ -3271,19 +3252,19 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_pre_inc.zs[]
+include::../examples/the_language/class/class_metafunction_preinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_pre_inc_out.txt[]
+include::../examples/the_language/class/class_metafunction_preinc_out.txt[]
 ----
 
-===== _pre_dec()
+===== _predec()
 
-Implements _pre_decrement_ operator (aka --a ) 
+Implements _pre decrement_ operator (aka --a ) 
 
 *Syntax*
 
@@ -3304,28 +3285,28 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_pre_dec.zs[]
+include::../examples/the_language/class/class_metafunction_predec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_pre_dec_out.txt[]
+include::../examples/the_language/class/class_metafunction_predec_out.txt[]
 ----
  
-==== Custom properties
+==== Properties
 
-A custom property is and special property that operates with a set of metafunctions.
+A property is a kind of variable that are acceded through a metamethods.
 
 *Syntax*
 
 [source,javascript]
 ----
-class ClassWithVirtualProperty{
+class Test{
 
-	// custom property
-	prop{
+	// property
+	property{
 			...
 	}
 
@@ -3456,14 +3437,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_negt.zs[]
+include::../examples/the_language/class/class_property_metafunction_neg.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_not_neg.txt[]
+include::../examples/the_language/class/class_property_metafunction_neg_out.txt[]
 ----
 
 ===== _post_inc()
