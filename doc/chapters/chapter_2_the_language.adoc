@@ -3,6 +3,8 @@
 :sectnums:
 :stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
 
+// TODO Change mamber variable by member fields (more apropiate for objects as member fields)
+
 == The language
 
 === Statments
