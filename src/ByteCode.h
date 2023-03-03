@@ -14,7 +14,7 @@
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_GLOBAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_LOCAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_VECTOR_ITEM)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ARRAY_ITEM)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_THIS_VARIABLE)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_OBJECT_ITEM)\
 )
@@ -118,7 +118,7 @@ namespace zetscript{
 		BYTE_CODE_PUSH_STK_LOCAL,
 		//BYTE_CODE_PUSH_STK_REF,
 		BYTE_CODE_PUSH_STK_THIS,
-		BYTE_CODE_PUSH_STK_VECTOR_ITEM,
+		BYTE_CODE_PUSH_STK_ARRAY_ITEM,
 		BYTE_CODE_PUSH_STK_THIS_VARIABLE,
 		BYTE_CODE_PUSH_STK_THIS_FUNCTION,
 		BYTE_CODE_PUSH_STK_OBJECT_ITEM,
@@ -129,7 +129,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
 		BYTE_CODE_LOAD_THIS,
-		BYTE_CODE_LOAD_VECTOR_ITEM,
+		BYTE_CODE_LOAD_ARRAY_ITEM,
 		BYTE_CODE_LOAD_THIS_VARIABLE,
 		BYTE_CODE_LOAD_THIS_FUNCTION,
 		BYTE_CODE_LOAD_OBJECT_ITEM,
@@ -167,7 +167,7 @@ namespace zetscript{
 		BYTE_CODE_END_STORE=BYTE_CODE_SHR_STORE,
 		//----- END STORE
 
-		BYTE_CODE_PUSH_VECTOR_ITEM, // Value push for vector
+		BYTE_CODE_PUSH_ARRAY_ITEM, // Value push for vector
 		BYTE_CODE_PUSH_OBJECT_ITEM,
 		//-------------------------------
 		//
@@ -213,7 +213,7 @@ namespace zetscript{
 		BYTE_CODE_NEW_OBJECT_BY_TYPE, // new operator...
 		BYTE_CODE_NEW_OBJECT_BY_VALUE, // new operator...
 		BYTE_CODE_DELETE,
-		BYTE_CODE_NEW_VECTOR, // Vector object
+		BYTE_CODE_NEW_ARRAY, // Array object
 		BYTE_CODE_NEW_OBJECT,
 		BYTE_CODE_NEW_STRING,
 		BYTE_CODE_RET, // ret instruction ..

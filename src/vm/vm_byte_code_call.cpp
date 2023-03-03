@@ -273,7 +273,7 @@ execute_function:
 				// we pass everything by copy (TODO implement ref)
 				if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
 					StackElement *stk_arg=sf_call_stk_start_arg_call;
-					VectorScriptObject *var_args=NULL;
+					ArrayScriptObject *var_args=NULL;
 					ScriptObject *so_param=NULL;
 
 					int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
@@ -343,7 +343,7 @@ execute_function:
 							var_args->push(stk_arg); // we do not share pointer here due is already added in a vector
 						}else{
 							if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
-								var_args=ZS_NEW_VECTOR_OBJECT(data->zs);
+								var_args=ZS_NEW_ARRAY_OBJECT(data->zs);
 								if(!vm_create_shared_script_object(_vm,var_args)){
 									goto lbl_exit_function;
 								}

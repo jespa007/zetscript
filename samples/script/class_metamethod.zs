@@ -1,6 +1,6 @@
-class Vector2{
+class Vector{
 
-	Vector2(_x=0,_y=0){
+	Vector(_x=0,_y=0){
 		this.x=_x;
 		this.y=_y;
 	}
@@ -36,7 +36,7 @@ class Vector2{
 	// defines _add metamethod...
 	static _add(v1,v2){
 		
-		return new Vector2(
+		return new Vector(
 				v1.x+v2.x
 				,v1.y+v2.y);
 	}
@@ -51,7 +51,7 @@ class Vector2{
 	}
 };
 
-var v=(new Vector2(3,4))+(new Vector2(5,6))
+var v=(new Vector(3,4))+(new Vector(5,6))
 Console::outln(v++) // it will read vector [x,y] and postincrement
 
 

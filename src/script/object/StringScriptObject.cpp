@@ -92,7 +92,7 @@ namespace zetscript{
 		zs_string str_input;
 		zs_string str_result;
 		StackElement stk=*_stk;
-		VectorScriptObject *sov=NULL;
+		ArrayScriptObject *sov=NULL;
 		zs_string str_num_aux;
 		bool error=false;
 		char str_error[512]={0};
@@ -119,8 +119,8 @@ namespace zetscript{
 
 		if(_stk_args->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_args->value;
-			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-				sov=(VectorScriptObject *)so;
+			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_ARRAY){
+				sov=(ArrayScriptObject *)so;
 			}
 		}
 

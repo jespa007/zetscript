@@ -6,22 +6,22 @@
 
 namespace zetscript{
 
-	void    			VectorScriptObjectWrap_push(ZetScript *_zs,VectorScriptObject *sv,StackElement  * stk){
+	void    			ArrayScriptObjectWrap_push(ZetScript *_zs,ArrayScriptObject *sv,StackElement  * stk){
 		ZS_UNUSUED_PARAM(_zs);
 		return sv->push(stk);
 	}
 
-	void   	VectorScriptObjectWrap_pop(ZetScript *_zs,VectorScriptObject *_this){
+	void   	ArrayScriptObjectWrap_pop(ZetScript *_zs,ArrayScriptObject *_this){
 		ZS_UNUSUED_PARAM(_zs);
 		_this->pop();
 	}
 
-	zs_int 			VectorScriptObjectWrap_length(ZetScript *_zs,VectorScriptObject *_this){
+	zs_int 			ArrayScriptObjectWrap_length(ZetScript *_zs,ArrayScriptObject *_this){
 		ZS_UNUSUED_PARAM(_zs);
 		return _this->length();
 	}
 
-	void 			VectorScriptObjectWrap_insertAt(ZetScript *_zs,VectorScriptObject *_this, zs_int idx,StackElement  * _stk){
+	void 			ArrayScriptObjectWrap_insertAt(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx,StackElement  * _stk){
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		stk_assign(_zs,new_stk,_stk);
@@ -30,17 +30,17 @@ namespace zetscript{
 		stk_user_list_elements->insert(idx,new_stk);
 	}
 
-	void 			VectorScriptObjectWrap_eraseAt(ZetScript *_zs,VectorScriptObject *_this, zs_int idx){
+	void 			ArrayScriptObjectWrap_eraseAt(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx){
 		ZS_UNUSUED_PARAM(_zs);
 		_this->eraseUserElementAt(idx);
 	}
 
-	void 			VectorScriptObjectWrap_clear(ZetScript *_zs,VectorScriptObject *_this){
+	void 			ArrayScriptObjectWrap_clear(ZetScript *_zs,ArrayScriptObject *_this){
 		ZS_UNUSUED_PARAM(_zs);
 		_this->eraseAllUserElements();
 	}
 
-	StringScriptObject *		VectorScriptObjectWrap_join(ZetScript *_zs,VectorScriptObject *_this, zs_int idx){
+	StringScriptObject *		ArrayScriptObjectWrap_join(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx){
 		StringScriptObject *so_string = ZS_NEW_STRING_OBJECT(_zs);
 		zs_string *ptr_str=so_string->str_ptr;
 		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkUserListElements();
@@ -62,22 +62,22 @@ namespace zetscript{
 		return so_string;
 	}
 
-	VectorIteratorScriptObject * VectorScriptObjectWrap_iter(ZetScript *_zs,VectorScriptObject *so){
+	ArrayIteratorScriptObject * ArrayScriptObjectWrap_iter(ZetScript *_zs,ArrayScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_OBJECT_ITERATOR_VECTOR(_zs,so);
+		return ZS_NEW_OBJECT_ITERATOR_ARRAY(_zs,so);
 	}
 
-	VectorScriptObject 			*	VectorScriptObjectWrap_concat(ZetScript *_zs,VectorScriptObject *_so1, VectorScriptObject *_so2){
+	ArrayScriptObject 			*	ArrayScriptObjectWrap_concat(ZetScript *_zs,ArrayScriptObject *_so1, ArrayScriptObject *_so2){
 
-		return VectorScriptObject::concat(_zs,_so1, _so2);
+		return ArrayScriptObject::concat(_zs,_so1, _so2);
 	}
 
-	void 							VectorScriptObjectWrap_extend(ZetScript *_zs,VectorScriptObject *_this, VectorScriptObject *_sv_extend){
+	void 							ArrayScriptObjectWrap_extend(ZetScript *_zs,ArrayScriptObject *_this, ArrayScriptObject *_sv_extend){
 		ZS_UNUSUED_PARAM(_zs);
 		_this->concat(_sv_extend);
 	}
 
-	bool 							VectorScriptObjectWrap_contains(ZetScript *_zs,VectorScriptObject *sv, StackElement *stk_to_compare){
+	bool 							ArrayScriptObjectWrap_contains(ZetScript *_zs,ArrayScriptObject *sv, StackElement *stk_to_compare){
 		ZS_UNUSUED_PARAM(_zs);
 		bool found=false;
 		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
@@ -108,7 +108,7 @@ namespace zetscript{
 		return found;
 	}
 
-	bool 							VectorScriptObjectWrap_equal(ZetScript *_zs,VectorScriptObject *so1, VectorScriptObject *so2){
+	bool 							ArrayScriptObjectWrap_equal(ZetScript *_zs,ArrayScriptObject *so1, ArrayScriptObject *so2){
 		ZS_UNUSUED_PARAM(_zs);
 		bool equal=true;
 		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();

@@ -39,14 +39,14 @@ namespace zetscript{
 			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getTypeName();
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
 			result=ZS_TYPE_NAME_OBJECT_STRING;
-		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
-			result=ZS_TYPE_NAME_OBJECT_VECTOR;
+		else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk))
+			result=ZS_TYPE_NAME_OBJECT_ARRAY;
 		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_OBJECT;
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_STRING;
-		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk))
-			result=ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR;
+		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_ARRAY(stk))
+			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY;
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
@@ -417,8 +417,8 @@ namespace zetscript{
 				 if(ptr_var==0) return stk_result;
 				 stk_result=*((StackElement *)ptr_var);
 				 break;
-			 case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR:
+			 case IDX_TYPE_SCRIPT_OBJECT_ARRAY:
+			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY:
 			 case IDX_TYPE_SCRIPT_OBJECT_OBJECT:
 			 case IDX_TYPE_SCRIPT_OBJECT_CLASS:
 			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:

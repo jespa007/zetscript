@@ -4,11 +4,11 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_ITERATOR_VECTOR(zs,so) (VectorIteratorScriptObject::newVectorIteratorScriptObject(zs,so))
+#define ZS_NEW_OBJECT_ITERATOR_ARRAY(zs,so) (ArrayIteratorScriptObject::newArrayIteratorScriptObject(zs,so))
 
 namespace zetscript{
 
-	class  VectorIteratorScriptObject:public RefObjectScriptObject{
+	class  ArrayIteratorScriptObject:public RefObjectScriptObject{
 
 	public:
 
@@ -16,18 +16,18 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static VectorIteratorScriptObject * newVectorIteratorScriptObject(ZetScript *_zs, VectorScriptObject *_so_ref);
+		static ArrayIteratorScriptObject * newArrayIteratorScriptObject(ZetScript *_zs, ArrayScriptObject *_so_ref);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-		VectorIteratorScriptObject(ZetScript *_zs,VectorScriptObject *_so_ref);
+		ArrayIteratorScriptObject(ZetScript *_zs,ArrayScriptObject *_so_ref);
 		void get();
 		void next();
 		bool end();
-		~VectorIteratorScriptObject();
+		~ArrayIteratorScriptObject();
 	private:
 
 		zs_int idx;

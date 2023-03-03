@@ -15,7 +15,7 @@ var test_instanceof=[
 	"0 instanceof int"
 	,"0.0 instanceof float"
 	,"true instanceof bool"
-	,"[0,1,2] instanceof Vector"
+	,"[0,1,2] instanceof Array"
 	,"\"abc\" instanceof String"
 	,"new A() instanceof A"
 	,"new B() instanceof A"

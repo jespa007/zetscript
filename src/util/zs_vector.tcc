@@ -3,8 +3,8 @@
  *  See LICENSE file for details.
  */
 
-#define ZS_VECTOR_MAX_ELEMENTS	2000000
-#define ZS_VECTOR_EXPAND_SLOT_ELEMENTS 16
+#define ZS_ARRAY_MAX_ELEMENTS	2000000
+#define ZS_ARRAY_EXPAND_SLOT_ELEMENTS 16
 
 namespace zetscript{
 
@@ -14,16 +14,16 @@ namespace zetscript{
 	template<typename _T>
 	bool	zs_vector<_T>::push_back_slot(){
 		if (this->_size == 0) {
-			this->_size = ZS_VECTOR_EXPAND_SLOT_ELEMENTS;
+			this->_size = ZS_ARRAY_EXPAND_SLOT_ELEMENTS;
 			this->items = new _T[ this->_size]; //(zs_int *)ZS_MALLOC(sizeof(zs_int) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->size()) {
-			if((this->_size+ ZS_VECTOR_EXPAND_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
+			if((this->_size+ ZS_ARRAY_EXPAND_SLOT_ELEMENTS) >= ZS_ARRAY_MAX_ELEMENTS){
 				ZS_THROW_RUNTIME_ERRORF("Max elements vector");
 			}
-			this->_size += ZS_VECTOR_EXPAND_SLOT_ELEMENTS;
+			this->_size += ZS_ARRAY_EXPAND_SLOT_ELEMENTS;
 			_T *aux_buf=new _T[ this->_size];
 
 			// copy.
@@ -140,7 +140,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(_new_size >=  ZS_VECTOR_MAX_ELEMENTS){
+		if(_new_size >=  ZS_ARRAY_MAX_ELEMENTS){
 			ZS_THROW_RUNTIME_ERROR("Cannot resize zs_vector. Reached maximum",_new_size);
 			return;
 		}
@@ -212,7 +212,7 @@ namespace zetscript{
 		// needs to resize
 		if(this->_size<=(_n_elements_src_vector_to_copy+count)){
 			_size=_n_elements_src_vector_to_copy+count;
-			if(_size >=  ZS_VECTOR_MAX_ELEMENTS){
+			if(_size >=  ZS_ARRAY_MAX_ELEMENTS){
 				ZS_THROW_RUNTIME_ERROR("Cannot insert. Reached max capacity",_pos,count);
 			}
 		}

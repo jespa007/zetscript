@@ -52,7 +52,7 @@ namespace zetscript{
 		return *this;
 	}
 
-	ScriptFunctionParam *ScriptFunctionParam::createArrayFromVector(const zs_vector<ScriptFunctionParam *> * _script_function_params){
+	ScriptFunctionParam *ScriptFunctionParam::createArrayFromArray(const zs_vector<ScriptFunctionParam *> * _script_function_params){
 		ScriptFunctionParam *params=new ScriptFunctionParam[_script_function_params->size()];
 
 		for(int i=0; i < _script_function_params->size(); i++){

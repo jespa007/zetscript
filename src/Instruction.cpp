@@ -136,7 +136,7 @@ namespace zetscript{
 				case BYTE_CODE_BITWISE_XOR:
 				case BYTE_CODE_SHL:
 				case BYTE_CODE_SHR:
-				case BYTE_CODE_PUSH_VECTOR_ITEM:
+				case BYTE_CODE_PUSH_ARRAY_ITEM:
 				// byte_code_XXX_store, it pops -2 and push +1 = -1
 				case BYTE_CODE_ADD_STORE:
 				case BYTE_CODE_SUB_STORE:
@@ -185,7 +185,7 @@ namespace zetscript{
 				case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
 				case BYTE_CODE_PUSH_STK_LOCAL:
 				case BYTE_CODE_PUSH_STK_THIS:
-				case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
+				case BYTE_CODE_PUSH_STK_ARRAY_ITEM:
 				case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 				case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 				case BYTE_CODE_LOAD_GLOBAL:
@@ -194,7 +194,7 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_THIS:
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				case BYTE_CODE_LOAD_THIS_VARIABLE:
-				case BYTE_CODE_LOAD_VECTOR_ITEM:
+				case BYTE_CODE_LOAD_ARRAY_ITEM:
 				case BYTE_CODE_LOAD_FUNCTION:
 				case BYTE_CODE_LOAD_UNDEFINED:
 				case BYTE_CODE_LOAD_NULL:
@@ -204,7 +204,7 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_BOOL:
 				case BYTE_CODE_LOAD_ZS_INT:
 				case BYTE_CODE_LOAD_TYPE:
-				case BYTE_CODE_NEW_VECTOR:
+				case BYTE_CODE_NEW_ARRAY:
 				case BYTE_CODE_NEW_OBJECT_BY_TYPE:
 				case BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				case BYTE_CODE_NEW_OBJECT:

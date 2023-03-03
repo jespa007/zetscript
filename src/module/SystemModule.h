@@ -7,7 +7,7 @@
 namespace zetscript{
 
 	class StringScriptObject;
-	class VectorScriptObject;
+	class ArrayScriptObject;
 	class StringMod;
 
 	zs_float	SystemModule_clock(ZetScript *_zs);

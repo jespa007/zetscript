@@ -31,7 +31,7 @@ namespace zetscript{
 			ZetScript 					*zs;
 
 			/**
-			 * Vector of script scopes.
+			 * Array of script scopes.
 			 */
 			zs_vector<Scope *> 		 *scopes;
 			Scope *main_scope;

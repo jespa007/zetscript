@@ -441,10 +441,10 @@ SET(
 	script/object/StringIteratorScriptObject.h
 	script/object/StringIteratorScriptObjectWrap.h
 	script/object/VarRefScriptObject.h
-	script/object/VectorScriptObject.h
-	script/object/VectorScriptObjectWrap.h
-	script/object/VectorIteratorScriptObject.h
-	script/object/VectorIteratorScriptObjectWrap.h
+	script/object/ArrayScriptObject.h
+	script/object/ArrayScriptObjectWrap.h
+	script/object/ArrayIteratorScriptObject.h
+	script/object/ArrayIteratorScriptObjectWrap.h
 	
 			
 	# scope

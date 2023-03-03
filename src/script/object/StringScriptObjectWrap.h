@@ -16,8 +16,8 @@ namespace zetscript{
 	void 							StringScriptObjectWrap_eraseAt(ZetScript *_zs,StringScriptObject *so, zs_int _idx);
 	void 							StringScriptObjectWrap_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,zs_int _ch);
 	void 							StringScriptObjectWrap_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,zs_string *_str);
-	VectorScriptObject * 			StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int _ch_delim);
-	VectorScriptObject * 			StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_string * _str_token);
+	ArrayScriptObject * 			StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int _ch_delim);
+	ArrayScriptObject * 			StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_string * _str_token);
 
 	zs_int 							StringScriptObjectWrap_indexOf(ZetScript *_zs,StringScriptObject *so,zs_int search);
 	zs_int 							StringScriptObjectWrap_indexOf(ZetScript *_zs,StringScriptObject *so,zs_string *search);

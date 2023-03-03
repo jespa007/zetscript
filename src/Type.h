@@ -13,13 +13,13 @@
 #define ZS_TYPE_NAME_FUNCTION					"Function"
 #define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
 #define ZS_TYPE_NAME_OBJECT_STRING 				"String"
-#define ZS_TYPE_NAME_OBJECT_VECTOR 				"Vector"
+#define ZS_TYPE_NAME_OBJECT_ARRAY 				"Array"
 #define ZS_TYPE_NAME_OBJECT_OBJECT 				"Object"
 #define ZS_TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
 #define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
 #define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
-#define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY 	"IteratorArray"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
 
 namespace zetscript{
@@ -62,7 +62,7 @@ namespace zetscript{
 
 		// Iterator
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING, // "IteratorString"
-		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR, // IteratorVector []
+		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY, // IteratorArray []
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
 		//
 		// BUILT-IN CLASSES
@@ -70,7 +70,7 @@ namespace zetscript{
 		//
 		// CONTAINER CLASSES
 		//
-		IDX_TYPE_SCRIPT_OBJECT_VECTOR, // Vector []
+		IDX_TYPE_SCRIPT_OBJECT_ARRAY, // Array []
 
 		// Object & type
 		IDX_TYPE_SCRIPT_OBJECT_OBJECT, //  Object {}

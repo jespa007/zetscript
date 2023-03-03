@@ -254,7 +254,7 @@ namespace zetscript{
 		}
 
 		// declare vector ...
-		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_VECTOR));
+		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_ARRAY));
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		unsigned v_elements=0;
@@ -287,7 +287,7 @@ namespace zetscript{
 			}
 
 			// vpush
-			eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ITEM));
+			eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_ARRAY_ITEM));
 
 			v_elements++;
 		}

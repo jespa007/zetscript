@@ -493,7 +493,7 @@ namespace zetscript{
 				}
 			}
 
-			params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
+			params=ScriptFunctionParam::createArrayFromArray(&script_function_params);
 			params_len=script_function_params.size();
 
 			// remove collected script function params

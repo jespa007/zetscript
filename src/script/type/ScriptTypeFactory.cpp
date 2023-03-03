@@ -95,7 +95,7 @@ namespace zetscript{
 
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringScriptObject)
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VectorScriptObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ArrayScriptObject)
 
 	ScriptTypeFactory::ScriptTypeFactory(ZetScript *_zs){
 		zs = _zs;
@@ -225,14 +225,14 @@ namespace zetscript{
 
 		// Script object iterators
 		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,StringIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,VectorIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY,ArrayIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY);
 		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ObjectIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,VectorScriptObject,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_ARRAY,ArrayScriptObject,IDX_TYPE_SCRIPT_OBJECT_ARRAY);
 		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ObjectScriptObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
 		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_CLASS,ClassScriptObject,IDX_TYPE_SCRIPT_OBJECT_CLASS);
 		// it needs script object type to have zetscript reference
@@ -280,8 +280,8 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_string *)>(StringScriptObjectWrap_insertAt));
 		bindMemberFunction<StringScriptObject>("clear",StringScriptObjectWrap_clear);
 		bindMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
-		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
-		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
+		bindMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
+		bindMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));
 
@@ -305,30 +305,30 @@ namespace zetscript{
 		bindMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectWrap_get);
 
 		//---------------------------------------------
-		// Vector
+		// Array
 
 		// properties
-		bindMemberPropertyGetter<VectorScriptObject>("length",&VectorScriptObjectWrap_length);
+		bindMemberPropertyGetter<ArrayScriptObject>("length",&ArrayScriptObjectWrap_length);
 
 		// members
-		bindMemberFunction<VectorScriptObject>("push",&VectorScriptObjectWrap_push);
-		bindMemberFunction<VectorScriptObject>("pop",&VectorScriptObjectWrap_pop);
-		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
-		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
-		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
-		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
-		bindMemberFunction<VectorScriptObject>("extend",&VectorScriptObjectWrap_extend);
-		bindStaticMemberFunction<VectorScriptObject>("concat",&VectorScriptObjectWrap_concat);
-		bindMemberFunction<VectorScriptObject>("contains",&VectorScriptObjectWrap_contains);
+		bindMemberFunction<ArrayScriptObject>("push",&ArrayScriptObjectWrap_push);
+		bindMemberFunction<ArrayScriptObject>("pop",&ArrayScriptObjectWrap_pop);
+		bindMemberFunction<ArrayScriptObject>("insertAt",&ArrayScriptObjectWrap_insertAt);
+		bindMemberFunction<ArrayScriptObject>("eraseAt",&ArrayScriptObjectWrap_eraseAt);
+		bindMemberFunction<ArrayScriptObject>("clear",&ArrayScriptObjectWrap_clear);
+		bindMemberFunction<ArrayScriptObject>("join",&ArrayScriptObjectWrap_join);
+		bindMemberFunction<ArrayScriptObject>("extend",&ArrayScriptObjectWrap_extend);
+		bindStaticMemberFunction<ArrayScriptObject>("concat",&ArrayScriptObjectWrap_concat);
+		bindMemberFunction<ArrayScriptObject>("contains",&ArrayScriptObjectWrap_contains);
 
-		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
-		bindStaticMemberFunction<VectorScriptObject>("_equ",&VectorScriptObjectWrap_equal);
-		//bindStaticMemberFunction<VectorScriptObject>("_add",&VectorScriptObjectWrap_equal_add);
+		bindMemberFunction<ArrayScriptObject>("_iter",&ArrayScriptObjectWrap_iter);
+		bindStaticMemberFunction<ArrayScriptObject>("_equ",&ArrayScriptObjectWrap_equal);
+		//bindStaticMemberFunction<ArrayScriptObject>("_add",&ArrayScriptObjectWrap_equal_add);
 
-		// IteratorVector
-		bindMemberFunction<VectorIteratorScriptObject>("_postinc",VectorIteratorScriptObjectWrap_next);
-		bindMemberFunction<VectorIteratorScriptObject>("_end",VectorIteratorScriptObjectWrap_end);
-		bindMemberFunction<VectorIteratorScriptObject>("_get",VectorIteratorScriptObjectWrap_get);
+		// IteratorArray
+		bindMemberFunction<ArrayIteratorScriptObject>("_postinc",ArrayIteratorScriptObjectWrap_next);
+		bindMemberFunction<ArrayIteratorScriptObject>("_end",ArrayIteratorScriptObjectWrap_end);
+		bindMemberFunction<ArrayIteratorScriptObject>("_get",ArrayIteratorScriptObjectWrap_get);
 
 
 		//---------------------------------------------
@@ -769,8 +769,8 @@ namespace zetscript{
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // "String"
 				so=StringScriptObject::newStringScriptObject(zs);
 				break;
-			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
-				so=VectorScriptObject::newVectorScriptObject(zs);
+			case IDX_TYPE_SCRIPT_OBJECT_ARRAY: // Array []
+				so=ArrayScriptObject::newArrayScriptObject(zs);
 				break;
 			// Object
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
@@ -822,7 +822,7 @@ namespace zetscript{
 
 		if(
 				idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING
-				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_ARRAY
 				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 				|| idx_script_type>=IDX_TYPE_MAX
 		){

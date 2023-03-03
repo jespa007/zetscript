@@ -43,14 +43,14 @@ namespace zetscript{
 					vm_create_shared_script_object(_vm,so_string);\
 					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 					return true;
-			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)\
+			}else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op1)\
 						&&\
-					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+					STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op2)\
 			){\
-				script_object=VectorScriptObject::concat(\
+				script_object=ArrayScriptObject::concat(\
 							data->zs\
-							,(VectorScriptObject *)stk_result_op1->value\
-							,(VectorScriptObject *)stk_result_op2->value\
+							,(ArrayScriptObject *)stk_result_op1->value\
+							,(ArrayScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_script_object(_vm,script_object);\
 					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
@@ -307,9 +307,9 @@ namespace zetscript{
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
-			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)\
+			}else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op1)\
 						&&\
-					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+					STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op2)\
 			){\
 				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\

@@ -268,7 +268,7 @@ namespace zetscript{
 						delete number_value;
 					}
 				}else{
-					json_deserialize_error(data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Vector or Object");
+					json_deserialize_error(data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Array or Object");
 					return NULL;
 				}
 			}
@@ -283,20 +283,20 @@ namespace zetscript{
 				){
 			char *str_current = (char *)str_start;
 			zs_string error;
-			VectorScriptObject *vo;
+			ArrayScriptObject *vo;
 			StackElement *stk_element=NULL;
 
 
 			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '['){
-				json_deserialize_error(data,str_start,line,"A '[' was expected to parse JsonVarVector type");
+				json_deserialize_error(data,str_start,line,"A '[' was expected to parse JsonVarArray type");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=VectorScriptObject::newVectorScriptObject(data->zs);
+				vo=ArrayScriptObject::newArrayScriptObject(data->zs);
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),vo) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared poiner for vector object");
 					return NULL;

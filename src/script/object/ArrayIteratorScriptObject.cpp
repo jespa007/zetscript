@@ -7,27 +7,27 @@
 
 namespace zetscript{
 
-	VectorIteratorScriptObject * VectorIteratorScriptObject::newVectorIteratorScriptObject(
+	ArrayIteratorScriptObject * ArrayIteratorScriptObject::newArrayIteratorScriptObject(
 			ZetScript *_zs
-			, VectorScriptObject *_so_ref
+			, ArrayScriptObject *_so_ref
 	){
-		return new VectorIteratorScriptObject(_zs,_so_ref);
+		return new ArrayIteratorScriptObject(_zs,_so_ref);
 	}
 
 
-	VectorIteratorScriptObject::VectorIteratorScriptObject(
+	ArrayIteratorScriptObject::ArrayIteratorScriptObject(
 		ZetScript *_zs
-		, VectorScriptObject *_so_ref
+		, ArrayScriptObject *_so_ref
 	):RefObjectScriptObject(_zs,_so_ref)
 	{
-		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY;
 		idx=0;
 		stk_key.properties=STK_PROPERTY_ZS_INT;
 		stk_value.properties=STK_PROPERTY_ZS_INT;
 	}
 
-	void VectorIteratorScriptObject::get(){
-		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
+	void ArrayIteratorScriptObject::get(){
+		ArrayScriptObject *sov=(ArrayScriptObject *)ref_object;
 		if(sov==NULL) {
 			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
@@ -45,8 +45,8 @@ namespace zetscript{
 		vm_push_stack_element(vm,stk_key);
 	}
 
-	void	 VectorIteratorScriptObject::next(){
-		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
+	void	 ArrayIteratorScriptObject::next(){
+		ArrayScriptObject *sov=(ArrayScriptObject *)ref_object;
 		if(sov==NULL) {
 			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
@@ -56,15 +56,15 @@ namespace zetscript{
 		}
 	}
 
-	bool	 VectorIteratorScriptObject::end(){
-		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
+	bool	 ArrayIteratorScriptObject::end(){
+		ArrayScriptObject *sov=(ArrayScriptObject *)ref_object;
 		if(sov==NULL) {
 			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return idx >= sov->length();
 	}
 
-	VectorIteratorScriptObject::~VectorIteratorScriptObject(){
+	ArrayIteratorScriptObject::~ArrayIteratorScriptObject(){
 
 
 	}

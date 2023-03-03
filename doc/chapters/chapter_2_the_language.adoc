@@ -218,7 +218,7 @@ ZetScript supports the following builtin data types,
 * Number
 * Boolean
 * String
-* Vector
+* Array
 * Object
 * Function
 
@@ -731,7 +731,7 @@ include::../examples/the_language/string/string_replace_out.txt[]
 
 ====== String::split()
 
-Splits the string into a vector of strings using a separator
+Splits the string into a array of strings using a separator
 
 *Syntax*
 
@@ -746,7 +746,7 @@ String::split(_separator)
 
 +++<u>Returns</u>+++ 
 
-A vector of strings 
+A array of strings 
 
 *Example*
 
@@ -962,104 +962,104 @@ Output
 include::../examples/the_language/string/string_append_out.txt[]
 ----
 
-==== Vector
+==== Array
 
-Vector type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Vector_ once it assings a open/closed square brackets (i.e '[]' ), 
-
-Example,
-
-[source,javascript]
-----
-[]; // a vector
-----
-
-Variable instanced as _Vector_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,
+Array type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Array_ once it assings a open/closed square brackets (i.e '[]' ), 
 
 Example,
 
 [source,javascript]
 ----
-[1,"string",true,2.0]; // A vector with elements
+[]; // a array
 ----
 
-To access element vector is done through integer as a index.
+Variable instanced as _Array_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,
+
+Example,
+
+[source,javascript]
+----
+[1,"string",true,2.0]; // A array with elements
+----
+
+To access element array is done through integer as a index.
 
 Example,
 
 [source,javascript]
 ----
 var v=[1,"string",true,2.0]; // variable 'v' has 4 elements where its access exist in [0..3]
-v[1]; // It access vector's second element (i.e "string")
+v[1]; // It access array's second element (i.e "string")
 ----
 
 ===== Properties
 
-====== Vector::length
+====== Array::length
 
-Returns the number of elements in the vector
+Returns the number of elements in the array
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_length.zs[]
+include::../examples/the_language/array/array_length.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_length_out.txt[]
+include::../examples/the_language/array/array_length_out.txt[]
 ----
 
 ===== Static functions
 
-====== Vector::concat()
+====== Array::concat()
 
-Creates a new vector as a result of merge all elements from two vectors
+Creates a new array as a result of merge all elements from two arrays
 
 *Syntax*
 
 [source,javascript]
 ----
-Vector::concat(_v1, _v2)
+Array::concat(_v1, _v2)
 ----
 
 +++<u>Parameters</u>+++
 
-- __v1_ : First vector to concatenate into the new vector
-- __v2_ : Second vector to concatenate into the new vector
+- __v1_ : First array to concatenate into the new array
+- __v2_ : Second array to concatenate into the new array
 
 +++<u>Returns</u>+++ 
 
-A new vector as a result of merge all elements from the vectors
+A new array as a result of merge all elements from the arrays
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_concat.zs[]
+include::../examples/the_language/array/array_concat.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_concat_out.txt[]
+include::../examples/the_language/array/array_concat_out.txt[]
 ----
 
 
 ===== Member functions
 
-====== Vector::push()
+====== Array::push()
 
-Adds a new element at the end of the vector
+Adds a new element at the end of the array
 
 *Syntax*
 
 [source,javascript]
 ----
-Vector::push(_value)
+Array::push(_value)
 ----
 
 +++<u>Parameters</u>+++
@@ -1074,23 +1074,23 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_push.zs[]
+include::../examples/the_language/array/array_push.zs[]
 ----
 
 Output
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_push_out.txt[]
+include::../examples/the_language/array/array_push_out.txt[]
 ----
 
-====== Vector::pop()
+====== Array::pop()
 
-Removes the last element in the vector
+Removes the last element in the array
 
 [source,javascript]
 ----
-Vector::pop()
+Array::pop()
 ----
 
 +++<u>Parameters</u>+++
@@ -1099,41 +1099,41 @@ None
 
 +++<u>Returns</u>+++ 
 
-Last value of the vector before be removed
+Last value of the array before be removed
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_pop.zs[]
+include::../examples/the_language/array/array_pop.zs[]
 ----
 
 Output
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_pop_out.txt[]
+include::../examples/the_language/array/array_pop_out.txt[]
 ----
 
-====== Vector::insertAt(_pos,_value)
+====== Array::insertAt(_pos,_value)
 
-Inserts element in the vector at defined position
+Inserts element in the array at defined position
 
 [source,javascript]
 ----
-Vector::insertAt(_pos,_value)
+Array::insertAt(_pos,_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __position_: Position where to insert. The position ranges within 0 to the length-1 of the vector
+- __position_: Position where to insert. The position ranges within 0 to the length-1 of the array
 - __value_: value to insert
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_insert_at.zs[]
+include::../examples/the_language/array/array_insert_at.zs[]
 ----
 
 Output:
@@ -1143,18 +1143,18 @@ Output:
 include::../examples/the_language/string/string_insert_at_out.txt[]
 ----
 
-====== Vector::eraseAt()
+====== Array::eraseAt()
 
 Removes the value at defined position
 
 [source,javascript]
 ----
-Vector::eraseAt(_pos)
+Array::eraseAt(_pos)
 ----
 
 +++<u>Parameters</u>+++
 
-- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the vector
+- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the array
 
 +++<u>Returns</u>+++ 
 
@@ -1164,23 +1164,23 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_erase_at.zs[]
+include::../examples/the_language/array/array_erase_at.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_erase_at_out.txt[]
+include::../examples/the_language/array/array_erase_at_out.txt[]
 ----
 
-====== Vector::clear()
+====== Array::clear()
 
-Clears all elements in the vector
+Clears all elements in the array
 
 [source,javascript]
 ----
-Vector::clear()
+Array::clear()
 ----
 
 +++<u>Parameters</u>+++
@@ -1195,23 +1195,23 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_clear.zs[]
+include::../examples/the_language/array/array_clear.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/vector/vector_clear_out.txt[]
+include::../examples/the_language/array/array_clear_out.txt[]
 ----
 
-====== Vector::join(_separator)
+====== Array::join(_separator)
 
-Concatenates all elements of the vector into a string using a separator
+Concatenates all elements of the array into a string using a separator
 
 [source,javascript]
 ----
-Vector::join(_separator)
+Array::join(_separator)
 ----
 
 +++<u>Parameters</u>+++
@@ -1220,29 +1220,29 @@ Vector::join(_separator)
 
 +++<u>Returns</u>+++ 
 
-A string of all concatenated vector's elements 
+A string of all concatenated array's elements 
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_join.zs[]
+include::../examples/the_language/array/array_join.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_join_out.txt[]
+include::../examples/the_language/array/array_join_out.txt[]
 ----
 
-====== Vector::contains(_value)
+====== Array::contains(_value)
 
-Tells whether a value is contained in the vector or not
+Tells whether a value is contained in the array or not
 
 [source,javascript]
 ----
-Vector::contains(_value)
+Array::contains(_value)
 ----
 
 +++<u>Parameters</u>+++
@@ -1251,34 +1251,34 @@ Vector::contains(_value)
 
 +++<u>Returns</u>+++
 
-A boolean value telling if the value exist or not in the vector 
+A boolean value telling if the value exist or not in the array 
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_contains.zs[]
+include::../examples/the_language/array/array_contains.zs[]
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/vector/vector_contains_out.txt[]
+include::../examples/the_language/array/array_contains_out.txt[]
 ----
 
-====== Vector::extend(_v)
+====== Array::extend(_v)
 
-Extends the calling vector by appending all elements from a vector
+Extends the calling array by appending all elements from a array
 
 [source,javascript]
 ----
-Vector::extend(_v)
+Array::extend(_v)
 ----
 
 +++<u>Parameters</u>+++
 
-- __v_ : Vector type which all elements will appended into the vector
+- __v_ : Array type which all elements will appended into the array
 
 +++<u>Returns</u>+++ 
 
@@ -1288,14 +1288,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/vector/vector_extend.zs[]
+include::../examples/the_language/array/array_extend.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/vector/vector_extend_out.txt[]
+include::../examples/the_language/array/array_extend_out.txt[]
 ----
 
 
@@ -1509,7 +1509,7 @@ include::../examples/the_language/object/object_concat_out.txt[]
 
 ====== Object::keys(_o)
 
-Returns a vector of string representing its key names
+Returns a array of string representing its key names
 
 *Syntax*
 
@@ -1524,7 +1524,7 @@ Object::keys(_o)
 
 +++<u>Returns</u>+++ 
 
-A vector of strings of its key names
+A array of strings of its key names
 
 *Example*
 
@@ -1581,6 +1581,65 @@ var fun=function(_a,_b){
 Console::outln(fun(5,5)); // it prints "10"
 ----
 
+For more information about Functions go to section X.XX
+
+==== Class
+
+Class type is a custom type that operates with its variables and functions. A class is defined by keyword _class_ followed by name. 
+
+[source,javascript]
+----
+// Definition class A
+class A{
+
+}
+----
+
+To instance a object of type class is done through operator _new_ followed by the class name defined with parethesis
+
+[source,javascript]
+----
+// Instances object class type A
+var a=new A();
+----
+
+Also a class type can extend from another class with _extends_ keyword
+
+
+[source,javascript]
+----
+// Definition class A
+class A{
+
+}
+
+
+// Definition class B that extends from B
+class B extends A{
+
+}
+----
+
+For more information about class type go to section X.XX
+
+==== The instanceof operator
+
+The _instanceof_ operator returns true if the operand's match or derives from type object.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/type/type_instanceof.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/type/type_instanceof_out.txt[]
+----
+
 ==== The typeof operator
 
 The _typeof_ operator returns the type of operand's value.
@@ -1624,7 +1683,7 @@ It performs a these operations:
 
 * Add operation between two integer or float values 
 * Concatenates two strings or other values
-* Concatenates two vectors 
+* Concatenates two arrays 
 * Concatenates two objects 
 
 |
@@ -1740,7 +1799,7 @@ Relational operators evaluates relations through two values. The relational oper
 a|
 Performs the following operations:
 
-* Checks if a value exist in a string or vector
+* Checks if a value exist in a string or array
 * Checks a key exist in object
 |
 [source,javascript]
@@ -2123,19 +2182,19 @@ include::../examples/the_language/loop/loop_for_out.txt[]
 
 ==== The for-in loop
 
-The _for-in_ loop works as for loop but simplifies the iteration over containers like string, object or vectors. On each iteration it can evaluate its value in a variable or its key and its value in a pair of variables,
+The _for-in_ loop works as for loop but simplifies the iteration over containers like string, object or arrays. On each iteration it can evaluate its value in a variable or its key and its value in a pair of variables,
 
 *Syntax*
 
 [source,javascript]
 ----
 // Evaluate container value per iteration
-for(var v in vector){
+for(var v in array){
 	// code block to be executed
 }
 
 // Evaluate container key and value per iteration
-for(var k,v in vector){
+for(var k,v in array){
 	// code block to be executed
 }
 ----
@@ -2320,7 +2379,7 @@ var j=sum(5); // j=6
 
 ==== Variable parameters
 
-A variable parameters is declared by adding three dots (...) with the variable name. The variable parameter access are acceded as a vector.
+A variable parameters is declared by adding three dots (...) with the variable name. The variable parameter access are acceded as a array.
 
 *Syntax*
 
@@ -2467,10 +2526,25 @@ t.a=10; 		  // t.a==10
 
 ----
 
-==== Constructor
+==== Inicialization
 
-A constructor is a special member function that aims to execute when class is instanced. The definition and initialization of a member variable is done through _this_ keyword. 
+===== Member variables
 
+A class can initialize its variables defining them at its body with _var_ and assign (=) operator
+
+[source,javascript]
+----
+class Test{
+
+	var a=10;
+}
+
+var t=new Test(); // t.a==10
+----
+
+===== Constructor
+
+A constructor is a special member function that aims to execute when class is instanced. To initialize member variable is done through _this_ keyword and member field access (.) operator 
 
 [source,javascript]
 ----
@@ -2478,32 +2552,38 @@ class Test{
 
  	// Constructor function
 	constructor(){
-		this.a=0; // initialize field a=0
+		this.a=10; // initialize member variable as a=10
  	}
 }
 
-var t=new Test(); // t.a==0
+var t=new Test(); // t.a==10
 ----
 
 ==== Inheritance
 
-A class can inherit another class through "extends". The new extended class will copy all functions from base class. The extended class can call parent functions through _super_ keyword.
+A class can inherit another class through _extends_ keyword. The new extended class will copy all functions and variable initialization from base class. The extended class can call parent functions through _super_ keyword.
 
 Example,
 
 [source,javascript]
 ----
-class TestExtended extends Test{
-	function1(a){
- 		var t=super(a); // it calls Test::function1(2)
- 		this.data1+=t; // Now data1=5+2 = 7
- 		return this.data1+a;
+
+class A {
+	constructor(){
+		this.a=10;
+	}
+}; 
+
+
+class B extends A{
+	constructor(){
+		super(); // call A::constructor
+		this.b=10 + this.a; 
  	}
  	
- 	function3(){
- 		this.data3=this.data1+this.function1(5);
- 	}
 }; 
+
+var b=new B(); // b.a==10, b.b=20
 ----
 
 ==== Metamethods

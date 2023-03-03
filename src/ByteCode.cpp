@@ -47,7 +47,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
 			//case BYTE_CODE_PUSH_STK_REF:						return "PUSH_STK_REF"; // push stk global
 			case BYTE_CODE_PUSH_STK_THIS:						return "PUSH_STK_THIS"; // push stk global
-			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:				return "PUSH_STK_VEC@ITEM"; // load element vector
+			case BYTE_CODE_PUSH_STK_ARRAY_ITEM:				return "PUSH_STK_VEC@ITEM"; // load element vector
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:				return "PUSH_STK_OBJ@ITEM"; // load element object
 			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:				return "PUSH_STK_THIS@VAR"; // load element object
 
@@ -71,7 +71,7 @@ namespace zetscript{
 			case BYTE_CODE_MEMBER_CALL:							return "MEMBER_CALL"; // this indirect call through dynamic symbol
 			case BYTE_CODE_LOAD_THIS_VARIABLE:					return "LOAD_THIS@VAR"; // load element object
 			case BYTE_CODE_LOAD_THIS_FUNCTION:					return "LOAD_THIS@FUN"; // load element object
-			case BYTE_CODE_LOAD_VECTOR_ITEM:					return "LOAD_VEC@ITEM"; // load element vector
+			case BYTE_CODE_LOAD_ARRAY_ITEM:					return "LOAD_VEC@ITEM"; // load element vector
 			case BYTE_CODE_LOAD_OBJECT_ITEM:					return "LOAD_OBJ@ITEM"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:						return "LOAD_FUN"; // load function
 			case BYTE_CODE_LOAD_UNDEFINED:						return "LOAD_UNDEFINED"; // load undfined
@@ -89,8 +89,8 @@ namespace zetscript{
 			case BYTE_CODE_JT:          						return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_JE_CASE:								return "JE_CASE"; // je case equal ... goes end to conditional.
 			case BYTE_CODE_CONSTRUCTOR_CALL: 					return "CALL_CONSTRUCTOR"; // calling function after all of arguments are processed...
-			case BYTE_CODE_NEW_VECTOR: 							return "NEW_VEC"; // Vector object (CREATE)
-			case BYTE_CODE_PUSH_VECTOR_ITEM: 					return "PUSH_VITEM"; // Value push for stdvector
+			case BYTE_CODE_NEW_ARRAY: 							return "NEW_VEC"; // Array object (CREATE)
+			case BYTE_CODE_PUSH_ARRAY_ITEM: 					return "PUSH_VITEM"; // Value push for stdvector
 			case BYTE_CODE_RET: 								return "RET"; // Value pop for stdvector
 			case BYTE_CODE_NEW_OBJECT_BY_TYPE:					return "NEW_OBJECT_BY_TYPE"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT_BY_VALUE:					return "NEW_OBJECT_BY_VALUE"; // New object (CREATE)
@@ -160,7 +160,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      		return "LOAD_???"; // load to find global
-			case BYTE_CODE_LOAD_VECTOR_ITEM:		return "LOAD_EVEC"; // load element vector
+			case BYTE_CODE_LOAD_ARRAY_ITEM:		return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_OBJECT_ITEM:		return "LOAD_EOBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:			return "LOAD_FUNCT"; // load function
 			case BYTE_CODE_LOAD_UNDEFINED:			return "LOAD_UNDEFINED"; // load undefined
@@ -176,8 +176,8 @@ namespace zetscript{
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_JE_CASE:					return "JE"; // goto if equal ... goes end to conditional.
 			case BYTE_CODE_JMP_CASE:       			return "JMP_CASE"; // Last jmp case
-			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
-			case BYTE_CODE_PUSH_VECTOR_ITEM: 		return "VPUSH"; // Value push for stdvector
+			case BYTE_CODE_NEW_ARRAY: 				return "NEW_VEC"; // Array object (CREATE)
+			case BYTE_CODE_PUSH_ARRAY_ITEM: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector
 			case BYTE_CODE_NEW_OBJECT_BY_TYPE:		return "NEW_OBJECT_TYPE"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
@@ -373,7 +373,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
 			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF
 			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
-			case BYTE_CODE_LOAD_VECTOR_ITEM:return BYTE_CODE_PUSH_STK_VECTOR_ITEM;
+			case BYTE_CODE_LOAD_ARRAY_ITEM:return BYTE_CODE_PUSH_STK_ARRAY_ITEM;
 			case BYTE_CODE_LOAD_THIS_VARIABLE:return BYTE_CODE_PUSH_STK_THIS_VARIABLE;
 			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
 		}
@@ -388,7 +388,7 @@ namespace zetscript{
 				|| byte_code==BYTE_CODE_LOAD_LOCAL
 				|| byte_code==BYTE_CODE_LOAD_REF
 				|| byte_code==BYTE_CODE_LOAD_THIS
-				|| byte_code==BYTE_CODE_LOAD_VECTOR_ITEM
+				|| byte_code==BYTE_CODE_LOAD_ARRAY_ITEM
 				|| byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
 				|| byte_code==BYTE_CODE_LOAD_OBJECT_ITEM;
 	}

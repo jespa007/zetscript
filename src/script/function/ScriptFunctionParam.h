@@ -26,7 +26,7 @@ namespace zetscript{
 
 		ScriptFunctionParam & operator=( const ScriptFunctionParam & _function_param);
 
-		static ScriptFunctionParam *createArrayFromVector(const zs_vector<ScriptFunctionParam *>  * _script_function_params);
+		static ScriptFunctionParam *createArrayFromArray(const zs_vector<ScriptFunctionParam *>  * _script_function_params);
 		static ScriptFunctionParam *createArrayFromScriptFunction(const ScriptFunction * sf);
 
 		~ScriptFunctionParam();

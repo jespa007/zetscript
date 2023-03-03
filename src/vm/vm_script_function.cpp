@@ -517,8 +517,8 @@ namespace zetscript{
 						return;
 				 	 }
 				 	 continue;
-			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
-					so_aux=ZS_NEW_VECTOR_OBJECT(data->zs);
+			 case BYTE_CODE_NEW_ARRAY: // Create new vector...
+					so_aux=ZS_NEW_ARRAY_OBJECT(data->zs);
 					if(!vm_create_shared_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}
@@ -582,7 +582,7 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_TYPE:
 					VM_PUSH_STK_TYPE(instruction->value_op2);
 					continue;
-				case BYTE_CODE_PUSH_VECTOR_ITEM:
+				case BYTE_CODE_PUSH_ARRAY_ITEM:
 					if(vm_push_container_item(
 							 _vm
 							 ,_this_object
@@ -607,8 +607,8 @@ namespace zetscript{
 					 }
 					continue;
 				// access vector (i.e vec[1]) or access object (i.e obj["aa"])
-				case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
-				case BYTE_CODE_LOAD_VECTOR_ITEM:
+				case BYTE_CODE_PUSH_STK_ARRAY_ITEM:
+				case BYTE_CODE_LOAD_ARRAY_ITEM:
 					if(vm_load_vector_item(
 						 _vm
 						 ,_this_object

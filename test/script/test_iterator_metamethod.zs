@@ -19,7 +19,7 @@ class CustomObjectIterator{
 	}
 }
 
-class CustomVector{
+class CustomArray{
 	var data=[1,2,3,4]
 	
 	_iter(){
@@ -27,7 +27,7 @@ class CustomVector{
 	}
 }
 
-var data=new CustomVector([1,2,3,4])
+var data=new CustomArray([1,2,3,4])
 
 for(var d in data){
 	Console::outln(d)

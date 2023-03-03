@@ -381,13 +381,13 @@ namespace zetscript{
 			VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
 
 			stk_var=(data->vm_stk_current-1);
-			if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_var) == 0){
+			if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected vector but is type '%s'",stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
 
 			dst_container = (ContainerScriptObject *)stk_var->value;
-			id_slot=((VectorScriptObject *)dst_container)->length();
-			stk_dst=((VectorScriptObject *)dst_container)->newSlot();
+			id_slot=((ArrayScriptObject *)dst_container)->length();
+			stk_dst=((ArrayScriptObject *)dst_container)->newSlot();
 			stk_src=*stk_result_op1;
 		}
 
@@ -507,12 +507,12 @@ lbl_exit_function:
 			}
 
 
-			if(		   so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+			if(		   so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_ARRAY
 					|| so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					|| so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS
 			){
 
-				if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+				if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_ARRAY){
 					index_aux1=0;
 
 					if(STK_VALUE_IS_ZS_INT(stk_result_op2)){ \
@@ -523,11 +523,11 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Expected index value for vector access");
 					}
 
-					if(index_aux1 >= (int)((VectorScriptObject *)so_aux)->length() || index_aux1 < 0){
+					if(index_aux1 >= (int)((ArrayScriptObject *)so_aux)->length() || index_aux1 < 0){
 						ZS_VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 					}
 
-					if((stk_var =((VectorScriptObject *)so_aux)->getUserElementAt(index_aux1))==NULL){
+					if((stk_var =((ArrayScriptObject *)so_aux)->getUserElementAt(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}
@@ -536,12 +536,12 @@ lbl_exit_function:
 					if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
-					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
+					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM
 					stk_var = ((ObjectScriptObject *)so_aux)->getProperty(
 							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
-						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
+						if(instruction->byte_code == BYTE_CODE_PUSH_STK_ARRAY_ITEM){
 							if((stk_var =((ObjectScriptObject *)so_aux)->setProperty(
 									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
@@ -554,7 +554,7 @@ lbl_exit_function:
 					}
 				}
 
-				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
+				if(instruction->byte_code == BYTE_CODE_LOAD_ARRAY_ITEM){
 					*data->vm_stk_current++=*stk_var;
 				}else{
 					// dest to write
@@ -581,7 +581,7 @@ lbl_exit_function:
 				}
 
 				zs_char *ptr_char=(zs_char *)&((StringScriptObject *)so_aux)->str_ptr->c_str()[stk_result_op2->value];
-				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
+				if(instruction->byte_code == BYTE_CODE_LOAD_ARRAY_ITEM){
 					data->vm_stk_current->value=((zs_int)(*ptr_char));
 					data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;
 				}else{ // push stk
@@ -591,7 +591,7 @@ lbl_exit_function:
 				data->vm_stk_current++;
 				goto lbl_exit_ok;
 			}else{
-				ZS_VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \
+				ZS_VM_STOP_EXECUTEF("Expected String,Array or Object for access '[]' operation"); \
 			}
 		}else{
 			ZS_VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)); \

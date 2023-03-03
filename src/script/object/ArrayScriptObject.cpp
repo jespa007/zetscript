@@ -10,16 +10,16 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	VectorScriptObject * VectorScriptObject::newVectorScriptObject(ZetScript *_zs){
-		return new VectorScriptObject(_zs);
+	ArrayScriptObject * ArrayScriptObject::newArrayScriptObject(ZetScript *_zs){
+		return new ArrayScriptObject(_zs);
 	}
 
-	VectorScriptObject * VectorScriptObject::concat(
+	ArrayScriptObject * ArrayScriptObject::concat(
 			ZetScript *zs
-			,VectorScriptObject *v1
-			,VectorScriptObject *v2
+			,ArrayScriptObject *v1
+			,ArrayScriptObject *v2
 	){
-		VectorScriptObject *so_vector = ZS_NEW_VECTOR_OBJECT(zs);
+		ArrayScriptObject *so_vector = ZS_NEW_ARRAY_OBJECT(zs);
 
 		so_vector->concat(v1);
 		so_vector->concat(v2);
@@ -34,22 +34,22 @@ namespace zetscript{
 	//----------------------------------------------
 
 
-	VectorScriptObject::VectorScriptObject(
+	ArrayScriptObject::ArrayScriptObject(
 			ZetScript *_zs
-	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_ARRAY){
 	}
 
-	zs_vector<StackElement *> * VectorScriptObject::getStkUserListElements(){ // return list of stack elements
+	zs_vector<StackElement *> * ArrayScriptObject::getStkUserListElements(){ // return list of stack elements
 		return &stk_user_elements;
 	}
 
-	int VectorScriptObject::length(){
+	int ArrayScriptObject::length(){
 
 		return this->stk_user_elements.size();
 	}
 
 
-	StackElement * VectorScriptObject::getUserElementAt(int _idx){
+	StackElement * ArrayScriptObject::getUserElementAt(int _idx){
 		if(_idx >= stk_user_elements.size()){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
@@ -58,7 +58,7 @@ namespace zetscript{
 		return (StackElement *)stk_user_elements.items[_idx];
 	}
 
-	bool VectorScriptObject::eraseUserElementAt( int idx){//onst zs_string & varname){
+	bool ArrayScriptObject::eraseUserElementAt( int idx){//onst zs_string & varname){
 
 		StackElement *si;
 
@@ -76,30 +76,30 @@ namespace zetscript{
 		return true;
 	}
 
-	void VectorScriptObject::eraseAllUserElements(){
+	void ArrayScriptObject::eraseAllUserElements(){
 		for(int i=0; i <stk_user_elements.size(); i++){
 			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
 		}
 		stk_user_elements.clear();
 	}
 
-	StackElement *VectorScriptObject::newSlot(){
+	StackElement *ArrayScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
 		stk_user_elements.push_back(stk);
 		return stk;
 	}
 
-	void VectorScriptObject::push(const StackElement  * _stk){
+	void ArrayScriptObject::push(const StackElement  * _stk){
 		stk_assign(zs,newSlot(),_stk);
 	}
 
-	void 	VectorScriptObject::pushInteger(zs_int _value){
+	void 	ArrayScriptObject::pushInteger(zs_int _value){
 		StackElement stk={_value,STK_PROPERTY_ZS_INT};
 		stk_assign(zs,newSlot(),&stk);
 	}
 
-	void 	VectorScriptObject::pushFloat(zs_float _value){
+	void 	ArrayScriptObject::pushFloat(zs_float _value){
 		zs_int dst;
 		StackElement stk;
 		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
@@ -107,19 +107,19 @@ namespace zetscript{
 		stk_assign(zs,newSlot(),&stk);
 	}
 
-	void 	VectorScriptObject::pushBoolean(bool _value){
+	void 	ArrayScriptObject::pushBoolean(bool _value){
 		StackElement stk={_value,STK_PROPERTY_BOOL};
 		stk_assign(zs,newSlot(),&stk);
 	}
 
-	void	VectorScriptObject::pushString(const zs_string & _value){
+	void	ArrayScriptObject::pushString(const zs_string & _value){
 		StringScriptObject *so=this->zs->newStringScriptObject();
 		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
 		so->set(_value);
 		stk_assign(zs,newSlot(),&stk);
 	}
 
-	void VectorScriptObject::pop(){
+	void ArrayScriptObject::pop(){
 		// save last element...
 		StackElement stk_element=*((StackElement *)stk_user_elements.items[stk_user_elements.size()-1]);
 
@@ -132,19 +132,19 @@ namespace zetscript{
 		vm_push_stack_element(vm,stk_element);
 	}
 
-	void VectorScriptObject::concat(VectorScriptObject *_v){
+	void ArrayScriptObject::concat(ArrayScriptObject *_v){
 		for(int i=0; i < _v->stk_user_elements.size();i++){
 			this->push((StackElement *)_v->stk_user_elements.items[i]);
 		}
 	}
 
 
-	zs_string VectorScriptObject::toString(){
+	zs_string ArrayScriptObject::toString(){
 		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};
 		return json::serialize(zs,&stk,true);
 	}
 
-	VectorScriptObject::~VectorScriptObject(){
+	ArrayScriptObject::~ArrayScriptObject(){
 		eraseAllUserElements();
 	}
 }

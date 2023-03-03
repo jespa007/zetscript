@@ -4,20 +4,20 @@
  */
 #pragma once
 
-#define ZS_NEW_VECTOR_OBJECT(zs) (VectorScriptObject::newVectorScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassVector())))//,(void *)(new VectorScriptObject())))
+#define ZS_NEW_ARRAY_OBJECT(zs) (ArrayScriptObject::newArrayScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassArray())))//,(void *)(new ArrayScriptObject())))
 
 namespace zetscript{
 
 	class CZetgine;
-	class  VectorScriptObject: public ContainerScriptObject{
+	class  ArrayScriptObject: public ContainerScriptObject{
 	public:
 
 		//----------------------------------------------
 		//
 		// Helpers
 		//
-		static VectorScriptObject * newVectorScriptObject(ZetScript *zs);
-		static VectorScriptObject * concat(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2);
+		static ArrayScriptObject * newArrayScriptObject(ZetScript *zs);
+		static ArrayScriptObject * concat(ZetScript *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
 
 
 
@@ -26,7 +26,7 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		VectorScriptObject(ZetScript *_zs);
+		ArrayScriptObject(ZetScript *_zs);
 
 		virtual StackElement * 				getUserElementAt(int idx);
 		bool 								eraseUserElementAt(int idx);
@@ -37,7 +37,7 @@ namespace zetscript{
 
 		bool 								exists(StackElement  * stk);
 
-		void 								concat(VectorScriptObject *_v);
+		void 								concat(ArrayScriptObject *_v);
 
 		/**
 		 * creates and insert new StackElement at the end of the vector
@@ -52,7 +52,7 @@ namespace zetscript{
 		void 								pushString(const zs_string & _value);
 		void 								pop();
 		virtual 							zs_string toString();
-		virtual 							~VectorScriptObject();
+		virtual 							~ArrayScriptObject();
 	protected:
 		zs_vector<StackElement *> 			stk_user_elements;
 

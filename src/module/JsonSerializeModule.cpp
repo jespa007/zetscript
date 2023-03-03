@@ -25,7 +25,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,ScriptObject *_this_object
 				,zs_string & _str_result
-				, VectorScriptObject * _vector
+				, ArrayScriptObject * _vector
 				,int _ident
 				, bool _is_formatted
 				,bool _strict_json_format
@@ -252,8 +252,8 @@ namespace zetscript{
 				case IDX_TYPE_SCRIPT_OBJECT_STRING:
 					_str_result.append(zs_string("\"") + ((StringScriptObject *)obj)->toString() + "\"");
 					break;
-				case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
-					serialize_vector(_zs, _this_object, _str_result,(VectorScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
+				case IDX_TYPE_SCRIPT_OBJECT_ARRAY:
+					serialize_vector(_zs, _this_object, _str_result,(ArrayScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
 					break;
 				default:
 					if(

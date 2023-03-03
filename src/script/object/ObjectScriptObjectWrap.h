@@ -5,7 +5,7 @@
 namespace zetscript{
 	class	ObjectIteratorScriptObject;
 
-	VectorScriptObject *			ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1);
+	ArrayScriptObject *			ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1);
 	bool 							ObjectScriptObjectWrap_contains(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key);
 	void 							ObjectScriptObjectWrap_clear(ZetScript *_zs,ObjectScriptObject *o1);
 	void 							ObjectScriptObjectWrap_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key);

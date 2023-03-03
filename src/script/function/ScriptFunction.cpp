@@ -273,7 +273,7 @@ namespace zetscript{
 				);
 				break;
 
-			case BYTE_CODE_LOAD_VECTOR_ITEM:
+			case BYTE_CODE_LOAD_ARRAY_ITEM:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%s {vector}\n"
 					,idx_instruction
 					,req_stk
@@ -286,7 +286,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS_VARIABLE:
 			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
-			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
+			case BYTE_CODE_PUSH_STK_ARRAY_ITEM:
 				//instruction_aux=instruction;
 
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){

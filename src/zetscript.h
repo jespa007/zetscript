@@ -145,7 +145,7 @@ namespace zetscript{
 		//
 		ObjectScriptObject * newScriptObjectObject();
 		StringScriptObject * newStringScriptObject();
-		VectorScriptObject * newVectorScriptObject();
+		ArrayScriptObject * newArrayScriptObject();
 
 		template<typename _C>
 		ClassScriptObject * newClassScriptObject(_C  *_instance=NULL);

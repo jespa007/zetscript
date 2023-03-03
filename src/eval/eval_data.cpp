@@ -123,7 +123,7 @@ namespace zetscript{
 		TOKEN_TYPE_LITERAL, // true, false, 0.1, -12e-12
 		TOKEN_TYPE_OPERATOR, // +,-,%, ...
 		TOKEN_TYPE_SUBEXPRESSION,
-		TOKEN_TYPE_OBJECT_VECTOR,
+		TOKEN_TYPE_OBJECT_ARRAY,
 		TOKEN_TYPE_OBJECT_OBJECT,
 		TOKEN_TYPE_OBJECT_FUNCTION,
 		TOKEN_TYPE_NEW_OBJECT, // =new ob(); | op (new obj()) op
@@ -134,7 +134,7 @@ namespace zetscript{
 	typedef enum:int8_t{
 		ACCESSOR_UNKNOWN=0,
 		ACCESSOR_CALL, // v(1)
-		ACCESSOR_VECTOR, // v[0]
+		ACCESSOR_ARRAY, // v[0]
 		ACCESSOR_MEMBER, // a.b.c
 		ACCESSOR_MAX
 	}AccessorType;

@@ -137,7 +137,7 @@ namespace zetscript{
 				))==NULL){
 					goto error_expression_token_symbol;
 				}
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_VECTOR;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_ARRAY;
 			}else if(*aux_p=='{'){ // object ...
 
 				if((aux_p=eval_object_object(
@@ -332,7 +332,7 @@ namespace zetscript{
 				   token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
-				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_VECTOR
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_ARRAY
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
 			)==false){
@@ -511,7 +511,7 @@ namespace zetscript{
 					}
 
 					aux_p++;
-					byte_code=ByteCode::BYTE_CODE_LOAD_VECTOR_ITEM;
+					byte_code=ByteCode::BYTE_CODE_LOAD_ARRAY_ITEM;
 					break;
 				case '.': // member/static access
 

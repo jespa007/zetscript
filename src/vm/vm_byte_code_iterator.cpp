@@ -170,11 +170,11 @@ namespace zetscript{
 				error="operand is not 'zs_int' or 'StringScriptObject' type";
 			}
 			break;
-			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
-			//PUSH_STK_BOOLEAN(((VectorScriptObject *)so_aux)->exists(stk_result_op1));
+			case IDX_TYPE_SCRIPT_OBJECT_ARRAY: // check whether value exists...
+			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				VM_PUSH_STK_BOOLEAN(
-				VectorScriptObjectWrap_contains(
-					data->zs,(VectorScriptObject *)so_aux,stk_result_op1
+				ArrayScriptObjectWrap_contains(
+					data->zs,(ArrayScriptObject *)so_aux,stk_result_op1
 				)
 			);
 			break;

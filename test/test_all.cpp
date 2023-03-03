@@ -97,7 +97,7 @@ int main(int argc, char * argv[]) {
 		,"test_eval"								//5.
 		,"test_for_in_object"						//6.
 		,"test_for_in_string"						//7.
-		,"test_for_in_vector"						//8.
+		,"test_for_in_array"						//8.
 		,"test_function_arg_by_ref"					//9.
 		,"test_function_arg_default"				//10.
 		,"test_if_else"								//11.
@@ -107,7 +107,7 @@ int main(int argc, char * argv[]) {
 		,"test_instance_from_var_type"				//15.
 		,"test_iterator_object"						//16.
 		,"test_iterator_string"						//17.
-		,"test_iterator_vector"						//18.
+		,"test_iterator_array"						//18.
 		,"test_json"								//19.
 		,"test_loops_break_continue"				//20.
 		,"test_loops"								//21.
@@ -116,7 +116,7 @@ int main(int argc, char * argv[]) {
 		,"test_switch"								//24.
 		,"test_ternary"								//25.
 		,"test_typeof"								//26.
-		,"test_vector"								//27.
+		,"test_array"								//27.
 		,"test_integer_values"						//28.
 		,"test_constant_operations"					//29.
 		,"test_member_functions"					//30.

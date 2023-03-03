@@ -7,3 +7,4 @@ Console::outln("typeof []  => "+ typeof [])
 Console::outln("typeof {}  => "+ typeof {})
 Console::outln("typeof function(){}  => "+ typeof function(){})
 Console::outln("typeof new A() => "+ typeof new A())
+

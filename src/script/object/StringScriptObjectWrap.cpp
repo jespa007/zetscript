@@ -53,9 +53,9 @@ namespace zetscript{
 		str->insert(idx,*_str);
 	}
 
-	VectorScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int ch_delim){
+	ArrayScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int ch_delim){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv=ZS_NEW_VECTOR_OBJECT(_zs);
+		ArrayScriptObject *sv=ZS_NEW_ARRAY_OBJECT(_zs);
 
 		auto v=zs_strutils::split(so->toString(),ch_delim);
 
@@ -80,9 +80,9 @@ namespace zetscript{
 		return sv;
 	}
 
-	VectorScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so, zs_string * str_token){
+	ArrayScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so, zs_string * str_token){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv=ZS_NEW_VECTOR_OBJECT(_zs);
+		ArrayScriptObject *sv=ZS_NEW_ARRAY_OBJECT(_zs);
 
 		auto v=zs_strutils::split(so->toString(),*str_token);
 

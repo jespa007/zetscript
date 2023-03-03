@@ -6,9 +6,9 @@
 
 namespace zetscript{
 
-	VectorScriptObject *ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1){
+	ArrayScriptObject *ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv= ZS_NEW_VECTOR_OBJECT(_zs);
+		ArrayScriptObject *sv= ZS_NEW_ARRAY_OBJECT(_zs);
 
 		zs_map *map=o1->getMapUserProperties();
 		for(auto it=map->begin(); !it.end(); it.next()){

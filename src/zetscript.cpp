@@ -189,7 +189,7 @@ namespace zetscript{
 				"Scope:%i\n"
 				"ScriptObject:%i\n"
 				"StringScriptObject:%i\n"
-				"VectorScriptObject:%i\n"
+				"ArrayScriptObject:%i\n"
 				"ObjectScriptObject:%i\n"
 				"ClassScriptObject:%i\n"
 				"ContainerSlot:%i\n"
@@ -207,7 +207,7 @@ namespace zetscript{
 				, (int)sizeof(Scope)
 				, (int)sizeof(ScriptObject)
 				, (int)sizeof(StringScriptObject)
-				, (int)sizeof(VectorScriptObject)
+				, (int)sizeof(ArrayScriptObject)
 				, (int)sizeof(ObjectScriptObject)
 				, (int)sizeof(ClassScriptObject)
 				, (int)sizeof(ContainerSlot)
@@ -262,8 +262,8 @@ namespace zetscript{
 					|| sc->str_script_type == "IteratorObject"
 					|| sc->str_script_type == "Console"
 					|| sc->str_script_type == "DateTime"
-					|| sc->str_script_type == "Vector"
-					|| sc->str_script_type == "IteratorVector"
+					|| sc->str_script_type == "Array"
+					|| sc->str_script_type == "IteratorArray"
 					|| sc->str_script_type == "Json"
 				)){
 				 show_class=false;
@@ -332,8 +332,8 @@ namespace zetscript{
 		return StringScriptObject::newStringScriptObject(this);
 	}
 
-	VectorScriptObject * ZetScript::newVectorScriptObject(){
-		return VectorScriptObject::newVectorScriptObject(this);
+	ArrayScriptObject * ZetScript::newArrayScriptObject(){
+		return ArrayScriptObject::newArrayScriptObject(this);
 	}
 
 	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
