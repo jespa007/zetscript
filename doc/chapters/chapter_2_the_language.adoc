@@ -1908,7 +1908,7 @@ Binary operators combines operations between two integer values. The binary oper
 ==== Operator priority
 Each operator it has priority in a evaluation. The priority of each operator in ZetScript is the following,
 
-<<,>>,&,|,^,*,/,%,+,-,in,instanceof,==,!=,>=,\<=,>,<,&&,||
+`in,instanceof,<<,>>,&,|,^,*,/,%,+,-,==,!=,>=,\<=,>,<,&&,||`
 
 Starting from left to right, the most left operator is the more priority and the most right one the less priority
 
@@ -2476,10 +2476,8 @@ In a class it can have two types of member functions:
 [source,javascript]
 ----
 class Test{
-	method3(){
-		Console::outln(" and method 3")
-	}
 
+	// a member function
 	method1(){
 		Console::out("Access method 1")
 		
@@ -2487,13 +2485,19 @@ class Test{
 		this.method3();
 	}
 	
+	// another member function
+	method2(){
+		Console::outln(" and method 3")
+	}
+	
+	// static function
 	static staticMethod(){
 		Console::outln("Access static method")
 	}
 
 };
 
-// function member Test::method2 implementation 
+// Test::method2 implementated outside of class Test 
 function Test::method2(){
 	Console::outln("Access method 2")
 }
@@ -2509,7 +2513,7 @@ Test::staticMethod(); // prints "Access static method"
 
 ==== Member variables
 
-Mamber variables are data that live within the instanced class. To access a member variable is done through field '.' operator and preceded by _this_ keyword when is acceded within the member function
+Member variables are data that live within the instanced class. To access a member variable is done through field '.' operator and preceded by _this_ keyword when is acceded within its member function
 
 [source,javascript]
 ----
@@ -2526,9 +2530,12 @@ t.a=10; 		  // t.a==10
 
 ----
 
-==== Inicialization
+In the code it can see that when t is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
 
-===== Member variables
+
+===== Inicialization
+
+====== Body declaration
 
 A class can initialize its variables defining them at its body with _var_ and assign (=) operator
 
@@ -2536,15 +2543,16 @@ A class can initialize its variables defining them at its body with _var_ and as
 ----
 class Test{
 
+	// Declare and initialize member varaible 'a' as 10
 	var a=10;
 }
 
 var t=new Test(); // t.a==10
 ----
 
-===== Constructor
+====== Constructor
 
-A constructor is a special member function that aims to execute when class is instanced. To initialize member variable is done through _this_ keyword and member field access (.) operator 
+A constructor is a special member function that aims to execute when class is instanced thus can initialize its variables. To initialize member variable is done through _this_ keyword and member field access (.) operator 
 
 [source,javascript]
 ----
@@ -2552,7 +2560,7 @@ class Test{
 
  	// Constructor function
 	constructor(){
-		this.a=10; // initialize member variable as a=10
+		this.a=10; // initialize member variable 'a' as 10
  	}
 }
 
@@ -3110,7 +3118,7 @@ include::../examples/the_language/class/class_metafunction_shr_out.txt[]
 
 ===== Member functions
 
-====== _toString()
+====== _tostring()
 
 Returns custom when string operation operation is invoved
 
@@ -4301,7 +4309,7 @@ include::../examples/the_language/datetime/datetime_metafunctions_sub.zs[]
 include::../examples/the_language/datetime/datetime_metafunctions_sub_out.txt[]
 ----
 
-====== _toString
+====== _tostring
 
 Returns formatted date
 
@@ -4309,12 +4317,12 @@ Returns formatted date
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_to_string.zs[]
+include::../examples/the_language/datetime/datetime_metafunctions_tostring.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_to_string_out.txt[]
+include::../examples/the_language/datetime/datetime_metafunctions_tostring_out.txt[]
 ----
 
 

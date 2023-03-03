@@ -467,6 +467,8 @@ namespace zetscript{
 			return 6;
 		}else if (PREFERENCE_OPERATOR_GROUP_7(_operator)){
 			return 7;
+		}else if (PREFERENCE_OPERATOR_GROUP_8(_operator)){
+			return 8;
 		}
 
 		return PREFERENCE_OPERATOR_GROUP_MAX;

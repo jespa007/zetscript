@@ -24,8 +24,6 @@
 || 	(_operator) == OPERATOR_LTE \
 || 	(_operator) == OPERATOR_GT \
 || 	(_operator) == OPERATOR_LT \
-||	(_operator) == OPERATOR_IN \
-|| 	(_operator) == OPERATOR_INSTANCEOF \
 )
 
 #define PREFERENCE_OPERATOR_GROUP_3(_operator) \
@@ -59,9 +57,15 @@
 || 	(_operator) == OPERATOR_SHIFT_RIGHT \
 )
 
-// group 7 is the less candidate split it will do in the eval expression (more priority)
 
-#define PREFERENCE_OPERATOR_GROUP_MAX	7
+#define	PREFERENCE_OPERATOR_GROUP_8(_operator) \
+(\
+	(_operator) == OPERATOR_IN \
+|| 	(_operator) == OPERATOR_INSTANCEOF \
+)
+// group 8 is the less candidate split it will do in the eval expression (more priority)
+
+#define PREFERENCE_OPERATOR_GROUP_MAX	8
 
 namespace zetscript{
 

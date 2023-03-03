@@ -113,7 +113,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 
 		// calls C function 'test_callback'.
 		"test_callback(\n"
-		//  Anonymous function as parameter: The test_callback function expects 'ScriptFunction' in C++ due is created in a main scope
+		//   Anonymous function ('ScriptFunction *' in C aka 'function(){}')
 		"	function(a,b,c){\n"
 		"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 		"});\n"

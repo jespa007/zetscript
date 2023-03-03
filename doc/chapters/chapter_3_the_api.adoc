@@ -3,6 +3,42 @@
 :sectnums:
 
 
+//  TODO: 
+// 1. Calling script functions from c++
+//  1.1 bind script function 
+//  1.2 bind member function from instanced object
+//  1.3 Life time objects returned
+//      zs_int,zs_float,bool
+//      other times should bee freed. Show error if not freed
+// 2. Calling c++ function from script
+// 2.1 Explain function passing these type IN parameters
+//    Boolean --> bool *
+//    Integer --> zs_int or zs_int *
+//	  Float  --> zs_float * 
+//	  String  --> StringScriptObject * (and how acces/modify its elements)
+//	  Array  --> ArrayScriptObject *  (and how acces/modify its elements)
+//	  Object  --> ObjectScriptObject *  (and how acces/modify its elements)
+//    class --> class (see seccion 4 for more information)
+//    Calling script functions (callbacks). Process bindFunction and call-it
+// 2.2 Returning variables
+//    Boolean --> bool
+//    Integer --> zs_int
+//	  Float  --> zs_float
+//	  String  --> zs->newStringScriptObject  (and how add elements)
+//	  Array  --> zs->newArrayScriptObject  (and how add elements)
+//	  Object  --> zs->newObjectScriptObject  (and how add elements)
+//    class --> zs->newClass<class> (see seccion 4 for more information)
+    
+    
+// 3. BindTypes
+//    Show all examples with type "Number"!!!!
+//	  no-instantiable types
+//	  instantiable types
+//    bindFunctionsMember
+//    bindPropertyMember through its metamethods
+
+
+
 == the API
 
 === Bind type
@@ -17,8 +53,6 @@ include::../examples/the_api/type/type_bind_type.cpp[]
 To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are built-in types or types binded by the user. 
 
 Example,
-
-
 
 Parameters
 
@@ -65,81 +99,6 @@ int main(int argc, char *argv[])
 } 
 ---- 
  
-==== Ambiguities
-
-If we try to register another function with the same name the c++ compiler will fail to register function.
-
-For instance,
-
-[source, c++]
-----
-#include "ZetScript.h"
-
-// a function that adds two integers.
-zetscript::zs_int add(zetscript::zs_int op1, zetscript::zs_int op2)
-{ 
-	return op1+op2;
-}
-
-// a function that adds two floats return op1+op2;
-zetscript::zs_float add(zetscript::zs_float *op1, zetscript::zs_float *op2)
-{ 
-	return *op1+*op2;
-}
-
-int main(int argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-	
-	// c++ compiler throws an error due function deduction.
- 	zs.bindFunction("add",add);
- 	
- 	return 0;
-}
-----
-
-For instance gnu c++ compiler throws this error,
-
-note: template argument deduction/substitution failed:
-
-That means that indeed there're more than one function named 'add' and the compiler cannot deduce which function take to register. To achieve register more than a one function with the same name we have to make a cast to get the function we want with its signature.
-
-Example,
-
-[source,cpp]
-----
-#include "ZetScript.h"
-
-// a function that adds two integers.
-zetscript::zs_int add(zetscript::zs_int op1, zetscript::zs_int op2)
-{
-	return op1+op2;
-}
-
-// a function that adds two floats return op1+op2;
-zetscript::zs_float add(zetscript::zs_float *op1, zetscript::zs_float *op2)
-{ 
-	return *op1+*op2;
-} 
-
-int main(int argc, char *argv[])
-{
-	zetscript::ZetScript zs; 	
-
- 	// register function add(int,int)
-	zs.bindFunction("add",static_cast<int (*)(int,int)>(add));
-	
-	 // register function add(float *,float *)
- 	zs.bindFunction("add",static_cast<float (*)(float *,float *)>(add));
-
- 	zs.eval(
- 		"Console::outln(\"result:\"+add(5,4));" // prints "result:9"
- 		"Console::outln(\"result:\"+add(0.5,4.6));" // prints "result:5.1"
- 	);
- 
- 	return 0;
-}
-----
 
 === Bind types
 
