@@ -586,7 +586,7 @@ namespace zetscript{
 		}
 		else {
 			// object
-			stk_obj = dst_container_ref->getProperty((const char*)dst_container_slot_id);
+			stk_obj = dst_container_ref->get((const char*)dst_container_slot_id);
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
 				, _src_container_ref->getScriptType()->str_script_type.c_str()

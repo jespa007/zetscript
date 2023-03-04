@@ -3,8 +3,6 @@
 :sectnums:
 :stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
 
-// TODO Change mamber variable by member fields (more apropiate for objects as member fields)
-
 == The language
 
 === Statments
@@ -1303,14 +1301,14 @@ include::../examples/the_language/array/array_extend_out.txt[]
 
 ==== Object
 
-Object type is a anonymous container type to store values through attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
+Array type it defines a container type that stores a serie of key-value data. _Object_ is declared as open/closed of curly brackets (i.e '{}'),
 
 [source,javascript]
 ----
 {}; // Object
 ----
 
-Optionally we can init with some values with its attributes,
+Optionally it be init with series of pair key-value separated by comma.
 
 [source,javascript]
 ----
@@ -1322,7 +1320,7 @@ Optionally we can init with some values with its attributes,
 };
 ----
 
-To acces to its elements is done through the variable name followed by '.' and attribute name or attribute name as string within brackets (i.e ["attribute_name"] ),
+The access to its fields is done through the variable object followed by '.' and key name or key name as string within brackets (i.e ["key_name"] ),
 
 [source,javascript]
 ----
@@ -1334,8 +1332,8 @@ var o={
  ,f:2.0
 };
 
-o.i; // get contens of attribute 'i' by '.'
-o["i"]; // gets the contents of attribute 'i' by '[]'
+o.i; // access field 'i' by '.'
+o["i"]; // access field 'i' by '[]'
 ----
 
 ===== Static functions

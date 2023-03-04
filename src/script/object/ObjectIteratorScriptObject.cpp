@@ -23,7 +23,7 @@ namespace zetscript{
 		stk_key.properties=(STK_PROPERTY_ZS_CHAR_PTR);
 
 		// setup object
-		it=_so_ref->getMapUserProperties()->begin();
+		it=_so_ref->getMapUserFields()->begin();
 	}
 
 

@@ -29,49 +29,50 @@ namespace zetscript{
 
 		ObjectScriptObject(ZetScript	*_zs);
 
-		virtual StackElement * setProperty(
-				const zs_string &  _property_name
+		/**
+		 * setters to set field value
+		 */
+		virtual StackElement * set(
+				const zs_string &  _key_name
 				//,zs_string & error
 				,StackElement * stk_element = NULL
 		);
 
-		StackElement * setPropertyInteger(
+		StackElement * setInteger(
 				const zs_string &  _property_name
 				,zs_int _value
 		);
 
-		StackElement * setPropertyFloat(
-				const zs_string &  _property_name
+		StackElement * setFloat(
+				const zs_string &  _key_name
 				,zs_float _value
 		);
 
-		StackElement * setPropertyBoolean(
-				const zs_string &  _property_name
+		StackElement * setBoolean(
+				const zs_string &  _key_name
 				,bool _value
 		);
 
-		StackElement * setPropertyString(
-				const zs_string &  _property_name
+		StackElement * setString(
+				const zs_string &  _key_name
 				,const zs_string & _value
 		);
 
-		/*StackElement * setUserProperty(
-				const zs_string &  symbol_value
-						,zs_string & error
-						,StackElement * stk_element = NULL
-				);*/
+		/**
+		 * Object getter
+		 */
+		virtual StackElement 	* get(const zs_string &  _key_name);
 
-		virtual StackElement 	* getProperty(const zs_string &  property_name);
-
-		bool existUserProperty(const zs_string &  property_name);
+		bool exists(const zs_string &  _key_name);
 
 		virtual int	length();
 
 
-		bool eraseUserProperty(const zs_string &  symbol_value);
-		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
-		zs_map *getMapUserProperties();
-		zs_map *getMapBuiltinProperties();
+		bool erase(const zs_string &  _key_name);
+		void eraseAll(/*const ScriptFunction *info_function=NULL*/);
+		zs_map getKeys();
+		//zs_map *getMapUserFields();
+		//zs_map *getMapBuiltinFields();
 
 
 
@@ -81,10 +82,10 @@ namespace zetscript{
 
 	protected:
 
-		zs_map				*	map_user_properties; // to search faster each property by its name
+		zs_map				*	map_user_fields; // to search faster each property by its name
 
 
-		StackElement * 			getUserProperty(const zs_string &  property_name);
+		StackElement * 			getUserField(const zs_string &  _key);
 	};
 
 }

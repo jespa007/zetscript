@@ -107,7 +107,7 @@ namespace zetscript{
 			goto lbl_exit_function_ok;
 
 
-		}else if((stk_var=so_aux->getProperty(str_symbol_aux1)) == NULL){
+		}else if((stk_var=so_aux->get(str_symbol_aux1)) == NULL){
 			// property is not defined
 
 			if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
@@ -151,7 +151,7 @@ namespace zetscript{
 				}
 
 				// create new property initialized as undefined
-				if((stk_var=so_aux->setProperty((const char *)str_symbol_aux1))==NULL){
+				if((stk_var=so_aux->set((const char *)str_symbol_aux1))==NULL){
 					ZS_VM_STOP_EXECUTE("Cannot setProperty '%s'",str_symbol_aux1);
 				}
 
@@ -295,7 +295,7 @@ namespace zetscript{
 		Instruction			*	instruction=_instruction;
 
 		if(_offset != (uint8_t)ZS_IDX_UNDEFINED){
-			stk_result = _this_object->getBuiltinElementAt(_offset);
+			stk_result = _this_object->getBuiltinField(_offset);
 		}
 		if(stk_result != NULL && (stk_result->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 			stk_mp_aux=(StackMemberProperty *)stk_result->value;
@@ -365,11 +365,11 @@ namespace zetscript{
 				);
 			}
 
-			if((stk_var =dst_container->setProperty(
+			if((stk_var =dst_container->set(
 					((StringScriptObject *)stk_result_op1->value)->toString()
 			)
 			)==NULL){
-				ZS_VM_STOP_EXECUTE("Cannot setProperty('%s')",((StringScriptObject *)stk_result_op1->value)->toString().c_str());
+				ZS_VM_STOP_EXECUTE("Cannot set field '%s'",((StringScriptObject *)stk_result_op1->value)->toString().c_str());
 			}
 
 			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
@@ -537,12 +537,12 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM
-					stk_var = ((ObjectScriptObject *)so_aux)->getProperty(
+					stk_var = ((ObjectScriptObject *)so_aux)->get(
 							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_ARRAY_ITEM){
-							if((stk_var =((ObjectScriptObject *)so_aux)->setProperty(
+							if((stk_var =((ObjectScriptObject *)so_aux)->set(
 									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
 							)==NULL){

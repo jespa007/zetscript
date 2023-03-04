@@ -485,13 +485,13 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
-				VM_PUSH_STK_PTR(_this_object->getThisProperty());
+				VM_PUSH_STK_PTR(_this_object->getThis());
 				continue;
 			case BYTE_CODE_LOAD_REF:
 				*data->vm_stk_current++=*STK_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_THIS: // load variable ...
-				*data->vm_stk_current++=*_this_object->getThisProperty();
+				*data->vm_stk_current++=*_this_object->getThis();
 				continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 

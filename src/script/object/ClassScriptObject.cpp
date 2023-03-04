@@ -44,8 +44,8 @@ namespace zetscript{
 
 			Symbol * symbol = (Symbol *)member_vars->items[i];
 
-			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each type
-			if((se=addBuiltinProperty(
+			// we add symbol as field. In it will have the same idx as when were evaluated declared symbols on each type
+			if((se=addBuiltinField(
 				symbol->name
 			))==NULL){
 				return;
@@ -124,7 +124,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
+		return get(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){

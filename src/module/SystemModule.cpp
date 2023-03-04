@@ -80,7 +80,7 @@ namespace zetscript{
 
 				if(function_params!=NULL){
 					int i=0;
-					zs_map *map=oo_param->getMapUserProperties();
+					zs_map *map=oo_param->getMapUserFields();
 
 					for(auto it=map->begin(); !it.end(); it.next()){
 						StackElement *stk=((StackElement *)it.value);
@@ -122,7 +122,7 @@ namespace zetscript{
 		// 2. register arg symbols
 		// catch parameters...
 		if(function_params_len > 0){
-			zs_map *map=oo_param->getMapUserProperties();
+			zs_map *map=oo_param->getMapUserFields();
 
 			for(auto it=map->begin(); !it.end(); it.next()){
 

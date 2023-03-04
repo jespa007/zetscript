@@ -10,7 +10,7 @@ namespace zetscript{
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		ArrayScriptObject *sv= ZS_NEW_ARRAY_OBJECT(_zs);
 
-		zs_map *map=o1->getMapUserProperties();
+		zs_map *map=o1->getMapUserFields();
 		for(auto it=map->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->newSlot();
 			StringScriptObject *so=ZS_NEW_STRING_OBJECT(_zs);
@@ -39,17 +39,17 @@ namespace zetscript{
 
 	bool ObjectScriptObjectWrap_contains(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
 		ZS_UNUSUED_PARAM(_zs);
-		return o1->existUserProperty(key->c_str());
+		return o1->exists(key->c_str());
 	}
 
 	void ObjectScriptObjectWrap_clear(ZetScript *_zs,ObjectScriptObject *o1){
 		ZS_UNUSUED_PARAM(_zs);
-		o1->eraseAllUserProperties();
+		o1->eraseAll();
 	}
 
 	void ObjectScriptObjectWrap_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
 		ZS_UNUSUED_PARAM(_zs);
-		o1->eraseUserProperty(key->c_str());
+		o1->erase(key->c_str());
 	}
 
 	ObjectIteratorScriptObject * ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *_oo){

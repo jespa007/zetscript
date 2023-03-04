@@ -64,16 +64,16 @@ namespace zetscript{
 		virtual	int 							length();
 
 		ZetScript      						* 	getZetScript();
-		StackElement 						* 	getBuiltinProperty(const zs_string & property_name);
+		StackElement 						* 	getBuiltinField(const zs_string & _key_name);
 
-		StackElement 						* 	getBuiltinElementAt(int idx);
+		StackElement 						* 	getBuiltinField(int idx);
 
-		virtual StackElement 				* 	setProperty(
-			const zs_string 		& 	symbol_value
+		virtual StackElement 				* 	set(
+			const zs_string 		& 	key_name
 			,StackElement 			*	stk_element = NULL
 		);
 
-		virtual StackElement 				* 	getProperty(const zs_string & property_name);
+		virtual StackElement 				* 	get(const zs_string & key_name);
 		virtual Symbol 						*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
 
 
@@ -81,7 +81,7 @@ namespace zetscript{
 		bool 									isNativeObject();
 		const char * 							getTypeName();
 		ScriptType * 	    					getScriptType();
-		StackElement 						*	getThisProperty();
+		StackElement 						*	getThis();
 		virtual void						*	getNativeObject();
 		virtual zs_string 						toString();
 
@@ -98,14 +98,14 @@ namespace zetscript{
 		ZetScript 							*	zs; // 8
 		VirtualMachine 						*	vm; // 8
 		zs_vector<StackElement *>				stk_builtin_elements;
-		zs_map    							*	map_builtin_properties; // to search faster each property by its name
+		zs_map    							*	map_builtin_fields; // to search faster each property by its name
 
 		static void 							onDettachRefObjectNode(zs_list_node<RefObjectScriptObject *> *node);
 		zs_list<RefObjectScriptObject *>	*	ref_objects;
 		ScriptTypeFactory					*	getScriptTypeFactory();
 
 		virtual StackElement 				* 	newBuiltinSlot();
-		virtual StackElement 				* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
+		virtual StackElement 				* 	addBuiltinField(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 									unrefAndFreeStackElementContainer(StackElement *si);
 	};
 

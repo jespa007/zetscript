@@ -45,7 +45,7 @@ namespace zetscript{
 		idx_script_type=_idx_script_type;
 		shared_pointer=NULL;
 
-		map_builtin_properties=new zs_map;
+		map_builtin_fields=new zs_map;
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -64,7 +64,7 @@ namespace zetscript{
 			for(int i = 0; i < symbol_vars->size(); i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-					addBuiltinProperty(
+					addBuiltinField(
 							symbol->name
 							,{(zs_int)(new StackMemberProperty(
 									this
@@ -85,7 +85,7 @@ namespace zetscript{
 	}
 
 	// built-in only for initialized
-	StackElement * ScriptObject::addBuiltinProperty(
+	StackElement * ScriptObject::addBuiltinField(
 			const zs_string & symbol_value
 			, StackElement stk
 	){
@@ -95,7 +95,7 @@ namespace zetscript{
 		StackElement *new_stk=newBuiltinSlot();
 		*new_stk=stk;
 
-		map_builtin_properties->set(key_value.c_str(),(zs_int)new_stk);
+		map_builtin_fields->set(key_value.c_str(),(zs_int)new_stk);
 
   	    return new_stk;
 	}
@@ -145,17 +145,17 @@ namespace zetscript{
 		return zs;
 	}
 
-	StackElement * 			ScriptObject::getBuiltinProperty(const zs_string & property_name){
+	StackElement * 			ScriptObject::getBuiltinField(const zs_string & _key_name){
 		bool exists=false;
-		zs_int element=this->map_builtin_properties->get(property_name.c_str(), &exists);
+		zs_int element=this->map_builtin_fields->get(_key_name.c_str(), &exists);
 		if(exists){
 			return (StackElement *)element;
 		}
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getProperty(const zs_string & property_name){
-		return getBuiltinProperty(property_name);
+	StackElement 	* ScriptObject::get(const zs_string & _key_name){
+		return getBuiltinField(_key_name);
 	}
 
 	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
@@ -170,7 +170,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement *ScriptObject::getThisProperty(){
+	StackElement *ScriptObject::getThis(){
 		return &this->stk_this;
 	}
 
@@ -182,16 +182,16 @@ namespace zetscript{
 		return &stk_builtin_elements;
 	}
 
-	StackElement * ScriptObject::setProperty(
-		const zs_string & symbol_value
+	StackElement * ScriptObject::set(
+		const zs_string & _key_value
 		,StackElement * stk_element
 	){
-		ZS_UNUSUED_2PARAMS(symbol_value, stk_element);
-		ZS_VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
+		ZS_UNUSUED_2PARAMS(_key_value, stk_element);
+		ZS_VM_SET_USER_ERRORF(vm,"XXXXX::set() is not implemented");
 		return NULL;
 	}
 
-	StackElement * ScriptObject::getBuiltinElementAt(int idx){
+	StackElement * ScriptObject::getBuiltinField(int idx){
 		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
@@ -248,7 +248,7 @@ namespace zetscript{
 			free(stk);
 		}
 		stk_builtin_elements.clear();
-		delete map_builtin_properties;
+		delete map_builtin_fields;
 
 		if(ref_objects!=NULL){
 			ref_objects->dettachAllNodes(onDettachRefObjectNode);

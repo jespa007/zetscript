@@ -64,8 +64,8 @@ namespace zetscript{
 			_str_result.append('{');
 
 			zs_map_iterator map_iterators[2]={
-					_obj->getMapUserProperties()->begin()
-					,_obj->getMapBuiltinProperties()->begin()
+					_obj->getMapUserFields()->begin()
+					,_obj->getMapBuiltinFields()->begin()
 			};
 
 			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){

@@ -1520,7 +1520,7 @@ namespace zetscript{
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
-						se = calling_obj->getProperty(symbol_to_find);
+						se = calling_obj->get(symbol_to_find);
 						if(se!=NULL){
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->value;
