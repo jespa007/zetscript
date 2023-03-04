@@ -63,14 +63,14 @@ namespace zetscript{
 
 			_str_result.append('{');
 
-			zs_map_iterator map_iterators[2]={
-					_obj->getMapUserFields()->begin()
+			zs_map_iterator fields[2]={
+					_obj->getMapFields()->begin()
 					,_obj->getMapBuiltinFields()->begin()
 			};
 
 			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){
 				int k=0;
-				zs_map_iterator *mi=&map_iterators[i];
+				zs_map_iterator *mi=&fields[i];
 				for(;!mi->end();mi->next()){
 
 					StackElement stk_se=*((StackElement *)mi->value);

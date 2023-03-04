@@ -70,11 +70,9 @@ namespace zetscript{
 
 		bool erase(const zs_string &  _key_name);
 		void eraseAll(/*const ScriptFunction *info_function=NULL*/);
-		zs_map getKeys();
-		//zs_map *getMapUserFields();
-		//zs_map *getMapBuiltinFields();
+		zs_vector<zs_string> getKeys();
 
-
+		zs_map *getMapFields();
 
 
 		virtual zs_string toString();
@@ -82,10 +80,7 @@ namespace zetscript{
 
 	protected:
 
-		zs_map				*	map_user_fields; // to search faster each property by its name
-
-
-		StackElement * 			getUserField(const zs_string &  _key);
+		zs_map				*	map_fields; // to search faster each property by its name
 	};
 
 }

@@ -19,13 +19,13 @@ namespace zetscript{
 		ObjectScriptObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 
 		// get properties from object o1
-		zs_map *map=o1->getMapUserFields();
+		zs_map *map=o1->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
 			obj->set(it.key,(StackElement *)it.value);
 		}
 
 		// get properties from object o2
-		map=o2->getMapUserFields();
+		map=o2->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
 			obj->set(it.key,(StackElement *)it.value);
 		}
@@ -37,8 +37,8 @@ namespace zetscript{
 		zs_string error;
 
 		// get properties from object o2
-		zs_map *map=o2->getMapUserFields();
-		for(auto it=map->begin(); !it.end();it.next()){
+		zs_map *fields=o2->getMapFields();
+		for(auto it=fields->begin(); !it.end();it.next()){
 			o1->set(it.key,(StackElement *)it.value);
 		}
 	}
@@ -51,7 +51,7 @@ namespace zetscript{
 	ObjectScriptObject::ObjectScriptObject(
 			ZetScript	*_zs
 	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_OBJECT){
-		map_user_fields=new zs_map();
+		map_fields=new zs_map();
 	}
 
 	StackElement * ObjectScriptObject::set(
@@ -61,16 +61,15 @@ namespace zetscript{
 		){
 		StackElement si;
 
-		/*if(map_user_fields->exist(symbol_value.c_str())){
-			//error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
-			//return NULL;
-		}*/
 		bool exists=false;
-		StackElement *stk_user_element = (StackElement *)map_user_fields->get(_key_name.c_str(),&exists);
+		if(map_builtin_fields->exist(_key_name.c_str())){
+			ZS_THROW_RUNTIME_ERROR("Cannot set value on '%s' field because is internally used",_key_name.c_str());
+		}
+
+		StackElement *stk_user_element = (StackElement *)map_fields->get(_key_name.c_str(),&exists);
 		if(exists){
 			ScriptObject::unrefAndFreeStackElementContainer(stk_user_element);
 		}
-
 
 		if(sv != NULL){
 			si = *sv;
@@ -87,20 +86,10 @@ namespace zetscript{
 
 		zs_string key_name = _key_name;
 		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		map_user_fields->set(key_name.c_str(),(zs_int)new_stk);
+		map_fields->set(key_name.c_str(),(zs_int)new_stk);
 
 		*new_stk=si; //assign var
 		return new_stk;
-	}
-
-	StackElement * ObjectScriptObject::getUserField(const zs_string &  _key_name){
-
-		bool exists;
-		StackElement *stk_element=(StackElement *)this->map_user_fields->get(_key_name.c_str(),&exists);
-		if(exists){
-			return stk_element;
-		}
-		return NULL;
 	}
 
 	StackElement * ObjectScriptObject::setInteger(
@@ -148,55 +137,60 @@ namespace zetscript{
 	StackElement 	* ObjectScriptObject::get(const zs_string &  _key_name){
 		StackElement *stk=getBuiltinField(_key_name);
 		if(stk==NULL){
-			stk=getUserField(_key_name/*,idx*/);
+			// get user field
+			bool exists;
+			StackElement *stk_element=(StackElement *)this->map_fields->get(_key_name.c_str(),&exists);
+			if(exists){
+				return stk_element;
+			}
+			return NULL;
 		}
 		return stk;
 	}
 
 	bool ObjectScriptObject::exists(const zs_string &  _key_name){
-		if(map_user_fields->exist(_key_name.c_str())){
+		if(map_builtin_fields->exist(_key_name.c_str())){
 			return true;
 		}
-		return map_builtin_fields->exist(_key_name.c_str());
+		return map_fields->exist(_key_name.c_str());
 	}
 
-	zs_map *ObjectScriptObject::getMapUserFields(){
-		return map_user_fields;
-	}
-
-	zs_map *ObjectScriptObject::getMapBuiltinFields(){
-		return map_builtin_fields;
+	zs_map *ObjectScriptObject::getMapFields(){
+		return map_fields;
 	}
 
 	int	ObjectScriptObject::length(){
-		return this->map_user_fields->count();
+		return this->map_fields->count();
 	}
 
-	zs_map getKeys(){
-		// concatenate zs_map user & builtin
-		zs_map
+	zs_vector<zs_string> ObjectScriptObject::getKeys(){
+		zs_vector<zs_string> keys;
+		for(auto mi=map_fields->begin();!mi.end();mi.next()){
+				keys.push_back(mi.key);
+		}
+		return keys;
 	}
 
 	bool ObjectScriptObject::erase(const zs_string &  _property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
-		StackElement *stk_user_element = (StackElement *)map_user_fields->get(_property_name.c_str(),&exists);
+		StackElement *stk_user_element = (StackElement *)map_fields->get(_property_name.c_str(),&exists);
 		if(!exists){
 			ZS_VM_SET_USER_ERROR(vm,"field '%s' not exist",_property_name.c_str());
 			return false;
 		}
 
-		map_user_fields->erase(_property_name.c_str()); // erase also property key
+		map_fields->erase(_property_name.c_str()); // erase also property key
 		ScriptObject::unrefAndFreeStackElementContainer(stk_user_element);
 		return true;
 	}
 
 	void ObjectScriptObject::eraseAll(){
 
-		for(auto it=map_user_fields->begin();!it.end();it.next()){
+		for(auto it=map_fields->begin();!it.end();it.next()){
 			StackElement *si=(StackElement *)(it.value);
 			ScriptObject::unrefAndFreeStackElementContainer(si);
 		}
-		map_user_fields->clear();
+		map_fields->clear();
 	}
 
 	zs_string ObjectScriptObject::toString(){
@@ -207,6 +201,6 @@ namespace zetscript{
 	ObjectScriptObject::~ObjectScriptObject(){
 
 		eraseAll();
-		delete map_user_fields;
+		delete map_fields;
 	}
 }

@@ -80,9 +80,9 @@ namespace zetscript{
 
 				if(function_params!=NULL){
 					int i=0;
-					zs_map *map=oo_param->getMapUserFields();
+					zs_map *fields=oo_param->getMapFields();
 
-					for(auto it=map->begin(); !it.end(); it.next()){
+					for(auto it=fields->begin(); !it.end(); it.next()){
 						StackElement *stk=((StackElement *)it.value);
 						function_params[i]=ScriptFunctionParam(it.key);
 						stk_params.push_back(stk);
@@ -122,9 +122,9 @@ namespace zetscript{
 		// 2. register arg symbols
 		// catch parameters...
 		if(function_params_len > 0){
-			zs_map *map=oo_param->getMapUserFields();
+			zs_map *fields=oo_param->getMapFields();
 
-			for(auto it=map->begin(); !it.end(); it.next()){
+			for(auto it=fields->begin(); !it.end(); it.next()){
 
 				if(sf_eval->registerLocalArgument(
 						sf_eval->scope_script_function

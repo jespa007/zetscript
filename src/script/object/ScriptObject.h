@@ -89,6 +89,7 @@ namespace zetscript{
 		void 									deattachRefObjectNode(zs_list_node<RefObjectScriptObject *> * _ref_object_node);
 
 		void 									printAllMemberFunctions();
+		zs_map 						*			getMapBuiltinFields();
 
 		virtual 								~ScriptObject();
 	protected:

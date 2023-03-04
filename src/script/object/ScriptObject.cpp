@@ -230,6 +230,10 @@ namespace zetscript{
 		_current_node->data->setRefObject(NULL);
 	}
 
+	zs_map *ScriptObject::getMapBuiltinFields(){
+		return map_builtin_fields;
+	}
+
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
 		for(int i=0; i< stk_builtin_elements.size(); i++){
