@@ -39,54 +39,54 @@ namespace zetscript{
 	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_ARRAY){
 	}
 
-	zs_vector<StackElement *> * ArrayScriptObject::getStkUserListElements(){ // return list of stack elements
-		return &stk_user_elements;
+	zs_vector<StackElement *> * ArrayScriptObject::getStkListElements(){ // return list of stack elements
+		return &stk_elements;
 	}
 
 	int ArrayScriptObject::length(){
 
-		return this->stk_user_elements.size();
+		return this->stk_elements.size();
 	}
 
 
-	StackElement * ArrayScriptObject::getUserElementAt(int _idx){
-		if(_idx >= stk_user_elements.size()){
+	StackElement * ArrayScriptObject::get(int _idx){
+		if(_idx >= stk_elements.size()){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
 		}
 
-		return (StackElement *)stk_user_elements.items[_idx];
+		return (StackElement *)stk_elements.items[_idx];
 	}
 
-	bool ArrayScriptObject::eraseUserElementAt( int idx){//onst zs_string & varname){
+	bool ArrayScriptObject::eraseElementAt( int idx){//onst zs_string & varname){
 
 		StackElement *si;
 
-		if(idx >= stk_user_elements.size()){
-			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.size());
+		if(idx >= stk_elements.size()){
+			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_elements.size());
 		}
 
-		si=(StackElement *)stk_user_elements.items[idx];
+		si=(StackElement *)stk_elements.items[idx];
 
 		ScriptObject::unrefAndFreeStackElementContainer(si);
 
 		// remove symbol on vector ...
-		stk_user_elements.erase(idx);
+		stk_elements.erase(idx);
 
 		return true;
 	}
 
-	void ArrayScriptObject::eraseAllUserElements(){
-		for(int i=0; i <stk_user_elements.size(); i++){
-			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
+	void ArrayScriptObject::eraseAllElements(){
+		for(int i=0; i <stk_elements.size(); i++){
+			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_elements.items[i]);
 		}
-		stk_user_elements.clear();
+		stk_elements.clear();
 	}
 
 	StackElement *ArrayScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
-		stk_user_elements.push_back(stk);
+		stk_elements.push_back(stk);
 		return stk;
 	}
 
@@ -121,10 +121,10 @@ namespace zetscript{
 
 	void ArrayScriptObject::pop(){
 		// save last element...
-		StackElement stk_element=*((StackElement *)stk_user_elements.items[stk_user_elements.size()-1]);
+		StackElement stk_element=*((StackElement *)stk_elements.items[stk_elements.size()-1]);
 
 		// erase
-		if(!eraseUserElementAt(stk_user_elements.size()-1)){
+		if(!eraseElementAt(stk_elements.size()-1)){
 			return;
 		}
 
@@ -133,8 +133,8 @@ namespace zetscript{
 	}
 
 	void ArrayScriptObject::concat(ArrayScriptObject *_v){
-		for(int i=0; i < _v->stk_user_elements.size();i++){
-			this->push((StackElement *)_v->stk_user_elements.items[i]);
+		for(int i=0; i < _v->stk_elements.size();i++){
+			this->push((StackElement *)_v->stk_elements.items[i]);
 		}
 	}
 
@@ -145,6 +145,6 @@ namespace zetscript{
 	}
 
 	ArrayScriptObject::~ArrayScriptObject(){
-		eraseAllUserElements();
+		eraseAllElements();
 	}
 }

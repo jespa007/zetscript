@@ -26,24 +26,24 @@ namespace zetscript{
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		stk_assign(_zs,new_stk,_stk);
 
-		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 		stk_user_list_elements->insert(idx,new_stk);
 	}
 
 	void 			ArrayScriptObjectWrap_eraseAt(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx){
 		ZS_UNUSUED_PARAM(_zs);
-		_this->eraseUserElementAt(idx);
+		_this->eraseElementAt(idx);
 	}
 
 	void 			ArrayScriptObjectWrap_clear(ZetScript *_zs,ArrayScriptObject *_this){
 		ZS_UNUSUED_PARAM(_zs);
-		_this->eraseAllUserElements();
+		_this->eraseAllElements();
 	}
 
 	StringScriptObject *		ArrayScriptObjectWrap_join(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx){
 		StringScriptObject *so_string = ZS_NEW_STRING_OBJECT(_zs);
 		zs_string *ptr_str=so_string->str_ptr;
-		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 
 		for(int i=0; i < stk_user_list_elements->size();i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
@@ -80,7 +80,7 @@ namespace zetscript{
 	bool 							ArrayScriptObjectWrap_contains(ZetScript *_zs,ArrayScriptObject *sv, StackElement *stk_to_compare){
 		ZS_UNUSUED_PARAM(_zs);
 		bool found=false;
-		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkListElements();
 
 		for(int i=0; i < stk_user_list_elements->size() && found == false;i++){
 			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
@@ -111,8 +111,8 @@ namespace zetscript{
 	bool 							ArrayScriptObjectWrap_equal(ZetScript *_zs,ArrayScriptObject *so1, ArrayScriptObject *so2){
 		ZS_UNUSUED_PARAM(_zs);
 		bool equal=true;
-		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();
-		zs_vector<StackElement *> *stk_user_list_elements_s2=so2->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkListElements();
+		zs_vector<StackElement *> *stk_user_list_elements_s2=so2->getStkListElements();
 
 		if(stk_user_list_elements_s1->size() != stk_user_list_elements_s2->size()){
 			return false;

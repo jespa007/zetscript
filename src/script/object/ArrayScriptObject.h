@@ -28,12 +28,12 @@ namespace zetscript{
 
 		ArrayScriptObject(ZetScript *_zs);
 
-		virtual StackElement * 				getUserElementAt(int idx);
-		bool 								eraseUserElementAt(int idx);
-		void								eraseAllUserElements();
+		virtual StackElement * 				get(int idx);
+		bool 								eraseElementAt(int idx);
+		void								eraseAllElements();
 
 		virtual int length();
-		virtual zs_vector<StackElement *> * getStkUserListElements();
+		virtual zs_vector<StackElement *> * getStkListElements();
 
 		bool 								exists(StackElement  * stk);
 
@@ -54,7 +54,7 @@ namespace zetscript{
 		virtual 							zs_string toString();
 		virtual 							~ArrayScriptObject();
 	protected:
-		zs_vector<StackElement *> 			stk_user_elements;
+		zs_vector<StackElement *> 			stk_elements;
 
 
 

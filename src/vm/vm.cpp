@@ -571,7 +571,7 @@ namespace zetscript{
 
 		// More tests would be needed see issue #336
 		if (dst_container_ref->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_ARRAY) {
-			stk_obj = ((ArrayScriptObject*)dst_container_ref)->getUserElementAt((int)dst_container_slot_id);
+			stk_obj = ((ArrayScriptObject*)dst_container_ref)->get((int)dst_container_slot_id);
 
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref

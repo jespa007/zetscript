@@ -527,7 +527,7 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 					}
 
-					if((stk_var =((ArrayScriptObject *)so_aux)->getUserElementAt(index_aux1))==NULL){
+					if((stk_var =((ArrayScriptObject *)so_aux)->get(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}
