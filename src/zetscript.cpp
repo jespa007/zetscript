@@ -7,6 +7,7 @@
 #include "ByteCode.cpp"
 #include "Instruction.cpp"
 #include "StackElement.cpp"
+#include "stk_utils.cpp"
 #include "Symbol.cpp"
 #include "zs_exception.cpp"
 

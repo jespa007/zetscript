@@ -283,7 +283,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+						,stk_utils::stk_to_typeof_str(data->zs,ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value == 0){
@@ -295,7 +295,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+						,stk_utils::stk_to_typeof_str(data->zs,ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value != 0){
@@ -715,7 +715,7 @@ namespace zetscript{
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
-			str1=stk_to_str(data->zs,_stk1);
+			str1=stk_utils::stk_to_str(data->zs,_stk1);
 		}
 
 
@@ -723,7 +723,7 @@ namespace zetscript{
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk2)){
 			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
-			str2=stk_to_str(data->zs, _stk2);
+			str2=stk_utils::stk_to_str(data->zs, _stk2);
 		}
 
 		bool result=false;
@@ -779,7 +779,7 @@ namespace zetscript{
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-				,stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk)
+				,stk_utils::stk_to_str(data->zs,ZS_VM_STR_AUX_PARAM_0,_stk)
 			);
 			break;
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:
@@ -800,7 +800,7 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk) \
+				,stk_utils::stk_to_typeof_str(data->zs,ZS_VM_STR_AUX_PARAM_0,_stk) \
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
 			);\

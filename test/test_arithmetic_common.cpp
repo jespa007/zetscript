@@ -66,7 +66,7 @@ void test_arithmetic_int_expression(
 				zetscript::zs_strutils::format(
 					"error test '%s' expected int but it was '%s'!\n"
 					,str_expr
-					,stk_to_str(_zs,&stk).c_str()
+					,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()
 				).c_str()
 			); \
 		} \
@@ -91,7 +91,7 @@ void test_constant_int_expression(
 					zetscript::zs_strutils::format(
 							"error test '%s' expected int but it was '%s'!\n"
 							,str_expr
-							,stk_to_str(_zs,&stk).c_str()).c_str()
+							,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()).c_str()
 					); \
 		} \
 	}catch(std::exception & ex){\
@@ -529,7 +529,7 @@ void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_exp
 					zetscript::zs_strutils::format(
 							"error test '%s' expected bool type but it was '%s'!\n"
 							,str_expr
-							,stk_to_str(_zs,&stk).c_str()
+							,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()
 					).c_str()
 			);
 		}
@@ -551,7 +551,7 @@ void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const 
 					zetscript::zs_strutils::format(
 							"error test '%s' expected bool but it was '%s'!\n"
 							,str_expr
-							,stk_to_str(_zs,&stk).c_str()
+							,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()
 					).c_str()
 			);
 		}
@@ -582,7 +582,7 @@ void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expe
 					zetscript::zs_strutils::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
 							,str_expr
-							,stk_to_str(_zs,&stk).c_str()
+							,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()
 					).c_str()
 			);
 		}
@@ -608,7 +608,7 @@ void test_arithmetic_string_expression(zetscript::ZetScript *_zs,const zetscript
 			throw std::runtime_error(
 					zetscript::zs_strutils::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
-							,str_expr,stk_to_str(_zs,&stk).c_str()
+							,str_expr,zetscript::stk_utils::stk_to_str(_zs,&stk).c_str()
 					).c_str()
 			);
 

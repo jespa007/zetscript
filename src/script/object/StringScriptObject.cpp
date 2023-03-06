@@ -69,7 +69,7 @@ namespace zetscript{
 			if(stk_src_item->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				*(*str_dst_it)=((ScriptObject *)stk_src_item->value)->toString();
 			}else{
-				*(*str_dst_it)=stk_to_str(_zs, stk_src_item);
+				*(*str_dst_it)=stk_utils::stk_to_str(_zs, stk_src_item);
 			}
 
 			str_dst_it++;
@@ -110,7 +110,7 @@ namespace zetscript{
 			str_input=zs_strutils::unescape(((ScriptObject *)stk.value)->toString());
 		}
 		else{
-			str_input=stk_to_str(_zs, &stk);
+			str_input=stk_utils::stk_to_str(_zs, &stk);
 		}
 
 		if(_stk_args->properties & STK_PROPERTY_PTR_STK){
@@ -228,7 +228,7 @@ namespace zetscript{
 								if(stk_arg.properties & STK_PROPERTY_SCRIPT_OBJECT){
 									str_format_results=((ScriptObject *)stk_arg.value)->toString();
 								}else{
-									str_format_results=stk_to_str(
+									str_format_results=stk_utils::stk_to_str(
 										_zs
 										,&stk_arg
 										,ptr_str_format_string

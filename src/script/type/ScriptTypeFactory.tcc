@@ -28,7 +28,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		StackElement stk_binded=to_stk(zs,(zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
+		StackElement stk_binded=stk_utils::to_stk(zs,(zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
 
 		if((symbol_variable = main_function->registerLocalVariable(
 				ZS_MAIN_SCOPE(this)

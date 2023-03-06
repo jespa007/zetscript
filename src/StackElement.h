@@ -92,41 +92,23 @@ namespace zetscript{
 	}StkProperty;
 
 	struct StackElement {
-		zs_int 			value; // operable value
-		uint16_t 		properties; // it tells its properties
+		static StackElement   	stkInt(zs_int);
+		static StackElement    	stkFloat(zs_float);
+
+
+		zs_int 					value; // operable value
+		uint16_t 				properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
-		void 			setUndefined();
-		bool			toBool();
-		zs_int			toInt();
-		zs_float		toFloat();
-		zs_string		toString();
+		void 					setUndefined();
+		bool					toBool();
+		zs_int					toInt();
+		zs_float				toFloat();
+		zs_string				toString();
+		StackElement			typeOf();
 
-		StackElement	typeOf();
 	};
 
-	StackElement   stk_int(zs_int);
-	StackElement   stk_float(zs_float);
-
-	zs_string		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
-	const char		*stk_to_str(char *_str_out, ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
-
-	zs_string		stk_to_typeof_str(ZetScript *_zs, StackElement *_stk);
-	const char		*stk_to_typeof_str(char *_str_out,ZetScript *_zs, StackElement *_stk);
-
-	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, const StackElement *_stk_src);
-	StackElement 	to_stk(ZetScript *_zs, zs_int ptr_var, short idx_builtin_type_var);
-	bool			stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error);
-
-	template<typename _C>
-	_C 				stk_to(ZetScript *_zs, StackElement * _stk);
-
-	template<typename _C>
-	StackElement	to_stk(ZetScript *_zs, _C _val);
-
-
 	extern const StackElement k_stk_undefined;
-
-
 
 }

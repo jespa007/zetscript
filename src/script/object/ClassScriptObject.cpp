@@ -177,7 +177,7 @@ namespace zetscript{
 						vm_unref_lifetime_object(this->vm,so);
 						// return
 					}else{
-						aux=stk_to_str(zs,&result);
+						aux=stk_utils::stk_to_str(zs,&result);
 					}
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;

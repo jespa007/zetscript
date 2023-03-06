@@ -24,7 +24,7 @@ namespace zetscript{
 	void 			ArrayScriptObjectWrap_insertAt(ZetScript *_zs,ArrayScriptObject *_this, zs_int idx,StackElement  * _stk){
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
-		stk_assign(_zs,new_stk,_stk);
+		stk_utils::stk_assign(_zs,new_stk,_stk);
 
 		zs_vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 		stk_user_list_elements->insert(idx,new_stk);
@@ -55,7 +55,7 @@ namespace zetscript{
 				ptr_str->append(((ScriptObject *)stk->value)->toString());
 			}
 			else{
-				ptr_str->append(stk_to_str(_zs,stk));
+				ptr_str->append(stk_utils::stk_to_str(_zs,stk));
 			}
 		}
 
