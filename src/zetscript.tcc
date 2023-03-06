@@ -4,7 +4,6 @@
  */
 
 
-#include	"stk_utils.tcc"
 #include 	"script/type/ScriptTypeFactory.tcc"
 #include 	"script/object/ClassScriptObject.tcc"
 

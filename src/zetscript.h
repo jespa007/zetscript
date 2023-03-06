@@ -71,7 +71,6 @@
 
 #include "Type.h"
 #include "StackElement.h"
-#include "stk_utils.h"
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "Symbol.h"
