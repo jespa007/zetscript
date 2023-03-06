@@ -1,11 +1,11 @@
 class MyNumber{
 	constructor(_n){
- 		this.num=_n;
+ 		this.__num__=_n;
 	}
  	static _nequ(op1, op2){
- 		return op1.num==op2.num;
+ 		return op1.__num__!=op2.__num__;
  	}
 };
 
-Console::outln("new MyNumber(20) != new MyNumber(20) => {0}",new MyNumber(20) != new MyNumber(20))
-Console::outln("new MyNumber(20) != new MyNumber(30) => {0}",new MyNumber(20) != new MyNumber(30))
+Console::outln("new MyNumber(20) != new MyNumber(20) => "+(new MyNumber(20) != new MyNumber(20)))
+Console::outln("new MyNumber(20) != new MyNumber(30) => "+(new MyNumber(20) != new MyNumber(30)))

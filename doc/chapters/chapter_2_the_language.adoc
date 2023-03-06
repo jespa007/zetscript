@@ -2596,7 +2596,7 @@ var b=new B(); // b.a==10, b.b=20
 
 ==== Metamethods
 
-Metamethods are special member functions that links with operators seen on section section 3.6. ZetScript metafunctions can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+Metamethods are special member functions that links with operators seen on section section X.XX. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
 ===== Static functions
 
@@ -2625,14 +2625,14 @@ _equ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_equ.zs[]
+include::../examples/the_language/class/class_metamethod_equ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_equ_out.txt[]
+include::../examples/the_language/class/class_metamethod_equ_out.txt[]
 ----
 
 ===== _nequ()
@@ -2660,14 +2660,14 @@ _nequ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_nequ.zs[]
+include::../examples/the_language/class/class_metamethod_nequ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_nequ_out.txt[]
+include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
 ----
 
 ===== _lt()
@@ -2695,14 +2695,14 @@ _lt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_lt.zs[]
+include::../examples/the_language/class/class_metamethod_lt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_lt_out.txt[]
+include::../examples/the_language/class/class_metamethod_lt_out.txt[]
 ----
 
 ===== _lte()
@@ -2730,14 +2730,14 @@ _lte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_lte.zs[]
+include::../examples/the_language/class/class_metamethod_lte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_lte_out.txt[]
+include::../examples/the_language/class/class_metamethod_lte_out.txt[]
 ----
 
 ===== _gt()
@@ -2765,14 +2765,14 @@ _gt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_gt.zs[]
+include::../examples/the_language/class/class_metamethod_gt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_gt_out.txt[]
+include::../examples/the_language/class/class_metamethod_gt_out.txt[]
 ----
 
 ===== _gte(_op1,_op2)
@@ -2800,14 +2800,14 @@ _gte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_gte.zs[]
+include::../examples/the_language/class/class_metamethod_gte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_gte_out.txt[]
+include::../examples/the_language/class/class_metamethod_gte_out.txt[]
 ----
 
 ===== _add()
@@ -2834,14 +2834,14 @@ _add(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_add.zs[]
+include::../examples/the_language/class/class_metamethod_add.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_add_out.txt[]
+include::../examples/the_language/class/class_metamethod_add_out.txt[]
 ----
 
 ===== _div()
@@ -2868,14 +2868,14 @@ _div(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_div.zs[]
+include::../examples/the_language/class/class_metamethod_div.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_div_out.txt[]
+include::../examples/the_language/class/class_metamethod_div_out.txt[]
 ----
 
 
@@ -2903,14 +2903,14 @@ _mul(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_mul.zs[]
+include::../examples/the_language/class/class_metamethod_mul.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_mul_out.txt[]
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
 ----
 
 ===== _mod()
@@ -2937,14 +2937,14 @@ _mod(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_mod.zs[]
+include::../examples/the_language/class/class_metamethod_mod.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_mul_out.txt[]
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
 ----
 
 ===== _and()
@@ -2971,14 +2971,14 @@ _and(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_and.zs[]
+include::../examples/the_language/class/class_metamethod_and.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_and_out.txt[]
+include::../examples/the_language/class/class_metamethod_and_out.txt[]
 ----
 
 ===== _or()
@@ -3005,14 +3005,14 @@ _or(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_or.zs[]
+include::../examples/the_language/class/class_metamethod_or.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_or_out.txt[]
+include::../examples/the_language/class/class_metamethod_or_out.txt[]
 ----
 
 ===== _xor()
@@ -3039,14 +3039,14 @@ _xor(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_xor.zs[]
+include::../examples/the_language/class/class_metamethod_xor.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_xor_out.txt[]
+include::../examples/the_language/class/class_metamethod_xor_out.txt[]
 ----
 ===== _shl()
 
@@ -3072,14 +3072,14 @@ _shl(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_shl.zs[]
+include::../examples/the_language/class/class_metamethod_shl.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_shl_out.txt[]
+include::../examples/the_language/class/class_metamethod_shl_out.txt[]
 ----
 
 ===== _shr()
@@ -3106,14 +3106,14 @@ _shr(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_shr.zs[]
+include::../examples/the_language/class/class_metamethod_shr.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_shr_out.txt[]
+include::../examples/the_language/class/class_metamethod_shr_out.txt[]
 ----
 
 ===== Member functions
@@ -3141,14 +3141,14 @@ Custom string defined by user
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_tostring.zs[]
+include::../examples/the_language/class/class_metamethod_tostring.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_tostring_out.txt[]
+include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
 ----
 
 ===== _set()
@@ -3174,14 +3174,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_set.zs[]
+include::../examples/the_language/class/class_metamethod_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_set_out.txt[]
+include::../examples/the_language/class/class_metamethod_set_out.txt[]
 ----
 
 ===== _not()
@@ -3207,14 +3207,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_not.zs[]
+include::../examples/the_language/class/class_metamethod_not.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_not_out.txt[]
+include::../examples/the_language/class/class_metamethod_not_out.txt[]
 ----
 
 ===== _neg()
@@ -3240,14 +3240,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_neg.zs[]
+include::../examples/the_language/class/class_metamethod_neg.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_not_neg.txt[]
+include::../examples/the_language/class/class_metamethod_not_neg.txt[]
 ----
 
 ===== _postinc()
@@ -3274,14 +3274,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_postinc.zs[]
+include::../examples/the_language/class/class_metamethod_postinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_postinc_out.txt[]
+include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
 ----
 
 ===== _postdec()
@@ -3307,14 +3307,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_postdec.zs[]
+include::../examples/the_language/class/class_metamethod_postdec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_post_dec_out.txt[]
+include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
 ----
 
 ===== _preinc()
@@ -3340,14 +3340,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_preinc.zs[]
+include::../examples/the_language/class/class_metamethod_preinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_preinc_out.txt[]
+include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
 ----
 
 ===== _predec()
@@ -3373,14 +3373,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metafunction_predec.zs[]
+include::../examples/the_language/class/class_metamethod_predec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metafunction_predec_out.txt[]
+include::../examples/the_language/class/class_metamethod_predec_out.txt[]
 ----
  
 ==== Properties
@@ -3426,14 +3426,14 @@ Returns the value of this property
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_set.zs[]
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_set_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
 ----
 
 ===== _set()
@@ -3459,14 +3459,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_set.zs[]
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_set_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
 ----
 
 ===== _not()
@@ -3492,14 +3492,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_not.zs[]
+include::../examples/the_language/class/class_property_metamethod_not.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_not_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_not_out.txt[]
 ----
 
 ===== _neg()
@@ -3525,17 +3525,17 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_neg.zs[]
+include::../examples/the_language/class/class_property_metamethod_neg.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_neg_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_neg_out.txt[]
 ----
 
-===== _post_inc()
+===== _postinc()
 
 
 Implements _post_increment_ operator (aka a++ ) 
@@ -3544,7 +3544,7 @@ Implements _post_increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-_post_inc()
+_postinc()
 ----
 
 +++<u>Parameters</u>+++
@@ -3559,17 +3559,17 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_post_inc.zs[]
+include::../examples/the_language/class/class_property_metamethod_post_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_post_inc_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_post_inc_out.txt[]
 ----
 
-===== _post_dec()
+===== _postdec()
 
 Implements _post_decrement_ operator (aka a-- ) 
 
@@ -3577,7 +3577,7 @@ Implements _post_decrement_ operator (aka a-- )
 
 [source,javascript]
 ----
-_post_dec()
+_postdec()
 ----
 
 +++<u>Parameters</u>+++
@@ -3592,17 +3592,17 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_post_dec.zs[]
+include::../examples/the_language/class/class_property_metamethod_post_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_post_dec_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_post_dec_out.txt[]
 ----
 
-===== _pre_inc()
+===== _preinc()
 
 Implements _pre_increment_ operator (aka ++a ) 
 
@@ -3610,7 +3610,7 @@ Implements _pre_increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-_pre_inc()
+_preinc()
 ----
 
 +++<u>Parameters</u>+++
@@ -3625,17 +3625,17 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_pre_inc.zs[]
+include::../examples/the_language/class/class_property_metamethod_pre_inc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_pre_inc_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_pre_inc_out.txt[]
 ----
 
-===== _pre_dec()
+===== _predec()
 
 Implements _pre_decrement_ operator (aka --a ) 
 
@@ -3643,7 +3643,7 @@ Implements _pre_decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-_pre_dec()
+_predec()
 ----
 
 +++<u>Parameters</u>+++
@@ -3658,16 +3658,15 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metafunction_pre_dec.zs[]
+include::../examples/the_language/class/class_property_metamethod_pre_dec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metafunction_pre_dec_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_pre_dec_out.txt[]
 ----
-
 
 === Modules
 
@@ -3685,6 +3684,7 @@ Console::out(_value,..._args)
 +++<u>Parameters</u>+++
 
 - __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+- __args_: 
 
 +++<u>Returns</u>+++
 
@@ -3701,7 +3701,6 @@ Output:
 ----
 include::../examples/the_language/console/console_out_out.txt[]
 ----
-
 
 ===== Console::outln()
 
@@ -3837,6 +3836,12 @@ Example,
 include::../examples/the_language/system/system_clock.zs[]
 ----
 
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
 Output:
 
 [source,txt]
@@ -3851,7 +3856,15 @@ Evals a expression
 Syntax,
 
 [source,zetscript]
-System::eval(_string,..._args)
+System::eval(_string,_args)
+
++++<u>Parameters</u>+++
+
+- __string_:
+- __args_: Object of fields as input variables used in eval 
+
++++<u>Returns</u>+++
+
 
 Example,
 
@@ -3877,7 +3890,14 @@ Evals an assert and raise an error if the condition is false
 [source,zetscript]
 System::assert(_condition,_string)
 
-Example,
++++<u>Parameters</u>+++
+
+- __condition_:
+- __string_:
+
++++<u>Returns</u>+++
+
+*Example*
 
 
 [source,zetscript]
@@ -3896,12 +3916,19 @@ include::../examples/the_language/system/system_assert_out.txt[]
 
 Raises an error by user
 
-Syntax,
+*Syntax*
 
 [source,zetscript]
 System::error(_string,..._args)
 
-Example,
++++<u>Parameters</u>+++
+
+- __string_:
+- __args_:
+
++++<u>Returns</u>+++
+
+*Example*
 
 
 [source,zetscript]
@@ -3931,19 +3958,18 @@ The number PI
 [source,zetscript]
 Math::PI
 
-*Example*
-
 [source,zetscript]
 ----
 include::../examples/the_language/math/math_pi.zs[]
 ----
 
-Output:
+Output
 
-[source,txt]
+[source,text]
 ----
-include::../examples/the_language/math/math_pi.txt[]
+include::../examples/the_language/math/math_pi_out.txt[]
 ----
+
 
 ===== Static functions
 
@@ -3954,7 +3980,15 @@ Performs a sinus
 *Syntax*
 
 [source,zetscript]
-Math::sin(_value)
+Math::sin(_radians)
+
++++<u>Parameters</u>+++
+
+- __radians_:
+
++++<u>Returns</u>+++
+
+Sinus of _radians between 0..1
 
 *Example*
 
@@ -3963,9 +3997,9 @@ Math::sin(_value)
 include::../examples/the_language/math/math_sin.zs[]
 ----
 
-Output:
+Output
 
-[source,txt]
+[source,text]
 ----
 include::../examples/the_language/math/math_sin_out.txt[]
 ----
@@ -3977,7 +4011,15 @@ Performs a cosinus
 *Syntax*
 
 [source,zetscript]
-Math::cos(_value)
+Math::cos(_radians)
+
++++<u>Parameters</u>+++
+
+- __radians_:
+
++++<u>Returns</u>+++
+
+Cosinus of _radians between 0..1
 
 *Example*
 
@@ -3986,9 +4028,9 @@ Math::cos(_value)
 include::../examples/the_language/math/math_cos.zs[]
 ----
 
-Output:
+Output
 
-[source,txt]
+[source,text]
 ----
 include::../examples/the_language/math/math_cos_out.txt[]
 ----
@@ -4002,6 +4044,14 @@ Performs a absolute
 [source,zetscript]
 Math::abs(_value)
 
++++<u>Parameters</u>+++
+
+- _value: Numeric input value
+
++++<u>Returns</u>+++
+
+Absolute value
+
 *Example*
 
 [source,zetscript]
@@ -4009,9 +4059,9 @@ Math::abs(_value)
 include::../examples/the_language/math/math_abs.zs[]
 ----
 
-Output:
+Output
 
-[source,txt]
+[source,text]
 ----
 include::../examples/the_language/math/math_abs_out.txt[]
 ----
@@ -4023,7 +4073,16 @@ Performs a power
 *Syntax*
 
 [source,zetscript]
-Math::pow(_base,_pow)
+Math::pow(_base,_exponent)
+
++++<u>Parameters</u>+++
+
+- _base: Base value
+- _exponent: Exponent value
+
++++<u>Returns</u>+++
+
+The result of raising __base_ to the __power_ exponent.
 
 *Example*
 
@@ -4046,7 +4105,15 @@ Converts degres to radiants
 *Syntax*
 
 [source,zetscript]
-Math::degToRad(_degres)
+Math::degToRad(_degrees)
+
++++<u>Parameters</u>+++
+
+- __degrees_: Degrees value
+
++++<u>Returns</u>+++
+
+The result of degrees as radians   
 
 *Example*
 
@@ -4059,7 +4126,7 @@ Output:
 
 [source,txt]
 ----
-include::../examples/the_language/math/math_deg_to_rad.txt[]
+include::../examples/the_language/math/math_deg_to_rad_out.txt[]
 ----
 
 ====== Math::random()
@@ -4070,6 +4137,14 @@ Returns random float number between [0..1)
 
 [source,zetscript]
 Math::random()
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A float between [0..1)
 
 *Example*
 
@@ -4094,6 +4169,15 @@ Returns maximmum of two input values
 [source,zetscript]
 Math::max(_v1,_v2)
 
++++<u>Parameters</u>+++
+
+- __v1_: First value
+- __v2_: Second value
+
++++<u>Returns</u>+++
+
+Returns the maximum of __v1_ and __v2_
+
 *Example*
 
 [source,zetscript]
@@ -4117,6 +4201,15 @@ Returns minimmum of two input values
 [source,zetscript]
 Math::min(_v1,_v2)
 
++++<u>Parameters</u>+++
+
+- __v1_: First value
+- __v2_: Second value
+
++++<u>Returns</u>+++
+
+Returns the minimmum of __v1_ and __v2_
+
 *Example*
 
 [source,zetscript]
@@ -4133,12 +4226,20 @@ include::../examples/the_language/math/math_min_out.txt[]
 
 ====== Math::sqrt()
 
-Performs the sqrt of input value
+Computes the square root of input value
 
 *Syntax*
 
 [source,zetscript]
 Math::sqrt(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: Input value
+
++++<u>Returns</u>+++
+
+Returns the square root of __value_
 
 *Example*
 
@@ -4156,12 +4257,20 @@ include::../examples/the_language/math/math_sqrt_out.txt[]
 
 ====== Math::floor()
 
-Returns the floor of input value
+Rounds a value downward
 
 *Syntax*
 
 [source,zetscript]
 Math::floor(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: Value to round down 
+
++++<u>Returns</u>+++
+
+The value of __x_ rounded downward 
 
 *Example*
 
@@ -4179,12 +4288,21 @@ include::../examples/the_language/math/math_floor_out.txt[]
 
 ====== Math::ceil()
 
-Returns the ceil of input value
+Rounds a value upward
 
 *Syntax*
 
 [source,zetscript]
-Math::ceil(_value)
+Math::ceil(_x)
+
++++<u>Parameters</u>+++
+
+- __x_: Value to round up 
+
++++<u>Returns</u>+++
+
+The largest integral value that is not greater than __x_
+
 
 *Example*
 
@@ -4202,12 +4320,20 @@ include::../examples/the_language/math/math_ceil_out.txt[]
 
 ====== Math::round()
 
-Returns the round of input value
+Rounds a value to the nearest integral
 
 *Syntax*
 
 [source,zetscript]
 Math::round(_value)
+
++++<u>Parameters</u>+++
+
+- __x_: Value to round
+
++++<u>Returns</u>+++
+
+The value of __x_ to the nearest integral
 
 *Example*
 
@@ -4229,12 +4355,20 @@ include::../examples/the_language/math/math_round_out.txt[]
 
 ===== Json::serialize()
 
-Serializes value or variable to json string
+Serializes to json string
 
 *Syntax*
 
 [source,zetscript]
-Json::serialize(_value)
+Json::serialize(_x)
+
++++<u>Parameters</u>+++
+
+- __x_: Literal or variable
+
++++<u>Returns</u>+++
+
+The equivalent representation in json format
 
 *Example*
 
@@ -4252,12 +4386,20 @@ include::../examples/the_language/json/json_serialize_out.tx[]
 
 ===== Json::deserialize()
 
-Deserializes json string to variable
+Deserializes json string
 
 *Syntax*
 
 [source,zetscript]
 Json::deserialize(_string)
+
++++<u>Parameters</u>+++
+
+- __string_: String in json format
+
++++<u>Returns</u>+++
+
+Converts the equivalent json string to literal or object
 
 *Example*
 
@@ -4285,12 +4427,12 @@ Perform add operation (aka +) between two objects type DateTime
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_add.zs[]
+include::../examples/the_language/datetime/datetime_metamethods_add.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_add_out.txt[]
+include::../examples/the_language/datetime/datetime_metamethods_add_out.txt[]
 ----
 
 ====== _sub
@@ -4301,12 +4443,12 @@ Perform sub (aka -)  operation between two objects type DateTime
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_sub.zs[]
+include::../examples/the_language/datetime/datetime_metamethods_sub.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_sub_out.txt[]
+include::../examples/the_language/datetime/datetime_metamethods_sub_out.txt[]
 ----
 
 ====== _tostring
@@ -4317,12 +4459,12 @@ Returns formatted date
 
 [source,javascript]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_tostring.zs[]
+include::../examples/the_language/datetime/datetime_metamethods_tostring.zs[]
 ----
 
 [source,txt]
 ----
-include::../examples/the_language/datetime/datetime_metafunctions_tostring_out.txt[]
+include::../examples/the_language/datetime/datetime_metamethods_tostring_out.txt[]
 ----
 
 
