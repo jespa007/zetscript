@@ -34,7 +34,7 @@ namespace zetscript{
 			if((data->vm_stk_current->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
 				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,stk_utils::stk_to_str(data->zs,data->vm_stk_current).c_str()
+					,data->zs->stackElementToString(data->vm_stk_current).c_str()
 				);
 				return false;
 			}

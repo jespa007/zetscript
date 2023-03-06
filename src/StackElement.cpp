@@ -8,53 +8,15 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
-	StackElement   StackElement::stkInt(zs_int _value){
-		return {_value,STK_PROPERTY_ZS_INT};
-	}
 
-	StackElement   StackElement::stkFloat(zs_float _value){
-		StackElement stk;
 
-		ZS_WRITE_INTPTR_FLOAT(&stk.value,_value);
-
-		return stk;
-	}
-
-	zs_int	StackElement::toInt(){
-		if((this->properties & (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT))==0){
-			ZS_THROW_RUNTIME_ERRORF("StackElement not is not int");
-		}
-
-		if((this->properties & STK_PROPERTY_ZS_INT)!=0){
-			return (zs_int)this->value;
-		}
-
-		return ZS_READ_INTPTR_FLOAT(this->value);
-	}
-
-	zs_float	StackElement::toFloat(){
-		if((this->properties & STK_PROPERTY_ZS_FLOAT)==0){
-			ZS_THROW_RUNTIME_ERRORF("StackElement not is not float");
-		}
-
-		return ZS_READ_INTPTR_FLOAT(this->value);
-	}
-
-	bool	StackElement::toBool(){
-		if((this->properties & STK_PROPERTY_BOOL)==0){
-			ZS_THROW_RUNTIME_ERRORF("StackElement not is not bool");
-		}
-
-		return this->value;
-	}
-
-	zs_string		StackElement::toString(){
+	/*zs_string		StackElement::toString(){
 		if(STK_IS_SCRIPT_OBJECT_STRING(this)){
 			return ((StringScriptObject *)this->value)->toString();
 		}
 		return stk_utils::stk_to_str(NULL,this);
 
-	}
+	}*/
 
 	void StackElement::setUndefined(){
 		STK_SET_UNDEFINED(this);

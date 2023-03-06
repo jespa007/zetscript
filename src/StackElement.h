@@ -92,8 +92,6 @@ namespace zetscript{
 	}StkProperty;
 
 	struct StackElement {
-		static StackElement   	stkInt(zs_int);
-		static StackElement    	stkFloat(zs_float);
 
 
 		zs_int 					value; // operable value
@@ -101,10 +99,9 @@ namespace zetscript{
 
 		// it gives stackelement as string (the result should be deleted)
 		void 					setUndefined();
-		bool					toBool();
-		zs_int					toInt();
-		zs_float				toFloat();
-		zs_string				toString();
+
+
+		//zs_string				toString();
 		StackElement			typeOf();
 
 	};

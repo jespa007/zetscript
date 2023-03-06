@@ -6,7 +6,7 @@
 
 namespace zetscript{
 	namespace stk_utils{
-
+/*
 		zs_string		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
 		const char		*stk_to_str(ZetScript *_zs,char *_str_out,  StackElement *_stk,const zs_string & _format="");
 
@@ -18,7 +18,7 @@ namespace zetscript{
 		bool			stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error);
 
 		template<typename _C>
-		StackElement	to_stk(ZetScript *_zs, _C _val);
+		StackElement	to_stk(ZetScript *_zs, _C _val);*/
 	}
 }
 

@@ -138,8 +138,19 @@ namespace zetscript{
 			return compiled_symbol_name;
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------
-		// StackElement
 		//
+		// STACKELEMENT
+		//
+		// it gives stackelement as string (the result should be deleted)
+		void 					setStackElementUndefined();
+		//bool					stackElementToBool(const  StackElement & _stk);
+		//zs_int					stackElementToInt(const  StackElement & _stk);
+		//zs_float				stackElementToFloat(const  StackElement & _stk);
+		//zs_string				toString();
+		StackElement   			intToStackElement(zs_int);
+		StackElement    		floatToStackElement(zs_float);
+		StackElement    		boolToStackElement(bool);
+
 
 		template<typename _C>
 		_C stackElementTo(StackElement * _stk){
@@ -154,7 +165,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
 			}
 
-			if(stk_utils::stk_to(this,_stk, script_type->idx_script_type, &ptr_var,error)==false){
+			if(this->stackElementTo(_stk, script_type->idx_script_type, &ptr_var,error)==false){
 				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
 						,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
 						,error.c_str()
@@ -163,6 +174,38 @@ namespace zetscript{
 			return (_C)ptr_var;
 		}
 
+		template<typename _C>
+		_C stackElementTo(StackElement   _stk){
+			return stackElementTo<_C>(&_stk);
+		}
+
+		zs_string		stackElementToString(StackElement *_stk,const zs_string & _format="");
+		const char		*stackElementToString(char *_str_out,  StackElement *_stk,const zs_string & _format="");
+
+		zs_string		stackElementToTypeOfString(StackElement *_stk);
+		const char		*stackElementToTypeOfString(char *_str_out, StackElement *_stk);
+
+		void			stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src);
+		StackElement 	toStackElement(zs_int ptr_var, short idx_builtin_type_var);
+		bool			stackElementTo(StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error);
+
+		template<typename _C>
+		StackElement	toStackElement( _C _val){
+			zs_string error;
+			zs_string str_script_type_ptr = typeid(_C).name();
+			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+			if(script_type == NULL){
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+			}
+
+			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
+		}
+
+		//
+		// STACKELEMENT
+		//
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		//

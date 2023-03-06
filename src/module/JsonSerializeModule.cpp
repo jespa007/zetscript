@@ -155,9 +155,8 @@ namespace zetscript{
 										result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										break;
 									}
-									stk_getter_result=stk_utils::to_stk(
-										_zs
-										,result
+									stk_getter_result=_zs->toStackElement(
+										result
 										,ptr_function->idx_script_type_return
 									);
 								}
@@ -233,7 +232,7 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
-				_str_result.append(stk_utils::stk_to_str(_zs,_stk));
+				_str_result.append(_zs->stackElementToString(_stk));
 				break;
 			case STK_PROPERTY_NULL:
 				_str_result.append("null");

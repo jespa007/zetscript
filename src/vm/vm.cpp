@@ -579,7 +579,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
 				, dst_container_ref->getScriptType()->str_script_type.c_str()
-				, stk_utils::stk_to_typeof_str(data->zs, stk_obj).c_str()
+				, data->zs->stackElementToTypeOfString( stk_obj).c_str()
 
 			);
 
@@ -593,7 +593,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
 				, dst_container_ref->getScriptType()->str_script_type.c_str()
-				, stk_utils::stk_to_typeof_str(data->zs, stk_obj).c_str()
+				, data->zs->stackElementToTypeOfString( stk_obj).c_str()
 
 			);
 		}

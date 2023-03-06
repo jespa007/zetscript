@@ -88,7 +88,7 @@ namespace zetscript{
 								,line
 						);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -115,7 +115,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1](Param1 p1){
 
 					StackElement args[1]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
+							 this->toStackElement((zs_int)p1,idx_param1)
 					};
 
 					vm_execute(
@@ -148,7 +148,7 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[1]={
-								stk_utils::to_stk(this,(zs_int)p1,idx_param1)
+								this->toStackElement((zs_int)p1,idx_param1)
 						};
 
 						StackElement stk = vm_execute(
@@ -161,7 +161,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk,idx_return, (zs_int*)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk,idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -190,8 +190,8 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2](Param1 p1,Param2 p2){
 
 					StackElement args[2]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
 
 					};
 
@@ -230,8 +230,8 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[2]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
 
 						};
 
@@ -246,7 +246,7 @@ namespace zetscript{
 							,line
 						);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -281,9 +281,9 @@ namespace zetscript{
 
 
 					StackElement args[3]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
 					};
 
 					vm_execute(
@@ -321,9 +321,9 @@ namespace zetscript{
 					zs_string str_error;
 
 					StackElement args[3]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
 					};
 
 					StackElement stk = vm_execute(
@@ -337,7 +337,7 @@ namespace zetscript{
 						,line
 					);
 
-					if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+					if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 					return ret_value;
@@ -371,10 +371,10 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
 
 					StackElement args[4]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-							,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
+							,this->toStackElement((zs_int)p4,idx_param4)
 					};
 
 					vm_execute(
@@ -415,10 +415,10 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[4]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
 						};
 
 						StackElement stk = vm_execute(
@@ -432,7 +432,7 @@ namespace zetscript{
 								,line
 								);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -470,11 +470,11 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
 
 					StackElement args[5]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-							,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-							,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
+							,this->toStackElement((zs_int)p4,idx_param4)
+							,this->toStackElement((zs_int)p5,idx_param5)
 
 					};
 
@@ -518,11 +518,11 @@ namespace zetscript{
 					zs_string str_error;
 
 					StackElement args[5]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-							,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-							,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
+							,this->toStackElement((zs_int)p4,idx_param4)
+							,this->toStackElement((zs_int)p5,idx_param5)
 
 					};
 
@@ -536,7 +536,7 @@ namespace zetscript{
 							,file
 							,line);
 
-					if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+					if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 					return ret_value;
@@ -577,12 +577,12 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
 
 					StackElement args[6]={
-							 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-							,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-							,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-							,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-							,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-							,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
+							 this->toStackElement((zs_int)p1,idx_param1)
+							,this->toStackElement((zs_int)p2,idx_param2)
+							,this->toStackElement((zs_int)p3,idx_param3)
+							,this->toStackElement((zs_int)p4,idx_param4)
+							,this->toStackElement((zs_int)p5,idx_param5)
+							,this->toStackElement((zs_int)p6,idx_param6)
 					};
 
 					vm_execute(
@@ -625,12 +625,12 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[6]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-								,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-								,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
+								,this->toStackElement((zs_int)p5,idx_param5)
+								,this->toStackElement((zs_int)p6,idx_param6)
 						};
 
 						StackElement stk = vm_execute(
@@ -643,7 +643,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -712,13 +712,13 @@ namespace zetscript{
 				){
 
 					StackElement args[7]={
-						 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-						,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-						,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-						,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-						,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-						,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-						,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
+						 this->toStackElement((zs_int)p1,idx_param1)
+						,this->toStackElement((zs_int)p2,idx_param2)
+						,this->toStackElement((zs_int)p3,idx_param3)
+						,this->toStackElement((zs_int)p4,idx_param4)
+						,this->toStackElement((zs_int)p5,idx_param5)
+						,this->toStackElement((zs_int)p6,idx_param6)
+						,this->toStackElement((zs_int)p7,idx_param7)
 					};
 
 					vm_execute(
@@ -793,13 +793,13 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[7]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-								,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-								,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-								,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
+								,this->toStackElement((zs_int)p5,idx_param5)
+								,this->toStackElement((zs_int)p6,idx_param6)
+								,this->toStackElement((zs_int)p7,idx_param7)
 						};
 
 						StackElement stk = vm_execute(
@@ -812,7 +812,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -885,14 +885,14 @@ namespace zetscript{
 				){
 
 					StackElement args[8]={
-						 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-						,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-						,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-						,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-						,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-						,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-						,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-						,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
+						 this->toStackElement((zs_int)p1,idx_param1)
+						,this->toStackElement((zs_int)p2,idx_param2)
+						,this->toStackElement((zs_int)p3,idx_param3)
+						,this->toStackElement((zs_int)p4,idx_param4)
+						,this->toStackElement((zs_int)p5,idx_param5)
+						,this->toStackElement((zs_int)p6,idx_param6)
+						,this->toStackElement((zs_int)p7,idx_param7)
+						,this->toStackElement((zs_int)p8,idx_param8)
 					};
 
 					vm_execute(
@@ -972,14 +972,14 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[8]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-								,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-								,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-								,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-								,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
+								,this->toStackElement((zs_int)p5,idx_param5)
+								,this->toStackElement((zs_int)p6,idx_param6)
+								,this->toStackElement((zs_int)p7,idx_param7)
+								,this->toStackElement((zs_int)p8,idx_param8)
 						};
 
 						StackElement stk = vm_execute(
@@ -992,7 +992,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -1071,15 +1071,15 @@ namespace zetscript{
 				){
 
 					StackElement args[9]={
-						 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-						,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-						,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-						,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-						,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-						,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-						,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-						,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
-						,stk_utils::to_stk(this,(zs_int)p9,idx_param9)
+						 this->toStackElement((zs_int)p1,idx_param1)
+						,this->toStackElement((zs_int)p2,idx_param2)
+						,this->toStackElement((zs_int)p3,idx_param3)
+						,this->toStackElement((zs_int)p4,idx_param4)
+						,this->toStackElement((zs_int)p5,idx_param5)
+						,this->toStackElement((zs_int)p6,idx_param6)
+						,this->toStackElement((zs_int)p7,idx_param7)
+						,this->toStackElement((zs_int)p8,idx_param8)
+						,this->toStackElement((zs_int)p9,idx_param9)
 					};
 
 					vm_execute(
@@ -1164,15 +1164,15 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[9]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-								,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-								,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-								,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-								,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
-								,stk_utils::to_stk(this,(zs_int)p9,idx_param9)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
+								,this->toStackElement((zs_int)p5,idx_param5)
+								,this->toStackElement((zs_int)p6,idx_param6)
+								,this->toStackElement((zs_int)p7,idx_param7)
+								,this->toStackElement((zs_int)p8,idx_param8)
+								,this->toStackElement((zs_int)p9,idx_param9)
 						};
 
 						StackElement stk = vm_execute(
@@ -1185,7 +1185,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
@@ -1269,16 +1269,16 @@ namespace zetscript{
 				){
 
 					StackElement args[10]={
-						 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-						,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-						,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-						,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-						,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-						,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-						,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-						,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
-						,stk_utils::to_stk(this,(zs_int)p9,idx_param9)
-						,stk_utils::to_stk(this,(zs_int)p10,idx_param10)
+						 this->toStackElement((zs_int)p1,idx_param1)
+						,this->toStackElement((zs_int)p2,idx_param2)
+						,this->toStackElement((zs_int)p3,idx_param3)
+						,this->toStackElement((zs_int)p4,idx_param4)
+						,this->toStackElement((zs_int)p5,idx_param5)
+						,this->toStackElement((zs_int)p6,idx_param6)
+						,this->toStackElement((zs_int)p7,idx_param7)
+						,this->toStackElement((zs_int)p8,idx_param8)
+						,this->toStackElement((zs_int)p9,idx_param9)
+						,this->toStackElement((zs_int)p10,idx_param10)
 					};
 
 					vm_execute(
@@ -1368,16 +1368,16 @@ namespace zetscript{
 						zs_string str_error;
 
 						StackElement args[10]={
-								 stk_utils::to_stk(this,(zs_int)p1,idx_param1)
-								,stk_utils::to_stk(this,(zs_int)p2,idx_param2)
-								,stk_utils::to_stk(this,(zs_int)p3,idx_param3)
-								,stk_utils::to_stk(this,(zs_int)p4,idx_param4)
-								,stk_utils::to_stk(this,(zs_int)p5,idx_param5)
-								,stk_utils::to_stk(this,(zs_int)p6,idx_param6)
-								,stk_utils::to_stk(this,(zs_int)p7,idx_param7)
-								,stk_utils::to_stk(this,(zs_int)p8,idx_param8)
-								,stk_utils::to_stk(this,(zs_int)p9,idx_param9)
-								,stk_utils::to_stk(this,(zs_int)p10,idx_param10)
+								 this->toStackElement((zs_int)p1,idx_param1)
+								,this->toStackElement((zs_int)p2,idx_param2)
+								,this->toStackElement((zs_int)p3,idx_param3)
+								,this->toStackElement((zs_int)p4,idx_param4)
+								,this->toStackElement((zs_int)p5,idx_param5)
+								,this->toStackElement((zs_int)p6,idx_param6)
+								,this->toStackElement((zs_int)p7,idx_param7)
+								,this->toStackElement((zs_int)p8,idx_param8)
+								,this->toStackElement((zs_int)p9,idx_param9)
+								,this->toStackElement((zs_int)p10,idx_param10)
 						};
 
 						StackElement stk = vm_execute(
@@ -1390,7 +1390,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_utils::stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;

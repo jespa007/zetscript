@@ -59,7 +59,7 @@ namespace zetscript{
 		 }else{
 			ZS_VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
 				,SFI_GET_SYMBOL_NAME(_script_function,_instruction)
-				, stk_utils::stk_to_typeof_str(data->zs,ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+				, data->zs->stackElementToTypeOfString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 			);
 		 }
 		 return	true;

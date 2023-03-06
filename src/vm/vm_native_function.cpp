@@ -199,7 +199,7 @@ namespace zetscript{
 				switch(current_arg->properties & STK_PROPERTY_TYPES){
 
 				default:
-					aux_string=stk_utils::stk_to_typeof_str(data->zs,current_arg);
+					aux_string=data->zs->stackElementToTypeOfString(current_arg);
 					break;
 				case STK_PROPERTY_ZS_INT:
 					aux_string=k_str_zs_int_type;
@@ -407,12 +407,11 @@ namespace zetscript{
 				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (_c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
-				}else if(!stk_utils::stk_to(
-						data->zs
-						,&_stk_arg_c_function[i-idx_arg_start]
-						,_c_function->params[i].idx_script_type
-						,(zs_int *)&converted_param[i]
-						,data->vm_error_description
+				}else if(!data->zs->stackElementTo(
+					&_stk_arg_c_function[i-idx_arg_start]
+					,_c_function->params[i].idx_script_type
+					,(zs_int *)&converted_param[i]
+					,data->vm_error_description
 				)){
 					ZS_VM_ERROR_AND_RET("Function '%s', param %i: %s",
 						_c_function->name_script_function.c_str(),
@@ -930,7 +929,7 @@ namespace zetscript{
 
 		// check for return values through stack
 
-		*data->vm_stk_current++=stk_utils::to_stk(data->zs,result,idx_script_type_return);
+		*data->vm_stk_current++=data->zs->toStackElement(result,idx_script_type_return);
 
 		StackElement *sf_call_stk_return=(_stk_arg_c_function+_n_args); // +1 points to starting return...
 		int sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;

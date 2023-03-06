@@ -91,12 +91,12 @@ namespace zetscript{
 	}
 
 	void ArrayScriptObject::push(const StackElement  * _stk){
-		stk_utils::stk_assign(zs,newSlot(),_stk);
+		zs->stackElementAssign(newSlot(),_stk);
 	}
 
 	void 	ArrayScriptObject::pushInteger(zs_int _value){
 		StackElement stk={_value,STK_PROPERTY_ZS_INT};
-		stk_utils::stk_assign(zs,newSlot(),&stk);
+		zs->stackElementAssign(newSlot(),&stk);
 	}
 
 	void 	ArrayScriptObject::pushFloat(zs_float _value){
@@ -104,19 +104,19 @@ namespace zetscript{
 		StackElement stk;
 		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
 		stk={dst,STK_PROPERTY_ZS_FLOAT};
-		stk_utils::stk_assign(zs,newSlot(),&stk);
+		zs->stackElementAssign(newSlot(),&stk);
 	}
 
 	void 	ArrayScriptObject::pushBoolean(bool _value){
 		StackElement stk={_value,STK_PROPERTY_BOOL};
-		stk_utils::stk_assign(zs,newSlot(),&stk);
+		zs->stackElementAssign(newSlot(),&stk);
 	}
 
 	void	ArrayScriptObject::pushString(const zs_string & _value){
 		StringScriptObject *so=this->zs->newStringScriptObject();
 		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
 		so->set(_value);
-		stk_utils::stk_assign(zs,newSlot(),&stk);
+		zs->stackElementAssign(newSlot(),&stk);
 	}
 
 	void ArrayScriptObject::pop(){

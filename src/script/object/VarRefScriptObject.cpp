@@ -41,7 +41,7 @@ namespace zetscript{
 		if(stk_var_ref.properties & STK_PROPERTY_SCRIPT_OBJECT){
 			return ((ScriptObject *)stk_var_ref.value)->toString();
 		}
-		return stk_utils::stk_to_str(zs,&stk_var_ref);
+		return zs->stackElementToString(&stk_var_ref);
 	}
 
 }

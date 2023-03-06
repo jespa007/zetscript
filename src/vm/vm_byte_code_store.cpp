@@ -56,7 +56,7 @@ namespace zetscript{
 		 }else if((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR)==0){
 			ZS_VM_STOP_EXECUTE(
 				"Expected l-value on assignment but it was type '%s'"
-				,stk_utils::stk_to_typeof_str(data->zs,stk_dst).c_str()
+				,data->zs->stackElementToTypeOfString(stk_dst).c_str()
 			);
 		}
 
@@ -286,7 +286,7 @@ namespace zetscript{
 
 			}else{
 				ZS_VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
-					,stk_utils::stk_to_typeof_str(data->zs,stk_src).c_str()
+					,data->zs->stackElementToTypeOfString(stk_src).c_str()
 				);
 			}
 
