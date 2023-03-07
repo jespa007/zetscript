@@ -30,5 +30,4 @@ class Number{
 
 Console::outln("new Number(10)+new Number(20) => " +  (new Number(10)+new Number(20)));
 Console::outln("new Number(10)+20 => " + (new Number(10)+20));
-Console::outln("10+Number(20) => " + (10+new Number(20)));
-//Console::outln("new Number(10)+true => " + (new Number(10)+"string_value"));
+Console::outln("10+new Number(20) => " + (10+new Number(20)));
