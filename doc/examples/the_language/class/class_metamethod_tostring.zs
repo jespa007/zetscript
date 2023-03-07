@@ -1,11 +1,17 @@
-class MyNumber{
+class NumberWithoutString{
 	constructor(_n){
- 		this.num=_n;
+ 		this.__num__=_n;
 	}
- 	_to_string(){
- 		return "Num: "+this.num;
+};
+
+class Number{
+	constructor(_n){
+ 		this.__num__=_n;
+	}
+ 	_tostring(){
+ 		return this.__num__;
  	}
 };
 
-var n=new MyNumber(10)
-Console::outln(n)
+Console::outln("without _tostring => "+new NumberWithoutString(10))
+Console::outln("with _tostring => "+new Number(10))

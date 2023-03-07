@@ -46,7 +46,7 @@ class Vector{
 		this.y++;
 	}
 
-	_to_string(){ // a way to have a custom string output
+	_tostring(){ // a way to have a custom string output
 		return "["+this.x+","+this.y+"]";
 	}
 };

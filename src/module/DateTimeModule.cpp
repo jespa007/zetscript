@@ -86,7 +86,7 @@ namespace zetscript{
 		return  _this->get_week_day();
 	}
 
-	zs_string		DateTimeModule_to_string(ZetScript *_zs,zs_datetime *_this){
+	zs_string		DateTimeModule_tostring(ZetScript *_zs,zs_datetime *_this){
 		ZS_UNUSUED_PARAM(_zs);
 		return _this->to_string();
 	}

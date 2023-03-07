@@ -3162,7 +3162,7 @@ Performs a set operation
 _set(_value)
 ----
 
-*Parameters
++++<u>Parameters</u>+++
 
 - __value_ : value to set.
 
@@ -3182,6 +3182,39 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_addset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_addset_out.txt[]
 ----
 
 ===== _not()
@@ -3469,6 +3502,40 @@ Output:
 include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
 ----
 
+===== _addset()
+
+Performs addition assignment (aka +=) adding the operation
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : value to set.
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_addset_out.txt[]
+----
+
+
 ===== _not()
 
 Implements _not_ pre operator (aka !)  
@@ -3559,14 +3626,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_inc.zs[]
+include::../examples/the_language/class/class_property_metamethod_postinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_inc_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_postinc_out.txt[]
 ----
 
 ===== _postdec()
@@ -3592,14 +3659,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_dec.zs[]
+include::../examples/the_language/class/class_property_metamethod_postdec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_post_dec_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_postdec_out.txt[]
 ----
 
 ===== _preinc()
@@ -3625,14 +3692,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_inc.zs[]
+include::../examples/the_language/class/class_property_metamethod_preinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_inc_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_preinc_out.txt[]
 ----
 
 ===== _predec()
@@ -3658,14 +3725,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_dec.zs[]
+include::../examples/the_language/class/class_property_metamethod_predec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_pre_dec_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_predec_out.txt[]
 ----
 
 === Modules

@@ -1,4 +1,4 @@
-class MyNumber{
+class Number{
 	constructor(_n){
  		this.__num__=_n;
 	}
@@ -7,5 +7,5 @@ class MyNumber{
  	}
 };
 
-Console::outln("new MyNumber(20) > new MyNumber(20) => "+(new MyNumber(20) > new MyNumber(20)))
-Console::outln("new MyNumber(20) > new MyNumber(30) => "+(new MyNumber(20) > new MyNumber(30)))
+Console::outln("new Number(20) > new Number(20) => "+(new Number(20) > new Number(20)))
+Console::outln("new Number(20) > new Number(30) => "+(new Number(20) > new Number(30)))

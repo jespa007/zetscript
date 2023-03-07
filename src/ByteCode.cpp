@@ -240,7 +240,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  ">>=";		// _set_shr
 			case	BYTE_CODE_METAMETHOD_BTW_SET:	return  "~=";		// _set_btw
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
-			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_to_string";// _to_string
+			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_tostring";// _tostring
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "++";		// i++
 			case 	BYTE_CODE_METAMETHOD_POST_DEC: 	return  "--";		//  i--
 			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "++";		// ++i
@@ -289,7 +289,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_BTW_SET:	return  "_btw_set";	// _set_btw
 
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
-			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_to_string";// _to_string
+			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_tostring";// _tostring
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "_postinc";// i++
 			case 	BYTE_CODE_METAMETHOD_POST_DEC:	return  "_postdec";// i--
 			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "_preinc";	// ++i

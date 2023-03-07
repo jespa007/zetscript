@@ -1,22 +1,27 @@
-class MyNumber{
+class Number{
 	constructor(){
- 		this.num=0;
+ 		this.__num__=0;
 	} 
- 	_set(v){
- 		if(v instanceof Integer){
- 			this.num = v;
- 		}else if(v instanceof MyNumber){
- 			this.num = v.num;
+ 	_set(_value){
+ 		if(_value instanceof Integer || _value instanceof Float){
+ 			this.__num__ = _value;
+ 		}else if(_value instanceof Number){
+ 			this.__num__ = _value.__num__;
  		}else{
- 			error("parameter not supported");
+ 			System::error("Number::set : parameter not supported");
  		}
  	}
- 	_to_string(){
- 		return "Num:"+this.num;
+ 	_tostring(){
+ 		return this.__num__;
  	}
 };
 
-var n = new MyNumber ();
-Console::outln(n)
+var n = new Number ();
+Console::outln("n => "+n)
+
 n=10;
-Console::outln(n)
+Console::outln("n=10 => "+n)
+
+n=new Number(20);
+Console::outln("n=new Number(20) => "+n)
+

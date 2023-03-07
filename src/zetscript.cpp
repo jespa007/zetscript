@@ -93,7 +93,7 @@ namespace zetscript{
 		bindMemberFunction<zs_datetime>("addYears",DateTimeModule_addYears);
 
 		// metamethods...
-		bindMemberFunction<zs_datetime>("_to_string",DateTimeModule_to_string);
+		bindMemberFunction<zs_datetime>("_tostring",DateTimeModule_tostring);
 
 		bindMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
 		bindMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
