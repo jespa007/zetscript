@@ -158,6 +158,15 @@ namespace zetscript{
 						,1\
 				);\
 			}else{\
+
+				// if argument is a script object should share, because on returning
+				// it does pop and it could deallocate twice
+				if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(vm_share_script_object(_vm,(ScriptObject *)stk_arg->value)==false){
+						ZS_VM_STOP_EXECUTEF("Internal error: Cannot share script pointer");
+					}
+				}
+
 				vm_execute_script_function(\
 					_vm\
 					,so_aux\

@@ -8,7 +8,7 @@ class Number{
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			op1 = _op1;
  		}else if(_op1 instanceof Number){
- 			op1 = _op1;
+ 			op1 = _op1.__num__;
  		}else{
  			System::error("Number::_add : right operand not supported");
  		}
