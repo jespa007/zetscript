@@ -327,7 +327,7 @@ namespace zetscript{
 			return _stk.value;
 		}*/
 
-	zs_string ZetScript::stackElementToTypeOfString(StackElement *_stk){
+	zs_string ZetScript::stackElementToStringTypeOf(StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
 		zs_string result="unknow";
@@ -379,7 +379,7 @@ namespace zetscript{
 		return result;
 	}
 
-	const char *ZetScript::stackElementToTypeOfString(char *_str_out, StackElement *_stk){
+	const char *ZetScript::stackElementToStringTypeOf(char *_str_out, StackElement *_stk){
 		auto str=this->stackElementToString(_stk);
 
 		strcpy(_str_out,str.c_str());
@@ -649,7 +649,7 @@ namespace zetscript{
 			}else{
 				_error=zs_strutils::format("Cannot know how to convert type '%s' from '%s'"
 					,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this->getScriptTypeFactory(),_idx_builtin_type)).c_str()
-					,this->stackElementToTypeOfString(_stack_element).c_str()
+					,this->stackElementToStringTypeOf(_stack_element).c_str()
 				);
 				return false;
 			}

@@ -283,7 +283,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->zs->stackElementToTypeOfString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value == 0){
@@ -295,7 +295,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->zs->stackElementToTypeOfString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value != 0){
@@ -800,7 +800,7 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,data->zs->stackElementToTypeOfString(ZS_VM_STR_AUX_PARAM_0,_stk) \
+				,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
 			);\

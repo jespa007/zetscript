@@ -240,7 +240,7 @@ namespace zetscript{
 
 		if(_is_je_case){
 			ZS_VM_ERROR("Error evaluating case for variable as type '%s': %s"
-				,data->zs->stackElementToTypeOfString(stk_result_op1).c_str()
+				,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
 				,error_found.c_str()
 			);
 		}else{
@@ -253,9 +253,9 @@ namespace zetscript{
 				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
-					,data->zs->stackElementToTypeOfString(stk_result_op1).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-					,data->zs->stackElementToTypeOfString(stk_result_op2).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_result_op2).c_str()
 					,error_found.empty()?"":":"
 					,error_found.c_str()
 					,tip.c_str()
@@ -265,7 +265,7 @@ namespace zetscript{
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-					,data->zs->stackElementToTypeOfString(stk_result_op1).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
 					,error_found.empty()?"":":"
 					,error_found.c_str()
 					,tip.c_str()

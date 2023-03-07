@@ -48,7 +48,7 @@ namespace zetscript{
 			vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format("eval error:expected StringScriptObject as first parameter but the typeof is '%s'"
-							,data->zs->stackElementToTypeOfString(stk_so_str_eval).c_str()
+							,data->zs->stackElementToStringTypeOf(stk_so_str_eval).c_str()
 					).c_str()
 			);
 			return;
@@ -65,7 +65,7 @@ namespace zetscript{
 					zs->getVirtualMachine()
 					,zs_strutils::format(
 						"eval error:expected 'Object' as second parameter but the typeof is '%s'"
-						,data->zs->stackElementToTypeOfString(stk_oo_param).c_str()
+						,data->zs->stackElementToStringTypeOf(stk_oo_param).c_str()
 					).c_str()
 				);
 				return;

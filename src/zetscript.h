@@ -181,8 +181,8 @@ namespace zetscript{
 		zs_string		stackElementToString(StackElement *_stk,const zs_string & _format="");
 		const char		*stackElementToString(char *_str_out,  StackElement *_stk,const zs_string & _format="");
 
-		zs_string		stackElementToTypeOfString(StackElement *_stk);
-		const char		*stackElementToTypeOfString(char *_str_out, StackElement *_stk);
+		zs_string		stackElementToStringTypeOf(StackElement *_stk);
+		const char		*stackElementToStringTypeOf(char *_str_out, StackElement *_stk);
 
 		void			stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src);
 		StackElement 	toStackElement(zs_int ptr_var, short idx_builtin_type_var);

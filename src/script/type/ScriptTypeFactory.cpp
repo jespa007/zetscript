@@ -365,7 +365,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR(
 					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
 					,_key.c_str()
-					,this->zs->stackElementToTypeOfString(stk).c_str()
+					,this->zs->stackElementToStringTypeOf(stk).c_str()
 				);
 			}
 		}
