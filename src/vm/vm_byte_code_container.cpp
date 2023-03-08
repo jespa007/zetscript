@@ -601,7 +601,7 @@ lbl_exit_function:
 		}else{
 			ZS_VM_STOP_EXECUTE(
 				"Expected object for access '[]' operation but it was type '%s'"
-				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op1)
 			); \
 		}
 

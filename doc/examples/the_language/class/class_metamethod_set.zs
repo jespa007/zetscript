@@ -1,6 +1,6 @@
 class Number{
-	constructor(){
- 		this.__num__=0;
+	constructor(_value=0){
+ 		this.__num__=_value;
 	} 
  	_set(_value){
  		if(_value instanceof Integer || _value instanceof Float){

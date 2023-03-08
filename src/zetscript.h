@@ -179,7 +179,7 @@ namespace zetscript{
 		}
 
 		zs_string		stackElementToString(StackElement *_stk,const zs_string & _format="");
-		const char		*stackElementToString(char *_str_out,  StackElement *_stk,const zs_string & _format="");
+		const char		*stackElementToString(char *_str_out,int _str_out_len, StackElement *_stk,const zs_string & _format="");
 
 		zs_string		stackElementToStringTypeOf(StackElement *_stk);
 		const char		*stackElementToStringTypeOf(char *_str_out, StackElement *_stk);

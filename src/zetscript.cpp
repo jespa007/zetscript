@@ -387,12 +387,29 @@ namespace zetscript{
 		return _str_out;
 	}
 
+	StackElement getOriginStackElement(StackElement _stk){
+		if(_stk.properties & STK_PROPERTY_PTR_STK){
+			_stk=*((StackElement *)_stk.value);
+		}
+
+		if(_stk.properties & STK_PROPERTY_CONTAINER_SLOT){
+			_stk.value=(zs_int)(((ContainerSlot *)_stk.value)->getSrcContainerRef());
+			_stk.properties=STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		if(_stk.properties & STK_PROPERTY_READ_ONLY){
+			_stk.properties&=~STK_PROPERTY_READ_ONLY;
+		}
+
+		return _stk;
+	}
+
 	zs_string ZetScript::stackElementToString(StackElement *_stk, const zs_string  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
-		StackElement stk=*_stk;
+		StackElement stk=getOriginStackElement(*_stk);
 
-		if(stk.properties & STK_PROPERTY_PTR_STK){
+		/*if(stk.properties & STK_PROPERTY_PTR_STK){
 			stk=*((StackElement *)stk.value);
 		}
 
@@ -403,7 +420,7 @@ namespace zetscript{
 
 		if(stk.properties & STK_PROPERTY_READ_ONLY){
 			stk.properties&=~STK_PROPERTY_READ_ONLY;
-		}
+		}*/
 
 		if(STK_VALUE_IS_UNDEFINED(&stk)){
 			result=ZS_TYPE_NAME_UNDEFINED;
@@ -445,8 +462,7 @@ namespace zetscript{
 					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->sf_ref->name_script_function+">";
 				}else{
-					// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
-					result="Object::"+zs_string(so->getTypeName());
+					result=so->toString();
 				}
 			}
 		}
@@ -454,10 +470,24 @@ namespace zetscript{
 		return result;
 	}
 
-	const char		*ZetScript::stackElementToString(char *_str_out, StackElement *_stk,const zs_string & _format){
-		auto str=stackElementToString(_stk,_format);
+	const char		*ZetScript::stackElementToString(char *_str_out, int _str_out_len, StackElement *_stk,const zs_string & _format){
+		StackElement stk=getOriginStackElement(*_stk);
+		zs_string result;
+		memset(_str_out,0,_str_out_len);
 
-		strcpy(_str_out,str.c_str());
+		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
+		if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)stk.value;
+			if(so->idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+				result="Object::"+zs_string(so->getTypeName());
+			}
+		}
+
+		if(result.empty()){
+			result=stackElementToString(_stk,_format);
+		}
+
+		strncpy(_str_out,result.c_str(),(result.length()<(_str_out_len-1))?result.length():_str_out_len-1);
 
 		return _str_out;
 	}

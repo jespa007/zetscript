@@ -485,54 +485,6 @@ Output:
 include::../examples/the_language/string/string_length_out.txt[]
 ----
 
-===== Static functions
- 
-====== String::format()
-
-Formats a string from with a serie of args. 
-
-*Syntax*
-
-[source,javascript]
-----
-String::format(_string,..._args)
-----
-
-+++<u>Parameters</u>+++
-
-- __string_ : String representation with specified arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format. The argument format is described below,
-
-[cols="1m,3d"]
-|====
-|Format |description
-|{n}
-|It replaces {_n_} by the argument _n_
-|{n:dm}
-|It replaces the argument _n_ padding _m_ 0s on its left
-|{n,m}
-|It replaces argument _n_ padding _m_ spaces on its left
-|====
-
-- __args_ : variable args to be replaced in the string representation
-
-+++<u>Returns</u>+++
-
-A formated string
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/string/string_format.zs[]
-----
-
-Output:
-
-[source,txt]
-----
-include::../examples/the_language/string/string_format_out.txt[]
-----
-
 ===== Member functions
 
 ====== String::insertAt()
@@ -693,7 +645,6 @@ Output:
 ----
 include::../examples/the_language/string/string_clear_out.txt[]
 ----
-
 
 ====== String::replace()
 
@@ -962,6 +913,55 @@ Output
 include::../examples/the_language/string/string_append_out.txt[]
 ----
 
+===== Static functions
+ 
+====== String::format()
+
+Formats a string from with a serie of args. 
+
+*Syntax*
+
+[source,javascript]
+----
+String::format(_string,..._args)
+----
+
++++<u>Parameters</u>+++
+
+- __string_ : String representation with specified arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format. The argument format is described below,
+
+[cols="1m,3d"]
+|====
+|Format |description
+|{n}
+|It replaces {_n_} by the argument _n_
+|{n:dm}
+|It replaces the argument _n_ padding _m_ 0s on its left
+|{n,m}
+|It replaces argument _n_ padding _m_ spaces on its left
+|====
+
+- __args_ : variable args to be replaced in the string representation
+
++++<u>Returns</u>+++
+
+A formated string
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string/string_format.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/string/string_format_out.txt[]
+----
+
+
 ==== Array
 
 Array type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Array_ once it assings a open/closed square brackets (i.e '[]' ), 
@@ -1011,43 +1011,6 @@ Output:
 ----
 include::../examples/the_language/array/array_length_out.txt[]
 ----
-
-===== Static functions
-
-====== Array::concat()
-
-Creates a new array as a result of merge all elements from two arrays
-
-*Syntax*
-
-[source,javascript]
-----
-Array::concat(_v1, _v2)
-----
-
-+++<u>Parameters</u>+++
-
-- __v1_ : First array to concatenate into the new array
-- __v2_ : Second array to concatenate into the new array
-
-+++<u>Returns</u>+++ 
-
-A new array as a result of merge all elements from the arrays
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/array/array_concat.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/array/array_concat_out.txt[]
-----
-
 
 ===== Member functions
 
@@ -1296,6 +1259,42 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/array/array_extend_out.txt[]
+----
+
+===== Static functions
+
+====== Array::concat()
+
+Creates a new array as a result of merge all elements from two arrays
+
+*Syntax*
+
+[source,javascript]
+----
+Array::concat(_v1, _v2)
+----
+
++++<u>Parameters</u>+++
+
+- __v1_ : First array to concatenate into the new array
+- __v2_ : Second array to concatenate into the new array
+
++++<u>Returns</u>+++ 
+
+A new array as a result of merge all elements from the arrays
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/array/array_concat.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/array/array_concat_out.txt[]
 ----
 
 
@@ -2598,6 +2597,306 @@ var b=new B(); // b.a==10, b.b=20
 
 Metamethods are special member functions that links with operators seen on section section X.XX. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
+===== Member functions
+
+====== _tostring()
+
+Returns custom when string operation operation is invoved
+
+*Syntax*
+
+[source,javascript]
+----
+_tostring()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+Custom string defined by user
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_tostring.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
+----
+
+===== _set()
+
+Performs a set operation
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : value to set.
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_addset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_addset_out.txt[]
+----
+
+===== _not()
+
+Implements _not_ pre operator (aka !)  
+
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- Boolean value as a result of not operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_not.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_not_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A new object as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_not_neg.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_inc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+Implements _pre decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_pre_dec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_predec_out.txt[]
+----
+ 
 ===== Static functions
 
 ====== _equ()
@@ -3114,306 +3413,6 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_shr_out.txt[]
-----
-
-===== Member functions
-
-====== _tostring()
-
-Returns custom when string operation operation is invoved
-
-*Syntax*
-
-[source,javascript]
-----
-_tostring()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-Custom string defined by user
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_tostring.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
-----
-
-===== _set()
-
-Performs a set operation
-
-*Syntax*
-
-[source,javascript]
-----
-_set(_value)
-----
-
-+++<u>Parameters</u>+++
-
-- __value_ : value to set.
-
-+++<u>Returns</u>+++
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_set.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_set_out.txt[]
-----
-
-===== _addset()
-
-Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_addset(_op1)
-----
-
-+++<u>Parameters</u>+++
-
-- __op1_ : Literal or variable as right operand
-
-+++<u>Returns</u>+++
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_addset.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_addset_out.txt[]
-----
-
-===== _not()
-
-Implements _not_ pre operator (aka !)  
-
-*Syntax*
-
-[source,javascript]
-----
-_not()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-- Boolean value as a result of not operation
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_not.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_not_out.txt[]
-----
-
-===== _neg()
-
-Implements _negate_ pre operator (aka -a ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_neg()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-- A new object as result of negate operation
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_neg.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_not_neg.txt[]
-----
-
-===== _postinc()
-
-
-Implements _post increment_ operator (aka a++ ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_postinc()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-A the object itself
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_postinc.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
-----
-
-===== _postdec()
-
-Implements _post decrement_ operator (aka a-- ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_postdec()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-A the object itself
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_postdec.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
-----
-
-===== _preinc()
-
-Implements _pre increment_ operator (aka ++a ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_pre_inc()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-A the object itself
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_preinc.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
-----
-
-===== _predec()
-
-Implements _pre decrement_ operator (aka --a ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_pre_dec()
-----
-
-+++<u>Parameters</u>+++
-
-None
-
-+++<u>Returns</u>+++
-
-A the object itself
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_predec.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_predec_out.txt[]
 ----
  
 ==== Properties

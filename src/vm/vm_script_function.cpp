@@ -779,7 +779,7 @@ namespace zetscript{
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,_stk)
+				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:

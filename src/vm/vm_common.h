@@ -142,6 +142,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 		(((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
 	)
 
+#define ZS_VM_STR_AUX_MAX_LENGTH	100
+
 namespace zetscript{
 
 	class ZetScript;
@@ -166,8 +168,8 @@ namespace zetscript{
 		 zs_string								vm_error_file;
 		 int 									vm_error_line;
 		 zs_string 								vm_error_callstack_str;
-		 char									vm_str_metamethod_aux[100];
-		 char									vm_str_aux[2][100];
+		 char									vm_str_metamethod_aux[ZS_VM_STR_AUX_MAX_LENGTH];
+		 char									vm_str_aux[2][ZS_VM_STR_AUX_MAX_LENGTH];
 		 VM_ScopeFunction					*	vm_current_scope_function;
 		 VM_ScopeFunction						vm_scope_function[VM_FUNCTION_CALL_MAX];
 
