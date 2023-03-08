@@ -469,7 +469,6 @@ SET(
 	config.h
 	Instruction.h
 	StackElement.h
-	StackElement.tcc
 	Symbol.h
 	Type.h
 	zetscript.h
