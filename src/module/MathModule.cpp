@@ -66,8 +66,18 @@ namespace zetscript{
 		 return sqrt(*_n);
 	 }
 
-	 zs_int MathModule_floor(ZetScript *_zs,zs_float *_n){
+	 zs_float MathModule_floor(ZetScript *_zs,zs_float *_n){
 		 ZS_UNUSUED_PARAM(_zs);
 		 return floor(*_n);
+	 }
+
+	 zs_float MathModule_ceil(ZetScript *_zs,zs_float *_n){
+		 ZS_UNUSUED_PARAM(_zs);
+		 return ceil(*_n);
+	 }
+
+	 zs_float MathModule_round(ZetScript *_zs,zs_float *_n){
+		 ZS_UNUSUED_PARAM(_zs);
+		 return round(*_n);
 	 }
 }

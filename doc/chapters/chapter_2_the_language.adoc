@@ -4024,6 +4024,8 @@ The number PI
 [source,zetscript]
 Math::PI
 
+*Example*
+
 [source,zetscript]
 ----
 include::../examples/the_language/math/math_pi.zs[]
@@ -4447,7 +4449,7 @@ Output:
 
 [source,txt]
 ----
-include::../examples/the_language/json/json_serialize_out.tx[]
+include::../examples/the_language/json/json_serialize_out.txt[]
 ----
 
 ===== Json::deserialize()
@@ -4478,7 +4480,7 @@ Output:
 
 [source,txt]
 ----
-include::../examples/the_language/json/json_deserialize_out.tx[]
+include::../examples/the_language/json/json_deserialize_out.txt[]
 ----
 
 ==== DateTime

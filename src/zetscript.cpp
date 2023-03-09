@@ -55,6 +55,8 @@ namespace zetscript{
 		cl->bindStaticMemberFunction("min",MathModule_min);
 		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
 		cl->bindStaticMemberFunction("floor",MathModule_floor);
+		cl->bindStaticMemberFunction("ceil",MathModule_ceil);
+		cl->bindStaticMemberFunction("round",MathModule_round);
 
 		// Console mod
 		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);

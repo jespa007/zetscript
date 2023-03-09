@@ -1,6 +1,11 @@
 class Number{
 	constructor(_value=0){
- 		this.__num__=_value;
+		// ensure that n is literal integer or literal float
+		if(_value instanceof Integer || _value instanceof Float){
+			this.__num__=_value;
+		}else{
+			System::error("Number::constructor : input value not supported");
+		}
 	} 
  	_set(_value){
  		if(_value instanceof Integer || _value instanceof Float){
@@ -16,7 +21,7 @@ class Number{
  	}
 };
 
-var n = new Number ();
+var n=new Number ();
 Console::outln("n => "+n)
 
 n=10;

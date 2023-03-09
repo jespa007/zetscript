@@ -1,7 +1,13 @@
 class Number{
-	constructor(_n){
- 		this.__num__=_n;
-	}
+	constructor(_value=0){
+		// ensure that n is literal integer or literal float
+		if(_value instanceof Integer || _value instanceof Float){
+			this.__num__=_value;
+		}else{
+			System::error("Number::constructor : input value not supported");
+		}
+	} 
+	
  	_addset(_op1){
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			this.__num__ += _op1;
