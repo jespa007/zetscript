@@ -2468,7 +2468,7 @@ var t= new Test(); // t instanced as class Test
 
 In a class it can have two types of member functions:
 
-- member functions: functions that affects to class property. It access through field '.' operator and preceded by _this_ keyword when is acceded within a member function. A member function can be implemented outside of the class 
+- member functions: A function member aims to do operations or management with its class members. It's acceded through field operator ('.') and preceded by _this_ keyword when is acceded within a member function. A  member function can be implemented outside of the class too. 
 - static functions: helper function of generic purposes about the class type. It access through '::' operator
 
 
@@ -2512,7 +2512,7 @@ Test::staticMethod(); // prints "Access static method"
 
 ==== Member variables
 
-Member variables are data that live within the instanced class. To access a member variable is done through field '.' operator and preceded by _this_ keyword when is acceded within its member function
+Member variables (also called fields) are data that live within the instanced class. To access a member variable is done through field operator ('.') and preceded by _this_ keyword when is acceded within its member function
 
 [source,javascript]
 ----
@@ -2532,17 +2532,17 @@ t.a=10; 		  // t.a==10
 In the code it can see that when t is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
 
 
-===== Inicialization
+===== Variable inicialization
 
-====== Body declaration
+====== Body
 
-A class can initialize its variables defining them at its body with _var_ and assign (=) operator
+A class can initialize its variables defining them at its body with _var_ and assignment operator (=)
 
 [source,javascript]
 ----
 class Test{
 
-	// Declare and initialize member varaible 'a' as 10
+	// Declaration and initialization of member variable 'a' as 10
 	var a=10;
 }
 
@@ -2551,7 +2551,7 @@ var t=new Test(); // t.a==10
 
 ====== Constructor
 
-A constructor is a special member function that aims to execute when class is instanced thus can initialize its variables. To initialize member variable is done through _this_ keyword and member field access (.) operator 
+A constructor is a special member function that is called when the class is instanced with the _new_ operator. To create and initialize a variable member within _constructor_ function is done through _this_ keyword and member field operator ('.').  
 
 [source,javascript]
 ----
@@ -2696,6 +2696,304 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_addset_out.txt[]
+----
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_subset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_mulset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_divset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_op1)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Literal or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shlset_out.txt[]
 ----
 
 ===== _not()

@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	template < typename R>
+	/*template < typename R>
 	void ScriptType::bindStaticConstMemberVariable(
 			const zs_string & var_name
 			, const R var_pointer
@@ -24,6 +24,47 @@ namespace zetscript{
 				,registered_file
 				,registered_line
 		);
+	}*/
+
+	/**
+	 * Register C Member function Class
+	 * like register function c but is added to member function list according type C
+	 */
+	template <typename F>
+	void ScriptType::bindStaticMemberPropertyGetter(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *_registered_file
+			,short _registered_line
+		)
+	{
+		zs_string error;
+		ScriptFunctionParam *params=NULL;
+		int params_len=0;
+		const char *return_type;
+
+		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+				this->script_type_factory
+				,NULL
+				,_ptr_function
+				,&params
+				,&params_len
+				,&return_type
+		);
+
+     	// register member function...
+		this->registerStaticMemberPropertyGetter(
+				_property_name
+				,&params
+				,params_len
+				, idx_script_type_return
+				, (zs_int)_ptr_function
+				,_registered_file
+				,_registered_line
+
+		);
+
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->str_script_type.c_str(), _function_name.c_str());
 	}
 
 	/**

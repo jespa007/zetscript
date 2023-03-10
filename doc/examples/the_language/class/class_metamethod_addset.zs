@@ -22,10 +22,10 @@ class Number{
  	}
 };
 
-var sum=new Number(20);
-Console::outln("sum => "+sum)
-sum+=20;
-Console::outln("sum+=20 => "+sum)
-sum+=new Number(30);
-Console::outln("sum+=new Number(30) => "+sum)
+var number=new Number(20);
+Console::outln("number => "+number)
+number+=20;
+Console::outln("number+=20 => "+number)
+number+=new Number(30);
+Console::outln("number+=new Number(30) => "+number)
 

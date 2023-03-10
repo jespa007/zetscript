@@ -25,7 +25,7 @@ namespace zetscript{
 		zs_string 				error_found="";
 		ScriptObject 		*	script_object=NULL;
 		zs_string 				str_script_type_object_found="";
-		int 					n_stk_args=_is_static?2:1;
+		int 					n_stk_args=byte_code_metamethod_get_num_arguments(_byte_code_metamethod);//_is_static?2:1;
 		size_t 					n_stk_local_symbols=0;
 		StackElement 		*	stk_return=NULL;
 		int 					n_returned_arguments_from_function=0;
@@ -110,7 +110,9 @@ namespace zetscript{
 			*data->vm_stk_current++=*stk_result_op1;
 			*data->vm_stk_current++=*stk_result_op2;
 		}else{
-			*data->vm_stk_current++=*stk_result_op2;
+			if(n_stk_args>0){
+				*data->vm_stk_current++=*stk_result_op2;
+			}
 		}
 		//------------------------------------
 

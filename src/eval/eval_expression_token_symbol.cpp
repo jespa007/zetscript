@@ -25,10 +25,20 @@ namespace zetscript{
 		bool ok=true;
 		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
-			if(static_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
+			if((static_symbol->properties & SYMBOL_PROPERTY_FUNCTION)){
 				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
-			}else if(static_symbol->properties & SYMBOL_PROPERTY_CONST){
+			}else if(static_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+				MemberProperty *metamethod_member=(MemberProperty *)(static_symbol->ref_ptr);
+				if(metamethod_member->metamethod_members.getter!=NULL){
+					instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+					instruction->value_op2=(zs_int)metamethod_member->metamethod_members.getter;
+				}
+				else{
+					static_error="internal error: symbol property member null";
+					ok=false;
+				}
+			}else if((static_symbol->properties & SYMBOL_PROPERTY_CONST)){
 				instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 				instruction->value_op2=static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
 			}else{

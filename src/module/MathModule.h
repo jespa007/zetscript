@@ -12,8 +12,7 @@
 
 namespace zetscript{
 
-	 extern const zs_float MathModule_PI;
-
+	 zs_float MathModule_PI(ZetScript *_zs);
 	 zs_float MathModule_degToRad(ZetScript *_zs,zs_float *_deg);
 	 zs_float MathModule_sin(ZetScript *_zs,zs_float *_rad);
 	 zs_float MathModule_cos(ZetScript *_zs,zs_float *_rad);

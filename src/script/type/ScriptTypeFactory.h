@@ -167,6 +167,21 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
+
+		/*
+		 * register static property getter
+		 */
+		template <typename C,typename F>
+		void bindStaticMemberPropertyGetter(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
+		 * register property setter
+		 */
 		template <typename C,typename F>
 		void bindMemberPropertySetter(
 				const zs_string & _property_name

@@ -11,7 +11,10 @@
 namespace zetscript{
 	static bool srand_init=false;
 
-	const zs_float MathModule_PI=M_PI;
+	zs_float MathModule_PI(ZetScript *_zs){
+		 ZS_UNUSUED_PARAM(_zs);
+		return M_PI;
+	}
 
 	 zs_float MathModule_degToRad(ZetScript *_zs,zs_float *deg){
 		 ZS_UNUSUED_PARAM(_zs);

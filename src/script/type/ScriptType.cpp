@@ -368,6 +368,52 @@ namespace zetscript{
 	}
 
 
+	Symbol				* 	ScriptType::registerStaticMemberPropertyGetter(
+			 const zs_string & _property_name
+			 ,ScriptFunctionParam **_params
+			 ,int8_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,const char *_file
+			,short _line
+	){
+
+		Symbol *symbol_member_property=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberProperty *mp=NULL;
+		if((symbol_member_property=getSymbol(_property_name)) == NULL){
+			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
+			symbol_member_property->properties|=SYMBOL_PROPERTY_STATIC;
+		}
+
+		mp=(MemberProperty *)symbol_member_property->ref_ptr;
+
+		if(mp->metamethod_members.getter != NULL){
+
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
+				,_property_name.c_str()
+			);
+		}
+
+		symbol_function=registerMemberFunction(
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER+_property_name,
+				_params,
+				_params_len,
+				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION | FUNCTION_PROPERTY_STATIC,
+				_idx_return_type,
+				_ref_ptr,
+				_file,
+				_line
+		);
+
+		mp->metamethod_members.getter=symbol_function;
+
+
+		return symbol_member_property;
+	}
+
+
 	Symbol				* 	ScriptType::registerMemberPropertyGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params

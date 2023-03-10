@@ -44,7 +44,7 @@ namespace zetscript{
 		// Math mod
 		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
-		cl->bindStaticConstMemberVariable("PI",&MathModule_PI);
+		cl->bindStaticMemberPropertyGetter("PI",MathModule_PI);
 		cl->bindStaticMemberFunction("sin",MathModule_sin);
 		cl->bindStaticMemberFunction("cos",MathModule_cos);
 		cl->bindStaticMemberFunction("abs",MathModule_abs);
