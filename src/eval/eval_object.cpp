@@ -454,7 +454,7 @@ namespace zetscript{
 							 eval_instruction=new EvalInstruction(
 							  BYTE_CODE_CONSTRUCTOR_CALL
 
-							 ,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(
+							 ,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(
 									 0   // <-- CONSTRUCTOR ALWAYS RETURNS 0! the object is created at begin of expression byte code
 									 ,n_args
 							)
@@ -489,13 +489,13 @@ namespace zetscript{
 								 // override idx
 								 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 								 constructor_function->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
-								 ei_load_function_constructor->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_args+1);
+								 ei_load_function_constructor->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args+1);
 							 }
 						 }
 
 					 }
 				 }else{
-					 eval_instruction_new_object_by_value->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_args);
+					 eval_instruction_new_object_by_value->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args);
 				 }
 
 

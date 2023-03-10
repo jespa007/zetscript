@@ -70,7 +70,7 @@ typedef enum:unsigned short {
 #define INSTRUCTION_VALUE_OP1_PARAMETER_COUNT(parameter_count) \
 		((parameter_count)&0xf)
 
-#define INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(return_count,parameter_count) \
+#define INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(return_count,parameter_count) \
 		(((return_count & 0x0f)<<0x4) | ((parameter_count)&0x0f))
 
 #define INSTRUCTION_SET_RETURN_COUNT(instruction, return_count) \

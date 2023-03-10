@@ -5,9 +5,6 @@
 #define EXTRACT_STK_RESULT_OP1 \
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 
-
-
-
 #define METAMETHOD_OPERATION_NOT_FOUND(__BYTE_CODE_METAMETHOD__) \
 		if(member_property!=NULL){\
 			ZS_VM_MAIN_ERROR(\
@@ -180,7 +177,7 @@
 			}else{\
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
-		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
+		}else if( STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1) && STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){\
 			vm_push_stk_boolean_equal_strings(_vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__);\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
 				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\

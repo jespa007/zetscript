@@ -205,7 +205,7 @@ load_function:
 			  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 			  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 			  sf_call_is_member_function=true;
-			}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
+			}else if(STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(sf_call_stk_function_ref)){
 			  MemberFunctionScriptObject *sofm=(  MemberFunctionScriptObject *)sf_call_stk_function_ref->value;
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
@@ -292,7 +292,7 @@ execute_function:
 							}
 
 							// because arg by ref is always loaded directly we have the object stk...
-							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
+							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==false) { // create new
 
 								if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
 									ZS_VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
@@ -320,7 +320,7 @@ execute_function:
 								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 							}
 
-							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
+							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==true) { // not passing by ref it gets its value
 								*stk_arg=*((VarRefScriptObject *)stk_arg->value)->getStackElementPtr();
 							}
 

@@ -43,7 +43,7 @@ namespace zetscript{
 
 
 		// check if by ref
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
+		if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_dst)){
 			stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->value);
 		}
 
@@ -68,7 +68,7 @@ namespace zetscript{
 		// store through metamethod
 		store_lst_setter_functions=NULL;
 
-		if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
+		if(STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
 			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
@@ -210,14 +210,14 @@ namespace zetscript{
 			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
-				STK_IS_SCRIPT_OBJECT_STRING(stk_src)
+				STK_IS_STRING_SCRIPT_OBJECT(stk_src)
 							||
 				(stk_src_properties & (STK_PROPERTY_ZS_CHAR_PTR))
 
 			){
 				StringScriptObject *str_object=NULL;
 
-				if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
+				if(STK_IS_STRING_SCRIPT_OBJECT(stk_dst)){ // dst is string reload
 					str_object=(StringScriptObject *)stk_dst->value;
 					unref_old_stk_script_object=false;
 				}else{ // Generates a zs_string var

@@ -3,16 +3,16 @@
  *  See LICENSE file for details.
  */
 
-#include "vm_byte_code_operation.h"
+#include "vm_operation.h"
 
 #define LOAD_OPS_SET_OPERATION \
 stk_result_op1=--data->vm_stk_current;\
 EXTRACT_STK_RESULT_OP1 \
-if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
+if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op1)){ \
 	stk_result_op1=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op1)->value); \
 } \
 stk_result_op2=--data->vm_stk_current;\
-if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
+if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 	stk_result_op2=(StackElement *)((STK_GET_STK_VAR_REF(stk_result_op2)->value)); \
 }
 

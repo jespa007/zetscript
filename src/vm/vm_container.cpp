@@ -68,12 +68,9 @@ namespace zetscript{
 			so_aux=((ScriptObject *)stk_result_op1->value);
 		}
 
-		if(so_aux == NULL)
-		{
+		if(so_aux == NULL){
 			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
 		}
-
-
 
 	find_element_object:
 
@@ -130,10 +127,7 @@ namespace zetscript{
 			if(   instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
 			  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			 ){
-
 				// if object is C
-				//sc_type=so_aux->getScriptType();
-
 				// exceptions
 				if(sc_type->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_OBJECT || sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
@@ -208,7 +202,7 @@ namespace zetscript{
 
 					if(
 							// If return value is object pass it if  >= TYPE_SCRIPT_OBJECT_CLASS ...
-							STK_IS_SCRIPT_OBJECT_CLASS(data->vm_stk_current)
+							STK_IS_CLASS_SCRIPT_OBJECT(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store
 								(
@@ -353,7 +347,7 @@ namespace zetscript{
 			VM_POP_STK_TWO; // first must be a string that describes property name and the other the variable itself ...
 
 			stk_var=(data->vm_stk_current-1);
-			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
+			if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
@@ -361,7 +355,7 @@ namespace zetscript{
 
 			dst_container = (ContainerScriptObject *)stk_var->value;
 
-			if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
+			if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1) == 0){
 				ZS_VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 				);
@@ -383,7 +377,7 @@ namespace zetscript{
 			VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
 
 			stk_var=(data->vm_stk_current-1);
-			if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_var) == 0){
+			if(STK_IS_ARRAY_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE(
 					"Expected vector but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
@@ -400,7 +394,7 @@ namespace zetscript{
 			stk_src=*((StackElement *)stk_src.value);
 		}
 		//------
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(&stk_src)){ \
+		if(STK_IS_VAR_REF_SCRIPT_OBJECT(&stk_src)){ \
 			stk_src=(*(StackElement *)((STK_GET_STK_VAR_REF(&stk_src)->value))); \
 		} \
 
@@ -429,7 +423,7 @@ namespace zetscript{
 			*stk_dst=stk_src;\
 		}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
 
-			if(STK_IS_SCRIPT_OBJECT_STRING(&stk_src)){\
+			if(STK_IS_STRING_SCRIPT_OBJECT(&stk_src)){\
 				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
 				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				if(!vm_create_shared_script_object(_vm,so_aux)){\
@@ -497,7 +491,7 @@ lbl_exit_function:
 		VM_POP_STK_TWO;
 		so_aux=NULL;
 
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+		if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op1)){
 			stk_result_op1 = ((VarRefScriptObject *)stk_result_op1->value)->getStackElementPtr();
 		}
 
@@ -538,7 +532,7 @@ lbl_exit_function:
 				}
 				else{
 					// is object
-					if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
+					if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)==0){ \
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM

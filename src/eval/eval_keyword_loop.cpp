@@ -586,7 +586,7 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
 							BYTE_CODE_MEMBER_CALL
-							,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0)
+							,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0)
 					)
 				);
 
@@ -621,7 +621,7 @@ namespace zetscript{
 					// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
 					new EvalInstruction(
 							BYTE_CODE_MEMBER_CALL
-							,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(ei_init_vars_for.size(),0)
+							,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(ei_init_vars_for.size(),0)
 					)
 				);
 

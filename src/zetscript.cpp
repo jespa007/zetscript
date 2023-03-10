@@ -345,17 +345,17 @@ namespace zetscript{
 			result=ZS_TYPE_NAME_BOOL;
 		else if(STK_VALUE_IS_CONTAINER_SLOT(stk))
 			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getTypeName();
-		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
+		else if(STK_IS_STRING_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_STRING;
-		else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk))
+		else if(STK_IS_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ARRAY;
-		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
+		else if(STK_IS_OBJECT_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_OBJECT;
-		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk))
+		else if(STK_IS_ITERATOR_STRING_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_STRING;
-		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_ARRAY(stk))
+		else if(STK_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY;
-		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
+		else if(STK_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result=zs_string("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name_script_function;
@@ -510,7 +510,7 @@ namespace zetscript{
 			ScriptObject *so=(ScriptObject *)_stk_dst->value;
 			VirtualMachine *vm=this->getVirtualMachine();
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
-				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
+				//STK_IS_STRING_SCRIPT_OBJECT(stk_arg)){ // remove
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
 				if(!vm_create_shared_script_object(
 						vm

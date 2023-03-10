@@ -94,7 +94,7 @@ namespace zetscript{
 					if(
 						((stk_se.properties & STK_PROPERTY_FUNCTION) == 0)
 							&&
-						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(&stk_se) == false
+						STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
 					){
 						bool getter_found=false;
 						bool value_from_vm_execute=false;
@@ -219,7 +219,7 @@ namespace zetscript{
 				_stk=(StackElement *)_stk->value;
 			}
 
-			if(STK_IS_SCRIPT_OBJECT_VAR_REF(_stk)){
+			if(STK_IS_VAR_REF_SCRIPT_OBJECT(_stk)){
 				_stk=((VarRefScriptObject *)_stk->value)->getStackElementPtr();
 			}
 

@@ -11,7 +11,7 @@ namespace zetscript{
 
 
 	/*zs_string		StackElement::toString(){
-		if(STK_IS_SCRIPT_OBJECT_STRING(this)){
+		if(STK_IS_STRING_SCRIPT_OBJECT(this)){
 			return ((StringScriptObject *)this->value)->toString();
 		}
 		return stk_utils::stk_to_str(NULL,this);

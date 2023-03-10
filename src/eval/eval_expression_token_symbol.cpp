@@ -31,7 +31,8 @@ namespace zetscript{
 			}else if(static_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 				MemberProperty *metamethod_member=(MemberProperty *)(static_symbol->ref_ptr);
 				if(metamethod_member->metamethod_members.getter!=NULL){
-					instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+					instruction->byte_code=BYTE_CODE_CALL;
+					instruction->value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0);
 					instruction->value_op2=(zs_int)metamethod_member->metamethod_members.getter;
 				}
 				else{
@@ -610,7 +611,7 @@ namespace zetscript{
 				case BYTE_CODE_UNRESOLVED_CALL:
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.byte_code=byte_code;
-					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
+					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
 					instruction_token->symbol_name=ei_first_token_node->symbol_name;
 					instruction_token->symbol_scope=ei_first_token_node->symbol_scope;
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
@@ -633,7 +634,7 @@ namespace zetscript{
 				case BYTE_CODE_STACK_CALL:
 				case BYTE_CODE_MEMBER_CALL:
 				case BYTE_CODE_CONSTRUCTOR_CALL:
-					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params);
+					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params);
 
 					// also insert source file/line/symbol info to get info of this call...
 					instruction_token->instruction_source_info= eval_instruction_source_info(

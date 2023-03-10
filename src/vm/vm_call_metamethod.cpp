@@ -35,17 +35,17 @@ namespace zetscript{
 
 
 		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD){
-			if(		STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)\
+			if(		STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)\
 						||\
-					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
+					STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
 					vm_create_shared_script_object(_vm,so_string);\
 					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 					return true;
-			}else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op1)\
+			}else if(STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op2)\
+					STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				script_object=ArrayScriptObject::concat(\
 							data->zs\
@@ -55,9 +55,9 @@ namespace zetscript{
 					vm_create_shared_script_object(_vm,script_object);\
 					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
 					return true;
-			}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op1)\
+			}else if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+					STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				script_object=ObjectScriptObject::concat(\
 							data->zs\
@@ -303,15 +303,15 @@ namespace zetscript{
 		Instruction			*			instruction=_instruction;
 
 		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
-			if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
+			if(	STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
 						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
-			}else if(STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op1)\
+			}else if(STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_SCRIPT_OBJECT_ARRAY(stk_result_op2)\
+					STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\

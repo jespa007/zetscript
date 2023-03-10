@@ -143,7 +143,7 @@ namespace zetscript{
 									break;*/
 								case STK_PROPERTY_SCRIPT_OBJECT:
 
-									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+									if(STK_IS_STRING_SCRIPT_OBJECT(current_arg)){
 										all_check=arg_idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING; // if string object --> direct
 
 										if(all_check==false){ // try native conversions

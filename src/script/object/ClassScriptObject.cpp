@@ -169,7 +169,7 @@ namespace zetscript{
 							,0
 					);
 
-					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
+					if(STK_IS_STRING_SCRIPT_OBJECT(&result)){
 						StringScriptObject *so=(StringScriptObject *)result.value;
 						// capture string...
 						aux=so->toString();

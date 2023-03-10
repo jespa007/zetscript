@@ -6,15 +6,15 @@
 #define __STR_PTR_SYMBOL_TO_FIND__ 	str_symbol_aux1
 #define __STR_PTR_END_CLASS__ 		str_symbol_aux2
 
-#include "vm_byte_code_operation.h"
-#include "vm_byte_code_operation_set.h"
+#include "vm_operation.h"
+#include "vm_operation_set.h"
 
-#include "vm_byte_code_call_metamethod.cpp"
-#include "vm_byte_code_call.cpp"
-#include "vm_byte_code_container.cpp"
-#include "vm_byte_code_iterator.cpp"
-#include "vm_byte_code_store.cpp"
-#include "vm_byte_code_new_object.cpp"
+#include "vm_call_metamethod.cpp"
+#include "vm_call.cpp"
+#include "vm_container.cpp"
+#include "vm_iterator.cpp"
+#include "vm_store.cpp"
+#include "vm_new_object.cpp"
 
 
 namespace zetscript{
@@ -31,11 +31,11 @@ namespace zetscript{
 			,Instruction *_instruction
 	);
 
-	bool vm_byte_code_delete(
+	bool vm_delete_object(
 		VirtualMachine *vm
 	);
 
-	bool vm_byte_code_new_string(
+	bool vm_new_string_object(
 			VirtualMachine 	*	_vm
 			,Instruction 	*	_instruction
 	);
@@ -509,7 +509,7 @@ namespace zetscript{
 					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
-				 	 if(vm_byte_code_new_object_by_value(
+				 	 if(vm_new_object_by_value(
 							_vm
 							,_script_function
 							,instruction
@@ -535,7 +535,7 @@ namespace zetscript{
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
-				 if(vm_byte_code_new_string(
+				 if(vm_new_string_object(
 						 _vm
 						 ,instruction
 					)==false){
@@ -543,7 +543,7 @@ namespace zetscript{
 				 }
 				continue;
 			 case  BYTE_CODE_DELETE:
-				 if(vm_byte_code_delete(
+				 if(vm_delete_object(
 						_vm
 				)==false){
 					return;
@@ -712,7 +712,7 @@ namespace zetscript{
 		zs_string str1="@@@STR1_NOT_INIT@@@@";
 		zs_string str2="@@@STR2_NOT_INIT@@@@";
 
-		if(STK_IS_SCRIPT_OBJECT_STRING(_stk1)){
+		if(STK_IS_STRING_SCRIPT_OBJECT(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
 			str1=data->zs->stackElementToString(_stk1);
@@ -720,7 +720,7 @@ namespace zetscript{
 
 
 
-		if(STK_IS_SCRIPT_OBJECT_STRING(_stk2)){
+		if(STK_IS_STRING_SCRIPT_OBJECT(_stk2)){
 			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
 			str2=data->zs->stackElementToString( _stk2);
@@ -907,7 +907,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool vm_byte_code_delete(
+	bool vm_delete_object(
 		VirtualMachine *_vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -944,7 +944,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool vm_byte_code_new_string(
+	bool vm_new_string_object(
 			VirtualMachine 	*	_vm
 			,Instruction 	*	_instruction
 	){

@@ -400,7 +400,7 @@ namespace zetscript{
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER+_property_name,
 				_params,
 				_params_len,
-				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION | FUNCTION_PROPERTY_STATIC,
+				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC,
 				_idx_return_type,
 				_ref_ptr,
 				_file,
@@ -409,6 +409,8 @@ namespace zetscript{
 
 		mp->metamethod_members.getter=symbol_function;
 
+		// do not deduce at run time ... only have one only one getter (no parameters)
+		//symbol_function->properties&=~FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 
 		return symbol_member_property;
 	}

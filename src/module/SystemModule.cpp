@@ -44,7 +44,7 @@ namespace zetscript{
 
 		// Example of use,
 		// System::eval("a+b",{a:1,b:2})
-		if(STK_IS_SCRIPT_OBJECT_STRING(stk_so_str_eval) == false){ // expected string to evaluate
+		if(STK_IS_STRING_SCRIPT_OBJECT(stk_so_str_eval) == false){ // expected string to evaluate
 			vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format("eval error:expected StringScriptObject as first parameter but the typeof is '%s'"
@@ -60,7 +60,7 @@ namespace zetscript{
 		// 0. setup scope and parameters
 		if(stk_oo_param->properties != 0){
 
-			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_oo_param) == false){
+			if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format(

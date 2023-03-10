@@ -158,7 +158,7 @@ namespace zetscript{
 						,(zs_int)stk_result_op1->value
 					)
 				);
-			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
+			}else if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectWrap_contains(

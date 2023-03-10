@@ -37,7 +37,10 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
-			if(irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION ){\
+			if((irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)\
+					&&\
+			 ((irfs->properties & FUNCTION_PROPERTY_STATIC)==0)\
+			){\
 				start_param=2;\
 			}\
 		}\
@@ -239,7 +242,7 @@ namespace zetscript{
 		, InfoSharedPointerNode *	_node
 	);
 
-	bool vm_byte_code_new_object_by_value(
+	bool vm_new_object_by_value(
 		VirtualMachine 		*vm
 		,ScriptFunction *calling_function
 		,Instruction *instruction
