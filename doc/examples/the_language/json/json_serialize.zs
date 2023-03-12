@@ -9,5 +9,10 @@ var object={
     ,indent : { "length" : 3, "use_space": true }
 }
 
-
-Console::outln("result : "+ Json::serialize(object))
+Console::outln("serialize :")
+Console::outln()
+Console::outln(Json::serialize(object))
+Console::outln()
+Console::outln("serialize with format : ")
+Console::outln()
+Console::outln(Json::serialize(object,true))

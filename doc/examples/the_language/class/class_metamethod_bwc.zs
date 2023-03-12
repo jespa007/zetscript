@@ -7,10 +7,14 @@ class Number{
 			System::error("Number::constructor : input value not supported");
 		}
 	} 
+	
+ 	_bwc(){
+ 		return ~Integer::parse(this.__num__);
+ 	}
 
-	num{
-		_addset(_value){
-			this.__num__+=_value;
-		}
-	}
-}
+};
+
+var number=new Number(20)
+
+Console::outln("~number => "+ (~number))
+

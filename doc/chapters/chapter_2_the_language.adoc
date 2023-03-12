@@ -4252,12 +4252,12 @@ Evals an assert and raise an error if the condition is false
 *Syntax*
 
 [source,zetscript]
-System::assert(_condition,_string)
+System::assert(_expression,_message)
 
 +++<u>Parameters</u>+++
 
-- __condition_:
-- __string_:
+- __expression_: the expression to be evaluated
+- __message (options): the message about the error. If message is not provided, a default message is assigned
 
 +++<u>Returns</u>+++
 
@@ -4266,29 +4266,30 @@ System::assert(_condition,_string)
 
 [source,zetscript]
 ----
-include::../examples/the_language/system/system_assert.zs[]
+var m=30
+System::assert(m < 20,"n > m")
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/system/system_assert_out.txt[]
+Assert error :n > m
 ----
 
 ===== System::error
 
-Raises an error by user
+Raises custom error by user
 
 *Syntax*
 
 [source,zetscript]
-System::error(_string,..._args)
+System::error(_message,..._args)
 
 +++<u>Parameters</u>+++
 
-- __string_:
-- __args_:
+- __message_: the message about the error
+- __args_ (optional): In case of formated message it should provide extra parameters to substitute num order parameters provided by the curly brackets (i.e {} ) 
 
 +++<u>Returns</u>+++
 
@@ -4297,14 +4298,17 @@ System::error(_string,..._args)
 
 [source,zetscript]
 ----
-include::../examples/the_language/system/system_error.zs[]
+var m=30
+if(!(m < 20)){
+	System::error("Error !(m < 20). 'm' is {0}", m)
+}
 ----
 
 Output:
 
 [source,txt]
 ----
-include::../examples/the_language/system/system_error_out.txt[]
+Error !(m < 20). 'm' is 30
 ----
 
 ==== Math

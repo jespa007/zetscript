@@ -10,7 +10,7 @@ var json_string="{\n"+
 	"}"
 
 var deseriazed_json_string=Json::deserialize(json_string);
-Console::outln("Deserialized json result:")
+Console::outln("Deserialized json result:\n")
 for(var k,v in deseriazed_json_string){
   	Console::outln("key => '{0}' value => {1} ",k,v)	    	
 }
