@@ -136,6 +136,11 @@ namespace zetscript{
 		return (ZetScript *)ptr;
 	}
 
+	zs_float floatMaxValue(ZetScript *_zs){
+		ZS_UNUSUED_PARAM(_zs);
+		return FLT_MAX;
+	}
+
 	zs_float parseFloat(ZetScript *_zs,zs_int number){
 		ZS_UNUSUED_PARAM(_zs);
 		return (zs_float)(number);
@@ -256,6 +261,7 @@ namespace zetscript{
 		integer_type->bindStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
 
 		ScriptType *float_type=this->getScriptType(ZS_TYPE_NAME_FLOAT);
+		float_type->bindStaticMemberPropertyGetter("MAX_VALUE",floatMaxValue);
 		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
 		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
 		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));

@@ -358,14 +358,15 @@ namespace zetscript{
 
 			if(token_node_symbol_class!=NULL){
 
-					EVAL_ERROR_FILE_LINE_GOTO(
-							eval_data->current_parsing_file
-							,line
-							,error_expression_token_symbol
-							,"Unexpected '%c' after type '%s'"
-							,*test_aux_p
-							,token_node_symbol->value.c_str()
-					);
+				EVAL_ERROR_FILE_LINE_GOTO(
+						eval_data->current_parsing_file
+						,line
+						,error_expression_token_symbol
+						,"Unexpected '%c' after type '%s' %s"
+						,*test_aux_p
+						,token_node_symbol->value.c_str()
+						,*test_aux_p=='.' ? " on trying access a static member. Static members access should be done through '::'":"."
+				);
 			}
 
 			// set test
