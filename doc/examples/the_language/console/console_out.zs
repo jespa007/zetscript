@@ -1,0 +1,1 @@
+Console::out("Hello world")

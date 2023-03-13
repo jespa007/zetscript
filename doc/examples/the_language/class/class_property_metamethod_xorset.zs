@@ -13,13 +13,13 @@ class Number{
 			return this.__value__
 		}
 		
-		_addset(_op1){
+		_xorset(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
-	 			this.__value__ += _op1;
+	 			this.__value__ ^= Integer::parse(_op1);
 	 		}else if(_op1 instanceof Number){
-	 			this.__value__ += _op1.__value__;
+	 			this.__value__ ^= Integer::parse(_op1.__value__);
 	 		}else{
-	 			System::error("Number::value::_addset : right operand not supported");
+	 			System::error("Number::value::_xorset : right operand not supported");
 	 		}
 		}
 	}
@@ -27,7 +27,7 @@ class Number{
 
 var number=new Number(20);
 Console::outln("number.value => "+number.value)
-number.value+=20;
-Console::outln("number+=20 => "+number.value)
-number.value+=new Number(30);
-Console::outln("number.value+=new Number(30) => "+number.value)
+number.value^=20;
+Console::outln("number^=20 => "+number.value)
+number.value^=new Number(30);
+Console::outln("number.value^=new Number(30) => "+number.value)

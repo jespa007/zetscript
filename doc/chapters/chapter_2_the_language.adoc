@@ -3,6 +3,9 @@
 :sectnums:
 :stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
 
+// TODO: unify  _predec and _postdec / _preinc, _postinc because it has the same behaviour  
+// Check example numbers more apopiate for each example. (For example andset put hexadecimal numbers)
+
 == The language
 
 === Statments
@@ -3059,7 +3062,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_not_neg.txt[]
+include::../examples/the_language/class/class_metamethod_neg_out.txt[]
 ----
 
 ===== _postinc()
@@ -3126,7 +3129,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_post_dec_out.txt[]
+include::../examples/the_language/class/class_metamethod_postdec_out.txt[]
 ----
 
 ===== _preinc()
@@ -3137,7 +3140,7 @@ Implements _pre increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-_pre_inc()
+_preinc()
 ----
 
 +++<u>Parameters</u>+++

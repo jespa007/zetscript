@@ -2,7 +2,7 @@ class Number{
 	constructor(_value=0){
 		// ensure that n is literal integer or literal float
 		if(_value instanceof Integer || _value instanceof Float){
-			this.__num__=_value;
+			this.__value__=_value;
 		}else{
 			System::error("Number::constructor : input value not supported");
 		}
@@ -13,7 +13,7 @@ class Number{
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			op1 = _op1;
  		}else if(_op1 instanceof Number){
- 			op1 = _op1.__num__;
+ 			op1 = _op1.__value__;
  		}else{
  			System::error("Number::_sub : right operand not supported");
  		}
@@ -21,7 +21,7 @@ class Number{
  		if(_op2 instanceof Integer || _op2 instanceof Float){
  			op2 = _op2;
  		}else if(_op2 instanceof Number){
- 			op2 = _op2.__num__;
+ 			op2 = _op2.__value__;
  		}else{
  			System::error("Number::_sub : left operand not supported");
  		}
@@ -29,7 +29,7 @@ class Number{
  		return new Number(op1-op2);
  	}
  	_tostring(){
- 		return this.__num__;
+ 		return this.__value__;
  	}
 };
 

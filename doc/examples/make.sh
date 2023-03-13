@@ -7,7 +7,7 @@ then
 	EXTENSION_EXE=".exe"
 fi
 
-the_language_example_dirs=(integer float string function array object class type loop math json)
+the_language_example_dirs=(integer float string function array object class type loop math json system)
 
 # build output for language examples
 for i in "${the_language_example_dirs[@]}"

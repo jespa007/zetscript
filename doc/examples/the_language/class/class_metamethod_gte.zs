@@ -2,14 +2,14 @@ class Number{
 	constructor(_value=0){
 		// ensure that n is literal integer or literal float
 		if(_value instanceof Integer || _value instanceof Float){
-			this.__num__=_value;
+			this.__value__=_value;
 		}else{
 			System::error("Number::constructor : input value not supported");
 		}
 	} 
 	
  	static _gte(op1, op2){
- 		return op1.__num__>=op2.__num__;
+ 		return op1.__value__>=op2.__value__;
  	}
 };
 
