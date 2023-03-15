@@ -69,7 +69,8 @@ namespace zetscript{
 		// System mod
 		cl=script_type_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->bindStaticMemberFunction("clock",SystemModule_clock);
-		cl->bindStaticMemberFunction("evalNative",SystemModule_eval);
+		cl->bindStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
+		cl->bindStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
 		//cl->bindStaticMemberFunction("assertNative",SystemModule_assert);
 		cl->bindStaticMemberFunction("errorNative",SystemModule_error);
 
@@ -154,9 +155,9 @@ namespace zetscript{
 				"static System::error(_str_error,..._args){"
 				"	System::errorNative(_str_error,_args)"
 				"}"
-				"static System::eval(_str_eval,_params){"
+				/*"static System::eval(_str_eval,_params){"
 				"	return System::evalNative(_str_eval,_params)"
-				"}"
+				"}"*/
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
 				"}"

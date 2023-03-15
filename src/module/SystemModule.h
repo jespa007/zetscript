@@ -7,12 +7,14 @@
 namespace zetscript{
 
 	class StringScriptObject;
+	class ObjectScriptObject;
 	class ArrayScriptObject;
 	class StringMod;
 
 	zs_float	SystemModule_clock(ZetScript *_zs);
 	void 	SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk);
-	void 	SystemModule_eval(ZetScript *zs,StackElement *str_eval,StackElement *object_args);
+	void 	SystemModule_eval(ZetScript *zs, StringScriptObject *_so_str_eval, ObjectScriptObject *_oo_param);
+	void 	SystemModule_eval(ZetScript *zs, StringScriptObject *_so_str_eval);
 	//void 	SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args);
 	void 	SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args);
 

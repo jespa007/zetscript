@@ -23,7 +23,7 @@ namespace zetscript{
 		stk->properties|=STK_PROPERTY_READ_ONLY;
 	}
 
-	void SystemModule_eval(ZetScript *zs,StackElement *stk_so_str_eval,StackElement *stk_oo_param){
+	void SystemModule_eval(ZetScript *_zs,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
 		StringScriptObject *so_str_eval=NULL;
 		ObjectScriptObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
@@ -34,7 +34,7 @@ namespace zetscript{
 		zs_vector<StackElement *> stk_params;
 		const char *str_start=NULL;
 		zs_string str_unescaped_source="";
-		VirtualMachine *vm=zs->getVirtualMachine();
+		VirtualMachine *vm=_zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
@@ -44,7 +44,7 @@ namespace zetscript{
 
 		// Example of use,
 		// System::eval("a+b",{a:1,b:2})
-		if(STK_IS_STRING_SCRIPT_OBJECT(stk_so_str_eval) == false){ // expected string to evaluate
+		/*if(STK_IS_STRING_SCRIPT_OBJECT(stk_so_str_eval) == false){ // expected string to evaluate
 			vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format("eval error:expected StringScriptObject as first parameter but the typeof is '%s'"
@@ -52,15 +52,15 @@ namespace zetscript{
 					).c_str()
 			);
 			return;
-		}
+		}*/
 
-		so_str_eval=(StringScriptObject *)stk_so_str_eval->value;
+		so_str_eval=_so_str_eval;//(StringScriptObject *)stk_so_str_eval->value;
 
 		//--------------------------------------
 		// 0. setup scope and parameters
-		if(stk_oo_param->properties != 0){
+		if(_oo_param != NULL){//->properties != 0){
 
-			if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_oo_param) == false){
+			/*if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format(
@@ -69,9 +69,9 @@ namespace zetscript{
 					).c_str()
 				);
 				return;
-			}
+			}*/
 
-			oo_param=(ObjectScriptObject *)stk_oo_param->value;
+			oo_param=_oo_param;//(ObjectScriptObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
@@ -103,7 +103,7 @@ namespace zetscript{
 		//    function(a,b){a+b}(1,2);
 		zs_string  name_script_function=zs_strutils::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	ScriptFunction(
-				zs
+				_zs
 				,IDX_ZS_SCRIPT_FUNCTION_EVAL
 				,IDX_TYPE_CLASS_MAIN
 				,-1
@@ -115,8 +115,8 @@ namespace zetscript{
 				,0
 		);
 
-		Scope *main_scope=((((zs)->getScopeFactory())))->getMainScope();
-		sf_eval->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		Scope *main_scope=((((_zs)->getScopeFactory())))->getMainScope();
+		sf_eval->scope_script_function=(((_zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 
 		//--------------------------------------
 		// 2. register arg symbols
@@ -144,7 +144,7 @@ namespace zetscript{
 		// 3. Call zetscript->eval this function
 		try{
 			eval_parse_and_compile(
-					zs
+					_zs
 					,str_start
 					,NULL
 					,NULL
@@ -152,14 +152,14 @@ namespace zetscript{
 					,sf_eval
 			);
 		}catch(std::exception & ex){
-			vm_set_error(zs->getVirtualMachine(),(zs_string("eval error:")+ex.what()).c_str());
+			vm_set_error(vm,(zs_string("eval error:")+ex.what()).c_str());
 			goto goto_eval_exit;
 		}
 
 		// link unresoved symbols
-		zs->link();
+		_zs->link();
 
-		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
+		// check if there's a reset stack at the end and set as end function in order to ensure it gets last value stk ...
 		if(sf_eval->instructions_len>2){
 			if(sf_eval->instructions[sf_eval->instructions_len-2].byte_code != BYTE_CODE_RET){
 				int offset_rst_stack=sf_eval->instructions[sf_eval->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
@@ -187,15 +187,15 @@ namespace zetscript{
 		}
 
 		vm_execute_script_function(
-			zs->getVirtualMachine(),
+			vm,
 			NULL,
 			sf_eval,
 			vm_stk_current);
 
 		// modifug
-		if(vm_it_has_error(zs->getVirtualMachine())){
-			zs_string error=vm_get_error(zs->getVirtualMachine());
-			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error: %s",error.c_str()).c_str());
+		if(vm_it_has_error(vm)){
+			zs_string error=vm_get_error(vm);
+			vm_set_error(vm,zs_strutils::format("eval error: %s",error.c_str()).c_str());
 		}
 
 goto_eval_exit:
@@ -214,7 +214,7 @@ goto_eval_exit:
 
 		 sf_eval->scope_script_function->removeChildrenBlockTypes();
 		 sf_eval->scope_script_function->markAsUnusued();
-		 zs->getScopeFactory()->clearUnusuedScopes();
+		 _zs->getScopeFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;
 
@@ -228,6 +228,10 @@ goto_eval_exit:
 			*stk_start++=*(vm_stk_current+stk_n_params+i);
 		}
 
+	}
+
+	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){
+		SystemModule_eval(_zs,_so_str_eval,NULL);
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
