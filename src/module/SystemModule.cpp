@@ -18,11 +18,6 @@ namespace zetscript{
 		return zs_system::clock();
 	}
 
-	void SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk){
-		ZS_UNUSUED_PARAM(_zs);
-		stk->properties|=STK_PROPERTY_READ_ONLY;
-	}
-
 	void SystemModule_eval(ZetScript *_zs,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
 		StringScriptObject *so_str_eval=NULL;
 		ObjectScriptObject *oo_param=NULL;
@@ -38,44 +33,21 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
-		StackElement *vm_stk_current=vm_get_current_stack_element(vm);
+		StackElement *stk_start_arg_call=data->vm_stk_current;
 		StackElement *stk_start=NULL;
 		VM_ScopeFunction *vm_eval_scope_function=data->vm_current_scope_function;
 
-		// Example of use,
-		// System::eval("a+b",{a:1,b:2})
-		/*if(STK_IS_STRING_SCRIPT_OBJECT(stk_so_str_eval) == false){ // expected string to evaluate
-			vm_set_error(
-					zs->getVirtualMachine()
-					,zs_strutils::format("eval error:expected StringScriptObject as first parameter but the typeof is '%s'"
-							,data->zs->stackElementToStringTypeOf(stk_so_str_eval).c_str()
-					).c_str()
-			);
-			return;
-		}*/
-
-		so_str_eval=_so_str_eval;//(StringScriptObject *)stk_so_str_eval->value;
+		so_str_eval=_so_str_eval;
 
 		//--------------------------------------
 		// 0. setup scope and parameters
 		if(_oo_param != NULL){//->properties != 0){
 
-			/*if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_oo_param) == false){
-				vm_set_error(
-					zs->getVirtualMachine()
-					,zs_strutils::format(
-						"eval error:expected 'Object' as second parameter but the typeof is '%s'"
-						,data->zs->stackElementToStringTypeOf(stk_oo_param).c_str()
-					).c_str()
-				);
-				return;
-			}*/
-
 			oo_param=_oo_param;//(ObjectScriptObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
-				function_params=new ScriptFunctionParam[function_params_len];//(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);
+				function_params=new ScriptFunctionParam[function_params_len];
 				function_params_ptr=&function_params;
 
 				if(function_params!=NULL){
@@ -181,7 +153,7 @@ namespace zetscript{
 		// 4. Call function passing all arg parameter
 		// pass data to vm_stk_current
 		stk_n_params=(uint8_t)stk_params.size();
-		stk_start=vm_stk_current;//vm data->vm_stk_current;
+		stk_start=stk_start_arg_call;//vm data->vm_stk_current;
 		for(int i = 0; i < stk_n_params; i++){
 			*stk_start++=*((StackElement *)stk_params.items[i]);
 		}
@@ -190,7 +162,7 @@ namespace zetscript{
 			vm,
 			NULL,
 			sf_eval,
-			vm_stk_current);
+			stk_start_arg_call);
 
 		// modifug
 		if(vm_it_has_error(vm)){
@@ -218,14 +190,13 @@ goto_eval_exit:
 
 		 delete sf_eval;
 
-
 		 // assign returning vars...
-		n_ret_args=vm_get_current_stack_element(vm)-vm_stk_current;
-		stk_start=vm_stk_current;
+		n_ret_args=data->vm_stk_current-(stk_start_arg_call+stk_n_params);
+		stk_start=stk_start_arg_call;
 
 		// overwrite first entered params due are the objects passed before and now are undefined
 		for(int i = 0; i < n_ret_args-stk_n_params; i++){
-			*stk_start++=*(vm_stk_current+stk_n_params+i);
+			*stk_start++=*(stk_start_arg_call+stk_n_params+i);
 		}
 
 	}
@@ -233,14 +204,6 @@ goto_eval_exit:
 	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){
 		SystemModule_eval(_zs,_so_str_eval,NULL);
 	}
-
-	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
-		if(*chk_assert == false){
-			StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
-			vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
-			delete str_out;
-		}
-	}*/
 
 	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
 		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
