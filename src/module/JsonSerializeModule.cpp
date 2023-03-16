@@ -21,7 +21,7 @@ namespace zetscript{
 		);
 
 
-		void serialize_vector(
+		void serialize_array(
 				ZetScript *_zs
 				,ScriptObject *_this_object
 				,zs_string & _str_result
@@ -204,27 +204,22 @@ namespace zetscript{
 		}
 
 		void serialize_stk(
-				ZetScript *_zs
-				, ScriptObject *_this_object
-				,zs_string & _str_result
-				, StackElement *_stk
-				, int _ident
-				,bool _is_formatted
-				,bool _strict_json_format){
+			ZetScript *_zs
+			, ScriptObject *_this_object
+			,zs_string & _str_result
+			, StackElement *_stk
+			, int _ident
+			,bool _is_formatted
+			,bool _strict_json_format
+		){
 
 			ScriptObject *obj=NULL;
 			int16_t var_type = 0;
+			StackElement stk=*_stk;
 
-			if(_stk->properties & STK_PROPERTY_PTR_STK){
-				_stk=(StackElement *)_stk->value;
-			}
+			stk=_zs->getOriginStackElement(stk);
 
-			if(STK_IS_VAR_REF_SCRIPT_OBJECT(_stk)){
-				_stk=((VarRefScriptObject *)_stk->value)->getStackElementPtr();
-			}
-
-
-			var_type = GET_STK_PROPERTY_TYPES(_stk->properties);
+			var_type = GET_STK_PROPERTY_TYPES(stk.properties);
 
 			switch(var_type){
 			default:
@@ -232,7 +227,7 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
-				_str_result.append(_zs->stackElementToString(_stk));
+				_str_result.append(_zs->stackElementToString(&stk));
 				break;
 			case STK_PROPERTY_NULL:
 				_str_result.append("null");
@@ -246,13 +241,13 @@ namespace zetscript{
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
-				obj=((ScriptObject *)_stk->value);
+				obj=((ScriptObject *)stk.value);
 				switch(obj->idx_script_type){
 				case IDX_TYPE_SCRIPT_OBJECT_STRING:
 					_str_result.append(zs_string("\"") + ((StringScriptObject *)obj)->toString() + "\"");
 					break;
 				case IDX_TYPE_SCRIPT_OBJECT_ARRAY:
-					serialize_vector(_zs, _this_object, _str_result,(ArrayScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
+					serialize_array(_zs, _this_object, _str_result,(ArrayScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
 					break;
 				default:
 					if(

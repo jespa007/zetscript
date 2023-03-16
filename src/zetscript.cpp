@@ -390,7 +390,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	StackElement getOriginStackElement(StackElement _stk){
+	StackElement ZetScript::getOriginStackElement(StackElement _stk){
 		if(_stk.properties & STK_PROPERTY_PTR_STK){
 			_stk=*((StackElement *)_stk.value);
 		}
