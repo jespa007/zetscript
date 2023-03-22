@@ -9,9 +9,10 @@ class Number{
 	}
 	
  	static _lte(op1, op2){
- 		return op1.__value__<op2.__value__;
+ 		return op1.__value__<=op2.__value__;
  	}
 };
 
+Console::outln("new Number(10) <= new Number(20) => "+(new Number(10) <= new Number(20)))
 Console::outln("new Number(20) <= new Number(20) => "+(new Number(20) <= new Number(20)))
-Console::outln("new Number(20) <= new Number(30) => "+(new Number(20) <= new Number(30)))
+Console::outln("new Number(30) <= new Number(20) => "+(new Number(30) <= new Number(20)))

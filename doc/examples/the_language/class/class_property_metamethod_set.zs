@@ -2,7 +2,8 @@ class Number{
 	constructor(_value=0){
 		this.value=_value // calls Number::value::_set metamethod
 	} 
-
+	
+	// property 'value'
 	value{
 		_get(){
 			return this.__value__

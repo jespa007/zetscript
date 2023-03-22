@@ -22,10 +22,10 @@ class Number{
  	}
 };
 
-var number=new Number(20);
+var number=new Number(0x7);
 Console::outln("number => "+number)
-number&=20;
-Console::outln("number&=20 => "+number)
-number&=new Number(30);
-Console::outln("number&=new Number(30) => "+number)
+number&=0x3;
+Console::outln("number&=0x3 => "+number)
+number&=new Number(0x1);
+Console::outln("number&=new Number(0x1) => "+number)
 

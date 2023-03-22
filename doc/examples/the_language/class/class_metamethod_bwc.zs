@@ -14,7 +14,7 @@ class Number{
 
 };
 
-var number=new Number(20)
+var number=new Number(2)
 
 Console::outln("~number => "+ (~number))
 

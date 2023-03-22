@@ -20,7 +20,7 @@ class Number{
 	}
 	
  	_tostring(){
- 		return this.__value__;
+ 		return this.__value__; // returns this.__value__ when string operation is involved
  	}
 };
 

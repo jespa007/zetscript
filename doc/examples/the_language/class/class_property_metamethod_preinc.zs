@@ -8,6 +8,8 @@ class Number{
 		}
 	} 
 
+	
+	// property 'value'
 	value{
 		_get(){
 			return this.__value__

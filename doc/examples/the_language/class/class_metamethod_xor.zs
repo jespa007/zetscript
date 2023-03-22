@@ -33,6 +33,6 @@ class Number{
  	}
 };
 
-Console::outln("new Number(10) ^ new Number(20) => " +  (new Number(10) ^ new Number(20)));
-Console::outln("new Number(10) ^ 20 => " + (new Number(10) ^ 20));
-Console::outln("10 ^ new Number(20) => " + (10 ^ new Number(20)));
+Console::outln("new Number(0xa) ^ new Number(0x9) => " +  (new Number(0xa) ^ new Number(0x9)));
+Console::outln("new Number(0xa) ^ 0x9 => " + (new Number(0xa) ^ 0x9));
+Console::outln("0xa ^ new Number(0x9) => " + (0xa ^ new Number(0x9)));

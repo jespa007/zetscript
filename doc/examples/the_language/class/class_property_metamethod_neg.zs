@@ -8,10 +8,16 @@ class Number{
 		}
 	} 
 	
- 	static _lt(op1, op2){
- 		return op1.__value__<op2.__value__;
- 	}
+    // property 'value'
+    value{
+        _get(){
+            return -this.__value__;
+        }
+    }
+
 };
 
-Console::outln("new Number(20) < new Number(20) => "+(new Number(20) < new Number(20)))
-Console::outln("new Number(20) < new Number(30) => "+(new Number(20) < new Number(30)))
+var number=new Number(20)
+
+Console::outln("-number.value => "+number.value)
+

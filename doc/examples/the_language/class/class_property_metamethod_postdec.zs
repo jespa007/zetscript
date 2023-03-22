@@ -7,7 +7,8 @@ class Number{
 			System::error("Number::constructor : input value not supported");
 		}
 	} 
-
+	
+	// property 'value'
 	value{
 		_get(){
 			return this.__value__

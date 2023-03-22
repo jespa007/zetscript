@@ -7,7 +7,8 @@ class Number{
 			System::error("Number::constructor : input value not supported");
 		}
 	} 
-
+	
+	// property 'value'
 	value{
 		_get(){
 			return this.__value__
@@ -25,9 +26,9 @@ class Number{
 	}
 }
 
-var number=new Number(20);
+var number=new Number(0x1);
 Console::outln("number.value => "+number.value)
-number.value|=20;
-Console::outln("number|=20 => "+number.value)
-number.value|=new Number(30);
-Console::outln("number.value|=new Number(30) => "+number.value)
+number.value|=0x2;
+Console::outln("number.value|=0x2 => "+number.value)
+number.value|=new Number(0x4);
+Console::outln("number.value|=new Number(0x4) => "+number.value)

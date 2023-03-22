@@ -3,10 +3,10 @@
 :sectnums:
 
 
-//  TODO: 
+//  Summary: 
 // 1. Calling script functions from c++
 //  1.1 bind script function 
-//  1.2 bind member function from instanced object
+//  1.2 bind member function from instanced global object
 //  1.3 Life time objects returned
 //      zs_int,zs_float,bool
 //      other times should bee freed. Show error if not freed

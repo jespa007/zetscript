@@ -13,5 +13,6 @@ class Number{
  	}
 };
 
+Console::outln("new Number(10) >= new Number(20) => "+(new Number(10) >= new Number(20)))
 Console::outln("new Number(20) >= new Number(20) => "+(new Number(20) >= new Number(20)))
-Console::outln("new Number(20) >= new Number(30) => "+(new Number(20) >= new Number(30)))
+Console::outln("new Number(30) >= new Number(20) => "+(new Number(30) >= new Number(20)))

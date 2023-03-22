@@ -129,7 +129,6 @@ Float literals supports the following pre operators,
 |
 [source,javascript]
  -10.5
-
 |====
 
 ==== String
@@ -370,6 +369,7 @@ Float operators are applied on float variables before or after its read. Float o
 [cols="1d,1m,2d,2a"]
 |====
 |Operator |Expression |Description |Result
+
 |Negate
 |-variable 
 |Evaluates negated variable
@@ -1674,11 +1674,12 @@ ZetScript has the following type of operators
 
 Arithmetic operators performs arithmetic operations between two values. The arithmetic operators are the following,
 
-[cols="2d,1m,3d,6a"]
+[cols="1m,2d,3d,6a"]
 |====
-|Operator |Symbol |Description |Example
-|Add 
+|Operator |Name |Description |Example
+
 |+
+|Add 
 a|
 
 It performs a these operations:
@@ -1699,97 +1700,97 @@ It performs a these operations:
  {a:1}+{b:2,c:3}; //{a:1,b:2,c:3}
 ----
 
-|Subtract
 |-
+|Subtract
 |Performs a substract operation between two integer/float values
 |
 [source,javascript]
 10-5; // = 5
 2.5-1;// = 1.5
 
-|Multiply 
 |* 
+|Multiply 
 |Performs a multiplication between two integer/float values
 |
 [source,javascript]
 10*5; //= 50
 1.5*2;//= 3.0
 
-|Divide 
 |/ 
+|Divide 
 |Performs a division between two integer/float values
 |
 [source,javascript]
 10/2; // = 5
 3/2.0 // = 1.5
 
-|Modulus 
 |% 
+|Modulus 
 |Performs a division between two integer/float values
 |
 [source,javascript]
-3%2; //it results 1
-10%2.5; // it results
+3%2; //it results 1.0
+23.6%2; // it results 1.6
 |====
 
 ==== Relational operators
 
 Relational operators evaluates relations through two values. The relational operators are the following,
 
-[cols="2d,1m,3d,6a"]
+[cols="1m,2d,3d,6a"]
 |====
-|Operator |symbol |Description |Example
+|Operator |Name |Description |Example
 
-|Equal 
 |==
+|Equal 
 |Check whether two values are equal
 |
 [source,javascript]
  10==10;// = true
 "hello"=="bye"; // = false
 
-|Not equal 
 |!= 
+|Not equal 
 |Check whether two values are not equal
 |
 [source,javascript]
 10!=10; // = false
 "hello"!="bye"; // = true
 
-|Less than 
 |< 
+|Less than 
 |Checks whether first value is less than second value
 |
 [source,javascript]
 10<20; // = true
 20<10; // = false
 
-|Greater than 
 |> 
+|Greater than 
 |Checks whether first value is greater than second value
 |
 [source,javascript]
 10>20; // = false
 20>10; // = true
 
-|Less equal than 
 | \<= 
+|Less equal than 
 |Checks whether first value is less equal than second value
 |
 [source,javascript]
 10<=10; //= true
 11<=10; // = false
 
-|Greater equal than 
 |>= 
+|Greater equal than 
 |Checks whether first value is greater equal than second value
 |
 [source,javascript]
 10>=11; // = false
 11>=10; // = true
 
-|Instance of 
 |instanceof 
+|Instance of 
 |Checks if a value is instance of a type. 
 |
 [source,javascript]
@@ -1821,28 +1822,28 @@ Performs the following operations:
 
 Logic operators combines operations between two boolean values. The logic operators are the following,
 
-[cols="2d,1m,3d,6a"]
+[cols="1m,2d,3d,6a"]
 |====
-|Operator |symbol |Description |Example
+|Operator |Name |Description |Example
 
-|Logic And 
 |&& 
+|Logic And 
 |Performs an AND operation between two boolean values
 |
 [source,javascript]
 true && true;// = true
 true&& false;// = false
 
-|Logic Or 
 | \|\|
+|Logic Or 
 |Performs an OR operation between two Boolean values
 |
 [source,javascript]
 true \|\| false;// = true
 false \|\| false;// = false
 
-|Logic Not 
 |! 
+|Logic Not 
 |Negates boolean value
 |
 [source,javascript]
@@ -1856,50 +1857,50 @@ false \|\| false;// = false
 
 Binary operators combines operations between two integer values. The binary operators are the following,
 
-[cols="2d,1m,3d,6a"]
+[cols="1m,2d,3d,6a"]
 |====
-|Operator |symbol |Description |Example
+|Operator |Name |Description |Example
 
-|Binary And 
 |& 
+|Binary And 
 |Performs binary AND operation between two integers
 |
 [source,javascript]
 0xa & 0x2; // = 0x2
 0xff & 0xf0; // = 0xf0
 
-|Binary Or
 |\|
+|Binary Or
 |Performs binary OR operation between two integers
 |
 [source,javascript]
 0xa \| 0x5; // = 0xf
 0x1 \| 0xe; // = 0xf
 
-|Binary Xor 
 |^ 
+|Binary Xor 
 |Performs binary XOR between two integers
 |
 [source,javascript]
 0xa ^ 0xa; // = 0x0
 0xa ^ 0x5; // = 0xf
 
-|Binary shift left
 |<< 
+|Binary shift left
 |Performs binary shift left between two integers
 |
 [source,javascript]
 0x1 << 2; // = 0x4
 
-|Binary shift right
 |>> 
+|Binary shift right
 |Performs binary shift right between two integers
 |
 [source,javascript]
 0xff >> 1; // = 0x7f
 
-|Bitwise complement
 |~
+|Bitwise complement
 |Performs bitwise complement operation from integer value
 |
 [source,javascript]
@@ -2468,12 +2469,12 @@ var t= new Test(); // t instanced as class Test
 
 ==== Member functions
 
+===== Member function
 
-In a class it can have two types of member functions:
+A function member aims to do operations or management with its class members. It's acceded through field operator ('.') and preceded by _this_ keyword when is acceded within a member function. A  member function can be implemented outside of the class too. 
 
-- member functions: A function member aims to do operations or management with its class members. It's acceded through field operator ('.') and preceded by _this_ keyword when is acceded within a member function. A  member function can be implemented outside of the class too. 
-- static functions: helper function of generic purposes about the class type. It access through '::' operator
 
+*Example*
 
 [source,javascript]
 ----
@@ -2491,11 +2492,6 @@ class Test{
 	method2(){
 		Console::outln(" and method 3")
 	}
-	
-	// static function
-	static staticMethod(){
-		Console::outln("Access static method")
-	}
 
 };
 
@@ -2508,6 +2504,26 @@ var t=new Test()
 
 t.method1(); // prints "Access method 1 and method 3"
 t.method2(); // prints "Access method 2"
+
+
+----
+
+===== Static function
+
+Static function is a kind of helper function of generic purposes about the class type. To declare static function it should be defined with static keyword. To access static function it has to type the name of containing class and '::' operator followed with the name of the function.
+
+*Example*
+
+[source,javascript]
+----
+class Test{
+
+	// static function
+	static staticMethod(){
+		Console::outln("Access static method")
+	}
+
+};
 
 Test::staticMethod(); // prints "Access static method"
 
@@ -2532,7 +2548,7 @@ t.a=10; 		  // t.a==10
 
 ----
 
-In the code it can see that when t is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
+In the code it can see that when _t_ is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
 
 
 ===== Variable inicialization
@@ -2604,7 +2620,7 @@ Metamethods are special member functions that links with operators seen on secti
 
 ====== _tostring()
 
-Returns custom when string operation operation is invoved
+Returns custom string when string operation operation is invoved
 
 *Syntax*
 
@@ -2619,7 +2635,7 @@ None
 
 +++<u>Returns</u>+++
 
-Custom string defined by user
+A string as a result when string operation operation is invoved
 
 *Example*
 
@@ -2637,7 +2653,7 @@ include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
 
 ===== _set()
 
-Performs a set operation
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
 
 *Syntax*
 
@@ -2648,7 +2664,7 @@ _set(_value)
 
 +++<u>Parameters</u>+++
 
-- __value_ : value to set.
+- __value_ :Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2676,12 +2692,12 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-_addset(_op1)
+_addset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2709,12 +2725,12 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 [source,javascript]
 ----
-_subset(_op1)
+_subset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2742,12 +2758,12 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 
 [source,javascript]
 ----
-_mulset(_op1)
+_mulset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2775,12 +2791,12 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 
 [source,javascript]
 ----
-_divset(_op1)
+_divset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2808,12 +2824,12 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 
 [source,javascript]
 ----
-_modset(_op1)
+_modset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2841,12 +2857,12 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 
 [source,javascript]
 ----
-_andset(_op1)
+_andset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2874,12 +2890,12 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 
 [source,javascript]
 ----
-_andset(_op1)
+_andset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2908,12 +2924,12 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 
 [source,javascript]
 ----
-_xorset(_op1)
+_xorset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __op1_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2941,12 +2957,12 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 
 [source,javascript]
 ----
-_shrset(_op1)
+_shrset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __op1_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -2974,12 +2990,12 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 
 [source,javascript]
 ----
-_shrset(_op1)
+_shrset(_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __op1_ : Literal or variable as right operand
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -3173,7 +3189,7 @@ Implements _pre decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-_pre_dec()
+_predec()
 ----
 
 +++<u>Parameters</u>+++
@@ -3544,7 +3560,7 @@ Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+include::../examples/the_language/class/class_metamethod_mod_out.txt[]
 ----
 
 ===== _and()
@@ -3738,13 +3754,13 @@ class Test{
 
 ===== _get()
 
-Performs a get operation
+__get_ returns the value of the property
 
 *Syntax*
 
 [source,javascript]
 ----
-_set(_value)
+_get()
 ----
 
 *Parameters
@@ -3753,25 +3769,25 @@ None
 
 +++<u>Returns</u>+++
 
-Returns the value of this property
+Returns the value of the property
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_set.zs[]
+include::../examples/the_language/class/class_property_metamethod_get.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_get_out.txt[]
 ----
 
 ===== _set()
 
-Performs a set operation
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
 
 *Syntax*
 
@@ -3782,7 +3798,7 @@ _set(_value)
 
 *Parameters
 
-- __value_ : value to set.
+- __value_ :Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -3804,7 +3820,7 @@ include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
 
 ===== _addset()
 
-Performs addition assignment (aka +=) adding the operation
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
 
 *Syntax*
 
@@ -3815,7 +3831,7 @@ _set(_value)
 
 *Parameters
 
-- __value_ : value to set.
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
@@ -3836,37 +3852,303 @@ include::../examples/the_language/class/class_property_metamethod_addset_out.txt
 ----
 
 
-===== _not()
+===== _subset()
 
-Implements _not_ pre operator (aka !)  
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
 
 *Syntax*
 
 [source,javascript]
 ----
-_not()
+_set(_value)
 ----
 
-+++<u>Parameters</u>+++
+*Parameters
 
-None
+- __value_ : Value or variable as right operand
 
 +++<u>Returns</u>+++
 
-- Boolean value as a result of not operation
+None.
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_not.zs[]
+include::../examples/the_language/class/class_property_metamethod_subset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_not_out.txt[]
+include::../examples/the_language/class/class_property_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
 ----
 
 ===== _neg()
@@ -3886,7 +4168,7 @@ None
 
 +++<u>Returns</u>+++
 
-- A new object as result of negate operation
+- A the value as result of negate operation
 
 *Example*
 
@@ -4050,8 +4332,8 @@ Console::out(_value,..._args)
 
 +++<u>Parameters</u>+++
 
-- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
-- __args_: 
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
 
 +++<u>Returns</u>+++
 
@@ -4080,7 +4362,8 @@ Console::outln(_value,..._args)
 
 +++<u>Parameters</u>+++
 
-- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
 
 +++<u>Returns</u>+++
 
@@ -4107,7 +4390,8 @@ Console::out(_value,..._args)
 
 +++<u>Parameters</u>+++
 
-- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
 
 +++<u>Returns</u>+++
 
@@ -4136,7 +4420,8 @@ Console::outln(_value,..._args)
 
 +++<u>Parameters</u>+++
 
-- __value_: If __value_ is string it can be formated (see in table X.X), else it tries to print a the value as human readable
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
 
 +++<u>Returns</u>+++
 
@@ -4189,25 +4474,29 @@ The integer as the equivalent character readed from console
 
 ===== System::clock()
 
-Returns the amount of time in milliseconds
+Returns the amount of time in seconds
 
 Syntax,
 
 [source,zetscript]
 System::clock()
 
-Example,
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+The amount of time in seconds as Float type
+
+*Example*
 
 [source,zetscript]
 ----
 include::../examples/the_language/system/system_clock.zs[]
 ----
 
-+++<u>Parameters</u>+++
 
-None
-
-+++<u>Returns</u>+++
 
 Output:
 
@@ -4216,19 +4505,19 @@ Output:
 include::../examples/the_language/system/system_clock_out.txt[]
 ----
 
-===== System::eval
+===== System::eval()
 
-Evals a expression
+Evals an expression
 
 Syntax,
 
 [source,zetscript]
-System::eval(_string,_args)
+System::eval(_expression_,_args)
 
 +++<u>Parameters</u>+++
 
-- __string_:
-- __args_: Object of fields as input variables used in eval 
+- __expresion_: String as the expression to be evaluated
+- __args_ (optional): Arguments that will be used as variables within the evaluation
 
 +++<u>Returns</u>+++
 
@@ -4291,8 +4580,8 @@ System::error(_message,..._args)
 
 +++<u>Parameters</u>+++
 
-- __message_: the message about the error
-- __args_ (optional): In case of formated message it should provide extra parameters to substitute num order parameters provided by the curly brackets (i.e {} ) 
+- __message_: the message to print as the error. The message representation can be specify arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format (see <<String::format()>>).
+- __args_ (optional): variable args to be replaced in the string representation
 
 +++<u>Returns</u>+++
 
@@ -4733,11 +5022,11 @@ Serializes to json string
 *Syntax*
 
 [source,zetscript]
-Json::serialize(_x)
+Json::serialize(_value)
 
 +++<u>Parameters</u>+++
 
-- __x_: Literal or variable
+- __value_: Literal or variable
 
 +++<u>Returns</u>+++
 
@@ -4764,11 +5053,11 @@ Deserializes json string
 *Syntax*
 
 [source,zetscript]
-Json::deserialize(_string)
+Json::deserialize(_value)
 
 +++<u>Parameters</u>+++
 
-- __string_: String in json format
+- __value_: value or variable as string in json format
 
 +++<u>Returns</u>+++
 
@@ -4791,7 +5080,7 @@ include::../examples/the_language/json/json_deserialize_out.txt[]
 ==== DateTime
 
 ===== Operations
- 
+
 ====== _add
 
 Perform add operation (aka +) between two objects type DateTime

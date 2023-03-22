@@ -8,6 +8,7 @@ class Number{
 		}
 	} 
 
+	// property 'value'
 	value{
 		_get(){
 			return this.__value__
@@ -25,9 +26,9 @@ class Number{
 	}
 }
 
-var number=new Number(20);
+var number=new Number(0x1);
 Console::outln("number.value => "+number.value)
-number.value<<=20;
-Console::outln("number<<=20 => "+number.value)
-number.value<<=new Number(30);
-Console::outln("number.value<<=new Number(30) => "+number.value)
+number.value<<=1;
+Console::outln("number.value<<=1 => "+number.value)
+number.value<<=new Number(1);
+Console::outln("number.value<<=new Number(1) => "+number.value)
