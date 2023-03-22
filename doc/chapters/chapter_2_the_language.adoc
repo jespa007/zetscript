@@ -3213,7 +3213,40 @@ Output:
 ----
 include::../examples/the_language/class/class_metamethod_predec_out.txt[]
 ----
- 
+
+===== _in()
+
+Implements _in_ operator 
+
+*Syntax*
+
+[source,javascript]
+----
+_in(_value)
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+Boolean telling whether the _value exist in or not
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_in.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_in_out.txt[]
+---- 
+
 ===== Static functions
 
 ====== _equ()
