@@ -692,15 +692,16 @@ namespace zetscript{
 							case BYTE_CODE_METAMETHOD_SHL: // << shift left
 							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
 
-								if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
+								/*if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
 
-									ZS_THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
+									ZS_THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return '%s' but it was '%s'",
 											this->str_script_type.c_str(),
 											_function_name.c_str(),
+											zs_rtti::demangle(this->str_script_type_ptr.c_str()).c_str(),
 											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
 									);
 									return NULL;
-								}
+								}*/
 								break;
 							default:
 								break;

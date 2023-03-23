@@ -6,4 +6,5 @@
 #include 		"module/SystemModule.cpp"
 #include 		"module/JsonModule.cpp"
 #include 		"module/ConsoleModule.cpp"
+#include 		"module/TimeSpanModule.cpp"
 #include 		"module/DateTimeModule.cpp"

@@ -6,6 +6,13 @@
 
 namespace zetscript{
 
+	zs_timespan::zs_timespan(){
+		days=0;
+		hours=0;
+		minutes=0;
+		seconds=0;
+	}
+
 	zs_timespan::zs_timespan(int days, int hours, int minutes, int seconds)
 		//days(days), hours(hours), minutes(minutes), seconds(seconds)
 	{

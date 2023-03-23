@@ -195,10 +195,18 @@ goto_eval_exit:
 		stk_start=stk_start_arg_call;
 
 		// overwrite first entered params due are the objects passed before and now are undefined
-		for(int i = 0; i < n_ret_args-stk_n_params; i++){
+		for(int i = 0; i < n_ret_args; i++){
 			*stk_start++=*(stk_start_arg_call+stk_n_params+i);
 		}
 
+		// invert order
+		for(int i = 0; i < (n_ret_args>>1); i++){
+			StackElement tmp=stk_start_arg_call[n_ret_args-i-1];
+			stk_start_arg_call[n_ret_args-i-1]=stk_start_arg_call[i];
+			stk_start_arg_call[i]=tmp;
+		}
+
+		data->vm_stk_current=stk_start_arg_call+n_ret_args;
 	}
 
 	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){

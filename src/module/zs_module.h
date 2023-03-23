@@ -6,4 +6,5 @@
 #include "module/SystemModule.h"
 #include "module/JsonModule.h"
 #include "module/ConsoleModule.h"
+#include "module/TimeSpanModule.h"
 #include "module/DateTimeModule.h"

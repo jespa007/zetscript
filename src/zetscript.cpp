@@ -80,11 +80,19 @@ namespace zetscript{
 		cl->bindStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->bindStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
+		// TimeSpan
+		cl=bindType<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
+		bindMemberPropertyGetter<zs_timespan>("days",TimeSpanModule_get_days);
+		bindMemberPropertyGetter<zs_timespan>("hour",TimeSpanModule_get_hours);
+		bindMemberPropertyGetter<zs_timespan>("minute",TimeSpanModule_get_minutes);
+		bindMemberPropertyGetter<zs_timespan>("second",TimeSpanModule_get_seconds);
+
+		//---------------------------------------------
 		// DateTime
 		cl=bindType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 		bindConstructor<zs_datetime>(DateTimeModule_constructor);
-		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);
-		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);*/
+		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);*/
+		bindStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);
 
 		bindMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
 
@@ -109,6 +117,7 @@ namespace zetscript{
 		bindMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
 		bindMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
 		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
+
 
 		// Custom user function or classes
 		eval(

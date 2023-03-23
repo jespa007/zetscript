@@ -1,18 +1,8 @@
-var operators=[
-	"+"
-	,"-"
-	,"*"
-	,"/"
-]
-
-for(var operator in operators){
-	var operation=String::format("{0} {1} {2}",10,operator,2);
-	var result=System::eval(
-		"return operation;\n"
+Console::outln(System::eval(
+	"return op1+op2;\n"
 	,{
-			operation:operation
-	});
-	
-	Console::outln("Result of operation '{0}' => {1} ",operation,result);
-}
+		op1:5
+		,op2:10
+	})
+);
 

@@ -401,6 +401,7 @@ SET(
 	# module
 	module/ConsoleModule.h
 	module/DateTimeModule.h
+	module/TimeSpanModule.h
 	module/JsonModule.h
 	module/MathModule.h
 	module/SystemModule.h

@@ -4,6 +4,7 @@ class ContainerIterator{
 		this.index=0;
 	}
 	_get(){
+		// returns 2 values: index as key and this.container.data[this.index] as value
 		return this.index,this.container.data[this.index];
 	}
 	_postinc(){
@@ -30,6 +31,8 @@ class Container{
 
 var container=new Container();
 
+
+// iterate over all elements
 for(var k,v in container){
-	Console::outln("{0} {1}",k,v)
+	Console::outln("key: {0}  value: {1}",k,v)
 }

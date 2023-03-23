@@ -140,13 +140,20 @@ namespace zetscript{
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		StackElement 		*	stk_result_op1=NULL;
 		StackElement 		*	stk_result_op2=NULL;
+		StackElement 			stk_result_op1_aux;
+		StackElement 			stk_result_op2_aux;
+
 		StackElement 			stk_aux1;
 		Instruction			*	instruction=_instruction;
 
 		 VM_POP_STK_TWO;
 
-		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
+		 stk_result_op1_aux=data->zs->getOriginStackElement(*stk_result_op1);
+		 stk_result_op2_aux=data->zs->getOriginStackElement(*stk_result_op2);
+
+
+		if(stk_result_op2_aux.properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so_aux=(ScriptObject *)stk_result_op2_aux.value;
 
 			switch(so_aux->idx_script_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
@@ -158,8 +165,8 @@ namespace zetscript{
 						,(zs_int)stk_result_op1->value
 					)
 				);
-			}else if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
-				zs_string str_op1=((StringScriptObject *)stk_result_op1->value)->toString();
+			}else if(STK_IS_STRING_SCRIPT_OBJECT(&stk_result_op1_aux)){
+				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectWrap_contains(
 						data->zs
@@ -174,13 +181,13 @@ namespace zetscript{
 			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				VM_PUSH_STK_BOOLEAN(
 				ArrayScriptObjectWrap_contains(
-					data->zs,(ArrayScriptObject *)so_aux,stk_result_op1
+					data->zs,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
 				)
 			);
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				zs_string str_op1=((StringScriptObject *)stk_result_op1->value)->toString();
+				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ObjectScriptObjectWrap_contains(
 						data->zs,(ObjectScriptObject *)so_aux,&str_op1
@@ -196,8 +203,8 @@ namespace zetscript{
 						_script_function,
 						_instruction,
 						BYTE_CODE_METAMETHOD_IN,
-						stk_result_op2,
-						stk_result_op1,
+						&stk_result_op2_aux,
+						&stk_result_op1_aux,
 						false
 				)==false){
 					return false;

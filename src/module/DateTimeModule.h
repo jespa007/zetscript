@@ -18,8 +18,8 @@ namespace zetscript{
 			,zs_int _minute
 			,zs_int _second
 	);
-	/*zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);
-	zs_datetime * 		DateTimeModule_sub(zs_datetime *dt1,zs_datetime *dt2);*/
+	/*zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);*/
+	zs_timespan * 		DateTimeModule_sub(ZetScript *_zs,zs_datetime *dt1,zs_datetime *dt2);
 
 	void 				DateTimeModule_setUtc(ZetScript *_zs,zs_datetime *_this);
 

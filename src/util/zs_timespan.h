@@ -9,6 +9,7 @@ namespace zetscript
 	class zs_timespan
 	{
 	public:
+		zs_timespan();
 		explicit zs_timespan(int days, int hours = 0, int minutes = 0, int seconds = 0);
 		int get_days() const;
 		int get_hours() const;
