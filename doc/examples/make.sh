@@ -29,18 +29,29 @@ then
 	mkdir -p the_api/build
 fi
 
-the_api_example_dirs=(function type)
+the_api_example_dirs=(eval function type)
 
 for i in "${the_api_example_dirs[@]}"
 do
-	dir="the_api/"$i"/*.cpp"
-	for j in $dir
+	dir_zs="the_api/"$i"/*.zs"
+	for j in $dir_zs
+	do
+		base_file="$(basename $j .zs)"
+		echo file:$base_file
+		cp "the_api/"$i"/"$base_file".zs" "the_api/build/"$base_file".zs"
+	done
+
+	dir_cpp="the_api/"$i"/*.cpp"
+	for j in $dir_cpp
 	do
 		base_file="$(basename $j .cpp)"
 		g++ -std=gnu++0x -Wall -pedantic -O2 "the_api/"$i"/"$base_file".cpp" ../../build/gcc/Release/libzetscript-2-0-0-static.a -o "the_api/build/"$base_file$EXTENSION_EXE -I ../../src
 		if [ $? -eq 0 ] 
 		then
-			"the_api/build/"$base_file > "the_api/"$i"/"$base_file"_out.txt" 
+			current=$PWD
+			cd "the_api/build"
+			./$base_file > $base_file"_out.txt"
+			cd $current
 		fi
 	done
 done

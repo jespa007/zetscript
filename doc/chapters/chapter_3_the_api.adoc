@@ -4,6 +4,10 @@
 
 
 //  Summary: 
+// 1. eval
+// eval expression
+// eval file
+// eval options
 // 1. Calling script functions from c++
 //  1.1 bind script function 
 //  1.2 bind member function from instanced global object
@@ -28,8 +32,6 @@
 //	  Array  --> zs->newArrayScriptObject  (and how add elements)
 //	  Object  --> zs->newObjectScriptObject  (and how add elements)
 //    class --> zs->newClass<class> (see seccion 4 for more information)
-    
-    
 // 3. BindTypes
 //    Show all examples with type "Number"!!!!
 //	  no-instantiable types
@@ -40,6 +42,76 @@
 
 
 == the API
+
+=== Eval
+
+ZetScript can evaluate scripts from string or from file
+
+*Eval from string*
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_string.cpp[]
+----
+
+*Eval from file*
+
+Having the following script file called `file.zs` with the following content,
+[source,javascript]
+----
+include::../examples/the_api/eval/file.zs[]
+----
+
+At the c++ side, to loads and eval `file.zs` it's done through _evalFile_ function as it shows as it follows,
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file.cpp[]
+----
+
+==== Eval options
+
+===== EVAL_OPTION_NO_EXECUTE
+
+In order to eval script but no execute add `EVAL_OPTION_NO_EXECUTE` option
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file_option_no_execute.cpp[]
+----
+
+
+===== EVAL_OPTION_PRINT_BYTE_CODE
+
+In order to show byte code for a script add `EVAL_OPTION_PRINT_BYTE_CODE` option
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file_option_print_byte_code.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/build/eval_file_option_print_byte_code_out.txt[]
+----
+
+As we can see in the output `EVAL_OPTION_PRINT_BYTE_CODE` option prints the byte code per each function. At the begin it prints summary,
+
+ - *Function*: Function name
+ - *Stack code*: Stack required for code
+ - *Stack local vars*: Stack required for local variables
+ - *Total stack required*: Total stack required
+ - *Scopes*: Total scopes
+
+Apart there's a description per instruction with the following columns,
+
+- *NUM*: Instruction number
+- *RS*: Required Stack for current instruction
+- *AS*: Acumulated Stack in the current instruction
+- *INSTRUCTION*: Byte code and operands if it needs
+
 
 === Bind type
 

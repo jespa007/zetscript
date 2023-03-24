@@ -105,8 +105,8 @@ namespace zetscript{
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
 		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
 		printf(" Stack local vars: %i                                         \n",sfo->local_variables->size());
-		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->size()+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->getScopes()->size());
+		printf(" Total stack required: %i                                     \n",sfo->local_variables->size()+sfo->min_code_stack_needed);
+		printf(" Scopes: %i                                                   \n\n",sfo->scope_script_function->getScopes()->size());
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
