@@ -90,6 +90,14 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
+
 						return ret_value;
 				}
 			)));
@@ -163,6 +171,13 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk,idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
 						return ret_value;
 				}
 			)));
@@ -248,6 +263,13 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
 						return ret_value;
 				}
 			)));
@@ -339,6 +361,13 @@ namespace zetscript{
 					if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
+
+					// particular case return type is string and stk is string script object
+					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						ScriptObject *so_string=(ScriptObject *)stk.value;
+						this->unrefLifetimeObject(so_string);
+					}
+
 					return ret_value;
 				}
 			)));
@@ -434,6 +463,14 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
+
 						return ret_value;
 				}
 			)));
@@ -538,6 +575,13 @@ namespace zetscript{
 					if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
+
+					// particular case return type is string and stk is string script object
+					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						ScriptObject *so_string=(ScriptObject *)stk.value;
+						this->unrefLifetimeObject(so_string);
+					}
+
 					return ret_value;
 				}
 			)));
@@ -645,6 +689,13 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
 						return ret_value;
 
 				}
@@ -814,6 +865,14 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
+
 						return ret_value;
 
 				}
@@ -994,6 +1053,14 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
+
 						return ret_value;
 
 				}
@@ -1187,6 +1254,13 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
 						return ret_value;
 
 				}
@@ -1392,6 +1466,13 @@ namespace zetscript{
 						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
+
+						// particular case return type is string and stk is string script object
+						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+							ScriptObject *so_string=(ScriptObject *)stk.value;
+							this->unrefLifetimeObject(so_string);
+						}
+
 						return ret_value;
 
 				}
@@ -1437,12 +1518,28 @@ namespace zetscript{
 				return NULL;
 			}
 
+			if(idx_script_type_return == IDX_TYPE_ZS_STRING_PTR_C){
+				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",zs_rtti::demangle(return_type).c_str());
+				return NULL;
+			}
+
 			for(int i = 0; i < params.size(); i++){
-				char *param=(char *)params.items[i];
-				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
+				char *str_param=(char *)params.items[i];
+				zs_int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
+
+				// exception: These variables are registered but not allowed to pass throught parameter
+				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
+					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
+							,i+1
+							,zs_rtti::demangle(str_param).c_str()
+							,zs_rtti::demangle(str_param).c_str());
+					return NULL;
+				}
+
+				if(idx_script_type==-1){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
-							,zs_rtti::demangle(param).c_str());
+							,zs_rtti::demangle(str_param).c_str());
 					return NULL;
 				}
 			}

@@ -94,7 +94,7 @@ Out:
 
 [source,txt]
 ----
-include::../examples/the_api/build/eval_file_option_print_byte_code_out.txt[]
+include::../examples/the_api/eval/eval_file_option_print_byte_code_out.txt[]
 ----
 
 As we can see in the output `EVAL_OPTION_PRINT_BYTE_CODE` option prints the byte code per each function. At the begin it prints summary,
@@ -112,13 +112,87 @@ Apart there's a description per instruction with the following columns,
 - *AS*: Acumulated Stack in the current instruction
 - *INSTRUCTION*: Byte code and operands if it needs
 
+=== Builtin types
 
-=== Bind type
+ZetScript has the following set of built-in types used beetwen function user and script functions,
 
-[source,cpp]
+- void : void type
+- bool : C boolean type
+- zs_int : int type as intptr_t
+- zs_float : a float of 32 or 64 bits in function of compiler architecture 
+- zs_string : string type
+- StringScriptObject : String script object pointer
+- ArrayScriptObject : Array script object pointer
+- ObjectScriptObject : Object script object pointer
+
+
+=== Calling script functions from c++
+
+==== bind script function 
+
+To bind a script function is done through _bindFunction_
+
+*Syntax*
+
+*Example*
+
+[source,c++]
 ----
-include::../examples/the_api/type/type_bind_type.cpp[]
+include::../examples/the_api/bind/bind_script_function_zs_int.cpp[]
 ----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_script_function_zs_int_out.txt[]
+----
+
+Also add function could be used as a function that accepts two floating values and returns a floating value,
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_script_function_zs_float.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_script_function_zs_float_out.txt[]
+----
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_script_function_zs_string.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_script_function_zs_string_out.txt[]
+----
+
+==== bind member function from instanced global object
+
+It can also call from instanced object
+
+[source,c++]
+----
+include::../examples/the_api/bind/bin_object_script_function.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bin_object_script_function_out.txt[]
+----
+
+==== Life time objects returned
+//      zs_int,zs_float,bool
+//      other times should bee freed. Show error if not freed
 
 === Bind function
 
@@ -172,7 +246,12 @@ int main(int argc, char *argv[])
 ---- 
  
 
-=== Bind types
+=== Bind type
+
+[source,cpp]
+----
+include::../examples/the_api/type/type_bind_type.cpp[]
+----
 
 ==== Bind static type
 

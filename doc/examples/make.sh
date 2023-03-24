@@ -29,7 +29,7 @@ then
 	mkdir -p the_api/build
 fi
 
-the_api_example_dirs=(eval function type)
+the_api_example_dirs=(eval bind)
 
 for i in "${the_api_example_dirs[@]}"
 do
@@ -50,7 +50,7 @@ do
 		then
 			current=$PWD
 			cd "the_api/build"
-			./$base_file > $base_file"_out.txt"
+			./$base_file > "../"$i"/"$base_file"_out.txt"
 			cd $current
 		fi
 	done

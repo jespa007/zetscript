@@ -643,6 +643,9 @@ namespace zetscript{
 
 						if(_idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->str_ptr);
+						}else if(_idx_builtin_type == IDX_TYPE_ZS_STRING_C){
+							*((zs_string *)_ptr_var)=*(((StringScriptObject *)script_object)->str_ptr);
+							return true;
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(zs_int)(((zs_string *)(((StringScriptObject *)script_object)))->c_str());
 						}else{
