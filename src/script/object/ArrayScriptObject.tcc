@@ -11,4 +11,10 @@ namespace zetscript{
 
 		return this->zs->stackElementTo<_T>(stk_elements.items[_idx]);
 	}
+
+	template<typename _T>
+	void ArrayScriptObject::push(_T _value){
+		auto stk=this->zs->toStackElement(_value);
+		this->push(stk);
+	}
 }

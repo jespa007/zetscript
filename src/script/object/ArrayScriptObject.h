@@ -49,6 +49,9 @@ namespace zetscript{
 		StackElement *						newSlot();
 
 		void 								push(const StackElement  * stk);
+		void 								push(StackElement  stk);
+		template<typename _T>
+		void 								push(_T _value);
 		void 								pushInteger(zs_int _value);
 		void 								pushFloat(zs_float _value);
 		void 								pushBoolean(bool _value);

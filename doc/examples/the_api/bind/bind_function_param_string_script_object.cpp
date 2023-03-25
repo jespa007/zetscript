@@ -5,7 +5,7 @@ using zetscript::StringScriptObject;
 
 // c function
 void funParamStringScriptObject(ZetScript *_zs, StringScriptObject *_string){
-    printf("String : %i\n",_string->c_str());
+    printf("String : '%s'\n",_string->get().c_str());
 }
 
 int main(int argc, char *argv[]){

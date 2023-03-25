@@ -8,6 +8,7 @@
 // eval expression
 // eval file
 // eval options
+// Explain builtin types and its functions
 // 1. Calling script functions from c++
 //  1.1 bind script function 
 //  1.2 bind member function from instanced global object
@@ -54,6 +55,14 @@ ZetScript can evaluate scripts from string or from file
 include::../examples/the_api/eval/eval_string.cpp[]
 ----
 
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/eval/eval_string_out.txt[]
+----
+
+
 *Eval from file*
 
 Having the following script file called `file.zs` with the following content,
@@ -62,12 +71,22 @@ Having the following script file called `file.zs` with the following content,
 include::../examples/the_api/eval/file.zs[]
 ----
 
-At the c++ side, to loads and eval `file.zs` it's done through _evalFile_ function as it shows as it follows,
+Out:
+
+At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as it shows as it follows,
 
 [source,c++]
 ----
 include::../examples/the_api/eval/eval_file.cpp[]
 ----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/eval/eval_file_out.txt[]
+----
+
 
 ==== Eval options
 
@@ -114,16 +133,118 @@ Apart there's a description per instruction with the following columns,
 
 === Builtin types
 
-ZetScript has the following set of built-in types used beetwen function user and script functions,
+ZetScript comes with the following set of built-in types to be used as interface beetwen C and ZetScript script functions. This section presents built-in types that will be used in the examples,
 
-- void : void type
-- bool : C boolean type
-- zs_int : int type as intptr_t
-- zs_float : a float of 32 or 64 bits in function of compiler architecture 
-- zs_string : string type
-- StringScriptObject : String script object pointer
-- ArrayScriptObject : Array script object pointer
-- ObjectScriptObject : Object script object pointer
+- ZetScript
+- void
+- bool
+- zs_int
+- zs_float 
+- zs_string
+- StringScriptObject
+- ArrayScriptObject
+- ObjectScriptObject
+
+==== ZetScript
+
+ZetScript instance usually used to give reference and perform operations in the current context. Due the big extension of the set of functions that ZetScript defines it will explain the most important (like <<ZetScript::eval>> already explained) along this document
+
+==== void
+
+Native C `void` type   
+
+==== bool
+
+Native C `bool` type. Possible vales are `true` or `false`   
+
+
+==== zs_int
+
+Integer data type it defines a integer variable with range from `-(2b-1)` to `2b-1-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits.
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_int i=10;
+----
+
+==== zs_float
+
+_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_float f=20.5;
+----
+
+==== zs_string
+
+_zs_string_ it defines a string represented a sequence of chars
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_string s="Hello World";
+----
+
+See <<zs_string>> for more information
+
+==== StringScriptObject
+
+_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced
+
+*Example*
+
+[source,c++]
+----
+zetscript::StringScriptObject str=zs.newStringScriptObject();
+str="Hello World";
+----
+
+See <<StringScriptObject>> for more information
+
+
+==== ArrayScriptObject
+
+_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced
+
+*Example*
+
+[source,c++]
+----
+zetscript::ArrayScriptObject array=zs.newArrayScriptObject();
+
+// push as integer value
+object->push<zetscript::zs_int>(0)
+----
+
+See <<ArrayScriptObject>> for more information
+
+
+==== ObjectScriptObject
+
+_ObjectScriptObject_ it defines a object script object that acts as a container of fields. It uses zetscript context in order to be instanced
+
+*Example*
+
+[source,c++]
+----
+zetscript::ObjectScriptObject *object=zs.newObjectScriptObject();
+
+// add field "a" as int
+object->set<zetscript::zs_int>("a",0)
+
+----
+
+See <<ArrayScriptObject>> for more information
+
+
+=== Calling C function from script side
+
 
 
 === Calling script functions from c++
@@ -1597,4 +1718,75 @@ int main(){
 }
 
 
+=== Additional types and helper functions
 
+ZetScript includes a set of types and helper functions. This document will explain the relevant ones,
+
+- zs_vector
+- zs_file
+- zs_dir
+- zs_datetime
+- zs_timespan
+- zs_buffer
+- zs_io
+- zs_path
+- zs_strutils
+- zs_rtti
+- zs_system
+
+- zs_vector
+
+==== zs_string
+
+===== Member functions
+
+====== zs_string::zs_string()
+====== zs_string::operator=()
+====== zs_string::operator+=()
+====== zs_string::operator[]
+====== zs_string::at()
+====== zs_string::clear()
+====== zs_string::substr()
+====== zs_string::operator+()
+====== zs_string::operator==()
+====== zs_string::operator!=()
+====== zs_string::find()
+====== zs_string::find_last_of()
+====== zs_string::replace()
+====== zs_string::append()
+====== zs_string::erase()
+====== zs_string::insert()
+====== zs_string::empty()
+====== zs_string::length()
+====== zs_string::c_str()
+====== zs_string::~zs_string()
+
+==== zs_vector
+
+_zs_vector_ it defines a vector represented a sequence of elements for type template set
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_vector<zetscript::zs_int> v;
+
+for(int i=0;i<10;i++){
+	v.push_back(i);
+}
+----
+
+===== zs_vector::zs_vector()
+===== zs_vector::operator=()
+===== zs_vector::set();
+===== zs_vector::get();
+===== zs_vector::erase();
+===== zs_vector::push_back();
+===== zs_vector::concat();
+===== zs_vector::insert();
+===== zs_vector::clear();
+===== zs_vector::pop_back();
+===== zs_vector::resize();
+===== zs_vector::data()
+===== zs_vector::size()
+===== zs_vector::~zs_vector()

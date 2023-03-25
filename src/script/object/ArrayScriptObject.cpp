@@ -94,6 +94,10 @@ namespace zetscript{
 		zs->stackElementAssign(newSlot(),_stk);
 	}
 
+	void 	ArrayScriptObject::push(StackElement  _stk){
+		this->push((const StackElement  *)&_stk);
+	}
+
 	void 	ArrayScriptObject::pushInteger(zs_int _value){
 		StackElement stk={_value,STK_PROPERTY_ZS_INT};
 		zs->stackElementAssign(newSlot(),&stk);

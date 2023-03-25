@@ -5175,13 +5175,53 @@ Output:
 include::../examples/the_language/json/json_deserialize_out.txt[]
 ----
 
+==== TimeSpan
+
+TimeSpan represents a time interval that is difference between two times measured in number of days, hours, minutes, and seconds. TimeSpan is used to compare two DateTime (see in section <<DateTime>>) objects to find the difference between two dates
+
+===== Member properties
+
+Datetime has the following memeber properties,
+
+[cols="1m,3d"]
+|====
+|Variable |description
+
+|days
+|days
+|hours
+|hours
+|minutes
+|minutes
+|seconds
+|seconds
+|====
+
+
 ==== DateTime
 
-===== Static function
+Represents an instant in time as a date and time of day.
+
+===== Static functions
 
 ====== DateTime::_sub()
 
 Perform sub (aka -)  operation between two objects type DateTime
+
+*Syntax*
+[source,javascript]
+----
+_sub(_op1,_op2)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_: First operand type DateTime as the minuend
+- __op2_: Second operand type DateTime as subtrahend
+
++++<u>Returns</u>+++
+
+TimeSpan object as a difference of __op1_ - __op2_
 
 *Example*
 

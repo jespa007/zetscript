@@ -2,11 +2,18 @@
 
 using zetscript::ZetScript;
 using zetscript::ArrayScriptObject;
+using zetscript::zs_int;
+using zetscript::zs_float;
 
 // c function expects an array of integers and floats
 void funParamArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
-    for(size_t i=0; i < _array->length(); i++){
-        printf("Integer value %i. Float value: \n",_array->elementAt<zs_float>(i),_array->elementAt<zs_float>(i));
+	printf("Values in array:\n");
+    for(int i=0; i < _array->length(); i++){
+    	zs_int v=_array->get(i);
+        printf(
+        		"value: %i\n"
+				,(int)_array->get<zs_int>(i)
+		);
     }
 }
 
@@ -18,7 +25,7 @@ int main(int argc, char *argv[]){
     // call c function with string param
     zs.eval(
         "funParamArrayScriptObject(["
-        "    0,1,2,3,4,4.5"
+        "    0,1,2,3,4,5"
         "]);"
  	);
 
