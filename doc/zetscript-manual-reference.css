@@ -61,11 +61,16 @@ video {
 	font-size: 1.1em !important;
 }
 
+.listingblock{
+	font-size:small;
+	font-family: 'Courier New', Courier, monospace;
+}
+
 /* DO NOT PUT ANYTHING AFTER THIS LINE OR CSS HAS NOT EFFECT */
 
 @media all and (max-width: 600px) {
-table {
-  width: 55vw!important;
-  font-size: 3vw;
+	table {
+	width: 55vw!important;
+	font-size: 3vw;
+	}
 }
-

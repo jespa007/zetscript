@@ -434,6 +434,7 @@ SET(
 	script/object/ContainerSlot.h
 	script/object/ContainerSlot.h
 	script/object/ObjectScriptObject.h
+	script/object/ObjectScriptObject.tcc
 	script/object/ObjectScriptObjectWrap.h
 	script/object/ObjectIteratorScriptObject.h
 	script/object/ObjectIteratorScriptObjectWrap.h
@@ -443,6 +444,7 @@ SET(
 	script/object/StringIteratorScriptObjectWrap.h
 	script/object/VarRefScriptObject.h
 	script/object/ArrayScriptObject.h
+	script/object/ArrayScriptObject.tcc
 	script/object/ArrayScriptObjectWrap.h
 	script/object/ArrayIteratorScriptObject.h
 	script/object/ArrayIteratorScriptObjectWrap.h

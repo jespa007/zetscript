@@ -61,7 +61,10 @@ namespace zetscript{
 		/**
 		 * Object getter
 		 */
-		virtual StackElement 	* get(const zs_string &  _key_name);
+		virtual StackElement 			* get(const zs_string &  _key_name);
+		template<typename _T>
+		_T 								get(const zs_string &  _key_name);
+
 
 		bool exists(const zs_string &  _key_name);
 

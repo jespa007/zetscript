@@ -399,7 +399,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	StackElement ZetScript::getOriginStackElement(StackElement _stk){
+	StackElement ZetScript::unwrapStackElement(StackElement _stk){
 		if(_stk.properties & STK_PROPERTY_PTR_STK){
 			_stk=*((StackElement *)_stk.value);
 		}
@@ -419,7 +419,7 @@ namespace zetscript{
 	zs_string ZetScript::stackElementToString(StackElement *_stk, const zs_string  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
-		StackElement stk=getOriginStackElement(*_stk);
+		StackElement stk=unwrapStackElement(*_stk);
 
 		/*if(stk.properties & STK_PROPERTY_PTR_STK){
 			stk=*((StackElement *)stk.value);
@@ -483,7 +483,7 @@ namespace zetscript{
 	}
 
 	const char		*ZetScript::stackElementToString(char *_str_out, int _str_out_len, StackElement *_stk,const zs_string & _format){
-		StackElement stk=getOriginStackElement(*_stk);
+		StackElement stk=unwrapStackElement(*_stk);
 		zs_string result;
 		memset(_str_out,0,_str_out_len);
 

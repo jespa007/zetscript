@@ -5,7 +5,10 @@
 
 
 #include 	"script/type/ScriptTypeFactory.tcc"
+#include 	"script/object/ArrayScriptObject.tcc"
+#include 	"script/object/ObjectScriptObject.tcc"
 #include 	"script/object/ClassScriptObject.tcc"
+
 
 
 namespace zetscript{

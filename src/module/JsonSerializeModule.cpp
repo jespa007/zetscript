@@ -217,7 +217,7 @@ namespace zetscript{
 			int16_t var_type = 0;
 			StackElement stk=*_stk;
 
-			stk=_zs->getOriginStackElement(stk);
+			stk=_zs->unwrapStackElement(stk);
 
 			var_type = GET_STK_PROPERTY_TYPES(stk.properties);
 

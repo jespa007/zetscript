@@ -148,8 +148,8 @@ namespace zetscript{
 
 		 VM_POP_STK_TWO;
 
-		 stk_result_op1_aux=data->zs->getOriginStackElement(*stk_result_op1);
-		 stk_result_op2_aux=data->zs->getOriginStackElement(*stk_result_op2);
+		 stk_result_op1_aux=data->zs->unwrapStackElement(*stk_result_op1);
+		 stk_result_op2_aux=data->zs->unwrapStackElement(*stk_result_op2);
 
 
 		if(stk_result_op2_aux.properties & STK_PROPERTY_SCRIPT_OBJECT){

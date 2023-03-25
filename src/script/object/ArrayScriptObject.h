@@ -8,7 +8,7 @@
 
 namespace zetscript{
 
-	class CZetgine;
+	class ZetScript;
 	class  ArrayScriptObject: public ContainerScriptObject{
 	public:
 
@@ -29,6 +29,9 @@ namespace zetscript{
 		ArrayScriptObject(ZetScript *_zs);
 
 		virtual StackElement * 				get(int idx);
+
+		template<typename _T>
+		_T 									get(int _idx);
 		bool 								eraseElementAt(int idx);
 		void								eraseAllElements();
 
