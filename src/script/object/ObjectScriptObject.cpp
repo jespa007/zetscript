@@ -21,13 +21,13 @@ namespace zetscript{
 		// get properties from object o1
 		zs_map *map=o1->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->set(it.key,(StackElement *)it.value);
+			obj->setStackElement(it.key,(StackElement *)it.value);
 		}
 
 		// get properties from object o2
 		map=o2->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->set(it.key,(StackElement *)it.value);
+			obj->setStackElement(it.key,(StackElement *)it.value);
 		}
 		return obj;
 	}
@@ -39,7 +39,7 @@ namespace zetscript{
 		// get properties from object o2
 		zs_map *fields=o2->getMapFields();
 		for(auto it=fields->begin(); !it.end();it.next()){
-			o1->set(it.key,(StackElement *)it.value);
+			o1->setStackElement(it.key,(StackElement *)it.value);
 		}
 	}
 
@@ -54,7 +54,7 @@ namespace zetscript{
 		map_fields=new zs_map();
 	}
 
-	StackElement * ObjectScriptObject::set(
+	StackElement * ObjectScriptObject::setStackElement(
 			const zs_string &  _key_name
 			//,zs_string & error
 			,StackElement * sv
@@ -92,7 +92,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	StackElement * ObjectScriptObject::setInteger(
+	/*StackElement * ObjectScriptObject::setInteger(
 			const zs_string &  _key_name
 			,zs_int _value
 	){
@@ -132,9 +132,9 @@ namespace zetscript{
 		so->set(_value);
 
 		return set(_key_name,&stk);
-	}
+	}*/
 
-	StackElement 	* ObjectScriptObject::get(const zs_string &  _key_name){
+	StackElement 	* ObjectScriptObject::getStackElement(const zs_string &  _key_name){
 		StackElement *stk=getBuiltinField(_key_name);
 		if(stk==NULL){
 			// get user field

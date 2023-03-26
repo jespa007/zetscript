@@ -32,7 +32,7 @@ namespace zetscript{
 		/**
 		 * setters to set field value
 		 */
-		virtual StackElement * set(
+		virtual StackElement * setStackElement(
 				const zs_string &  _key_name
 				//,zs_string & error
 				,StackElement * stk_element = NULL
@@ -61,7 +61,7 @@ namespace zetscript{
 		/**
 		 * Object getter
 		 */
-		virtual StackElement 			* getElementAt(const zs_string &  _key_name);
+		virtual StackElement 			* getStackElement(const zs_string &  _key_name);
 		template<typename _T>
 		_T 								get(const zs_string &  _key_name);
 

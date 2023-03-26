@@ -13,8 +13,17 @@ namespace zetscript{
 	}
 
 	template<typename _T>
+	_T 		ArrayScriptObject::set(int _idx, _T _value){
+		if(_idx >= stk_elements.size()){
+			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
+		}
+		auto stk=this->zs->toStackElement(_value);
+		return this->setStackElement(_idx,&stk);
+	}
+
+	template<typename _T>
 	void ArrayScriptObject::push(_T _value){
 		auto stk=this->zs->toStackElement(_value);
-		this->push(stk);
+		this->pushStackElement(stk);
 	}
 }

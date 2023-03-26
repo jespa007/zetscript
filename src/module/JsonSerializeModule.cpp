@@ -25,7 +25,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,ScriptObject *_this_object
 				,zs_string & _str_result
-				, ArrayScriptObject * _vector
+				, ArrayScriptObject * _array
 				,int _ident
 				, bool _is_formatted
 				,bool _strict_json_format
@@ -33,7 +33,7 @@ namespace zetscript{
 
 			_str_result.append('[');
 
-			for (int i = 0; i < _vector->length(); i++) {
+			for (int i = 0; i < _array->length(); i++) {
 				if (i > 0) {
 					_str_result.append(',');
 				}
@@ -42,7 +42,7 @@ namespace zetscript{
 					_zs
 					,_this_object
 					,_str_result
-					,_vector->get(i)
+					,_array->getStackElement(i)
 					,_ident
 					,_is_formatted
 					,_strict_json_format

@@ -154,7 +154,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getElementAt(const zs_string & _key_name){
+	StackElement 	* ScriptObject::getStackElement(const zs_string & _key_name){
 		return getBuiltinField(_key_name);
 	}
 
@@ -182,7 +182,7 @@ namespace zetscript{
 		return &stk_builtin_elements;
 	}
 
-	StackElement * ScriptObject::setElementAt(
+	StackElement * ScriptObject::setStackElement(
 		const zs_string & _key_value
 		,StackElement * stk_element
 	){

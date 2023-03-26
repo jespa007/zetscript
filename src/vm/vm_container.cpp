@@ -104,7 +104,7 @@ namespace zetscript{
 			goto lbl_exit_function_ok;
 
 
-		}else if((stk_var=so_aux->get(str_symbol_aux1)) == NULL){
+		}else if((stk_var=so_aux->getStackElement(str_symbol_aux1)) == NULL){
 			// property is not defined
 
 			if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
@@ -145,7 +145,7 @@ namespace zetscript{
 				}
 
 				// create new property initialized as undefined
-				if((stk_var=so_aux->set((const char *)str_symbol_aux1))==NULL){
+				if((stk_var=so_aux->setStackElement((const char *)str_symbol_aux1))==NULL){
 					ZS_VM_STOP_EXECUTE("Cannot setProperty '%s'",str_symbol_aux1);
 				}
 
@@ -361,7 +361,7 @@ namespace zetscript{
 				);
 			}
 
-			if((stk_var =dst_container->set(
+			if((stk_var =dst_container->setStackElement(
 					((StringScriptObject *)stk_result_op1->value)->toString()
 			)
 			)==NULL){
@@ -526,7 +526,7 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 					}
 
-					if((stk_var =((ArrayScriptObject *)so_aux)->get(index_aux1))==NULL){
+					if((stk_var =((ArrayScriptObject *)so_aux)->getStackElement(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}
@@ -536,12 +536,12 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM
-					stk_var = ((ObjectScriptObject *)so_aux)->get(
+					stk_var = ((ObjectScriptObject *)so_aux)->getStackElement(
 							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_ARRAY_ITEM){
-							if((stk_var =((ObjectScriptObject *)so_aux)->set(
+							if((stk_var =((ObjectScriptObject *)so_aux)->setStackElement(
 									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
 							)==NULL){

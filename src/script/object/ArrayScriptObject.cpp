@@ -49,7 +49,7 @@ namespace zetscript{
 	}
 
 
-	StackElement * ArrayScriptObject::get(int _idx){
+	StackElement * ArrayScriptObject::getStackElement(int _idx){
 		if(_idx >= stk_elements.size()){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
@@ -90,15 +90,15 @@ namespace zetscript{
 		return stk;
 	}
 
-	void ArrayScriptObject::push(const StackElement  * _stk){
+	void ArrayScriptObject::pushStackElement(const StackElement  * _stk){
 		zs->stackElementAssign(newSlot(),_stk);
 	}
 
-	void 	ArrayScriptObject::push(StackElement  _stk){
-		this->push((const StackElement  *)&_stk);
+	void 	ArrayScriptObject::pushStackElement(StackElement  _stk){
+		this->pushStackElement((const StackElement  *)&_stk);
 	}
 
-	void 	ArrayScriptObject::pushInteger(zs_int _value){
+	/*void 	ArrayScriptObject::pushInteger(zs_int _value){
 		StackElement stk={_value,STK_PROPERTY_ZS_INT};
 		zs->stackElementAssign(newSlot(),&stk);
 	}
@@ -121,7 +121,7 @@ namespace zetscript{
 		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
 		so->set(_value);
 		zs->stackElementAssign(newSlot(),&stk);
-	}
+	}*/
 
 	void ArrayScriptObject::pop(){
 		// save last element...

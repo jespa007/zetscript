@@ -129,7 +129,7 @@ namespace zetscript{
 					 }*/
 
 				 }else{ // Member function not exist try to get variable to call if exist
-					 sf_call_stk_function_ref=_this_object->get(SFI_GET_SYMBOL_NAME(_script_function,instruction));
+					 sf_call_stk_function_ref=_this_object->getStackElement(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					 sf_call_is_member_function=false;
 					 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error calling 'this.%s': member variable or function '%s::%s' not exist"
@@ -148,7 +148,7 @@ namespace zetscript{
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=_this_object->get(SFI_GET_SYMBOL_NAME(_script_function,instruction));
+				 sf_call_stk_function_ref=_this_object->getStackElement(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
 					 ZS_VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					);

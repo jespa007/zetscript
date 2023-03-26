@@ -124,7 +124,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return get(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
+		return getStackElement(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){

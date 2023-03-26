@@ -402,7 +402,7 @@ namespace zetscript{
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// create property... //get c property
-					if((stk_element=so->set(key_id.c_str())) == NULL){
+					if((stk_element=so->setStackElement(key_id.c_str())) == NULL){
 						json_deserialize_error(data, str_current, line, "Cannot set field value '%s'",key_id.c_str());
 						return NULL;
 					}
