@@ -136,7 +136,6 @@ Apart there's a description per instruction with the following columns,
 ZetScript comes with the following set of built-in types to be used as interface beetwen C and ZetScript script functions. This section presents built-in types that will be used in the examples,
 
 - ZetScript
-- void
 - bool
 - zs_int
 - zs_float 
@@ -149,14 +148,9 @@ ZetScript comes with the following set of built-in types to be used as interface
 
 ZetScript instance usually used to give reference and perform operations in the current context. Due the big extension of the set of functions that ZetScript defines it will explain the most important (like <<ZetScript::eval>> already explained) along this document
 
-==== void
-
-Native C `void` type   
-
 ==== bool
 
 Native C `bool` type. Possible vales are `true` or `false`   
-
 
 ==== zs_int
 
@@ -202,7 +196,7 @@ _StringScriptObject_ it defines a string script object and encapsules _zs_string
 [source,c++]
 ----
 zetscript::StringScriptObject str=zs.newStringScriptObject();
-str="Hello World";
+str.set("Hello World");
 ----
 
 See <<StringScriptObject>> for more information
@@ -219,7 +213,7 @@ _ArrayScriptObject_ it defines a array script object that acts as a array contai
 zetscript::ArrayScriptObject array=zs.newArrayScriptObject();
 
 // push as integer value
-object->push<zetscript::zs_int>(0)
+object->push<zetscript::zs_int>(10)
 ----
 
 See <<ArrayScriptObject>> for more information
@@ -236,7 +230,7 @@ _ObjectScriptObject_ it defines a object script object that acts as a container 
 zetscript::ObjectScriptObject *object=zs.newObjectScriptObject();
 
 // add field "a" as int
-object->set<zetscript::zs_int>("a",0)
+object->set<zetscript::zs_int>("a",10)
 
 ----
 

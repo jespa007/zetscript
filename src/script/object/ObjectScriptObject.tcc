@@ -12,4 +12,10 @@ namespace zetscript{
 
 		return this->zs->stackElementTo<_T>(stk);
 	}
+
+	template<typename _T>
+	void	ObjectScriptObject::set(const zs_string & _key_name, _T _value){
+		StackElement stk=this->zs->toStackElement<_T>(_value);
+		this->setStackElement(_key_name, &stk);
+	}
 }

@@ -10,7 +10,7 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ObjectScriptObject * ObjectScriptObject::newScriptObjectObject(ZetScript	*_zs){
+	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ZetScript	*_zs){
 		return new ObjectScriptObject(_zs);
 	}
 

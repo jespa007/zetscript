@@ -364,7 +364,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ObjectScriptObject::newScriptObjectObject(data->zs);
+				so=ObjectScriptObject::newObjectScriptObject(data->zs);
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared pointer for object");
 					return NULL;

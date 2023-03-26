@@ -780,7 +780,7 @@ namespace zetscript{
 				break;
 			// Object
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
-				so=ObjectScriptObject::newScriptObjectObject(zs);
+				so=ObjectScriptObject::newObjectScriptObject(zs);
 				break;
 
 			default:

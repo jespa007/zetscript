@@ -5,7 +5,7 @@
 #pragma once
 
 
-#define ZS_NEW_OBJECT_OBJECT(zs) (ObjectScriptObject::newScriptObjectObject(zs))
+#define ZS_NEW_OBJECT_OBJECT(zs) (ObjectScriptObject::newObjectScriptObject(zs))
 
 namespace zetscript{
 
@@ -18,7 +18,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ObjectScriptObject * newScriptObjectObject(ZetScript	*_zs);
+		static ObjectScriptObject * newObjectScriptObject(ZetScript	*_zs);
 		static ObjectScriptObject * concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		static void  append(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		//
@@ -37,6 +37,9 @@ namespace zetscript{
 				//,zs_string & error
 				,StackElement * stk_element = NULL
 		);
+
+		template<typename _T>
+		void set(const zs_string &  _key_name, _T _value);
 
 		/*StackElement * setInteger(
 				const zs_string &  _property_name

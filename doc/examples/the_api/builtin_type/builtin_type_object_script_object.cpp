@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
 
 	auto object=zs.newObjectScriptObject();
 
-	//str="Hello World";
+	object->set<zetscript::zs_int>("a",10);
 
 	delete object;
 

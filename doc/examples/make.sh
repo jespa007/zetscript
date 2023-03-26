@@ -29,7 +29,7 @@ then
 	mkdir -p the_api/build
 fi
 
-the_api_example_dirs=(eval bind)
+the_api_example_dirs=(eval bind builtin_type)
 
 for i in "${the_api_example_dirs[@]}"
 do

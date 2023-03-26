@@ -4,7 +4,7 @@ int main(int argc, char *argv[]){
 	zetscript::ZetScript zs;
 
 	auto str=zs.newStringScriptObject();
-	//str="Hello World";
+	str->set("Hello World");
 
 	delete str;
 

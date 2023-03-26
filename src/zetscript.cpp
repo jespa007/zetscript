@@ -834,8 +834,8 @@ namespace zetscript{
 	//
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	ObjectScriptObject * ZetScript::newScriptObjectObject(){
-		return ObjectScriptObject::newScriptObjectObject(this);
+	ObjectScriptObject * ZetScript::newObjectScriptObject(){
+		return ObjectScriptObject::newObjectScriptObject(this);
 	}
 
 	StringScriptObject * ZetScript::newStringScriptObject(){
