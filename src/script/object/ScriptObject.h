@@ -68,12 +68,12 @@ namespace zetscript{
 
 		StackElement 						* 	getBuiltinField(int idx);
 
-		virtual StackElement 				* 	set(
+		virtual StackElement 				* 	setElementAt(
 			const zs_string 		& 	key_name
 			,StackElement 			*	stk_element = NULL
 		);
 
-		virtual StackElement 				* 	get(const zs_string & key_name);
+		virtual StackElement 				* 	getElementAt(const zs_string & key_name);
 		virtual Symbol 						*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
 
 

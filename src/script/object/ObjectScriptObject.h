@@ -38,7 +38,7 @@ namespace zetscript{
 				,StackElement * stk_element = NULL
 		);
 
-		StackElement * setInteger(
+		/*StackElement * setInteger(
 				const zs_string &  _property_name
 				,zs_int _value
 		);
@@ -56,12 +56,12 @@ namespace zetscript{
 		StackElement * setString(
 				const zs_string &  _key_name
 				,const zs_string & _value
-		);
+		);*/
 
 		/**
 		 * Object getter
 		 */
-		virtual StackElement 			* get(const zs_string &  _key_name);
+		virtual StackElement 			* getElementAt(const zs_string &  _key_name);
 		template<typename _T>
 		_T 								get(const zs_string &  _key_name);
 

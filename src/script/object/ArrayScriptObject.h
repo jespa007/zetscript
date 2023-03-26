@@ -28,7 +28,7 @@ namespace zetscript{
 
 		ArrayScriptObject(ZetScript *_zs);
 
-		virtual StackElement * 				get(int idx);
+		virtual StackElement * 				getElementAt(int idx);
 
 		template<typename _T>
 		_T 									get(int _idx);
