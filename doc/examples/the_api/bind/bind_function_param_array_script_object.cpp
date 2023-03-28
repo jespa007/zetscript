@@ -6,7 +6,7 @@ using zetscript::zs_int;
 using zetscript::zs_float;
 
 // c function expects an array of integers and floats
-void funParamArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
+void paramArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
 	printf("Values in array:\n");
     for(int i=0; i < _array->length(); i++){
         printf(
@@ -19,11 +19,11 @@ void funParamArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("funParamArrayScriptObject",funParamArrayScriptObject);
+    zs.bindFunction("paramArrayScriptObject",paramArrayScriptObject);
 
     // call c function with string param
     zs.eval(
-        "funParamArrayScriptObject(["
+        "paramArrayScriptObject(["
         "    0,1,2,3,4,5"
         "]);"
  	);

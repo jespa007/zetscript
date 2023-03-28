@@ -4,18 +4,18 @@ using zetscript::ZetScript;
 using zetscript::StringScriptObject;
 
 // c function
-void funParamStringScriptObject(ZetScript *_zs, StringScriptObject *_string){
-    printf("String : '%s'\n",_string->get().c_str());
+void paramString(ZetScript *_zs, StringScriptObject *_string){
+    printf("String : '%s' (StringScriptObject *)\n",_string->get().c_str());
 }
 
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("funParamStringScriptObject",funParamStringScriptObject);
+    zs.bindFunction("paramString",paramString);
 
     // call c function with string param
     zs.eval(
-        "funParamStringScriptObject(\"Hello World\");"
+        "paramString(\"Hello World\");"
  	);
 
 

@@ -7,7 +7,7 @@ using zetscript::zs_float;
 using zetscript::zs_map;
 
 // c function expects an array of integers and floats
-void funParamObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
+void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 	printf("Values in object:\n");
 	zs_map *map=_object->getMapFields();
 	for(auto it=map->begin(); !it.end();it.next()){
@@ -22,11 +22,11 @@ void funParamObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("funParamObjectScriptObject",funParamObjectScriptObject);
+    zs.bindFunction("paramObjectScriptObject",paramObjectScriptObject);
 
-    // call c function with string param
+    // eval and call bind function
     zs.eval(
-        "funParamObjectScriptObject({"
+        "paramObjectScriptObject({"
         "    a:0"
         "     ,b:1"
         "     ,c:2"

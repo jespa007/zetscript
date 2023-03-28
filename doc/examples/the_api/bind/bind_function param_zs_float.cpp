@@ -5,7 +5,7 @@ using zetscript::zs_float;
 
 // c function
 void funParamFloat(ZetScript *_zs, zs_float *_number){
-    printf("Number : %f\n",*_number);
+    printf("Result : %f\n",*_number);
 }
 
 int main(){
