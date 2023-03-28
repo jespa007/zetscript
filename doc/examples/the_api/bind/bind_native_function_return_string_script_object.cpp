@@ -6,7 +6,7 @@ using zetscript::StringScriptObject;
 // Definition of the native function interface returnString
 StringScriptObject *returnString(ZetScript *_zs){
 	// instance new StringScriptObject using ZetScript context
-	StringScriptObject *sting=_zs->newStringScriptObject();
+	StringScriptObject *string=_zs->newStringScriptObject();
 
     string->set("Hello world (StringScriptObject)");
 
