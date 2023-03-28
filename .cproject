@@ -142,14 +142,13 @@
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-H. -Bbuild/gcc -DCMAKE_BUILD_TYPE=Debug  -DSUITTESTS:BOOL=true -DSUITSAMPLES:BOOL=true</buildTarget>
+				<buildTarget>-H. -Bbuild/gcc -DCMAKE_BUILD_TYPE=Debug  -DSUITTESTS:BOOL=true -DSUITSAMPLES:BOOL=false</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildArguments/>
 				<buildTarget>-H. -Bbuild/gcc   -DCMAKE_BUILD_TYPE=Release -DSUITTESTS:BOOL=false   -DSUITSAMPLES:BOOL=false</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>

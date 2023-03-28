@@ -200,6 +200,10 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
 			}
 
+			// particular case for zs_float
+			if(script_type->idx_script_type==IDX_TYPE_ZS_FLOAT_C){
+				return this->toStackElement((zs_int)&_val,IDX_TYPE_ZS_FLOAT_PTR_C);
+			}
 			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
 		}
 

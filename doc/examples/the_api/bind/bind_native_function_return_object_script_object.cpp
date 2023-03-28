@@ -34,7 +34,7 @@ ObjectScriptObject *returnObject(ZetScript *_zs){
 
 	object->set<ArrayScriptObject *>("d",array);
 
-
+	// return object
     return object;
 }
 

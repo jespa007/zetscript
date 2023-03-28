@@ -31,7 +31,7 @@ namespace zetscript{
 		virtual StackElement * 				getStackElement(int idx);
 
 		template<typename _T>
-		_T 									set(int _idx, _T _value);
+		void 								set(int _idx, _T _value);
 
 		template<typename _T>
 		_T 									get(int _idx);

@@ -13,7 +13,6 @@ ArrayScriptObject *returnArray(ZetScript *_zs){
 	// instance new ArrayScriptObject using ZetScript context
 	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
-
 	// push first value as integer 10
 	array->push<zs_int>(10);
 
@@ -26,7 +25,7 @@ ArrayScriptObject *returnArray(ZetScript *_zs){
 	// push 4rth reference string "Hello Word"
 	array->push<const char *>("Hello World");
 
-
+	// return object array
     return array;
 }
 
