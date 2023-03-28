@@ -6,7 +6,7 @@ typedef struct{
 }MyType;
 
 
-int main(int argc, char *argv[]){
+int main(){
 
 	zetscript::ZetScript zs;
 

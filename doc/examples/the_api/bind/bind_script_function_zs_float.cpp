@@ -3,7 +3,7 @@
 
 using zetscript::zs_float;
 
-int main(int argc, char *argv[])
+int main()
 {
 	zetscript::ZetScript zs;
 

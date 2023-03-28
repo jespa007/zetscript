@@ -9,7 +9,6 @@ using zetscript::zs_float;
 void funParamArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
 	printf("Values in array:\n");
     for(int i=0; i < _array->length(); i++){
-    	zs_int v=_array->get(i);
         printf(
         		"value: %i\n"
 				,(int)_array->get<zs_int>(i)
@@ -17,7 +16,7 @@ void funParamArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
     }
 }
 
-int main(int argc, char *argv[]){
+int main(){
 	ZetScript zs;
 
     zs.bindFunction("funParamArrayScriptObject",funParamArrayScriptObject);

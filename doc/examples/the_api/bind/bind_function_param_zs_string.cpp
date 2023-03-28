@@ -8,7 +8,7 @@ void funParamString(ZetScript *_zs, zs_string *_string){
     printf("String : '%s'\n",_string->c_str());
 }
 
-int main(int argc, char *argv[]){
+int main(){
 	ZetScript zs;
 
     zs.bindFunction("funParamString",funParamString);

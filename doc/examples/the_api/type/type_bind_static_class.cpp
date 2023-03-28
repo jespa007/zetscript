@@ -32,7 +32,7 @@ zetscript::zs_int MyClassPtrWrap_function1(zetscript::ZetScript *_zs, MyClass *_
 //---- BINDINGS
 
 
-int main(int argc, char *argv[]){
+int main(){
 
 	zetscript::ZetScript zs;
 

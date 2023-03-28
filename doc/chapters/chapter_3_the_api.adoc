@@ -131,9 +131,9 @@ Apart there's a description per instruction with the following columns,
 - *AS*: Acumulated Stack in the current instruction
 - *INSTRUCTION*: Byte code and operands if it needs
 
-=== Builtin types
+=== Built-in types for native-script interface
 
-ZetScript comes with the following set of built-in types to be used as interface beetwen C and ZetScript script functions. This section presents built-in types that will be used in the examples,
+The built-in types for the interface native to script side or viceversa are the following, 
 
 - ZetScript
 - bool
@@ -146,7 +146,7 @@ ZetScript comes with the following set of built-in types to be used as interface
 
 ==== ZetScript
 
-ZetScript instance usually used to give reference and perform operations in the current context. Due the big extension of the set of functions that ZetScript defines it will explain the most important (like <<ZetScript::eval>> already explained) along this document
+ZetScript instance usually used to give reference and perform operations in the current context. For more information see <<zetscript::ZetScript>> 
 
 ==== bool
 
@@ -154,7 +154,7 @@ Native C `bool` type. Possible vales are `true` or `false`
 
 ==== zs_int
 
-Integer data type it defines a integer variable with range from `-(2b-1)` to `2b-1-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits.
+Integer data type it defines a integer variable with range from `-(2b-1)` to `2b-1-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -185,7 +185,6 @@ _zs_string_ it defines a string represented a sequence of chars
 zetscript::zs_string s="Hello World";
 ----
 
-See <<zs_string>> for more information
 
 ==== StringScriptObject
 
@@ -199,7 +198,7 @@ zetscript::StringScriptObject str=zs.newStringScriptObject();
 str.set("Hello World");
 ----
 
-See <<StringScriptObject>> for more information
+See <<zetscript::StringScriptObject>> for more information
 
 
 ==== ArrayScriptObject
@@ -212,11 +211,11 @@ _ArrayScriptObject_ it defines a array script object that acts as a array contai
 ----
 zetscript::ArrayScriptObject array=zs.newArrayScriptObject();
 
-// push as integer value
+// push as integer 10 value
 object->push<zetscript::zs_int>(10)
 ----
 
-See <<ArrayScriptObject>> for more information
+See <<zetscript::ArrayScriptObject>> for more information
 
 
 ==== ObjectScriptObject
@@ -229,17 +228,178 @@ _ObjectScriptObject_ it defines a object script object that acts as a container 
 ----
 zetscript::ObjectScriptObject *object=zs.newObjectScriptObject();
 
-// add field "a" as int
+// add field "a" and 10 int as value
 object->set<zetscript::zs_int>("a",10)
 
 ----
 
-See <<ArrayScriptObject>> for more information
+See <<zetscript::ObjectScriptObject>> for more information
+
+==== FunctionObject
+
+_FunctionObject_ it defines a function object that contains function information.
 
 
-=== Calling C function from script side
+=== Calling native function from script side
+
+This section will explain the how to define and bind functions to call native function from script side.
+
+==== Bind native function
+
+To bind native function to be used as interface for script it has to be well defined. The definition of native function is a C function that always include `zetscript::ZetScript *` as first parameter and a maximmum of 9 parameters more as <<built-in types>> or custom types defined by the user.
+
+*Syntax*
+
+[source,c++]
+----
+ReturnType function_interface(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type8 _arg8, Type8 _arg9 ){
+	....
+}
+----
+
+Finally, after having the native function well defined, bind the function is done by calling `ZetScript::bindFunction` by passing the name of function and the native function
+
+[source,c++]
+----
+ZetScript::zetscript zs;
+zs.bindFunction("function_interface",function_interface);
+----
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function.cpp[]
+----
 
 
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_out.txt[]
+----
+
+==== Returning types
+
+A native function interface can define `void` to specify the returning of nothing, else the possible return types are the following,
+
+- zs_int
+- zs_float
+- zs_string
+- StringScriptObject
+- ArrayScriptObject
+- ObjectScriptObject
+- CustomType
+
+===== zs_int
+
+Defining _zs_int_ as type of return it defines a function that returns a integer value
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_int.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_int_out.txt[]
+----
+
+===== zs_float
+
+Defining _zs_float_ as type of return it defines a function that returns a float value
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_float.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_float_out.txt[]
+----
+
+===== zs_string
+
+Defining _zs_string_ as type of return it defines a function that returns a string value
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_string.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_zs_string_out.txt[]
+----
+
+
+===== StringScriptObject
+
+Defining _StringScriptObject_ as type of return it defines a function that returns a _String_ script object. The creation of _StringScriptObject_ it has be done with ZetScript context.
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_string_script_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_string_script_object_out.txt[]
+----
+
+===== ArrayScriptObject
+
+Defining _ArrayScriptObject_ as type of return it defines a function that returns a _Array_ script object. The creation of _ArrayScriptObject_ it has be done with ZetScript context.
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_array_script_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_array_script_object_out.txt[]
+----
+
+===== ObjectScriptObject
+
+Defining _ObjectScriptObject_ as type of return it defines a function that returns a _Object_ script object. The creation of _ObjectScriptObject_ it has be done with ZetScript context.
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_return_object_script_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_return_object_script_object_out.txt[]
+----
 
 === Calling script functions from c++
 
@@ -1712,25 +1872,44 @@ int main(){
 }
 
 
-=== Additional types and helper functions
+=== ZetScript types
 
-ZetScript includes a set of types and helper functions. This document will explain the relevant ones,
+ZetScript includes the following set of types,
 
-- zs_vector
-- zs_file
-- zs_dir
+- zs_int
+- zs_float
+- zs_string
+- StringStringObject
+- ArrayStringObject
+- ObjectStringObject
 - zs_datetime
 - zs_timespan
 - zs_buffer
-- zs_io
-- zs_path
-- zs_strutils
-- zs_rtti
-- zs_system
-
 - zs_vector
 
-==== zs_string
+==== zetscript::zs_int
+
+Integer data type it defines a integer variable with range from `-(2b-1)` to `2b-1-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_int i=10;
+----
+
+==== zetscript::zs_float
+
+_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
+
+*Example*
+
+[source,c++]
+----
+zetscript::zs_float f=20.5;
+----
+
+==== zetscript::zs_string
 
 ===== Member functions
 
@@ -1755,7 +1934,7 @@ ZetScript includes a set of types and helper functions. This document will expla
 ====== zs_string::c_str()
 ====== zs_string::~zs_string()
 
-==== zs_vector
+==== zetscript::zs_vector
 
 _zs_vector_ it defines a vector represented a sequence of elements for type template set
 
@@ -1784,3 +1963,19 @@ for(int i=0;i<10;i++){
 ===== zs_vector::data()
 ===== zs_vector::size()
 ===== zs_vector::~zs_vector()
+
+ 
+=== ZetScript helper functions
+
+ZetScript includes the following set of helper functions,
+
+- zs_file
+- zs_dir
+- zs_io
+- zs_path
+- zs_strutils
+- zs_rtti
+- zs_system
+
+
+

@@ -5,7 +5,7 @@ zetscript::zs_int add(zetscript::ZetScript *_zs, zetscript::zs_int  op1, zetscri
 	return op1+op2;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
 	zetscript::ZetScript zs;
 

@@ -1,5 +1,5 @@
 #include "zetscript.h"
-int main(int argc, char *argv[]){
+int main(){
 
 	zetscript::ZetScript zs;
 

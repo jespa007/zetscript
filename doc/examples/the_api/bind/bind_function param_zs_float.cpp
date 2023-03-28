@@ -8,7 +8,7 @@ void funParamFloat(ZetScript *_zs, zs_float *_number){
     printf("Number : %f\n",*_number);
 }
 
-int main(int argc, char *argv[]){
+int main(){
 	ZetScript zs;
 
     zs.bindFunction("funParamFloat",funParamFloat);

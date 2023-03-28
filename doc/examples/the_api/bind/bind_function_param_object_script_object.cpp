@@ -19,7 +19,7 @@ void funParamObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
     }
 }
 
-int main(int argc, char *argv[]){
+int main(){
 	ZetScript zs;
 
     zs.bindFunction("funParamObjectScriptObject",funParamObjectScriptObject);

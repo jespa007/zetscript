@@ -5,10 +5,10 @@ using zetscript::zs_int;
 
 // c function
 void funParamInt(ZetScript *_zs, zs_int _number){
-    printf("Number : %lu\n",_number);
+    printf("Number : %i\n",(int)_number);
 }
 
-int main(int argc, char *argv[]){
+int main(){
 	ZetScript zs;
 
     zs.bindFunction("funParamInt",funParamInt);
