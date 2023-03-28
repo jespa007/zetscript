@@ -9,8 +9,11 @@ using zetscript::ObjectScriptObject;
 
 // Definition of the native function interface returnObject
 ObjectScriptObject *returnObject(ZetScript *_zs){
+	// instance new ObjectScriptObject using ZetScript context
 	ObjectScriptObject *object=_zs->newObjectScriptObject();
-	//ArrayScriptObject *array=_zs->newArrayScriptObject();
+
+	// instance new ArrayScriptObject using ZetScript context
+	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
 	// set field "a" as integer 10
 	object->set<zs_int>("a",10);

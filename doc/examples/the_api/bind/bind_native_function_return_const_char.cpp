@@ -1,16 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringScriptObject;
 
 // Definition of the native function interface returnString
-StringScriptObject *returnString(ZetScript *_zs){
-	// instance new StringScriptObject using ZetScript context
-	StringScriptObject *sting=_zs->newStringScriptObject();
-
-    string->set("Hello world (StringScriptObject)");
-
-    return string;
+const char * returnString(ZetScript *_zs){
+    return "Hello world (const char *)";
 }
 
 int main(){
@@ -26,3 +20,4 @@ int main(){
 
     return 0;
 }
+

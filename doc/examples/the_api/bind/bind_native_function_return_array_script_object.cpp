@@ -9,6 +9,8 @@ using zetscript::zs_string;
 
 // Definition of the native function interface returnArray
 ArrayScriptObject *returnArray(ZetScript *_zs){
+
+	// instance new ArrayScriptObject using ZetScript context
 	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
 
