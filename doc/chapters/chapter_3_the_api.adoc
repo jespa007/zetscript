@@ -594,6 +594,60 @@ Out:
 include::../examples/the_api/bind/bind_native_function_param_string_script_object_out.txt[]
 ----
 
+===== Array
+
+To bind a function that requires a _array_ script object type as parameter it needs to define a _ArrayScriptObject_ pointer (i.e _ArrayScriptObject *_ )
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_param_array_script_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_param_array_script_object_out.txt[]
+----
+
+===== Object
+
+To bind a function that requires a _object_ script object type as parameter it needs to define a _ObjectScriptObject_ pointer (i.e _ObjectScriptObject *_ )
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_param_object_script_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_param_object_script_object_out.txt[]
+----
+
+===== Custom type
+
+To bind a function that requires a _custom type_ object type as parameter it has to binfneeds to be binded before _ObjectScriptObject_ pointer (i.e _ObjectScriptObject *_ )
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind/bind_native_function_param_custom_type_object.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bind_native_function_param_custom_type_object_out.txt[]
+----
+
 === Calling script functions from c++
 
 ==== bind script function 

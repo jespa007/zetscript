@@ -9,12 +9,12 @@ using zetscript::zs_map;
 // c function expects an array of integers and floats
 void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 	printf("Values in object:\n");
-	zs_map *map=_object->getMapFields();
-	for(auto it=map->begin(); !it.end();it.next()){
+	auto keys=_object->getKeys();
+	for(size_t i=0; keys.size();i++){
         printf(
 			"Key: '%s' => Value: %i\n"
-			,it.key
-			,(int)_object->get<zs_int>(it.key)
+			,keys.get(i).c_str()
+			,(int)_object->get<zs_int>(keys.get(i))
 		);
     }
 }

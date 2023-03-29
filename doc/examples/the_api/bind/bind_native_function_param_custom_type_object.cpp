@@ -1,42 +1,95 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ObjectScriptObject;
 using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::zs_map;
 
-// c function expects an array of integers and floats
-void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
-	printf("Values in object:\n");
-	zs_map *map=_object->getMapFields();
-	for(auto it=map->begin(); !it.end();it.next()){
-        printf(
-			"Key: '%s' => Value: %i\n"
-			,it.key
-			,(int)_object->get<zs_int>(it.key)
-		);
-    }
+// C structure to be binded
+struct Point{
+	int x,y;
+
+	Point(){
+		x=0;
+		y=0;
+	}
+};
+
+//------------------------------
+// WRAP POINT
+
+// defines new function for Point object
+Point *PointWrap_new(ZetScript *_zs){
+	return new  Point();
+}
+
+// defines setter property interface for Point::x
+void PointWrap_set_x(ZetScript *_zs, Point *_this, zs_int _x){
+	_this->x=_x;
+}
+
+// defines setter property interface for Point::y
+void PointWrap_set_y(ZetScript *_zs, Point *_this, zs_int _y){
+	_this->y=_y;
+}
+
+// defines getter property interface for Point::x
+zs_int PointWrap_get_x(ZetScript *_zs, Point *_this){
+	return _this->x;
+}
+
+// defines getter property interface for Point::y
+zs_int PointWrap_get_y(ZetScript *_zs, Point *_this){
+	return _this->y;
+}
+
+// defines delete function for Point object
+void PointWrap_delete(ZetScript *_zs, Point *_this){
+	delete _this;
+}
+
+// WRAP POINT
+//------------------------------
+
+// Definition of the native function interface returnPoint
+void mulPoint(ZetScript *_zs, Point *_point, zs_int _mul){
+	// define class script object
+	
+	// initialize x and y
+	_point->x*=_mul;
+	_point->y*=_mul;
+
 }
 
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramObjectScriptObject",paramObjectScriptObject);
+	// bind type Point
+	zs.bindType<Point>("Point",PointWrap_new,PointWrap_delete);
 
-    // call c function with string param
+
+	// bind property setter Point::x
+	zs.bindMemberPropertySetter<Point>("x",PointWrap_set_x);
+
+	// bind property setter Point::y
+	zs.bindMemberPropertySetter<Point>("y",PointWrap_set_y);    
+
+	// bind property getter Point::x
+	zs.bindMemberPropertyGetter<Point>("x",PointWrap_get_x);
+
+	// bind property getter Point::y
+	zs.bindMemberPropertyGetter<Point>("y",PointWrap_get_y);
+
+	// bind native function mulPoint named as 'mulPoint'
+    zs.bindFunction("mulPoint",mulPoint);
+
+    // Eval script that calls native function 'mulPoint'
     zs.eval(
-        "paramObjectScriptObject({"
-        "    a:0"
-        "     ,b:1"
-        "     ,c:2"
-        "     ,d:3"
-        "     ,e:4"
-
-        "});"
+        "var point=new Point();\n"
+        "point.x=10;\n"
+        "point.y=20;\n"
+        "Console::outln(\"before : \"+point);\n"
+        "mulPoint(point,5)\n"
+        "Console::outln(\"after : \"+point);"
  	);
 
-
- 	return 0;
+    return 0;
 }
-
