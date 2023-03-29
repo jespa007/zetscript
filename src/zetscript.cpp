@@ -647,7 +647,7 @@ namespace zetscript{
 							*((zs_string *)_ptr_var)=*(((StringScriptObject *)script_object)->str_ptr);
 							return true;
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(zs_int)(((zs_string *)(((StringScriptObject *)script_object)))->c_str());
+							val_ret=(zs_int)(((StringScriptObject *)script_object)->getConstChar());
 						}else{
 							_error="cannot convert '"
 									+zs_rtti::demangle((k_str_zs_string_type_ptr))

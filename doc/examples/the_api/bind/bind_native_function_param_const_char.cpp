@@ -5,7 +5,7 @@ using zetscript::ZetScript;
 
 // c function
 void paramString(ZetScript *_zs, const char *_string){
-    printf("Result : %s (const char *)\n",*_string);
+    printf("Result : %s (const char *)\n",_string);
 }
 
 int main(){
