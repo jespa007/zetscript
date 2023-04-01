@@ -10,7 +10,7 @@ using zetscript::zs_map;
 void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 	printf("Values in object:\n");
 	auto keys=_object->getKeys();
-	for(size_t i=0; keys.size();i++){
+	for(int i=0; i < keys.size();i++){
         printf(
 			"Key: '%s' => Value: %i\n"
 			,keys.get(i).c_str()

@@ -5,7 +5,7 @@ using zetscript::zs_int;
 
 // c function
 void paramInt(ZetScript *_zs, zs_int _number){
-    printf("Result : %i\n",(int)_number);
+    printf("Result : %ld\n",_number);
 }
 
 int main(){

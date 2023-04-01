@@ -131,7 +131,7 @@ Apart there's a description per instruction with the following columns,
 - *AS*: Acumulated Stack in the current instruction
 - *INSTRUCTION*: Byte code and operands if it needs
 
-=== Built-in types for native-script interface
+=== Built-in types
 
 The native built-in types supported for native to script side or viceversa are the following, 
 
@@ -139,6 +139,7 @@ The native built-in types supported for native to script side or viceversa are t
 - bool
 - zs_int
 - zs_float 
+- const char *
 - zs_string
 - StringScriptObject
 - ArrayScriptObject
@@ -154,7 +155,7 @@ Native C `bool` type. Possible vales are `true` or `false`
 
 ==== zs_int
 
-Integer data type it defines a integer variable with range from `-(2b-1)` to `2b-1-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from `-(2^b-1^)` to `2^b-1^-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -172,6 +173,17 @@ _zs_float_ type it defines a float variable represented as IEEE-754 floating poi
 [source,c++]
 ----
 zetscript::zs_float f=20.5;
+----
+
+==== const char *
+
+_const char *_ it defines a string represented a sequence of chars
+
+*Example*
+
+[source,c++]
+----
+const char * s="Hello World";
 ----
 
 ==== zs_string
@@ -238,13 +250,11 @@ See <<zetscript::ObjectScriptObject>> for more information
 _FunctionObject_ it defines a function object that contains function information.
 
 
-=== Call native function from script side
+=== Bind native function
 
-This section will explain the how to define and bind native function (functions in the C++ side) to be callable from script side.
+This section will explain the how to define and bind a native function as function interface to be called from script side.
 
-==== Define native function
-
-A native function is defined as C function and always includes `zetscript::ZetScript *` as first parameter that ZetScript pointer (i.e ZetScript *) and   until 9 parameters as <<built-in types>> or custom type defined by the user.
+The native function to bind is defined as C function and always includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as <<built-in types>> or custom types.
 
 *Syntax*
 
@@ -255,7 +265,7 @@ ReturnType native_function(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, 
 }
 ----
 
-After having the native function defined, it has to be binded through `ZetScript::bindFunction` by passing the name of function and the native function
+After having the native function defined, it binds through `ZetScript::bindFunction` function by passing the name of function and the native function reference.
 
 [source,c++]
 ----
@@ -265,9 +275,11 @@ zs.bindFunction("native_function",native_function);
 
 *Example*
 
+The following example it binds a native function called "sayHelloWorld" without arguments and return value.
+
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function.cpp[]
 ----
 
 
@@ -275,12 +287,12 @@ Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_out.txt[]
 ----
 
 ==== Return types
 
-In the definition of native function can returns `void` to specify that the function will return nothing. In other case, the possible return types are the following,
+In the next sections will explain which kind of types return the following values,
 
 - Boolean
 - Integer
@@ -292,62 +304,62 @@ In the definition of native function can returns `void` to specify that the func
 
 ===== Boolean
 
-A native function that returns a _Boolean_ value it has to be defined _bool_ as its returning type.
+A native function that returns a _boolean_ value must define return type as _bool_.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_bool.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_bool_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_bool_out.txt[]
 ----
 
 
 ===== Integer
 
-A native function that returns a _Integer_ value it has to be defined _zs_int_ as its returning type.
+A native function that returns a _integer_ value must define return type as _zs_int_.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_int.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_int_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_int_out.txt[]
 ----
 
 ===== Float
 
-A native function that returns a _Float_ value it has to be defined _zs_float_ as its returning type.
+A native function that returns a _float_ value must define return type as  _zs_float_.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_float.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_float_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_float_out.txt[]
 ----
 
 ===== String
 
-A native function that returns a _String_ value it can be defined by the following types:
+A native function that returns a _string_ value can be defined by the following types:
 
 - String as _const char *
 - String as _zs_string_
@@ -355,116 +367,121 @@ A native function that returns a _String_ value it can be defined by the followi
 
 ====== String as const char *
 
-A native function that returns a _String_ value it can be defined _const char *_ as its returning type.
+A native function that returns a _string_ value can define return type as _const char *_.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_const_char.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_const_char_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_const_char_out.txt[]
 ----
 
 ====== String as zs_string
 
-A native function that returns a _String_ value it can be defined _zs_string_ as its returning type.
+A native function that returns a _string_ value can define return type as _zs_string_.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_string.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_zs_string_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_zs_string_out.txt[]
 ----
 
 ====== String as StringScriptObject *
 
-A native function that returns a _String_ value it can be defined _StringScriptObject *_ as its returning type. The creation of _StringScriptObject_ it's done with usign _ZetScript_ context.
+A native function that returns a _string_ value can define return type as _StringScriptObject *_. The instantiation of _StringScriptObject_ it's done throught _ZetScript::newStringScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_string_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_string_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_string_script_object_out.txt[]
 ----
 
 ===== Array
 
-A native function that returns a _Array_ script object value it has to be defined _ArrayScriptObject *_ as its returning type. The creation of _ArrayScriptObject_ it's done through _ZetScript::newStringScriptObject_ usign _ZetScript_ context.
+A native function that returns a _array_ script object value must define return _ArrayScriptObject *_. The instantiation of _ArrayScriptObject_ it's done through _ZetScript::newArrayScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_array_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_array_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_array_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_array_script_object_out.txt[]
 ----
 
 ===== Object
 
-A native function that returns a _Object_ script object value it has to be defined _ObjectScriptObject *_ as its returning type. The creation of _ObjectScriptObject_ it's done through _ZetScript::newArrayScriptObject_ usign _ZetScript_ context.
+A native function that returns a _object_ script object value must define return _ObjectScriptObject *_. The instantiation of _ObjectScriptObject_ it's done through _ZetScript::newObjectScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_object_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_object_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_object_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_object_script_object_out.txt[]
 ----
 
 
 ===== Custom type
 
-A native function that returns a custom type value it has to be defined _ClassScriptObject *_ as its returning type. The creation of _ClassScriptObject_ it's done through _ZetScript::newClassScriptObject_ usign _ZetScript_ context. The creation _ClassScriptObject_ also it needs to have custom C/C++ type already binded (see <<bind types>> section) 
+A native function that returns a custom type value must define return type as _ClassScriptObject *_. The instantiation and setup of _ClassScriptObject_ it's done through these steps:
+
+ . The custom type must to be binded through <<ZetScript::bindType>>.
+ . The custom type must to be instanced whithin native function.
+ . Finally it instantiates _newClassScriptObject_ through _ZetScript::newClassScriptObject_ using _ZetScript *_ context passing instantiated custom type by parameter.
+
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_return_class_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_class_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_return_class_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_return_class_script_object_out.txt[]
 ----
 
 ==== Parameter types
 
-To bind a native function into the script context, always it has to define a `zetscript::ZetScript *` as first parameter and then it can define until 9 parameters as <<built-in types>> or custom types defined by the user. Possible argument types are the following,
+A native function to be binded always defines `zetscript::ZetScript *` as first parameter type and then it can define until 9 parameters as one of <<built-in types>> or custom types defined by user. In the next sections will explain which argument types accepts the following values,
 
 - Boolean
 - Integer
@@ -477,61 +494,61 @@ To bind a native function into the script context, always it has to define a `ze
 
 ===== Boolean
 
-A native function that accepts a _boolean_ value as argument is defined as _bool *_ parameter type.
+A native function that accepts an input _boolean_ value must define _bool *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_bool.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_bool_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_bool_out.txt[]
 ----
 
 ===== Integer
 
-A native function that accepts an _Integer_ value as argument is defined as _zs_int_ or _zs_int *_ parameter type.
+A native function that accepts an input _integer_ value must define _zs_int_ or _zs_int *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_int.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_int_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_int_out.txt[]
 ----
 
 ===== Float
 
-A native function that accepts a _Float_ value as argument is defined as _zs_float *_ parameter type.
+A native function that accepts an input _float_ value must define _zs_float *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_float.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_float_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_float_out.txt[]
 ----
 
 ===== String
 
-A native function that accepts a _String_ value as argument it can be defined as the following types:
+A native function that accepts a _string_ value as argument can be defined by the following types:
 
 - String as const char *
 - String as zs_string *
@@ -539,159 +556,199 @@ A native function that accepts a _String_ value as argument it can be defined as
 
 ===== String as const char *
 
-A native function that accepts a _String_ value as argument it can be defined as _const char *_ parameter type.
+A native function that accepts an input _string_ value can be defined   _const char *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_const_char.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_const_char_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_const_char_out.txt[]
 ----
 
 ===== String as zs_string *
 
-A native function that accepts a _String_ value as argument it can be defined as _zs_string *_ parameter type.
+A native function that accepts an input _string_ value can be defined   _zs_string *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_string.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_zs_string_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_zs_string_out.txt[]
 ----
 
 ===== String as StringScriptObject *
 
-A native function that accepts a _String_ value as argument it can be defined as _StringScriptObject *_ parameter type.
+A native function that accepts an input _string_ value can define  _StringScriptObject *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_string_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_string_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_string_script_object_out.txt[]
 ----
 
 ===== Array
 
-A native function that accepts a _Array_ value as argument is defined as _ArrayScriptObject *_ parameter type.
+A native function that accepts _array_ value as input must define _ArrayScriptObject *_ as the parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_array_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_array_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_array_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_array_script_object_out.txt[]
 ----
 
 ===== Object
 
-A native function that accepts a Object_ value as argument is defined as _ObjectScriptObject *_ parameter type.
+A native function that accepts _object_ value as input must define _ObjectScriptObject *_ as the parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_object_script_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_object_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_object_script_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_object_script_object_out.txt[]
 ----
 
 ===== Custom type
 
-A native function that accepts a custom type value as argument is defined by the custom type pointer parameter type.
+A native function that accepts a custom type value as argument is defined by the custom type pointer parameter type. The custom type must to be binded before through <<ZetScript::bindType>>.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_native_function_param_custom_type_object.cpp[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_custom_type_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_native_function_param_custom_type_object_out.txt[]
+include::../examples/the_api/bind_native_function/bind_native_function_param_custom_type_object_out.txt[]
 ----
 
-=== Calling script functions from c++
+=== Bind script function
 
-==== bind script function 
+This section will explain the how to create a function interface to call a script function from C++ side.
 
-To bind a script function is done through _bindFunction_
+When a script function is evaluated through `ZetScript::eval` or  `ZetScript::evalFile`, it can bind that script function through _ZetScript::bindFunction_ that defines a function signature with types defined in one of <<built-in types>> or other binded type by template and the name of script function by parameter.
 
 *Syntax*
 
+[source,c++]
+----
+ ZetScript::bindFunction<ReturnType(Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 )>("name_script_function")
+----
+
+Note that a difference with `ZetScript::bindFunction` `ZetScript::bindScriptFunction` doesn't needs to have _ZetScript *_ defined as first parameter.
+
+*Example*
+
+The following example shows the binding of a script function without parameters and no return
+
+[source,c++]
+----
+include::../examples/the_api/bind_script_function/bind_script_function.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_out.txt[]
+----
+
+==== Return types
+
+===== Boolean
+
+A script function that returns a _boolean_ value it must bind with a function signature that returns _bool_.
+
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_int.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_int_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_bool_out.txt[]
 ----
 
-Also add function could be used as a function that accepts two floating values and returns a floating value,
+===== Integer
+
+A script function that returns an _integer_ it must bind with a function signature that returns _zs_int_.
+
+*Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_float.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_float_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int_out.txt[]
 ----
+
+===== Float
+
+A script function that returns an _float_ it must bind with a function signature that returns _zs_float_.
+
+*Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_string.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bind_script_function_zs_string_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_float_out.txt[]
 ----
+
 
 ==== bind member function from instanced global object
 
@@ -715,7 +772,7 @@ include::../examples/the_api/bind/bin_object_script_function_out.txt[]
 
 === Bind function
 
-To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are built-in types or types binded by the user. 
+To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are <<built-in types>> or types binded by the user. 
 
 Example,
 
