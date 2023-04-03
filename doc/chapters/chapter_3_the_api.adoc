@@ -134,36 +134,39 @@ Apart there's a description per instruction with the following columns,
 To know more about the meaning of byte codes see section <<Byte codes>>
 
 
-=== Bind native function
+=== Bind function
 
-This section will explain the how to define and bind a native function as function interface to be called from script side.
+This section will explain the how to define and bind native function (or also called wrapper function) to be callable from script side.
 
-The native function to bind is defined as C function and always includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or custom types.
+The wrapper function has the following constraints:
+
+- It can returns nothing, some type from <<Built-in types>> or other binded type.
+- As parameters always includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other binded type.
 
 *Syntax*
 
 [source,c++]
 ----
-ReturnType native_function(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
+ReturnType wrapper_function(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
 	....
 }
 ----
 
-After having the native function defined, it binds through `ZetScript::bindFunction` function by passing the name of function and the native function reference.
+After having the wrapper function defined, it can be binded by calling `ZetScript::bindFunction` passing the name of function and the wrapper function reference.
 
 [source,c++]
 ----
 ZetScript::zetscript zs;
-zs.bindFunction("native_function",native_function);
+zs.bindFunction("wrapper_function",wrapper_function);
 ----
 
 *Example*
 
-The following example it binds a native function called "sayHelloWorld" without arguments and return value.
+The following example it binds a wrapper function called "sayHelloWorld" without arguments and without any return.
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function.cpp[]
 ----
 
 
@@ -171,12 +174,12 @@ Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_out.txt[]
 ----
 
 ==== Return types
 
-In the next sections will explain which kind of types return the following values,
+In the next sections will explain which return type has to has wrapper function to returns the following type of values:
 
 - Boolean
 - Integer
@@ -188,20 +191,20 @@ In the next sections will explain which kind of types return the following value
 
 ===== Boolean
 
-To create binding of a native function that returns a _boolean_ value to script side must define return type as _bool_.
+To bind wrapper function that returns a _boolean_ value to script side it must return _bool_ type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_bool.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_bool_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_bool_out.txt[]
 ----
 
 
@@ -213,14 +216,14 @@ A native function that returns a _integer_ value must define return type as _<<z
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_int.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_int_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_int_out.txt[]
 ----
 
 ===== Float
@@ -231,14 +234,14 @@ A native function that returns a _float_ value must define return type as  _zs_f
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_float.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_float_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_float_out.txt[]
 ----
 
 ===== String
@@ -257,14 +260,14 @@ A native function that returns a _string_ value can define return type as _const
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_const_char.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_const_char_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_const_char_out.txt[]
 ----
 
 ====== String as zs_string
@@ -275,14 +278,14 @@ A native function that returns a _string_ value can define return type as _zs_st
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_string.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_zs_string_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_zs_string_out.txt[]
 ----
 
 ====== String as StringScriptObject *
@@ -293,14 +296,14 @@ A native function that returns a _string_ value can define return type as _Strin
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_string_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_string_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_string_script_object_out.txt[]
 ----
 
 ===== Array
@@ -311,14 +314,14 @@ A native function that returns a _array_ script object value must define return 
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_array_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_array_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_array_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_array_script_object_out.txt[]
 ----
 
 ===== Object
@@ -329,14 +332,14 @@ A native function that returns a _object_ script object value must define return
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_object_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_object_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_object_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_object_script_object_out.txt[]
 ----
 
 
@@ -353,14 +356,14 @@ A native function that returns a custom type value must define return type as _C
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_class_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_class_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_return_class_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_return_class_script_object_out.txt[]
 ----
 
 ==== Parameter types
@@ -384,14 +387,14 @@ A native function that accepts an input _boolean_ value must define _bool *_ as 
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_bool.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_bool_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_bool_out.txt[]
 ----
 
 ===== Integer
@@ -402,14 +405,14 @@ A native function that accepts an input _integer_ value must define _zs_int_ or 
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_int.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_int_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_int_out.txt[]
 ----
 
 ===== Float
@@ -420,14 +423,14 @@ A native function that accepts an input _float_ value must define _zs_float *_ a
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_float.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_float_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_float_out.txt[]
 ----
 
 ===== String
@@ -446,14 +449,14 @@ A native function that accepts an input _string_ value can be defined   _const c
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_const_char.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_const_char_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_const_char_out.txt[]
 ----
 
 ===== String as zs_string *
@@ -464,14 +467,14 @@ A native function that accepts an input _string_ value can be defined   _zs_stri
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_string.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_zs_string_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_zs_string_out.txt[]
 ----
 
 ===== String as StringScriptObject *
@@ -482,14 +485,14 @@ A native function that accepts an input _string_ value can define  _StringScript
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_string_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_string_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_string_script_object_out.txt[]
 ----
 
 ===== Array
@@ -500,14 +503,14 @@ A native function that accepts _array_ value as input must define _ArrayScriptOb
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_array_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_array_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_array_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_array_script_object_out.txt[]
 ----
 
 ===== Object
@@ -518,14 +521,14 @@ A native function that accepts _object_ value as input must define _ObjectScript
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_object_script_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_object_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_object_script_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_object_script_object_out.txt[]
 ----
 
 ===== Custom type
@@ -536,14 +539,14 @@ A native function that accepts a custom type value as argument is defined by the
 
 [source,c++]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_custom_type_object.cpp[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_custom_type_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_native_function/bind_native_function_param_custom_type_object_out.txt[]
+include::../examples/the_api/bind_wrapper_function/bind_wrapper_function_param_custom_type_object_out.txt[]
 ----
 
 === Bind script function
