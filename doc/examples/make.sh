@@ -37,7 +37,6 @@ do
 	for j in $dir_zs
 	do
 		base_file="$(basename $j .zs)"
-		echo file:$base_file
 		cp "the_api/"$i"/"$base_file".zs" "the_api/build/"$base_file".zs"
 	done
 
