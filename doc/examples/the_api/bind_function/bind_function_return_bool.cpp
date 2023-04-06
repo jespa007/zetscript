@@ -11,7 +11,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnBoolean named as 'returnBoolean'
-    zs.bindFunction("returnBoolean",returnBoolean);
+    zs.registerFunction("returnBoolean",returnBoolean);
 
     // Eval script that calls native function 'returnBoolean'
     zs.eval(

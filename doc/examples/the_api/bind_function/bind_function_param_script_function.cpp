@@ -16,7 +16,7 @@ void paramScriptFunction(ZetScript *_zs, ScriptFunction *_script_function){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramScriptFunction",paramScriptFunction);
+    zs.registerFunction("paramScriptFunction",paramScriptFunction);
 
     // call c function with string param
     zs.eval(

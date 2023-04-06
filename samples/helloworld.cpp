@@ -16,7 +16,7 @@ int main(){
 	zetscript::ZetScript zs;
 
 	// Binds 'say_helloworld' function to be accessible from script
-	zs.bindFunction("say_helloworld",say_helloworld);
+	zs.registerFunction("say_helloworld",say_helloworld);
 
 	 // Prints 'Hello World from script!'
 	zs.eval("Console::outln(\"Hello World from script!\")");

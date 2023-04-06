@@ -11,7 +11,7 @@ void funParamFloat(ZetScript *_zs, zs_float *_number){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("funParamFloat",funParamFloat);
+    zs.registerFunction("funParamFloat",funParamFloat);
 
     // call c function 
     zs.eval(

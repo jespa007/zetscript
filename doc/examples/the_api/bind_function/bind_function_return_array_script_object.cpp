@@ -33,7 +33,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnArray named as 'returnArray'
-    zs.bindFunction("returnArray",returnArray);
+    zs.registerFunction("returnArray",returnArray);
 
     // Eval script that calls native function 'returnArray'
     zs.eval(

@@ -162,7 +162,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void bindStaticMemberPropertyGetter(
+		void registerStaticMemberPropertyGetter(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file=""
@@ -171,7 +171,7 @@ namespace zetscript{
 
 
 		template <typename F>
-		void bindStaticMemberFunction(
+		void registerStaticMemberFunction(
 			const zs_string & _function_name
 			,F _function_ptr
 			, const char *_registered_file=""
@@ -179,7 +179,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void bindMemberFunction(
+		void registerMemberFunction(
 			const zs_string & _function_name
 			,F _function_type
 			, const char *_registered_file=""

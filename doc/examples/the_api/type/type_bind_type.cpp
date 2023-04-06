@@ -10,7 +10,7 @@ int main(){
 
 	zetscript::ZetScript zs;
 
-	zs.bindType<MyType>("MyType");
+	zs.registerClass<MyType>("MyType");
 
 };
 

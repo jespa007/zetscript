@@ -11,7 +11,7 @@ void paramInt(ZetScript *_zs, zs_int _number){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramInt",paramInt);
+    zs.registerFunction("paramInt",paramInt);
 
     // call c function with int param
     zs.eval(

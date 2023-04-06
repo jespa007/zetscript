@@ -41,11 +41,11 @@ int main(){
 
 
  	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.bindType<MyClass>("MyClass");
+ 	zs.registerClass<MyClass>("MyClass");
 
- 	zs.bindFunction("getMyClass",MyClassPtrWrap_getMyClassPtr);
+ 	zs.registerFunction("getMyClass",MyClassPtrWrap_getMyClassPtr);
 
- 	zs.bindMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
+ 	zs.registerMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
 
 	// It throws an error that MyClass is not instanciable because is static
  	zs.eval(

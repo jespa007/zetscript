@@ -42,7 +42,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnObject named as 'returnObject'
-    zs.bindFunction("returnObject",returnObject);
+    zs.registerFunction("returnObject",returnObject);
 
     // Eval script that calls native function 'returnObject'
     zs.eval(

@@ -44,79 +44,79 @@ namespace zetscript{
 		// Math mod
 		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
-		cl->bindStaticMemberPropertyGetter("PI",MathModule_PI);
-		cl->bindStaticMemberFunction("sin",MathModule_sin);
-		cl->bindStaticMemberFunction("cos",MathModule_cos);
-		cl->bindStaticMemberFunction("abs",MathModule_abs);
-		cl->bindStaticMemberFunction("pow",MathModule_pow);
-		cl->bindStaticMemberFunction("degToRad",MathModule_degToRad);
-		cl->bindStaticMemberFunction("random",MathModule_random);
-		cl->bindStaticMemberFunction("max",MathModule_max);
-		cl->bindStaticMemberFunction("min",MathModule_min);
-		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
-		cl->bindStaticMemberFunction("floor",MathModule_floor);
-		cl->bindStaticMemberFunction("ceil",MathModule_ceil);
-		cl->bindStaticMemberFunction("round",MathModule_round);
+		cl->registerStaticMemberPropertyGetter("PI",MathModule_PI);
+		cl->registerStaticMemberFunction("sin",MathModule_sin);
+		cl->registerStaticMemberFunction("cos",MathModule_cos);
+		cl->registerStaticMemberFunction("abs",MathModule_abs);
+		cl->registerStaticMemberFunction("pow",MathModule_pow);
+		cl->registerStaticMemberFunction("degToRad",MathModule_degToRad);
+		cl->registerStaticMemberFunction("random",MathModule_random);
+		cl->registerStaticMemberFunction("max",MathModule_max);
+		cl->registerStaticMemberFunction("min",MathModule_min);
+		cl->registerStaticMemberFunction("sqrt",MathModule_sqrt);
+		cl->registerStaticMemberFunction("floor",MathModule_floor);
+		cl->registerStaticMemberFunction("ceil",MathModule_ceil);
+		cl->registerStaticMemberFunction("round",MathModule_round);
 
 		// Console mod
 		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindStaticMemberFunction("readChar",ConsoleModule_readChar);
-		cl->bindStaticMemberFunction("outNative",ConsoleModule_out);
-		cl->bindStaticMemberFunction("outlnNative",ConsoleModule_outln);
-		cl->bindStaticMemberFunction("errorNative",ConsoleModule_error);
-		cl->bindStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
+		cl->registerStaticMemberFunction("readChar",ConsoleModule_readChar);
+		cl->registerStaticMemberFunction("outNative",ConsoleModule_out);
+		cl->registerStaticMemberFunction("outlnNative",ConsoleModule_outln);
+		cl->registerStaticMemberFunction("errorNative",ConsoleModule_error);
+		cl->registerStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
 		cl=script_type_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindStaticMemberFunction("clock",SystemModule_clock);
-		cl->bindStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
-		cl->bindStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
-		//cl->bindStaticMemberFunction("assertNative",SystemModule_assert);
-		cl->bindStaticMemberFunction("errorNative",SystemModule_error);
+		cl->registerStaticMemberFunction("clock",SystemModule_clock);
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
+		//cl->registerStaticMemberFunction("assertNative",SystemModule_assert);
+		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
 		cl=script_type_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
-		cl->bindStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
-		cl->bindStaticMemberFunction("deserialize",JsonModule_deserialize);
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan
-		cl=bindType<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
-		bindMemberPropertyGetter<zs_timespan>("days",TimeSpanModule_get_days);
-		bindMemberPropertyGetter<zs_timespan>("hour",TimeSpanModule_get_hours);
-		bindMemberPropertyGetter<zs_timespan>("minute",TimeSpanModule_get_minutes);
-		bindMemberPropertyGetter<zs_timespan>("second",TimeSpanModule_get_seconds);
+		cl=registerClass<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
+		registerMemberPropertyGetter<zs_timespan>("days",TimeSpanModule_get_days);
+		registerMemberPropertyGetter<zs_timespan>("hour",TimeSpanModule_get_hours);
+		registerMemberPropertyGetter<zs_timespan>("minute",TimeSpanModule_get_minutes);
+		registerMemberPropertyGetter<zs_timespan>("second",TimeSpanModule_get_seconds);
 
 		//---------------------------------------------
 		// DateTime
-		cl=bindType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
-		bindConstructor<zs_datetime>(DateTimeModule_constructor);
+		cl=registerClass<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
+		registerConstructor<zs_datetime>(DateTimeModule_constructor);
 		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);*/
-		bindStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);
+		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);
 
-		bindMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
+		registerMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
 
-		bindMemberFunction<zs_datetime>("addSeconds",DateTimeModule_addSeconds);
-		bindMemberFunction<zs_datetime>("addMinutes",DateTimeModule_addMinutes);
-		bindMemberFunction<zs_datetime>("addHours",DateTimeModule_addHours);
-		bindMemberFunction<zs_datetime>("addDays",DateTimeModule_addDays);
-		bindMemberFunction<zs_datetime>("addMonths",DateTimeModule_addMonths);
-		bindMemberFunction<zs_datetime>("addYears",DateTimeModule_addYears);
+		registerMemberFunction<zs_datetime>("addSeconds",DateTimeModule_addSeconds);
+		registerMemberFunction<zs_datetime>("addMinutes",DateTimeModule_addMinutes);
+		registerMemberFunction<zs_datetime>("addHours",DateTimeModule_addHours);
+		registerMemberFunction<zs_datetime>("addDays",DateTimeModule_addDays);
+		registerMemberFunction<zs_datetime>("addMonths",DateTimeModule_addMonths);
+		registerMemberFunction<zs_datetime>("addYears",DateTimeModule_addYears);
 
 		// metamethods...
-		bindMemberFunction<zs_datetime>("_tostring",DateTimeModule_tostring);
+		registerMemberFunction<zs_datetime>("_tostring",DateTimeModule_tostring);
 
-		bindMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
-		bindMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
-		bindMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
+		registerMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
+		registerMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
+		registerMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
 
-		bindMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
-		bindMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
-		bindMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
+		registerMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
+		registerMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
+		registerMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
 
-		bindMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
-		bindMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
-		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
+		registerMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
+		registerMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
+		registerMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 
 		// Custom user function or classes

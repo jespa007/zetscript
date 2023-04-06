@@ -22,7 +22,7 @@ void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramObjectScriptObject",paramObjectScriptObject);
+    zs.registerFunction("paramObjectScriptObject",paramObjectScriptObject);
 
     // eval and call bind function
     zs.eval(

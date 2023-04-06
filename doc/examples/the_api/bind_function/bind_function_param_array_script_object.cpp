@@ -19,7 +19,7 @@ void paramArrayScriptObject(ZetScript *_zs, ArrayScriptObject *_array){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramArrayScriptObject",paramArrayScriptObject);
+    zs.registerFunction("paramArrayScriptObject",paramArrayScriptObject);
 
     // call c function with string param
     zs.eval(

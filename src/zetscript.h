@@ -235,50 +235,50 @@ namespace zetscript{
 			}
 		 }*/
 
-		void bindConstantVariable(const zs_string & _var_name, int value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, int value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
-		void bindConstantVariable(const zs_string & _var_name, bool value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, bool value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
-		void bindConstantVariable(const zs_string & _var_name, float value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, float value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
-		void bindConstantVariable(const zs_string & _var_name, double value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, double value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,(float)value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,(float)value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
 
-		void bindConstantVariable(const zs_string & _var_name, const zs_string & value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, const zs_string & value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
-		void bindConstantVariable(const zs_string & _var_name, const char *value, const char *_registered_file="", short _registered_line=-1){
+		void registerConstant(const zs_string & _var_name, const char *value, const char *_registered_file="", short _registered_line=-1){
 			try{
-				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
@@ -289,9 +289,9 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		ScriptType * bindType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
+		ScriptType * registerClass(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
 			try{
-				return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
+				return script_type_factory->registerClass<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.getDescription());
 				return NULL;
@@ -302,9 +302,9 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void bindFunction( const zs_string & _name_script_function,F ptr_function, const char *_registered_file="",short _registered_line=-1){
+		void registerFunction( const zs_string & _name_script_function,F ptr_function, const char *_registered_file="",short _registered_line=-1){
 			try{
-				script_type_factory->bindFunction( _name_script_function,ptr_function, _registered_file,_registered_line);
+				script_type_factory->registerFunction( _name_script_function,ptr_function, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\")': %s",__func__,_name_script_function.c_str(),_ex.getDescription());
 			}
@@ -316,13 +316,13 @@ namespace zetscript{
 		}
 
 		template<typename C,typename F>
-		void bindConstructor(
+		void registerConstructor(
 				 F function_type
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindConstructor<C>(function_type, _registered_file,_registered_line );
+				script_type_factory->registerConstructor<C>(function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(...)': %s"
@@ -334,14 +334,14 @@ namespace zetscript{
 		}
 
 		template <typename C, typename R>
-		void bindStaticConstMember(
+		void registerMemberConstant(
 				const zs_string & _var_name
 				, const R _var_pointer
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindStaticConstMember<C>(_var_name,_var_pointer, _registered_file,_registered_line );
+				script_type_factory->registerMemberConstant<C>(_var_name,_var_pointer, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -353,14 +353,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberFunction(
+		void	registerMemberFunction(
 				const zs_string & _name_script_function
 				,F function_type
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
+				script_type_factory->registerMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -373,14 +373,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindStaticMemberPropertyGetter(
+		void	registerStaticMemberPropertyGetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindStaticMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerStaticMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -393,14 +393,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertySetter(
+		void	registerMemberPropertySetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertySetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertySetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -412,14 +412,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyGetter(
+		void	registerMemberPropertyGetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -432,14 +432,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyNeg(
+		void	registerMemberPropertyNeg(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyNeg<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyNeg<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -452,14 +452,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyBwc(
+		void	registerMemberPropertyBwc(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyBwc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyBwc<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -472,14 +472,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyAddSetter(
+		void	registerMemberPropertyAddSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyAddSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyAddSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -492,14 +492,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertySubSetter(
+		void	registerMemberPropertySubSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertySubSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertySubSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -512,14 +512,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyMulSetter(
+		void	registerMemberPropertyMulSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyMulSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyMulSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -531,14 +531,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyDivSetter(
+		void	registerMemberPropertyDivSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyDivSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyDivSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -550,14 +550,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyModSetter(
+		void	registerMemberPropertyModSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyModSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyModSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -570,14 +570,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyXorSetter(
+		void	registerMemberPropertyXorSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyXorSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyXorSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -590,14 +590,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyOrSetter(
+		void	registerMemberPropertyOrSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyOrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyOrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -610,14 +610,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyAndSetter(
+		void	registerMemberPropertyAndSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyAndSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyAndSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -630,14 +630,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyShrSetter(
+		void	registerMemberPropertyShrSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyShrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyShrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -650,14 +650,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyShlSetter(
+		void	registerMemberPropertyShlSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyShlSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyShlSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -670,14 +670,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPostInc(
+		void	registerMemberPropertyPostInc(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPostInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPostInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -690,14 +690,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPostDec(
+		void	registerMemberPropertyPostDec(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPostDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPostDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -710,14 +710,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPreInc(
+		void	registerMemberPropertyPreInc(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPreInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPreInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -730,14 +730,14 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPreDec(
+		void	registerMemberPropertyPreDec(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPreDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPreDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
@@ -753,9 +753,9 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void bindStaticMemberFunction(const zs_string & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1){
+		void registerStaticMemberFunction(const zs_string & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1){
 			try{
-				script_type_factory->bindStaticMemberFunction<C>(_name_script_function,_fun, _registered_file, _registered_line);
+				script_type_factory->registerStaticMemberFunction<C>(_name_script_function,_fun, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"

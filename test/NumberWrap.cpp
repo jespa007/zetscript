@@ -413,133 +413,133 @@ void NumberWrap_delete(zetscript::ZetScript *_zs,Number *_this){
 
 void NumberWrap_register(zetscript::ZetScript *_zs){
 
-	_zs->bindType<Number>("Number",NumberWrap_new,NumberWrap_delete);
-	_zs->bindConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_set));
-	_zs->bindConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberWrap_set));
-	_zs->bindMemberFunction<Number>("toInt",&NumberWrap_toInt);
-	_zs->bindMemberFunction<Number>("toFloat",&NumberWrap_toFloat);
+	_zs->registerClass<Number>("Number",NumberWrap_new,NumberWrap_delete);
+	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_set));
+	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberWrap_set));
+	_zs->registerMemberFunction<Number>("toInt",&NumberWrap_toInt);
+	_zs->registerMemberFunction<Number>("toFloat",&NumberWrap_toFloat);
 
-	_zs->bindMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *, zetscript::zs_float *)>(&NumberWrap_set));
-	_zs->bindMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberWrap_set));
+	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *, zetscript::zs_float *)>(&NumberWrap_set));
+	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberWrap_set));
 
-	_zs->bindMemberPropertySetter<Number>("num",NumberWrap_num_setter);
-	_zs->bindMemberPropertyGetter<Number>("num",NumberWrap_num_getter);
-	_zs->bindMemberPropertyNeg<Number>("num",NumberWrap_num_neg);
-	_zs->bindMemberPropertyBwc<Number>("num",NumberWrap_num_bwc);
-	_zs->bindMemberPropertyAddSetter<Number>("num",NumberWrap_num_addset);
-	_zs->bindMemberPropertySubSetter<Number>("num",NumberWrap_num_subset);
-	_zs->bindMemberPropertyMulSetter<Number>("num",NumberWrap_num_mulset);
-	_zs->bindMemberPropertyDivSetter<Number>("num",NumberWrap_num_divset);
-	_zs->bindMemberPropertyModSetter<Number>("num",NumberWrap_num_modset);
-	_zs->bindMemberPropertyXorSetter<Number>("num",NumberWrap_num_xorset);
-	_zs->bindMemberPropertyOrSetter<Number>("num",NumberWrap_num_orset);
-	_zs->bindMemberPropertyAndSetter<Number>("num",NumberWrap_numandset);
-	_zs->bindMemberPropertyShrSetter<Number>("num",NumberWrap_num_shrset);
-	_zs->bindMemberPropertyShlSetter<Number>("num",NumberWrap_num_shlset);
+	_zs->registerMemberPropertySetter<Number>("num",NumberWrap_num_setter);
+	_zs->registerMemberPropertyGetter<Number>("num",NumberWrap_num_getter);
+	_zs->registerMemberPropertyNeg<Number>("num",NumberWrap_num_neg);
+	_zs->registerMemberPropertyBwc<Number>("num",NumberWrap_num_bwc);
+	_zs->registerMemberPropertyAddSetter<Number>("num",NumberWrap_num_addset);
+	_zs->registerMemberPropertySubSetter<Number>("num",NumberWrap_num_subset);
+	_zs->registerMemberPropertyMulSetter<Number>("num",NumberWrap_num_mulset);
+	_zs->registerMemberPropertyDivSetter<Number>("num",NumberWrap_num_divset);
+	_zs->registerMemberPropertyModSetter<Number>("num",NumberWrap_num_modset);
+	_zs->registerMemberPropertyXorSetter<Number>("num",NumberWrap_num_xorset);
+	_zs->registerMemberPropertyOrSetter<Number>("num",NumberWrap_num_orset);
+	_zs->registerMemberPropertyAndSetter<Number>("num",NumberWrap_numandset);
+	_zs->registerMemberPropertyShrSetter<Number>("num",NumberWrap_num_shrset);
+	_zs->registerMemberPropertyShlSetter<Number>("num",NumberWrap_num_shlset);
 
-	_zs->bindMemberPropertyPostInc<Number>("num",NumberWrap_num_postinc);
-	_zs->bindMemberPropertyPostDec<Number>("num",NumberWrap_num_postdec);
+	_zs->registerMemberPropertyPostInc<Number>("num",NumberWrap_num_postinc);
+	_zs->registerMemberPropertyPostDec<Number>("num",NumberWrap_num_postdec);
 
-	_zs->bindMemberPropertyPreInc<Number>("num",NumberWrap_num_preinc);
-	_zs->bindMemberPropertyPreDec<Number>("num",NumberWrap_num_predec);
+	_zs->registerMemberPropertyPreInc<Number>("num",NumberWrap_num_preinc);
+	_zs->registerMemberPropertyPreDec<Number>("num",NumberWrap_num_predec);
 
 
-	_zs->bindStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_add));
-	_zs->bindStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_add));
-	_zs->bindStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_add));
 
 	// add set
-	_zs->bindMemberFunction<Number>("_addset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_addset));
-	_zs->bindMemberFunction<Number>("_addset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_addset));
+	_zs->registerMemberFunction<Number>("_addset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_addset));
+	_zs->registerMemberFunction<Number>("_addset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_addset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_sub));
-	_zs->bindStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_sub));
-	_zs->bindStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_sub));
 
 	// sub set
-	_zs->bindMemberFunction<Number>("_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_subset));
-	_zs->bindMemberFunction<Number>("_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_subset));
+	_zs->registerMemberFunction<Number>("_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_subset));
+	_zs->registerMemberFunction<Number>("_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_subset));
 
-	_zs->bindStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_mul));
-	_zs->bindStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mul));
-	_zs->bindStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mul));
 
 	// mul set
-	_zs->bindMemberFunction<Number>("_mulset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mulset));
-	_zs->bindMemberFunction<Number>("_mulset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mulset));
+	_zs->registerMemberFunction<Number>("_mulset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mulset));
+	_zs->registerMemberFunction<Number>("_mulset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mulset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_div));
-	_zs->bindStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_div));
-	_zs->bindStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_div));
 
 	// div set
-	_zs->bindMemberFunction<Number>("_divset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_divset));
-	_zs->bindMemberFunction<Number>("_divset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_divset));
+	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_divset));
+	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_divset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_mod));
-	_zs->bindStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mod));
-	_zs->bindStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_mod));
 
 	// mod set
-	_zs->bindMemberFunction<Number>("_modset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_modset));
-	_zs->bindMemberFunction<Number>("_modset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_modset));
+	_zs->registerMemberFunction<Number>("_modset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_modset));
+	_zs->registerMemberFunction<Number>("_modset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_modset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_shr));
-	_zs->bindStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float * )>(&NumberWrap_shr));
-	_zs->bindStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float * )>(&NumberWrap_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shr));
 
 	// shr set
-	_zs->bindMemberFunction<Number>("_shrset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shrset));
-	_zs->bindMemberFunction<Number>("_shrset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shrset));
+	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shrset));
+	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shrset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_shl));
-	_zs->bindStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shl));
-	_zs->bindStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shl));
 
 
 	// shl set
-	_zs->bindMemberFunction<Number>("_shlset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shlset));
-	_zs->bindMemberFunction<Number>("_shlset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shlset));
+	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_shlset));
+	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_shlset));
 
-	_zs->bindStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_and));
-	_zs->bindStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_and));
-	_zs->bindStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_and));
 
 	// and set
-	_zs->bindMemberFunction<Number>("_andset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrapandset));
-	_zs->bindMemberFunction<Number>("_andset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrapandset));
+	_zs->registerMemberFunction<Number>("_andset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrapandset));
+	_zs->registerMemberFunction<Number>("_andset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrapandset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_or));
-	_zs->bindStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_or));
-	_zs->bindStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_or));
 
 	// or set
-	_zs->bindMemberFunction<Number>("_orset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_orset));
-	_zs->bindMemberFunction<Number>("_orset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_orset));
+	_zs->registerMemberFunction<Number>("_orset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_orset));
+	_zs->registerMemberFunction<Number>("_orset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_orset));
 
 
-	_zs->bindStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_xor));
-	_zs->bindStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_xor));
-	_zs->bindStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_xor));
 
 	// xor set
-	_zs->bindMemberFunction<Number>("_xorset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_xorset));
-	_zs->bindMemberFunction<Number>("_xorset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_xorset));
+	_zs->registerMemberFunction<Number>("_xorset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_xorset));
+	_zs->registerMemberFunction<Number>("_xorset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_xorset));
 
 
-	_zs->bindMemberFunction<Number>("_neg",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *)>(&NumberWrap_neg));
+	_zs->registerMemberFunction<Number>("_neg",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *)>(&NumberWrap_neg));
 
-	_zs->bindMemberFunction<Number>("_postinc",NumberWrap_postinc);
-	_zs->bindMemberFunction<Number>("_postdec",NumberWrap_postdec);
+	_zs->registerMemberFunction<Number>("_postinc",NumberWrap_postinc);
+	_zs->registerMemberFunction<Number>("_postdec",NumberWrap_postdec);
 
-	_zs->bindMemberFunction<Number>("_preinc",NumberWrap_preinc);
-	_zs->bindMemberFunction<Number>("_predec",NumberWrap_predec);
+	_zs->registerMemberFunction<Number>("_preinc",NumberWrap_preinc);
+	_zs->registerMemberFunction<Number>("_predec",NumberWrap_predec);
 }
 
 

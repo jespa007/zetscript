@@ -12,7 +12,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnInteger named as 'returnInteger'
-    zs.bindFunction("returnInteger",returnInteger);
+    zs.registerFunction("returnInteger",returnInteger);
 
     // Eval script that calls native function 'returnInteger'
     zs.eval(

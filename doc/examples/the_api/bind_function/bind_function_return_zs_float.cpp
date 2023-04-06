@@ -12,7 +12,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnFloat named as 'returnFloat'
-    zs.bindFunction("returnFloat",returnFloat);
+    zs.registerFunction("returnFloat",returnFloat);
 
     // Eval script that calls native function 'returnFloat'
     zs.eval(

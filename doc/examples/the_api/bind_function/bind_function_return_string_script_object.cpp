@@ -17,7 +17,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function returnString named as 'returnString'
-    zs.bindFunction("returnString",returnString);
+    zs.registerFunction("returnString",returnString);
 
     // Eval script that calls native function 'returnString'
     zs.eval(

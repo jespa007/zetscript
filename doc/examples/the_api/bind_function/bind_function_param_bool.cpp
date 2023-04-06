@@ -11,7 +11,7 @@ void paramBool(ZetScript *_zs, bool *_bool){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramBool",paramBool);
+    zs.registerFunction("paramBool",paramBool);
 
     // call c function with int param
     zs.eval(

@@ -76,10 +76,10 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	// 1s combination: Script -> C -> Script
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
-	_zs->bindFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
 
 	// bind 'test_callback' receives a 'ScriptFunction' and 'ObjectScriptObject' pointer type
-	_zs->bindFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
 
 
 	_zs->eval(
@@ -126,7 +126,7 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 
 
 	// 2nd test calling from C->Script->C
-	_zs->bindFunction("test_function_1st_c_call",test_function_1st_c_call);
+	_zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
 
 	_zs->eval(

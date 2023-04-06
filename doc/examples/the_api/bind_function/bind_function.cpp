@@ -11,7 +11,7 @@ int main(){
 	ZetScript zs;
 
 	// bind native function sayHelloWorld named as 'sayHelloWorld'
-    zs.bindFunction("sayHelloWorld",sayHelloWorld);
+    zs.registerFunction("sayHelloWorld",sayHelloWorld);
 
     // Eval script that calls native function 'sayHelloWorld'
     zs.eval(

@@ -407,47 +407,47 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->bindType<ClassA>("ClassA", ClassAWrap_new, ClassAWrap_delete);
-	_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
-	_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
-	_zs->bindType<Num>("Num");
-	_zs->bindType<ClassD>("ClassD");
+	_zs->registerClass<ClassA>("ClassA", ClassAWrap_new, ClassAWrap_delete);
+	_zs->registerClass<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
+	_zs->registerClass<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
+	_zs->registerClass<Num>("Num");
+	_zs->registerClass<ClassD>("ClassD");
 
-	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
-	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
+	_zs->registerClass<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
+	_zs->registerClass<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
 
 
-	_zs->bindFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);
+	_zs->registerFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);
 
-	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
-	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
-	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassAWrap_lt));
-	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassAWrap_lt));
+	_zs->registerMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassAWrap_lt));
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassAWrap_lt));
 
 
 	_zs->extends<ClassB,ClassA>();
 
-	_zs->bindMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
+	_zs->registerMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
 
 
 	_zs->extends<ClassC,ClassB>();
 
-	_zs->bindMemberFunction<ClassC>("newNum",ClassCWrap_newNum);
+	_zs->registerMemberFunction<ClassC>("newNum",ClassCWrap_newNum);
 
-	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
-	_zs->bindMemberFunction<Num>("_preinc",NumWrap_pre_increment);
-	_zs->bindMemberFunction<Num>("_predec",NumWrap_pre_decrement);
+	_zs->registerMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
+	_zs->registerMemberFunction<Num>("_preinc",NumWrap_pre_increment);
+	_zs->registerMemberFunction<Num>("_predec",NumWrap_pre_decrement);
 
-	_zs->bindMemberPropertyGetter<Num>("x",NumWrap_x_getter);
-	_zs->bindMemberFunction<Num>("setPosition",NumWrap_setPosition);
+	_zs->registerMemberPropertyGetter<Num>("x",NumWrap_x_getter);
+	_zs->registerMemberFunction<Num>("setPosition",NumWrap_setPosition);
 
-	_zs->bindMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
+	_zs->registerMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
 	//_zs->extends<ClassC,ClassB>();
 
-	//_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
+	//_zs->registerMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
 
 
-	_zs->bindFunction("test_native_function_with_nulls",test_native_function_with_nulls);
+	_zs->registerFunction("test_native_function_with_nulls",test_native_function_with_nulls);
 
 	//a->printListMemberFunctions();
 

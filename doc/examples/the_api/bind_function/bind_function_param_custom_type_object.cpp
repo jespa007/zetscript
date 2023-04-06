@@ -63,23 +63,23 @@ int main(){
 	ZetScript zs;
 
 	// bind type Point
-	zs.bindType<Point>("Point",PointWrap_new,PointWrap_delete);
+	zs.registerClass<Point>("Point",PointWrap_new,PointWrap_delete);
 
 
 	// bind property setter Point::x
-	zs.bindMemberPropertySetter<Point>("x",PointWrap_set_x);
+	zs.registerMemberPropertySetter<Point>("x",PointWrap_set_x);
 
 	// bind property setter Point::y
-	zs.bindMemberPropertySetter<Point>("y",PointWrap_set_y);    
+	zs.registerMemberPropertySetter<Point>("y",PointWrap_set_y);    
 
 	// bind property getter Point::x
-	zs.bindMemberPropertyGetter<Point>("x",PointWrap_get_x);
+	zs.registerMemberPropertyGetter<Point>("x",PointWrap_get_x);
 
 	// bind property getter Point::y
-	zs.bindMemberPropertyGetter<Point>("y",PointWrap_get_y);
+	zs.registerMemberPropertyGetter<Point>("y",PointWrap_get_y);
 
 	// bind native function mulPoint named as 'mulPoint'
-    zs.bindFunction("mulPoint",mulPoint);
+    zs.registerFunction("mulPoint",mulPoint);
 
     // Eval script that calls native function 'mulPoint'
     zs.eval(

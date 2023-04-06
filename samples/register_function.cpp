@@ -20,8 +20,8 @@ int main(){
 
 	zetscript::ZetScript zs; // instance ZetScript
 
-	zs.bindFunction("add",static_cast<zetscript::zs_int (*)(zetscript::ZetScript *_zs,zetscript::zs_int,zetscript::zs_int)>(add));
-	zs.bindFunction("add",static_cast<zetscript::zs_float (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,zetscript::zs_float *)>(add));
+	zs.registerFunction("add",static_cast<zetscript::zs_int (*)(zetscript::ZetScript *_zs,zetscript::zs_int,zetscript::zs_int)>(add));
+	zs.registerFunction("add",static_cast<zetscript::zs_float (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,zetscript::zs_float *)>(add));
 
 
 	zs.eval(

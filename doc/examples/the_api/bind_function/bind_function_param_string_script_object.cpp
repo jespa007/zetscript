@@ -11,7 +11,7 @@ void paramString(ZetScript *_zs, StringScriptObject *_string){
 int main(){
 	ZetScript zs;
 
-    zs.bindFunction("paramString",paramString);
+    zs.registerFunction("paramString",paramString);
 
     // call c function with string param
     zs.eval(

@@ -200,7 +200,7 @@ var t=new TestExtended(); // instances TestExtended class</pre>
 
 <h3>Calling script function from c++</h3>
 
-<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::zs->bindFunction</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
+<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::zs->registerFunction</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
 
 <pre lang="c++">
 #include &quot;ZetScript.h&quot;
@@ -229,10 +229,10 @@ int main(){
 
 	
     	// instance function delete_test function.
-	std::function&lt;void()&gt;  * delete_test=zs->bindFunction&lt;void ()&gt;(&quot;delete_test&quot;); 
+	std::function&lt;void()&gt;  * delete_test=zs->registerFunction&lt;void ()&gt;(&quot;delete_test&quot;); 
 
     	// instance member function test.function1.
-	std::function&lt;void(int)&gt; * test_function1=zs->bindFunction&lt;void (int)&gt;(&quot;test.function1&quot;); 
+	std::function&lt;void(int)&gt; * test_function1=zs->registerFunction&lt;void (int)&gt;(&quot;test.function1&quot;); 
 	
    	// it calls &quot;test.function&quot; member function with 10 as parameter.
 	(*test_function1)(10); 

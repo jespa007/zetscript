@@ -31,7 +31,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename F>
-	void ScriptType::bindStaticMemberPropertyGetter(
+	void ScriptType::registerStaticMemberPropertyGetter(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -72,7 +72,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename F>
-	void ScriptType::bindStaticMemberFunction(
+	void ScriptType::registerStaticMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -110,11 +110,11 @@ namespace zetscript{
 	}
 
 	/*
-	 * register static function bindMemberFunction as function member
+	 * register static function registerMemberFunction as function member
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
 	template <typename F>
-	void ScriptType::bindMemberFunction(
+	void ScriptType::registerMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file

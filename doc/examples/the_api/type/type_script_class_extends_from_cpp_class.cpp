@@ -44,19 +44,19 @@ int main(){
 	zetscript::ZetScript zs; // instance zetscript
 
 	// register MyClass as MyClass in script side
-	zs.bindType<MyClass>("MyClass",MyClassPtrWrap_new,MyClassPtrWrap_delete);
+	zs.registerClass<MyClass>("MyClass",MyClassPtrWrap_new,MyClassPtrWrap_delete);
 
 	// register MyClass as MyClass in script side
-	zs.bindType<MyClassExtend>("MyClassExtend");
+	zs.registerClass<MyClassExtend>("MyClassExtend");
 
 	// tells MyClassExtends extends from MyClass
 	zs.extends< MyClassExtend,MyClass >();
 
 	// register MyClass::constructor
-	zs.bindConstructor<MyClass>(MyClassPtrWrap_constructor);
+	zs.registerConstructor<MyClass>(MyClassPtrWrap_constructor);
 
 	//reg MyClass:: function1
- 	zs.bindMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
+ 	zs.registerMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
 
 	// eval print
 	zs.eval(
