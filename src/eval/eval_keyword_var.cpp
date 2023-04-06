@@ -140,24 +140,6 @@ namespace zetscript{
 						}
 					}
 
-					/*if( is_const_member_or_var_member){
-						try{
-							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
-								variable_name
-								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC : 0
-								,eval_data->current_parsing_file
-								,line
-							);
-
-						}catch(std::exception & ex){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",ex.what());
-						}
-
-						if(is_constant == true){
-							symbol_member_variable->ref_ptr=symbol_variable->idx_position;
-						}
-
-					}*/
 				}catch(std::exception & ex){
 					EVAL_ERROR("%s",ex.what());
 				}

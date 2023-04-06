@@ -5,67 +5,6 @@
 namespace zetscript{
 
 	/**
-	 * Register C variable
-	 */
-	template<typename V>
-	 void  ScriptTypeFactory::bindGlobalVariable(
-		 const zs_string & _var_name
-		 ,V _var_ptr
-		 ,const char *_registered_file
-		 ,short _registered_line)
-	{
-		//Scope *scope;
-		const char *var_type = typeid(V).name(); // we need the pointer type ...
-		Symbol *symbol_variable=NULL;
-
-		if(_var_ptr==NULL){
-			ZS_THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
-		}
-
-		ScriptFunction *main_function=ZS_MAIN_FUNCTION(this);
-
-		if(main_function == NULL){
-			ZS_THROW_RUNTIME_ERRORF("main function is not created");
-		}
-
-		StackElement stk_binded=zs->toStackElement((zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
-
-		if((symbol_variable = main_function->registerLocalVariable(
-				ZS_MAIN_SCOPE(this)
-				,_registered_file
-				,_registered_line
-				,_var_name
-				, var_type
-				,(zs_int)_var_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF)) != NULL
-		){
-			ZS_LOG_DEBUG("Registered variable name '%s'",_var_name.c_str());
-		}
-
-		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
-
-		if(stk_binded.properties & STK_PROPERTY_SCRIPT_OBJECT){
-			VirtualMachineData *data=(VirtualMachineData *)vm->data;
-			*stk=stk_binded;
-			//*stk = *this->registerStkObject(_var_name, stk_binded.value);
-
-			// share this variable++
-			vm_create_shared_script_object(
-					vm
-					,(ScriptObject *)stk->value
-					,ZS_VM_MAIN_SCOPE_BLOCK
-			);
-			vm_share_script_object(vm,(ScriptObject *)stk->value);
-		}
-		else{
-			*stk=stk_binded;
-		}
-		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
-		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-
-	}
-
-	/**
 	 * Register C function
 	 */
 	template <typename F>
@@ -406,47 +345,6 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERROR("native type '%s' is not registered",str_script_type_ptr.c_str());
 		}
 		return registerMemberFunction<C>(ZS_CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
-	}
-
-	/**
-	 * Register C Member var
-	 */
-	template <typename C, typename R>
-	void ScriptTypeFactory::registerMemberConstant(
-			const zs_string & var_name
-			,const R var_pointer
-			,const char *registered_file
-			,short registered_line) //unsigned int offset)
-	{
-		// to make compatible MSVC shared library
-		const char *var_type = typeid(R).name(); // we need the pointer type ...
-		zs_string error;
-		const char *str_script_type_ptr = typeid( C *).name();
-
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-		if(script_type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr);
-		}
-
-		// 1. check all parameters ok.
-		// check valid parameters ...
-		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
-			ZS_THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,script_type->str_script_type
-					,var_name
-					,zs_rtti::demangle(typeid(R).name()).c_str());
-		}
-
-		// register variable...
-		script_type->registerMemberVariable(
-				var_name
-				,var_type
-				,(zs_int)var_pointer
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
-				,registered_file
-				,registered_line
-		);
 	}
 
 	/*

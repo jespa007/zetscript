@@ -564,8 +564,6 @@ namespace zetscript{
 			, const char * _file
 			, short _line
 			, const zs_string & _symbol_name
-			, const zs_string & _str_native_type
-			, zs_int _ref_ptr
 			, unsigned short _properties
 	){
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
@@ -577,9 +575,7 @@ namespace zetscript{
 				return NULL;
 		}
 
-		symbol->ref_ptr =_ref_ptr;
-		//scope_symbol->symbol=scope_symbol;
-		symbol->str_native_type = _str_native_type;
+
 		symbol->properties = _properties;
 		symbol->idx_position = idx_position_aux;
 

@@ -86,36 +86,12 @@ namespace zetscript{
 		inline ScriptType * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
-
-		// register object
-		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
-		StackElement * getStkConstantStringObject(const zs_string & _key);
-
-		//StackElement * registerStkObject(const zs_string & _key, zs_int _value);
-		//StackElement * getStkObject(const zs_string & _key);
-
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & str_script_type);
 		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_script_type, void * value_object = NULL);
 
-		/**
-		 * Register C variable
-		 */
-		template <typename V>
-		void bindGlobalVariable(
-			 const zs_string & var_name
-			 ,V var_ptr
-			 , const char *registered_file=""
-			 ,short registered_line=-1
-		);
-
-		void registerConstant(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
 		/**
 		 * Register C function
@@ -140,7 +116,6 @@ namespace zetscript{
 			,short registered_line=-1
 		);
 
-
 		/**
 		 * Built in register C Class, like ScriptObject,StringScriptObject...
 		 */
@@ -158,15 +133,6 @@ namespace zetscript{
 				, const char *registered_file=""
 				,short registered_line=-1
 		);
-
-		template <typename C, typename R>
-		void registerMemberConstant(
-				const zs_string & var_name
-				, const R var_pointer
-				 , const char *registered_file=""
-				,short registered_line=-1
-		);
-
 
 		/*
 		 * register static property getter
@@ -393,7 +359,6 @@ namespace zetscript{
 			Type  id;
 		}PrimitiveType;
 
-		zs_map 	 						*	stk_constants;//,*stk_objects;
 		zs_vector<ScriptType *>			*	script_types;
 		ZetScript 						*	zs;
 		VirtualMachine					*	vm;
@@ -413,7 +378,6 @@ namespace zetscript{
 		short							getIdxTypeFromTypeNameInternal(const zs_string & _type_name);
 
 		void 							internalPrintError(const char *s);
-
 
 	};
 

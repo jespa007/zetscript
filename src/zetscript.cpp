@@ -36,7 +36,7 @@ namespace zetscript{
 		script_type_factory->setup();
 
 		script_filenames_by_ref=new zs_map();
-
+		stk_constants=new zs_map();
 		compiled_symbol_name = new zs_map();
 		//-------------------------
 		// Register built in modules
@@ -299,46 +299,6 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // STACKELEMENT
 
-		/*StackElement   ZetScript::intToStackElement(zs_int _value){
-			return {_value,STK_PROPERTY_ZS_INT};
-		}
-
-		StackElement   ZetScript::floatToStackElement(zs_float _value){
-			StackElement stk;
-
-			ZS_WRITE_INTPTR_FLOAT(&stk.value,_value);
-
-			return stk;
-		}*/
-
-		/*zs_int	ZetScript::stackElementToInt(const StackElement & _stk){
-			if((_stk.properties & (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT))==0){
-				ZS_THROW_RUNTIME_ERRORF("StackElement not is not int");
-			}
-
-			if((_stk.properties & STK_PROPERTY_ZS_INT)!=0){
-				return (zs_int)_stk.value;
-			}
-
-			return ZS_READ_INTPTR_FLOAT(_stk.value);
-		}
-
-		zs_float	ZetScript::stackElementToFloat(const StackElement & _stk){
-			if((_stk.properties & STK_PROPERTY_ZS_FLOAT)==0){
-				ZS_THROW_RUNTIME_ERRORF("StackElement not is not float");
-			}
-
-			return ZS_READ_INTPTR_FLOAT(_stk.value);
-		}
-
-		bool	ZetScript::stackElementToBool(const StackElement & _stk){
-			if((_stk.properties & STK_PROPERTY_BOOL)==0){
-				ZS_THROW_RUNTIME_ERRORF("StackElement not is not bool");
-			}
-
-			return _stk.value;
-		}*/
-
 	zs_string ZetScript::stackElementToStringTypeOf(StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
@@ -420,19 +380,6 @@ namespace zetscript{
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
 		StackElement stk=unwrapStackElement(*_stk);
-
-		/*if(stk.properties & STK_PROPERTY_PTR_STK){
-			stk=*((StackElement *)stk.value);
-		}
-
-		if(stk.properties & STK_PROPERTY_CONTAINER_SLOT){
-			stk.value=(zs_int)(((ContainerSlot *)stk.value)->getSrcContainerRef());
-			stk.properties=STK_PROPERTY_SCRIPT_OBJECT;
-		}
-
-		if(stk.properties & STK_PROPERTY_READ_ONLY){
-			stk.properties&=~STK_PROPERTY_READ_ONLY;
-		}*/
 
 		if(STK_VALUE_IS_UNDEFINED(&stk)){
 			result=ZS_TYPE_NAME_UNDEFINED;
@@ -833,6 +780,113 @@ namespace zetscript{
 	}
 	//
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//
+	// REGISTER CONSTANTS
+	//
+
+	void ZetScript::registerConstant(const zs_string & _key, int _value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
+			ZS_MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, _key
+		);
+
+		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
+		stk->value=_value;
+		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
+	}
+
+	void ZetScript::registerConstant(const zs_string & _key, bool _value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
+			ZS_MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, _key
+		);
+
+		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
+
+		stk->value=_value;
+		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
+	}
+
+	void ZetScript::registerConstant(const zs_string & _key, zs_float _value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
+			ZS_MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, _key
+		);
+
+		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
+		ZS_FLOAT_COPY(&stk->value,&_value);
+		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
+	}
+
+	void ZetScript::registerConstant(const zs_string & _key, const zs_string & _value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
+			ZS_MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, _key
+		);
+
+		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
+		*stk=*(this->registerStkConstantStringObject(_key,_value));
+	}
+
+	void ZetScript::registerConstant(const zs_string & _key, const char * _value, const char *registered_file, short registered_line){
+		registerConstant(_key, zs_string(_value), registered_file, registered_line);
+	}
+	//
+	// REGISTER CONSTANTS
+	//-----------------------------------------------------------------------------------------
+	//
+	// STK REGISTER OBJECT
+	//
+	StackElement * ZetScript::registerStkConstantStringObject(const zs_string & _key,const zs_string & _value){
+
+		StackElement *stk=NULL;
+		StringScriptObject *so=NULL;
+
+		if((stk = getStkConstantStringObject(_key))!=NULL){
+			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				ZS_THROW_RUNTIME_ERROR(
+					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
+					,_key.c_str()
+					,this->stackElementToStringTypeOf(stk).c_str()
+				);
+			}
+		}
+
+		stk=new StackElement;
+
+		stk_constants->set(_key.c_str(),(zs_int)stk);
+
+		so=ZS_NEW_STRING_OBJECT(this);
+
+		// swap values stk_ref/value
+		so->set(_value.c_str());
+		stk->value=(zs_int)so;
+		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
+
+		return stk;
+	}
+
+	StackElement *ZetScript::getStkConstantStringObject(const zs_string & _key){
+		return (StackElement *)stk_constants->get(_key.c_str());
+	}
+
+	//
+	// STK REGISTER OBJECT
+	//
+	//-----------------------------------------------------------------------------------------------------------------------------------------
+
 
 	ObjectScriptObject * ZetScript::newObjectScriptObject(){
 		return ObjectScriptObject::newObjectScriptObject(this);
@@ -953,14 +1007,18 @@ namespace zetscript{
 
 				StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[v];
 
-				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)local_variables->items[v];
 
 
 				ScriptObject *script_object = NULL;
 
 				if(symbol != NULL && symbol->scope == main_scope){ // if variable in global scope
 
-					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(
+							(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT)
+											&&
+							(vm_stk_element->properties & STK_PROPERTY_READ_ONLY)==0  // if not constant
+					){
 						script_object =((ScriptObject *)(vm_stk_element->value));
 						if(script_object!=NULL){
 							if(script_object->shared_pointer != NULL){
@@ -1168,6 +1226,18 @@ namespace zetscript{
 		}*/
 		delete compiled_symbol_name;
 		compiled_symbol_name=NULL;
+
+		if(stk_constants != NULL){
+			for(auto it=stk_constants->begin(); !it.end();it.next()){
+				StackElement *stk=(StackElement *)(it.value);
+				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					delete (StringScriptObject *)stk->value;
+				}
+				delete stk;
+			}
+			stk_constants->clear();
+			delete stk_constants;
+		}
 
 	}
 }

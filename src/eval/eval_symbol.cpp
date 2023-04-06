@@ -92,7 +92,7 @@ namespace zetscript{
 					default_str_value=zs_strutils::copy_from_ptr_diff(start_word+1,aux);
 				}
 				aux++;
-				value=(zs_int)eval_data->script_type_factory->registerStkConstantStringObject(zs_string("\"")+default_str_value+"\"",default_str_value);
+				value=(zs_int)eval_data->zs->registerStkConstantStringObject(zs_string("\"")+default_str_value+"\"",default_str_value);
 				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;

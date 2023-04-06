@@ -224,66 +224,18 @@ namespace zetscript{
 
 		//-----------------------------------------------
 		/**
-		 * Register C variable
+		 * Register constants
 		 */
-		/*template <typename V>
-		 void bindVariable(const zs_string & _var_name,V var_ptr, const char *_registered_file="",short _registered_line=-1){
-			try{
-				script_type_factory->bindGlobalVariable(_var_name,var_ptr, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		 }*/
 
-		void registerConstant(const zs_string & _var_name, int value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		}
+		void registerConstant(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
-		void registerConstant(const zs_string & _var_name, bool value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		}
-
-		void registerConstant(const zs_string & _var_name, float value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		}
-
-		void registerConstant(const zs_string & _var_name, double value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,(float)value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		}
-
-
-		void registerConstant(const zs_string & _var_name, const zs_string & value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-		}
-
-		void registerConstant(const zs_string & _var_name, const char *value, const char *_registered_file="", short _registered_line=-1){
-			try{
-				script_type_factory->registerConstant(_var_name,value, _registered_file, _registered_line);
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
-			}
-
-		}
+		// register object
+		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
+		StackElement * getStkConstantStringObject(const zs_string & _key);
 
 		/**
 		 * Register C Class. Return index registered class
@@ -329,25 +281,6 @@ namespace zetscript{
 					,__func__
 					,zs_rtti::demangle(typeid(C).name()).c_str()
 					,_ex.getDescription()
-				);
-			}
-		}
-
-		template <typename C, typename R>
-		void registerMemberConstant(
-				const zs_string & _var_name
-				, const R _var_pointer
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		){
-			try{
-				script_type_factory->registerMemberConstant<C>(_var_name,_var_pointer, _registered_file,_registered_line );
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR(
-					"Exception in '%s<%s>(\"%s\",...)': %s"
-					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
-					,_var_name.c_str(),_ex.getDescription()
 				);
 			}
 		}
@@ -989,6 +922,7 @@ namespace zetscript{
 		//--------
 		// VARS
 		zs_map 	 								*script_filenames_by_ref;
+		zs_map 	 							   	*stk_constants;//,*stk_objects;
 		zs_vector<ParsedFile *>					parsed_files;
 		zs_vector<ScriptFunction *>				functions_with_unresolved_symbols;
 

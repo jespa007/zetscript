@@ -109,8 +109,6 @@ namespace zetscript{
 				, const char * file
 				, short line
 				, const zs_string & symbol_name
-				, const zs_string & str_native_type=""
-				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
 

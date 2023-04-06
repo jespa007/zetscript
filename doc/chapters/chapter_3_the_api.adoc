@@ -136,9 +136,9 @@ To know more about the meaning of byte codes see section <<Byte codes>>
 
 === Bind function
 
-This section will explain the how to define and bind C function as a wrapper to be callable from script side.
+This section will explain how to define and register C function to be callable from script side.
 
-A wrapper function can be configured as it follows,
+The function to register must have signature as it follows,
 
 - *Return* :It can return `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other binded type.
 - *Parameters* : always includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other binded type.

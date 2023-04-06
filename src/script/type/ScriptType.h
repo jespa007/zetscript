@@ -64,24 +64,6 @@ namespace zetscript{
 
 		);
 
-		/*template < typename R>
-		void bindStaticConstMemberVariable(
-			const zs_string & _var_name
-			, const R _var_pointer
-			, const char *_registered_file=""
-			,short _registered_line=-1
-		);*/
-
-
-		Symbol				* 	registerMemberVariable(
-			 const zs_string & _symbol_name
-			,const zs_string & _str_native_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
 		//---------------------------------------------------
 		//
 		// MEMBER PROPERTIES
@@ -205,20 +187,6 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-
-		Symbol				* 	registerInternalMemberVariable(
-			const zs_string & _symbol_name
-			, unsigned short _properties
-			,const zs_string & _str_native_type=""
-			,zs_int _ref_ptr=0 // it's the offset from pointer or a pointer directly
-			,const char *_file=""
-			, short _line=-1
-
-		);
-
-
-
-
 
 		ScriptType * 					getScriptType(short idx_script_type);
 		short							getIdxScriptTypeFromTypeNamePtr(const char  * s);

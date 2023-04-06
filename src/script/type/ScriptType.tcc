@@ -4,28 +4,6 @@
  */
 namespace zetscript{
 
-	/*template < typename R>
-	void ScriptType::bindStaticConstMemberVariable(
-			const zs_string & var_name
-			, const R var_pointer
-			, const char *registered_file
-			,short registered_line)
-	{
-		// to make compatible MSVC shared library
-		zs_string var_type = typeid(R).name();
-		zs_string error;
-
-			// register variable...
-		this->registerMemberVariable(
-				var_name
-				,var_type
-				,(zs_int)var_pointer
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
-				,registered_file
-				,registered_line
-		);
-	}*/
-
 	/**
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C

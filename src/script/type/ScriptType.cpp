@@ -148,49 +148,12 @@ namespace zetscript{
 	// MEMBER VARIABLES
 	//
 	Symbol				* 	ScriptType::registerMemberVariable(
-		const zs_string & symbol_name
-		,unsigned short symbol_properties
-		,const char * file
-		,short line
-	){
-
-		return registerInternalMemberVariable(
-			symbol_name
-			,symbol_properties
-			,symbol_name
-			,0
-			,file
-			,line
-		);
-	}
-
-	Symbol				* 	ScriptType::registerMemberVariable(
-		 const zs_string & _symbol_name
-		,const zs_string & _str_native_type
-		,zs_int _ref_ptr
-		,unsigned short _symbol_properties
-		,const char * _file
-		,short _line
-	){
-		return registerInternalMemberVariable(
-			_symbol_name
-			,_symbol_properties
-			,_str_native_type
-			,_ref_ptr
-			,_file
-			,_line
-		);
-	}
-
-	Symbol				* 	ScriptType::registerInternalMemberVariable(
 		const zs_string & _symbol_name
 		,unsigned short _symbol_properties
-		,const zs_string & _str_native_type
-		,zs_int _ref_ptr
 		,const char * _file
 		,short _line
-
 	){
+
 		if(getSymbol(_symbol_name)!=NULL){
 			ZS_THROW_RUNTIME_ERROR("Variable '%s' already registered",_symbol_name.c_str());
 			return NULL;
@@ -202,11 +165,10 @@ namespace zetscript{
 				,_symbol_name
 		);
 
-		symbol->ref_ptr=_ref_ptr;
-		symbol->str_native_type = _str_native_type;
 		symbol->properties=_symbol_properties;
 		return symbol;
 	}
+
 	//---------------------------------------------------
 	//
 	// MEMBER PROPERTIES
