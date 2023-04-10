@@ -5,6 +5,7 @@
 
 #include "MetamethodMembers.h"
 #include "MemberProperty.h"
+#include "StackElementMemberProperty.h"
 
 #include "object/ScriptObject.h"
 #include "object/RefObjectScriptObject.h"

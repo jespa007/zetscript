@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_STRING_OBJECT(zs) (StringScriptObject::newStringScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassString()),NULL))
+#define ZS_NEW_STRING_OBJECT StringScriptObject::newStringScriptObject
 
 
 namespace zetscript{

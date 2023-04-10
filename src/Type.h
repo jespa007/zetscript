@@ -19,8 +19,9 @@
 #define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
 #define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
-#define ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY 	"IteratorArray"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY 		"IteratorArray"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
+#define ZS_TYPE_NAME_SCRIPT_OBJECT 				"__ScriptObject__"
 
 namespace zetscript{
 

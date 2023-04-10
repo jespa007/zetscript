@@ -18,7 +18,7 @@ namespace zetscript{
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
 		ScriptObject 				*		so_aux=NULL;
-		StackMemberProperty 		*		stk_mp_aux=NULL;
+		StackElementMemberProperty 		*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
 		Instruction					*		instruction=_instruction;
@@ -76,7 +76,7 @@ namespace zetscript{
 				}
 			}
 		}else if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
-			stk_mp_aux=(StackMemberProperty *)stk_dst->value;\
+			stk_mp_aux=(StackElementMemberProperty *)stk_dst->value;\
 			if(stk_mp_aux->member_property!=NULL && stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
@@ -95,7 +95,7 @@ namespace zetscript{
 			const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_SET);\
 			*stk_arg=*stk_src;\
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
-				stk_mp_aux=(StackMemberProperty *)(stk_dst->value);
+				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
 				so_aux=stk_mp_aux->so_object;\
 			}else{
 				so_aux=(ClassScriptObject *)stk_dst->value;

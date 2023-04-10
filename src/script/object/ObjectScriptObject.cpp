@@ -72,13 +72,14 @@ namespace zetscript{
 		}
 
 		if(sv != NULL){
-			si = *sv;
+			//si = *sv;
 			// update n_refs +1
-			if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
+			/*if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_script_object(vm,(ObjectScriptObject *)(sv->value)) == false){
 					return NULL;
 				}
-			}
+			}*/
+			zs->stackElementAssign(stk_user_element,sv);
 		}else{
 
 			si=k_stk_undefined;
@@ -91,48 +92,6 @@ namespace zetscript{
 		*new_stk=si; //assign var
 		return new_stk;
 	}
-
-	/*StackElement * ObjectScriptObject::setInteger(
-			const zs_string &  _key_name
-			,zs_int _value
-	){
-		StackElement stk={_value,STK_PROPERTY_ZS_INT};
-
-		return set(_key_name,&stk);
-	}
-
-	StackElement * ObjectScriptObject::setFloat(
-			const zs_string &  _key_name
-			,zs_float _value
-	){
-		zs_int dst;
-		StackElement stk;
-		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
-		stk={dst,STK_PROPERTY_ZS_FLOAT};
-
-		return set(_key_name,&stk);
-	}
-
-	StackElement * ObjectScriptObject::setBoolean(
-			const zs_string &  _key_name
-			,bool _value
-	){
-		StackElement stk={_value,STK_PROPERTY_BOOL};
-
-		return set(_key_name,&stk);
-	}
-
-	StackElement * ObjectScriptObject::setString(
-			const zs_string &  _key_name
-			,const zs_string & _value
-	){
-		StringScriptObject *so=this->zs->newStringScriptObject();
-		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
-
-		so->set(_value);
-
-		return set(_key_name,&stk);
-	}*/
 
 	StackElement 	* ObjectScriptObject::getStackElement(const zs_string &  _key_name){
 		StackElement *stk=getBuiltinField(_key_name);

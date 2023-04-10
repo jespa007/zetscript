@@ -64,119 +64,6 @@ namespace zetscript{
 		data->main_class_object = SCRIPT_TYPE_MAIN(data->script_type_factory);
 	}
 
-	//============================================================================================================================================
-	// SCRIPT OBJECT SHARE MANANAGER
-	bool vm_create_shared_script_object(
-		VirtualMachine *_vm
-		,ScriptObject *_obj
-		,VM_ScopeBlock *_vm_scope_block
-	){
-		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-
-		// if vm block NULL set current block scope by default
-		if(_vm_scope_block == NULL){
-			_vm_scope_block=ZS_VM_CURRENT_SCOPE_BLOCK;
-		}
-
-		if(_obj->shared_pointer == NULL){
-			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
-			// init
-			_node->previous=NULL;
-			_node->next=NULL;
-			_node->data.n_shares=0;
-			_node->data.ptr_script_object_shared=_obj;
-			_node->data.vm_scope_block_where_created=_vm_scope_block;//ZS_VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
-
-			// insert node into shared nodes ...
-			if(!vm_insert_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node)){
-				return false;
-			}
-			_obj->shared_pointer=_node;
-			return true;
-		}else{
-			ZS_VM_SET_USER_ERRORF(_vm," shared ptr already has a shared pointer data");
-		}
-
-		return false;
-
-	}
-
-	bool vm_share_script_object(
-		VirtualMachine *_vm
-		,ScriptObject *_obj
-	){
-		InfoSharedPointerNode *_node=_obj->shared_pointer;
-
-		unsigned short *n_shares = &_node->data.n_shares;
-
-		bool move_to_shared_list=*n_shares==0;
-
-		/*if(*n_shares >= VM_VARIABLE_SHARES_MAX){
-			ZS_VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",VM_VARIABLE_SHARES_MAX);
-			return false;
-		}*/
-
-		(*n_shares)++;
-
-		if(move_to_shared_list){
-
-			// Mov to shared pointer...
-			if(!vm_deattach_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node)){
-				return false;
-			}
-			// update current stack due different levels from functions!
-			//_node->currentStack=idx_current_call;
-			/*if(!vm_insert_shared_node(vm,&data->shared_vars,_node)){
-				return false;
-			}*/
-
-			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_type,_node->data.ptr_script_object_shared);
-
-		}
-		return true;
-	}
-
-	bool vm_unref_shared_script_object(
-			VirtualMachine 	*	_vm
-			, ScriptObject 	*	_obj
-			,VM_ScopeBlock 	*	_scope_block
-	){
-		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
-		if(shared_pointer==NULL){
-			ZS_VM_SET_USER_ERRORF(_vm,"shared ptr not registered");
-			return false;
-		}
-
-		if(shared_pointer->data.n_shares==0){
-			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
-			// we return true
-			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
-			return false;
-		}
-
-		shared_pointer->data.n_shares--;
-
-		if(shared_pointer->data.n_shares==0){
-
-			if(_scope_block==NULL){
-				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
-				free(shared_pointer);
-			}else{
-				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
-
-				// insert to zero shares vector to remove automatically on ending scope
-				if(vm_insert_shared_node(_vm,unreferenced_objects,shared_pointer)==false){
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-	// SCRIPT OBJECT SHARE MANANAGER
-	//============================================================================================================================================
-
-
 	const ScriptFunction * vm_get_current_native_function_call(
 			VirtualMachine *_vm
 	){
@@ -714,8 +601,17 @@ namespace zetscript{
 
 	}
 
+	VM_ScopeBlock *vm_get_main_scope_block(
+			VirtualMachine *_vm
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		return ZS_VM_MAIN_SCOPE_BLOCK;
+	}
+
+
 }
 
 #include "vm_script_function.cpp"
 #include "vm_native_function.cpp"
+#include "vm_share_manager.cpp"
 

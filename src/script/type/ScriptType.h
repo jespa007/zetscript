@@ -46,7 +46,7 @@ namespace zetscript{
 				 ,short _idx_script_type
 				 , const zs_string & _name
 				 , Scope *_scope
-				 ,const char *  str_script_type_ptr=TYPE_SCRIPT_VARIABLE
+				 ,const char *  str_script_type_ptr=ZS_TYPE_NAME_SCRIPT_OBJECT
 				 ,uint16_t _properties=0
 		);
 

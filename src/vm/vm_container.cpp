@@ -16,7 +16,7 @@ namespace zetscript{
 		StackElement 				*	stk_result_op1=NULL;
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement 				*	stk_var=NULL;
-		StackMemberProperty 		*	stk_mp_aux=NULL;
+		StackElementMemberProperty 		*	stk_mp_aux=NULL;
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
@@ -189,7 +189,7 @@ namespace zetscript{
 			if(
 			   (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0
 			 ){
-				stk_mp_aux=(StackMemberProperty *)stk_var->value;
+				stk_mp_aux=(StackElementMemberProperty *)stk_var->value;
 
 				// calls getter if defined
 				if(stk_mp_aux->member_property->metamethod_members.getter!=NULL){
@@ -284,7 +284,7 @@ namespace zetscript{
 		,short 						_offset
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		StackMemberProperty *	stk_mp_aux=NULL;
+		StackElementMemberProperty *	stk_mp_aux=NULL;
 		StackElement 		*	stk_result=NULL;
 		Instruction			*	instruction=_instruction;
 
@@ -292,7 +292,7 @@ namespace zetscript{
 			stk_result = _this_object->getBuiltinField(_offset);
 		}
 		if(stk_result != NULL && (stk_result->properties & STK_PROPERTY_MEMBER_PROPERTY)){
-			stk_mp_aux=(StackMemberProperty *)stk_result->value;
+			stk_mp_aux=(StackElementMemberProperty *)stk_result->value;
 			if(stk_mp_aux->member_property->metamethod_members.getter != NULL){
 				// saves current stack element due the return will overwrite current stackpositin
 				StackElement *stk_back=data->vm_stk_current;

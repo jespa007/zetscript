@@ -29,7 +29,7 @@
 	member_property=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_aux1=*stk_result_op1;\
-		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
+		stk_mp_aux=(StackElementMemberProperty *)stk_result_op1->value;\
 		member_property=stk_mp_aux->member_property;\
 		ptr_metamethod_members_aux= &member_property->metamethod_members;\
 		so_aux = stk_mp_aux->so_object;\

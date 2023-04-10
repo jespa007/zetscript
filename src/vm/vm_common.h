@@ -293,6 +293,7 @@ namespace zetscript{
 	zs_map_int *vm_get_cyclic_container_instances(
 			VirtualMachine *_vm
 	);
+
 }
 
 

@@ -6,6 +6,43 @@
 
 namespace zetscript{
 
+	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_script_type){
+		idx_script_type=_idx_script_type;
+		shared_pointer=NULL;
+		properties=0;
+
+		map_builtin_fields=new zs_map;
+		memset(&stk_this,0,sizeof(stk_this));
+		stk_this.value=(zs_int)this;
+		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+		ref_objects=NULL;//new zs_list<RefObject *>();
+
+		zs=_zs;
+		vm=_zs->getVirtualMachine();
+
+		// init builtin
+		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
+			ScriptType *script_type=getScriptType();
+			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
+			//------------------------------------------------------------------------------
+			// pre-register built-in members...
+			for(int i = 0; i < symbol_vars->size(); i++){
+				Symbol * symbol = (Symbol *)symbol_vars->items[i];
+				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+					addBuiltinField(
+							symbol->name
+							,{(zs_int)(new StackElementMemberProperty(
+									this
+									,(MemberProperty *)symbol->ref_ptr)
+							)
+							,STK_PROPERTY_MEMBER_PROPERTY}
+					);
+				}
+			}
+		}
+	}
+
 	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
 		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
 
@@ -38,45 +75,6 @@ namespace zetscript{
 		free(si);
 		return true;
 	}
-
-
-
-	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_script_type){
-		idx_script_type=_idx_script_type;
-		shared_pointer=NULL;
-
-		map_builtin_fields=new zs_map;
-		memset(&stk_this,0,sizeof(stk_this));
-		stk_this.value=(zs_int)this;
-		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
-
-		ref_objects=NULL;//new zs_list<RefObject *>();
-
-		zs=_zs;
-		vm=_zs->getVirtualMachine();
-
-		// init builtin
-		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
-			ScriptType *script_type=getScriptType();
-			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
-			//------------------------------------------------------------------------------
-			// pre-register built-in members...
-			for(int i = 0; i < symbol_vars->size(); i++){
-				Symbol * symbol = (Symbol *)symbol_vars->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-					addBuiltinField(
-							symbol->name
-							,{(zs_int)(new StackMemberProperty(
-									this
-									,(MemberProperty *)symbol->ref_ptr)
-							)
-							,STK_PROPERTY_MEMBER_PROPERTY}
-					);
-				}
-			}
-		}
-	}
-
 
 	StackElement *ScriptObject::newBuiltinSlot(){
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
@@ -240,7 +238,7 @@ namespace zetscript{
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
 			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
-				delete (StackMemberProperty *)stk->value;
+				delete (StackElementMemberProperty *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (stk->value != 0)

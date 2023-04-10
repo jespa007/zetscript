@@ -60,7 +60,7 @@ namespace zetscript{
 				se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
 				se->properties=STK_PROPERTY_PTR_STK;
 			}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-				se->value=(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
+				se->value=(zs_int)(new StackElementMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
 				se->properties=STK_PROPERTY_MEMBER_PROPERTY;
 			}
 		}

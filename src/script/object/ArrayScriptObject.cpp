@@ -48,6 +48,20 @@ namespace zetscript{
 		return this->stk_elements.size();
 	}
 
+	StackElement	*ArrayScriptObject::setStackElement(int _idx, StackElement *_value){
+		if(_idx >= stk_elements.size()){
+			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
+		}
+
+		StackElement *si=(StackElement *)stk_elements.items[_idx];
+
+		ScriptObject::unrefAndFreeStackElementContainer(si);
+
+		zs->stackElementAssign(si,_value);
+
+		return si;
+	}
+
 
 	StackElement * ArrayScriptObject::getStackElement(int _idx){
 		if(_idx >= stk_elements.size()){
@@ -98,31 +112,6 @@ namespace zetscript{
 		this->pushStackElement((const StackElement  *)&_stk);
 	}
 
-	/*void 	ArrayScriptObject::pushInteger(zs_int _value){
-		StackElement stk={_value,STK_PROPERTY_ZS_INT};
-		zs->stackElementAssign(newSlot(),&stk);
-	}
-
-	void 	ArrayScriptObject::pushFloat(zs_float _value){
-		zs_int dst;
-		StackElement stk;
-		ZS_WRITE_INTPTR_FLOAT(&dst,_value);
-		stk={dst,STK_PROPERTY_ZS_FLOAT};
-		zs->stackElementAssign(newSlot(),&stk);
-	}
-
-	void 	ArrayScriptObject::pushBoolean(bool _value){
-		StackElement stk={_value,STK_PROPERTY_BOOL};
-		zs->stackElementAssign(newSlot(),&stk);
-	}
-
-	void	ArrayScriptObject::pushString(const zs_string & _value){
-		StringScriptObject *so=this->zs->newStringScriptObject();
-		StackElement stk={(zs_int)so,STK_PROPERTY_SCRIPT_OBJECT};
-		so->set(_value);
-		zs->stackElementAssign(newSlot(),&stk);
-	}*/
-
 	void ArrayScriptObject::pop(){
 		// save last element...
 		StackElement stk_element=*((StackElement *)stk_elements.items[stk_elements.size()-1]);
@@ -138,7 +127,7 @@ namespace zetscript{
 
 	void ArrayScriptObject::concat(ArrayScriptObject *_v){
 		for(int i=0; i < _v->stk_elements.size();i++){
-			this->push((StackElement *)_v->stk_elements.items[i]);
+			this->pushStackElement((StackElement *)_v->stk_elements.items[i]);
 		}
 	}
 

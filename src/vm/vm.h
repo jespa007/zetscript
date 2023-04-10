@@ -4,9 +4,11 @@
  */
 #pragma once
 
+#include "vm_share_manager.h"
 #include "vm_pop_stk.h"
 #include "vm_push_stk.h"
 #include "vm_scope.h"
+
 
 #define VM_STACK_MAX					150
 #define VM_FUNCTION_CALL_MAX 			100
@@ -21,12 +23,6 @@ namespace zetscript{
 
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
-	bool 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
-	bool 			vm_create_shared_script_object(
-			VirtualMachine *vm
-			, ScriptObject *_obj
-			,VM_ScopeBlock *_vm_scope_block=NULL
-	);
 
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
@@ -76,12 +72,6 @@ namespace zetscript{
 			StackElement 		  	* _stk_local_var
 	);
 
-	bool vm_unref_shared_script_object(
-		VirtualMachine 	*	_vm
-		, ScriptObject 	*	_obj
-		,VM_ScopeBlock 	*	_scope_block
-	);
-
 	void  vm_execute_native_function(
 		VirtualMachine 			*	_vm,
 		const ScriptFunction 	*	_script_function,
@@ -97,6 +87,10 @@ namespace zetscript{
 		ScriptObject		* 	_this_object,
 		ScriptFunction 		* 	_script_function,
 		StackElement 		*	_stk_local_var
+	);
+
+	VM_ScopeBlock *vm_get_main_scope_block(
+			VirtualMachine *_vm
 	);
 
 	void vm_delete(VirtualMachine *vm);

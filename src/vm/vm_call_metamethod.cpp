@@ -286,21 +286,21 @@ namespace zetscript{
 			,StackElement 			*	_stk_result_op2
 			, ByteCodeMetamethod 		_byte_code_metamethod
 	){
-		VirtualMachineData 	*			data=(VirtualMachineData *)_vm->data;
-		MemberProperty 		*			member_property=NULL;
-		Symbol 				*			symbol_setter=NULL;
-		ScriptObject 		*			so_aux=NULL;
-		//StackElement 		*			stk_var=NULL;
+		VirtualMachineData 			*			data=(VirtualMachineData *)_vm->data;
+		MemberProperty 				*			member_property=NULL;
+		Symbol 						*			symbol_setter=NULL;
+		ScriptObject 				*			so_aux=NULL;
+		//StackElement 				*			stk_var=NULL;
 		StackElement 					stk_aux1;
-		StackElement 		*			stk_result_op1=_stk_result_op1;
-		StackElement 		*			stk_result_op2=_stk_result_op2;
-		StackMemberProperty *			stk_mp_aux=NULL;
-		MetamethodMembers 	*			ptr_metamethod_members_aux=NULL;
-		ScriptFunction 		*			ptr_function_found=NULL;
-		MetamethodMemberSetterInfo 		setter_info;
-		const char 			*			str_set_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
-		const char 			*			str_aka_set_metamethod=byte_code_metamethod_to_operator_str(_byte_code_metamethod);
-		Instruction			*			instruction=_instruction;
+		StackElement 				*			stk_result_op1=_stk_result_op1;
+		StackElement 				*			stk_result_op2=_stk_result_op2;
+		StackElementMemberProperty 	*			stk_mp_aux=NULL;
+		MetamethodMembers 			*			ptr_metamethod_members_aux=NULL;
+		ScriptFunction 				*			ptr_function_found=NULL;
+		MetamethodMemberSetterInfo 				setter_info;
+		const char 					*			str_set_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
+		const char 					*			str_aka_set_metamethod=byte_code_metamethod_to_operator_str(_byte_code_metamethod);
+		Instruction					*			instruction=_instruction;
 
 		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
 			if(	STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
@@ -450,7 +450,7 @@ namespace zetscript{
 		Symbol 				*	symbol_metamethod_pre_operation=NULL;
 		MemberProperty		*	member_property=NULL;
 		StackElement			stk_aux1;
-		StackMemberProperty	*	stk_mp_aux=NULL;
+		StackElementMemberProperty	*	stk_mp_aux=NULL;
 		Instruction			*	instruction=_instruction;
 
 		LOAD_PROPERTIES(_byte_code_metamethod);\
@@ -538,7 +538,7 @@ lbl_exit_function:
 		Symbol 				*	symbol_metamethod_pre=NULL;
 		MemberProperty		*	member_property=NULL;
 		StackElement			stk_aux1;
-		StackMemberProperty	*	stk_mp_aux=NULL;
+		StackElementMemberProperty	*	stk_mp_aux=NULL;
 		Instruction			*	instruction=_instruction;
 
 		LOAD_PROPERTIES(_byte_code_metamethod);\

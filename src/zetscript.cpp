@@ -332,7 +332,7 @@ namespace zetscript{
 		else if(STK_VALUE_IS_TYPE(stk)) // is a type
 			result=zs_string("type@")+this->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
-			StackMemberProperty *ma=(StackMemberProperty *)stk->value;
+			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk->value;
 			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
@@ -394,7 +394,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(&stk)){
 			result= stk.value?"true":"false";
 		}else if(STK_VALUE_IS_MEMBER_PROPERTY(&stk)){
-			StackMemberProperty *ma=(StackMemberProperty *)stk.value;
+			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk.value;
 			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
 		}else if(STK_VALUE_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
@@ -466,8 +466,9 @@ namespace zetscript{
 		if(_stk_dst->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_dst->value;
 			VirtualMachine *vm=this->getVirtualMachine();
-			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
-				//STK_IS_STRING_SCRIPT_OBJECT(stk_arg)){ // remove
+
+			// create new if constant
+			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
 				if(!vm_create_shared_script_object(
 						vm
@@ -833,7 +834,21 @@ namespace zetscript{
 		);
 
 		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
-		*stk=*(this->registerStkConstantStringObject(_key,_value));
+		StringScriptObject *so=ZS_NEW_STRING_OBJECT(this);
+		so->shared_pointer=(InfoSharedPointerNode *)ZS_IDX_UNDEFINED;
+		so->set(_value);
+
+		// create and share pointer
+		if(!vm_create_shared_script_object(this->virtual_machine,so,vm_get_main_scope_block(this->virtual_machine))){
+			ZS_THROW_RUNTIME_ERRORF("cannot creat shared pointer");
+		}
+		if(!vm_share_script_object(this->virtual_machine,so)){
+			ZS_THROW_RUNTIME_ERRORF("cannot share pointer");
+		}
+
+		stk->value=(zs_int)so;
+		stk->properties=STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_READ_ONLY;
+		//*stk=*(this->registerStkConstantStringObject(_key,_value));
 	}
 
 	void ZetScript::registerConstant(const zs_string & _key, const char * _value, const char *registered_file, short registered_line){
@@ -869,6 +884,7 @@ namespace zetscript{
 		stk_constants->set(_key.c_str(),(zs_int)stk);
 
 		so=ZS_NEW_STRING_OBJECT(this);
+		so->properties=SCRIPT_OBJECT_PROPERTY_CONSTANT;
 
 		// swap values stk_ref/value
 		so->set(_value.c_str());
@@ -1016,8 +1032,6 @@ namespace zetscript{
 
 					if(
 							(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT)
-											&&
-							(vm_stk_element->properties & STK_PROPERTY_READ_ONLY)==0  // if not constant
 					){
 						script_object =((ScriptObject *)(vm_stk_element->value));
 						if(script_object!=NULL){

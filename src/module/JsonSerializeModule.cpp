@@ -81,10 +81,10 @@ namespace zetscript{
 						stk_se.properties=STK_PROPERTY_SCRIPT_OBJECT;
 					}
 
-					StackMemberProperty *smp=NULL;
+					StackElementMemberProperty *smp=NULL;
 
 					if(stk_se.properties & STK_PROPERTY_MEMBER_PROPERTY){
-						smp=(StackMemberProperty *)stk_se.value;
+						smp=(StackElementMemberProperty *)stk_se.value;
 						if(smp->member_property->metamethod_members.getter == NULL){ // ignore value due it doesn't has getter
 							continue;
 						}

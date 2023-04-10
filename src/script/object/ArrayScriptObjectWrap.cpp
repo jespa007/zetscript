@@ -8,7 +8,7 @@ namespace zetscript{
 
 	void    			ArrayScriptObjectWrap_push(ZetScript *_zs,ArrayScriptObject *sv,StackElement  * stk){
 		ZS_UNUSUED_PARAM(_zs);
-		return sv->push(stk);
+		return sv->pushStackElement(stk);
 	}
 
 	void   	ArrayScriptObjectWrap_pop(ZetScript *_zs,ArrayScriptObject *_this){
