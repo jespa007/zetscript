@@ -122,7 +122,7 @@ namespace zetscript{
 		template<class C, class B>
 		void extends();
 
-		void bindMemberSymbols();
+		void registerMemberSymbols();
 
 		/**
 		 * Register C Member constructor
