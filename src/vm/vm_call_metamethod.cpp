@@ -163,17 +163,13 @@ namespace zetscript{
 			// we have to share any object to avoid be removed on function exit
 			if(_is_static == true){ // the share of the 1st object if static and object
 				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op1->value)==false){
-						goto apply_metamethod_error;
-					}
+					vm_share_script_object(_vm,(ScriptObject *)stk_result_op1->value);
 				}
 			}
 
 			if(stk_result_op2!=NULL){
 				if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value)==false){
-						goto apply_metamethod_error;
-					}
+					vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value);
 				}
 			}
 
@@ -220,9 +216,7 @@ namespace zetscript{
 				sv->deleteNativeObjectOnDestroy(true);
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					if(!vm_create_shared_script_object(_vm,sv)){
-						goto apply_metamethod_error;
-					}
+					vm_create_shared_script_object(_vm,sv);
 				}
 			}
 			// ... and push result if not function constructor...
@@ -342,9 +336,7 @@ namespace zetscript{
 			// call_metamethod_set is always non-static, so it shares stk_result_op2 if object to
 			// avoid be removed on function exit stk_result_op1 is always the _this object
 			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value)==false){
-					ZS_VM_STOP_EXECUTEF("Internal error: cannot share script object");
-				}
+				vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value);
 			}
 
 			if(setter_info.setters->size()>1){

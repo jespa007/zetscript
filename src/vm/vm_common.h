@@ -25,9 +25,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
 			if(sv->shared_pointer == NULL){\
-				if(!vm_create_shared_script_object(_vm,sv)){\
-					return false;\
-				}\
+				vm_create_shared_script_object(_vm,sv);\
 			}\
 		}\
 	}
@@ -234,12 +232,6 @@ namespace zetscript{
 		,ScriptObject 			*	_script_object
 		,ScriptFunction 		*	_script_function_to_call
 		,int 						_n_args
-	);
-
-	bool  vm_insert_shared_node(
-		VirtualMachine	 		*	_vm
-		, InfoSharedList 		*	 list
-		, InfoSharedPointerNode *	_node
 	);
 
 	bool vm_new_object_by_value(

@@ -300,9 +300,7 @@ execute_function:
 								}
 
 								VarRefScriptObject *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
-								if(!vm_create_shared_script_object(_vm,sc)){
-									goto lbl_exit_function;
-								}
+								vm_create_shared_script_object(_vm,sc);
 								so_param=sc;
 								stk_arg->value=(intptr_t)sc;
 								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -328,9 +326,7 @@ execute_function:
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_param->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 									StringScriptObject *sc=ZS_NEW_STRING_OBJECT(data->zs);
-									if(!vm_create_shared_script_object(_vm,sc)){
-										goto lbl_exit_function;
-									}
+									vm_create_shared_script_object(_vm,sc);
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
 									so_param=sc;
 									stk_arg->value=(zs_int)sc;
@@ -344,13 +340,9 @@ execute_function:
 						}else{
 							if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
 								var_args=ZS_NEW_ARRAY_OBJECT(data->zs);
-								if(!vm_create_shared_script_object(_vm,var_args)){
-									goto lbl_exit_function;
-								}
+								vm_create_shared_script_object(_vm,var_args);
 
-								if(!vm_share_script_object(_vm,var_args)){ // we share pointer +1 to not remove on pop in calling return
-									goto lbl_exit_function;
-								}
+								vm_share_script_object(_vm,var_args); // we share pointer +1 to not remove on pop in calling return
 
 								// push first arg
 								var_args->pushStackElement(stk_arg);
@@ -360,9 +352,7 @@ execute_function:
 							}else{ // not push in var arg
 
 								if(so_param != NULL){ // share n+1 to function if not this
-									if(!vm_share_script_object(_vm,so_param)){ // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
-										goto lbl_exit_function;
-									}
+									vm_share_script_object(_vm,so_param); // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
 								}
 
 								sf_param++;
@@ -401,9 +391,7 @@ execute_function:
 
 						// if script object it shares in order to be used as variable in the function to be called
 						if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
-							if(!vm_share_script_object(_vm,(ScriptObject *)data->vm_stk_current->value)){
-								goto lbl_exit_function;
-							}
+							vm_share_script_object(_vm,(ScriptObject *)data->vm_stk_current->value);
 						}
 						data->vm_stk_current++;
 						break;
@@ -420,9 +408,7 @@ execute_function:
 				if(sf_call_is_constructor){
 					// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
 					// exposin 'this' candidate to be dereferenced and destroyed. So we share 'this' before the call and unref after call
-					if(!vm_share_script_object(_vm,sf_call_calling_object)){
-						goto lbl_exit_function;
-					}
+					vm_share_script_object(_vm,sf_call_calling_object);
 				}
 
 				vm_execute_script_function(
@@ -436,13 +422,11 @@ execute_function:
 					// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
 					// exposin 'this' candidate to be dereferenced and destroyed. In the BYTE_CODE_CONSTRUCTOR_CALL was shared +1.
 					// In this case deref the shared 'this' is dereferenced
-					if(!vm_unref_shared_script_object(
+					vm_unref_shared_script_object(
 							_vm
 							,sf_call_calling_object
-							,ZS_VM_CURRENT_SCOPE_BLOCK)
-					){
-						goto lbl_exit_function;
-					}
+							,ZS_VM_CURRENT_SCOPE_BLOCK
+					);
 				}
 
 				sf_call_n_local_symbols=sf_call_script_function->local_variables->size();

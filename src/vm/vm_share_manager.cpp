@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	bool vm_create_shared_script_object(
+	void vm_create_shared_script_object(
 		VirtualMachine *_vm
 		,ScriptObject *_obj
 		,VM_ScopeBlock *_vm_scope_block
@@ -30,19 +30,37 @@ namespace zetscript{
 			_node->data.vm_scope_block_where_created=_vm_scope_block;//ZS_VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
-			if(!vm_insert_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node)){
-				return false;
-			}
+			vm_insert_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node);
 			_obj->shared_pointer=_node;
-			return true;
 		}else{
 			ZS_THROW_EXCEPTION("Internal : shared ptr already has a shared pointer data");
 		}
-
-		return false;
-
 	}
-	bool vm_share_script_object(
+
+	void  vm_insert_shared_node(VirtualMachine *_vm, InfoSharedList * _list, InfoSharedPointerNode *_node){
+
+		ZS_UNUSUED_PARAM(_vm);
+
+		if(_node->next != NULL || _node->previous!=NULL) {
+			ZS_THROW_EXCEPTION("Internal error expected node not in list");
+		}
+
+		if(_list->first == NULL){ /*one  node: trivial ?*/
+			_node->previous=_node->next= _list->last = _list->first =_node;
+		}
+		else{ /* >1 node add to the end */
+			// attach last-previous
+			_node->previous=_list->last;
+			_list->last->next=_node;
+			_list->last=_node;
+
+			// attach next
+			_node->next=_list->first;
+			_list->first->previous=_node;
+		}
+	}
+
+	void vm_share_script_object(
 		VirtualMachine *_vm
 		,ScriptObject *_obj
 	){
@@ -66,22 +84,13 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			if(!vm_deattach_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node)){
-				return false;
-			}
-			// update current stack due different levels from functions!
-			//_node->currentStack=idx_current_call;
-			/*if(!vm_insert_shared_node(vm,&data->shared_vars,_node)){
-				return false;
-			}*/
-
+			vm_deattach_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node);
 			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_type,_node->data.ptr_script_object_shared);
-
 		}
-		return true;
+
 	}
 
-	bool vm_unref_shared_script_object(
+	void vm_unref_shared_script_object(
 			VirtualMachine 	*	_vm
 			, ScriptObject 	*	_obj
 			,VM_ScopeBlock 	*	_scope_block
@@ -92,15 +101,13 @@ namespace zetscript{
 
 		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
 		if(shared_pointer==NULL){
-			ZS_VM_SET_USER_ERRORF(_vm,"shared ptr not registered");
-			return false;
+			ZS_THROW_EXCEPTION("Internal : shared ptr not registered");
 		}
 
 		if(shared_pointer->data.n_shares==0){
 			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
 			// we return true
-			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
-			return false;
+			ZS_THROW_EXCEPTION("Internal: Shared pointer already deattached\n");
 		}
 
 		shared_pointer->data.n_shares--;
@@ -114,41 +121,38 @@ namespace zetscript{
 				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
 
 				// insert to zero shares vector to remove automatically on ending scope
-				if(vm_insert_shared_node(_vm,unreferenced_objects,shared_pointer)==false){
-					return false;
-				}
+				vm_insert_shared_node(_vm,unreferenced_objects,shared_pointer);
 			}
 		}
-
-		return true;
 	}
 
-	bool vm_deattach_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
+	void vm_deattach_shared_node(VirtualMachine *_vm, InfoSharedList * _list, InfoSharedPointerNode *_node){
 
-		if(list == NULL) return true;
+		ZS_UNUSUED_PARAM(_vm);
+
+		if(_list == NULL){
+			ZS_THROW_EXCEPTION("Internal: list NULL\n");
+		}
 
 		if(_node->next == NULL || _node->previous == NULL){
-			ZS_VM_SET_USER_ERRORF(vm," Internal error: An already deattached node");
-			return false;
+			ZS_THROW_EXCEPTION(" Internal error: An already deattached node");
 		}
 
 		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...
-			list->last=list->first=NULL;
-		}
-		else{ // dettach and attach next...
+			_list->last=_list->first=NULL;
+		}else{ // dettach and attach next...
 			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
-			if(_node == list->first){
-				list->first=_node->next;
+			if(_node == _list->first){
+				_list->first=_node->next;
 			}
-			else if(_node == list->last){
-				list->last=_node->previous;
+			else if(_node == _list->last){
+				_list->last=_node->previous;
 			}
 			_node->previous->next=_node->next;
 			_node->next->previous=_node->previous;
 
 		}
 		_node->previous = _node->next = NULL;
-		return true;
 	}
 
 	void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block){
@@ -162,9 +166,7 @@ namespace zetscript{
 				next_node=current->next;
 				finish=next_node ==list->first;
 
-				if(!vm_deattach_shared_node(vm,list,current)){
-					return;
-				}
+				vm_deattach_shared_node(vm,list,current);
 
 				delete current->data.ptr_script_object_shared;
 				current->data.ptr_script_object_shared=NULL;

@@ -90,9 +90,7 @@ namespace zetscript{
 			}
 
 
-			if(!vm_share_script_object(_vm,obj)){\
-				goto lbl_exit_function;\
-			}\
+			vm_share_script_object(_vm,obj);
 
 			sc=obj->getScriptType();
 

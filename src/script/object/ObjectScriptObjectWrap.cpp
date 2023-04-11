@@ -17,12 +17,8 @@ namespace zetscript{
 			so->set(it.key);
 
 			// create and share pointer
-			if(!vm_create_shared_script_object(vm,so)){
-				ZS_THROW_RUNTIME_ERRORF("cannot creat shared pointer");
-			}
-			if(!vm_share_script_object(vm,so)){
-				ZS_THROW_RUNTIME_ERRORF("cannot share pointer");
-			}
+			vm_create_shared_script_object(vm,so);
+			vm_share_script_object(vm,so);
 
 			stk->value=(zs_int)so;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;

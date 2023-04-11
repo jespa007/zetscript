@@ -43,7 +43,7 @@ namespace zetscript{
 		}
 	}
 
-	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
+	void ScriptObject::unrefStackElementContainer(StackElement *si){
 		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
@@ -66,14 +66,16 @@ namespace zetscript{
 					&& (si->value != 0)
 				 ){ // deallocate but not if is c or this ref
 					// remove property if not referenced anymore
-					if(!vm_unref_shared_script_object(vm,(ScriptObject *)si->value,NULL)){
-						return false;
-					}
+					vm_unref_shared_script_object(vm,(ScriptObject *)si->value,NULL);
 				}
 				break;
 		}
+
+	}
+
+	void ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
+		unrefStackElementContainer(si);
 		free(si);
-		return true;
 	}
 
 	StackElement *ScriptObject::newBuiltinSlot(){

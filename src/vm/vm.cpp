@@ -300,23 +300,17 @@ namespace zetscript{
 					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
-						if(vm_create_shared_script_object(_vm,so) == false){
-							ZS_THROW_RUNTIME_ERRORF("Internal error: Cannot create shared pointer");
-						}
+						vm_create_shared_script_object(_vm,so);
 					}else if((so->shared_pointer->data.n_shares==0) && (_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE)){
 						// share object to avoid be deallocated ...
-						if(vm_share_script_object(_vm,so) == false){
-							ZS_THROW_RUNTIME_ERRORF("Internal error: Cannot share script pointer");
-						}
+						vm_share_script_object(_vm,so);
 
 						// ... and put in the list to deref after execute
 						deref_native_args[n_deref_native_args++]=so;
 
 					}
 
-					if(vm_share_script_object(_vm,so) == false){
-						ZS_THROW_RUNTIME_ERRORF("Internal error: Cannot share script pointer");
-					}
+					vm_share_script_object(_vm,so);
 
 				}
 				*stk_it++=_stk_params[i];

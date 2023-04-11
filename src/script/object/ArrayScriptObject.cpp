@@ -48,18 +48,18 @@ namespace zetscript{
 		return this->stk_elements.size();
 	}
 
-	StackElement	*ArrayScriptObject::setStackElement(int _idx, StackElement *_value){
+	StackElement	*ArrayScriptObject::setStackElement(int _idx, StackElement *_stk_src){
 		if(_idx >= stk_elements.size()){
 			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
 		}
 
-		StackElement *si=(StackElement *)stk_elements.items[_idx];
+		StackElement *stk_dst=(StackElement *)stk_elements.items[_idx];
 
-		ScriptObject::unrefAndFreeStackElementContainer(si);
+		ScriptObject::unrefStackElementContainer(stk_dst);
 
-		zs->stackElementAssign(si,_value);
+		zs->stackElementAssign(stk_dst,_stk_src);
 
-		return si;
+		return stk_dst;
 	}
 
 

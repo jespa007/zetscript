@@ -162,9 +162,7 @@ namespace zetscript{
 				// if argument is a script object should share, because on returning
 				// it does pop and it could deallocate twice
 				if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					if(vm_share_script_object(_vm,(ScriptObject *)stk_arg->value)==false){
-						ZS_VM_STOP_EXECUTEF("Internal error: Cannot share script pointer");
-					}
+					vm_share_script_object(_vm,(ScriptObject *)stk_arg->value);
 				}
 
 				vm_execute_script_function(\
@@ -224,13 +222,9 @@ namespace zetscript{
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					// create shared ptr
-					if(!vm_create_shared_script_object(_vm,str_object)){
-						goto lbl_exit_function;
-					}
+					vm_create_shared_script_object(_vm,str_object);
 					// share ptr
-					if(!vm_share_script_object(_vm,str_object)){
-						goto lbl_exit_function;
-					}
+					vm_share_script_object(_vm,str_object);
 					//-------------------------------------
 				}
 
@@ -276,9 +270,7 @@ namespace zetscript{
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					}
 
-					if(!vm_share_script_object(_vm,so_aux)){
-						goto lbl_exit_function;
-					}
+					vm_share_script_object(_vm,so_aux);
 				}else{
 
 					// because is same references, it has to be not dereferenced
@@ -307,9 +299,7 @@ namespace zetscript{
 			){
 				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
 
-				if(!vm_unref_shared_script_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK)){
-					goto lbl_exit_function;
-				}
+				vm_unref_shared_script_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK);
 			}else if(
 					(old_stk_dst.properties & STK_PROPERTY_CONTAINER_SLOT)!=0
 										&&

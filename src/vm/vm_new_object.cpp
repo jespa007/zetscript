@@ -27,9 +27,7 @@ namespace zetscript{
 
 			 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,stk_result_op1->value);
 
-			if(!vm_create_shared_script_object(_vm,so_aux)){
-				goto lbl_exit_function;
-			}
+			vm_create_shared_script_object(_vm,so_aux);
 
 			data->vm_stk_current->value=(zs_int)so_aux;
 			data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;

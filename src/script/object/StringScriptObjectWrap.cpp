@@ -66,12 +66,8 @@ namespace zetscript{
 			so_partial->set(v.items[i]);
 
 			// create and share pointer
-			if(!vm_create_shared_script_object(vm,so_partial)){
-				ZS_THROW_RUNTIME_ERRORF("cannot creat shared pointer");
-			}
-			if(!vm_share_script_object(vm,so_partial)){
-				ZS_THROW_RUNTIME_ERRORF("cannot share pointer");
-			}
+			vm_create_shared_script_object(vm,so_partial);
+			vm_share_script_object(vm,so_partial);
 
 			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
@@ -92,12 +88,8 @@ namespace zetscript{
 			so_partial->set(v.items[i]);
 
 			// create and share pointer
-			if(!vm_create_shared_script_object(vm,so_partial)){
-				ZS_THROW_RUNTIME_ERRORF("cannot creat shared pointer");
-			}
-			if(!vm_share_script_object(vm,so_partial)){
-				ZS_THROW_RUNTIME_ERRORF("cannot share pointer");
-			}
+			vm_create_shared_script_object(vm,so_partial);
+			vm_share_script_object(vm,so_partial);
 
 			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;

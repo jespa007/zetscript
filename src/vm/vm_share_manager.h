@@ -19,20 +19,27 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	};
 
-	bool 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
-	bool 			vm_create_shared_script_object(
+	void 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
+
+	void  vm_insert_shared_node(
+		VirtualMachine	 		*	_vm
+		, InfoSharedList 		*	_list
+		, InfoSharedPointerNode *	_node
+	);
+
+	void 			vm_create_shared_script_object(
 			VirtualMachine *vm
 			, ScriptObject *_obj
 			,VM_ScopeBlock *_vm_scope_block=NULL
 	);
 
-	bool vm_unref_shared_script_object(
+	void vm_unref_shared_script_object(
 		VirtualMachine 	*	_vm
 		, ScriptObject 	*	_obj
 		,VM_ScopeBlock 	*	_scope_block
 	);
 
-	bool vm_deattach_shared_node(
+	void vm_deattach_shared_node(
 		VirtualMachine *vm
 		, InfoSharedList * list
 		, InfoSharedPointerNode *_node

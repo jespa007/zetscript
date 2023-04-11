@@ -93,9 +93,7 @@ namespace zetscript{
 
 			somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
-			 if(!vm_create_shared_script_object(_vm,somf)){
-				goto lbl_exit_function;
-			 }
+			 vm_create_shared_script_object(_vm,somf);
 
 			data->vm_stk_current->value=(zs_int)somf;
 			data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -426,12 +424,8 @@ namespace zetscript{
 			if(STK_IS_STRING_SCRIPT_OBJECT(&stk_src)){\
 				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
 				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-				if(!vm_create_shared_script_object(_vm,so_aux)){\
-					goto lbl_exit_function;\
-				}\
-				if(!vm_share_script_object(_vm,so_aux)){\
-					goto lbl_exit_function;\
-				}\
+				vm_create_shared_script_object(_vm,so_aux);
+				vm_share_script_object(_vm,so_aux);
 				((StringScriptObject *)(so_aux))->set(((StringScriptObject *)stk_src.value)->get());
 			}else{ \
 				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src.value;
@@ -452,9 +446,7 @@ namespace zetscript{
 				}
 
 				// share always because it's not possible have cyclic reference of each push item object/vector
-				if(!vm_share_script_object(_vm,src_container)){\
-					goto lbl_exit_function;\
-				}\
+				vm_share_script_object(_vm,src_container);
 			}\
 		}else{\
 			ZS_VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\

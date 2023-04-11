@@ -57,40 +57,33 @@ namespace zetscript{
 	StackElement * ObjectScriptObject::setStackElement(
 			const zs_string &  _key_name
 			//,zs_string & error
-			,StackElement * sv
+			,StackElement * _stk_src
 		){
-		StackElement si;
 
 		bool exists=false;
 		if(map_builtin_fields->exist(_key_name.c_str())){
 			ZS_THROW_RUNTIME_ERROR("Cannot set value on '%s' field because is internally used",_key_name.c_str());
 		}
 
-		StackElement *stk_user_element = (StackElement *)map_fields->get(_key_name.c_str(),&exists);
+		StackElement *stk_dst = (StackElement *)map_fields->get(_key_name.c_str(),&exists);
 		if(exists){
-			ScriptObject::unrefAndFreeStackElementContainer(stk_user_element);
-		}
-
-		if(sv != NULL){
-			//si = *sv;
-			// update n_refs +1
-			/*if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_script_object(vm,(ObjectScriptObject *)(sv->value)) == false){
-					return NULL;
-				}
-			}*/
-			zs->stackElementAssign(stk_user_element,sv);
+			// unref current slot
+			ScriptObject::unrefStackElementContainer(stk_dst);
 		}else{
+			// create new slot
+			zs_string key_name = _key_name;
+			stk_dst=(StackElement *)ZS_MALLOC(sizeof(StackElement));
+			map_fields->set(key_name.c_str(),(zs_int)stk_dst);
 
-			si=k_stk_undefined;
 		}
 
-		zs_string key_name = _key_name;
-		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		map_fields->set(key_name.c_str(),(zs_int)new_stk);
+		if(_stk_src != NULL){
+			zs->stackElementAssign(stk_dst,_stk_src);
+		}else{
+			*stk_dst=k_stk_undefined;
+		}
 
-		*new_stk=si; //assign var
-		return new_stk;
+		return stk_dst;
 	}
 
 	StackElement 	* ObjectScriptObject::getStackElement(const zs_string &  _key_name){

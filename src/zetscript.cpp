@@ -470,12 +470,10 @@ namespace zetscript{
 			// create new if constant
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
-				if(!vm_create_shared_script_object(
+				vm_create_shared_script_object(
 						vm
 						,sc
-				)){
-					return;
-				}
+				);
 				sc->set(so->toString().c_str());
 				so=sc;
 			}
@@ -835,16 +833,11 @@ namespace zetscript{
 
 		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
 		StringScriptObject *so=ZS_NEW_STRING_OBJECT(this);
-		so->shared_pointer=(InfoSharedPointerNode *)ZS_IDX_UNDEFINED;
 		so->set(_value);
 
 		// create and share pointer
-		if(!vm_create_shared_script_object(this->virtual_machine,so,vm_get_main_scope_block(this->virtual_machine))){
-			ZS_THROW_RUNTIME_ERRORF("cannot creat shared pointer");
-		}
-		if(!vm_share_script_object(this->virtual_machine,so)){
-			ZS_THROW_RUNTIME_ERRORF("cannot share pointer");
-		}
+		vm_create_shared_script_object(this->virtual_machine,so,vm_get_main_scope_block(this->virtual_machine));
+		vm_share_script_object(this->virtual_machine,so);
 
 		stk->value=(zs_int)so;
 		stk->properties=STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_READ_ONLY;
@@ -1036,9 +1029,7 @@ namespace zetscript{
 						script_object =((ScriptObject *)(vm_stk_element->value));
 						if(script_object!=NULL){
 							if(script_object->shared_pointer != NULL){
-								if(!vm_unref_shared_script_object(this->virtual_machine,script_object,NULL)){
-									ZS_THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
-								}
+								vm_unref_shared_script_object(this->virtual_machine,script_object,NULL);
 							}
 						}
 					}

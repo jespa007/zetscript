@@ -31,11 +31,11 @@ namespace zetscript{
 			,Instruction *_instruction
 	);
 
-	bool vm_delete_object(
+	void vm_delete_object(
 		VirtualMachine *vm
 	);
 
-	bool vm_new_string_object(
+	void vm_new_string_object(
 			VirtualMachine 	*	_vm
 			,Instruction 	*	_instruction
 	);
@@ -497,9 +497,7 @@ namespace zetscript{
 
 				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,instruction->value_op1);
 
-					if(!vm_create_shared_script_object(_vm,so_aux)){
-						goto lbl_exit_function;
-					}
+					vm_create_shared_script_object(_vm,so_aux);
 
 					if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						so_class_aux1=(ClassScriptObject *)so_aux;
@@ -519,35 +517,27 @@ namespace zetscript{
 				 	 continue;
 			 case BYTE_CODE_NEW_ARRAY: // Create new vector...
 					so_aux=ZS_NEW_ARRAY_OBJECT(data->zs);
-					if(!vm_create_shared_script_object(_vm,so_aux)){
-						goto lbl_exit_function;
-					}
+					vm_create_shared_script_object(_vm,so_aux);
 					data->vm_stk_current->value=(zs_int)so_aux;
 					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
-					if(vm_create_shared_script_object(_vm,so_aux)==false){
-						return;
-					}
+					vm_create_shared_script_object(_vm,so_aux);
 					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
-				 if(vm_new_string_object(
-						 _vm
-						 ,instruction
-					)==false){
-						return;
-				 }
+				 vm_new_string_object(
+					 _vm
+					 ,instruction
+				);
 				continue;
 			 case  BYTE_CODE_DELETE:
-				 if(vm_delete_object(
+				 vm_delete_object(
 						_vm
-				)==false){
-					return;
-				 }
+				);
 				continue;
 			/* case BYTE_CODE_CLEAR_ZERO_POINTERS:
 				 vm_remove_empty_shared_pointers(_vm,ZS_VM_CURRENT_SCOPE_BLOCK);
@@ -631,9 +621,7 @@ namespace zetscript{
 
 					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,_this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
 
-					 if(!vm_create_shared_script_object(_vm,so_aux)){
-						return;
-					 }
+					 vm_create_shared_script_object(_vm,so_aux);
 					 data->vm_stk_current->value=(zs_int)so_aux;
 					 data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					 data->vm_stk_current++;
@@ -868,13 +856,11 @@ namespace zetscript{
 
 				// deatch from list of created scope block to avoid double dealloc on pop scope
 				if(so_aux->shared_pointer->data.n_shares == 0){
-					if(vm_deattach_shared_node(
+					vm_deattach_shared_node(
 							vm
 							,&so_aux->shared_pointer->data.vm_scope_block_where_created->unreferenced_objects
 							,so_aux->shared_pointer
-					)==false){
-						return false;
-					}
+					);
 				}
 				free(so_aux->shared_pointer);
 				so_aux->shared_pointer=NULL;
@@ -885,29 +871,7 @@ namespace zetscript{
 		return true;
 	}
 
-	bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
-		if(_node->next != NULL || _node->previous!=NULL) {
-			ZS_VM_SET_USER_ERRORF(vm," Internal error expected node not in list");
-			return false;
-		}
-
-		if(list->first == NULL){ /*one  node: trivial ?*/
-			_node->previous=_node->next= list->last = list->first =_node;
-		}
-		else{ /* >1 node add to the end */
-			// attach last-previous
-			_node->previous=list->last;
-			list->last->next=_node;
-			list->last=_node;
-
-			// attach next
-			_node->next=list->first;
-			list->first->previous=_node;
-		}
-		return true;
-	}
-
-	bool vm_delete_object(
+	void vm_delete_object(
 		VirtualMachine *_vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -926,9 +890,7 @@ namespace zetscript{
 
 			so_aux = (ScriptObject *)(stk_result_op1)->value;
 
-			if(!vm_unref_shared_script_object(_vm,so_aux,NULL)){
-				return false;
-			}
+			vm_unref_shared_script_object(_vm,so_aux,NULL);
 
 			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
 			{ // max ...
@@ -940,11 +902,9 @@ namespace zetscript{
 			}
 			STK_SET_UNDEFINED(stk_result_op1);
 		}
-
-		return true;
 	}
 
-	bool vm_new_string_object(
+	void vm_new_string_object(
 			VirtualMachine 	*	_vm
 			,Instruction 	*	_instruction
 	){
@@ -953,11 +913,8 @@ namespace zetscript{
 
 
 		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
-		if(!vm_create_shared_script_object(_vm,so_aux)){
-			return false;
-		}
+		vm_create_shared_script_object(_vm,so_aux);
 		(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
-		return true;
 	}
 }
 

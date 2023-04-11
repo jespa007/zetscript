@@ -78,7 +78,8 @@ namespace zetscript{
 
 		virtual StackElement 				* 	newBuiltinSlot();
 		virtual StackElement 				* 	addBuiltinField(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
-		bool 									unrefAndFreeStackElementContainer(StackElement *si);
+		void 									unrefStackElementContainer(StackElement *si);
+		void 									unrefAndFreeStackElementContainer(StackElement *si);
 	};
 
 }
