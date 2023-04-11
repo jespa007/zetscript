@@ -27,9 +27,9 @@ namespace zetscript{
 			va_end(ap);
 
 			if((_file == NULL || *_file == 0)){
-				str_out=format("[line %i] ", _line);
+				str_out=format("[line %i] : %s", _line,_sformat_buffer);
 			}else{
-				str_out=format("[%s:%i] ", zs_path::get_filename(_file).c_str(), _line);
+				str_out=format("[%s:%i] : %s", zs_path::get_filename(_file).c_str(), _line,_sformat_buffer);
 			}
 
 			return str_out;
