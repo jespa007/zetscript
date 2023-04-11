@@ -183,7 +183,7 @@ This section explains how a C function to be binded in the script side, it shoul
 
 ===== Boolean
 
-To bind a C function that returns a _Boolean_ in the script type value it must returns _bool_ type.
+To bind a function that returns a _Boolean_ in the script side, it has to define a C function that returns _bool_ type.
 
 *Example*
 
