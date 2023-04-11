@@ -256,6 +256,10 @@ namespace zetscript{
 		StackElement stk_return=k_stk_undefined;
 		StackElement *stk_start=NULL;
 
+		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
+			vm_reset_error_vars(_vm);
+		}
+
 		// calling main funcion
 		if(
 			_script_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN
@@ -265,8 +269,6 @@ namespace zetscript{
 			if(data->vm_current_scope_function != ZS_VM_SCOPE_FUNCTION_MAIN){
 				ZS_THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",ZS_IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
-
-			vm_reset_error_vars(_vm);
 
 			stk_start=data->vm_stack;
 			n_stk_params=data->main_function_object->local_variables->size();
@@ -282,7 +284,6 @@ namespace zetscript{
 				if((_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					ZS_THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
 				}
-				//vm_reset_error_vars(vm);
 
 				first_script_call_from_c=true;
 				data->vm_current_scope_function=ZS_VM_SCOPE_FUNCTION_FIRST; // assign first idx call as 1
