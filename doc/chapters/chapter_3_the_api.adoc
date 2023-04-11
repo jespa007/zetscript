@@ -136,33 +136,25 @@ To know more about the meaning of byte codes see section <<Byte codes>>
 
 === Bind function
 
-This section will explain how to define and register C function to be callable from script side.
+To expose a C function in the script side it has be defined as it follows,
 
-The function to register must have signature as it follows,
-
-- *Return* :It can return `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other binded type.
-- *Parameters* : always includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other binded type.
+- *Return* :It returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
+- *Parameters* : It includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other registered type.
 
 *Syntax*
 
 [source,c++]
 ----
-ReturnType wrapper_function(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
+ReturnType c_function_to_bind(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
 	....
 }
 ----
 
-After having the wrapper function defined, it can be binded by calling `ZetScript::registerFunction` passing the name of function and the wrapper function reference.
-
-[source,c++]
-----
-ZetScript::zetscript zs;
-zs.registerFunction("wrapper_function",wrapper_function);
-----
+After defining the function, it has to registered by callind `ZetScript::registerFunction` passing the name of function and its reference.
 
 *Example*
 
-The following example it binds a wrapper function called "sayHelloWorld" without arguments and without any return.
+The following example it register wrapper function called "sayHelloWorld" without arguments and without any return.
 
 [source,c++]
 ----
@@ -179,7 +171,7 @@ include::../examples/the_api/bind_function/bind_function_out.txt[]
 
 ==== Return types
 
-In the next sections will explain which return type has to has wrapper function to returns the following type of values:
+This section explains how a C function to be binded in the script side, it should be defined in order to return the following script types,
 
 - Boolean
 - Integer
@@ -187,11 +179,11 @@ In the next sections will explain which return type has to has wrapper function 
 - String
 - Array
 - Object
-- Custom type
+- Registered type
 
 ===== Boolean
 
-To bind wrapper function that returns a _boolean_ value to script side it must return _bool_ type.
+To bind a C function that returns a _Boolean_ in the script type value it must returns _bool_ type.
 
 *Example*
 
