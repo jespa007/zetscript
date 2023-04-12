@@ -134,23 +134,23 @@ Apart there's a description per instruction with the following columns,
 To know more about the meaning of byte codes see section <<Byte codes>>
 
 
-=== Bind function
+=== Call C function from script side
 
-To expose a C function in the script side it has be defined as it follows,
+To call a C function from script side it must meet the following signature,
 
-- *Return* :It returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
+- *Return* :It can returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
 - *Parameters* : It includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other registered type.
 
 *Syntax*
 
 [source,c++]
 ----
-ReturnType c_function_to_bind(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
+ReturnType c_function_to_register(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
 	....
 }
 ----
 
-After defining the function, it has to registered by callind `ZetScript::registerFunction` passing the name of function and its reference.
+After the C function is created, it has to be registered by calling `ZetScript::registerFunction` passing the name of function and its reference.
 
 *Example*
 
@@ -171,7 +171,7 @@ include::../examples/the_api/bind_function/bind_function_out.txt[]
 
 ==== Return types
 
-This section explains how a C function to be binded in the script side, it should be defined in order to return the following script types,
+This section will explain all cases of register a C function that returns the following script types,
 
 - Boolean
 - Integer
@@ -183,7 +183,7 @@ This section explains how a C function to be binded in the script side, it shoul
 
 ===== Boolean
 
-To bind a function that returns a _Boolean_ in the script side, it has to define a C function that returns _bool_ type.
+To register a C function that returns a _Boolean_ value to the script side, its C return type has to be _bool_.
 
 *Example*
 
