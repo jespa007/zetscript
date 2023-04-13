@@ -1598,7 +1598,7 @@ namespace zetscript{
 									}
 								}
 								else{
-									ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+									ZS_THROW_EXCEPTION_FILE_LINE(
 											file
 											,line
 											,"Cannot bind script function '%s': cannot access i (%i)"
@@ -1610,7 +1610,7 @@ namespace zetscript{
 						}
 
 						if(calling_obj == NULL){
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+							ZS_THROW_EXCEPTION_FILE_LINE(
 									file
 									,line
 									,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
@@ -1625,7 +1625,7 @@ namespace zetscript{
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->value;
 							}else{
-								ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+								ZS_THROW_EXCEPTION_FILE_LINE(
 										file
 										,line
 										,"Cannot bind script function '%s': Variable name '%s' not script variable"
@@ -1635,7 +1635,7 @@ namespace zetscript{
 							}
 						}
 						else{
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+							ZS_THROW_EXCEPTION_FILE_LINE(
 								file
 								,line
 								,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
@@ -1657,7 +1657,7 @@ namespace zetscript{
 						fun_obj=test_fun;
 					}
 				}else{
-					ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+					ZS_THROW_EXCEPTION_FILE_LINE(
 							file
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
@@ -1681,7 +1681,7 @@ namespace zetscript{
 			}
 
 			if(fun_obj==NULL){
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 						file
 						,line
 						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
@@ -1692,7 +1692,7 @@ namespace zetscript{
 			try{
 				return_function=bindScriptFunction<F>(fun_obj,calling_obj,file,line);
 			}catch(std::exception & ex){
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
+				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
 			}
 
 

@@ -169,39 +169,7 @@ namespace zetscript{
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",str_script_type.c_str());
 		}
 
-		// link unreferenced forward declared functions
-		for(int i=0; i < sc->scope_script_type->symbol_functions->size(); i++){
-			Symbol  *symbol_sf=(Symbol *)(sc->scope_script_type->symbol_functions->items[i]);
-			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
-			Instruction *it=sf->instructions;
-			if(it != NULL){
-				while(it->byte_code!=BYTE_CODE_END_FUNCTION){
-					if((it->byte_code==BYTE_CODE_THIS_CALL) && (it->value_op2==ZS_IDX_UNDEFINED)){
-						// search function and link its idx_position
-						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
-
-						for(int j = 0; j < sc->scope_script_type->symbol_functions->size(); j++){
-							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[j];
-							if(
-								   ( sv->name == str_name_unreferenced_this_call )
-							){
-								it->value_op2=(zs_int)sv;
-								break;
-
-							}
-						}
-
-					}
-
-					it++;
-				}
-			}
-		}
-
-
 		return aux_p+1;
-
-
 	}
 
 	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){

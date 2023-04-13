@@ -238,6 +238,7 @@ namespace zetscript{
 			if(named_function){ // is named function..
 
 				if(sc==NULL){ // check if function member declaration
+
 				   end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
 						eval_data
 						,aux_p
@@ -245,6 +246,11 @@ namespace zetscript{
 						,&sc
 						,name_script_function
 				   );
+
+				   if(eval_data->error){
+					   return NULL;
+				   }
+
 
 				   if(sc!=NULL){ // scope is the type
 					   scope_info=sc->scope_script_type;
@@ -275,16 +281,6 @@ namespace zetscript{
 					// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
 					return NULL;
 				}
-
-
-
-				// anonymous functions are always in main scope
-				/*if(
-						scope_info->script_type != SCRIPT_TYPE_MAIN(eval_data)
-					 && scope_info->scope_parent != NULL
-				){
-					sc=scope_info->script_type;
-				}*/
 			}
 
 			// eval function args...

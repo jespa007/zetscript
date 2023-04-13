@@ -491,7 +491,7 @@ namespace zetscript{
 				}
 
 				if(same_signature){
-					ZS_THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
+					ZS_THROW_EXCEPTION_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
 										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
@@ -765,7 +765,7 @@ namespace zetscript{
 
 
 				if(ptr_str_symbol_to_find==NULL){
-					ZS_THROW_SCRIPT_ERROR_FILE_LINE(
+					ZS_THROW_EXCEPTION_FILE_LINE(
 						instruction_file
 						,instruction_line
 						,"Cannot find symbol name at instruction %i"
@@ -805,8 +805,23 @@ namespace zetscript{
 
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
-				}else{ // global scope
-					symbol_found = ZS_MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+				}else{
+					if(unresolved_instruction->byte_code==BYTE_CODE_THIS_CALL){
+
+						ScriptType *sc_sf=this->scope_script_function->getScriptTypeOwner();
+						for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->size(); j++){
+							Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
+							if(
+								   sv->name==ptr_str_symbol_to_find
+							){
+								symbol_found=sv;
+								break;
+							}
+						}
+					}else{
+						// global scope
+						symbol_found = ZS_MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+					}
 				}
 
 
@@ -818,12 +833,14 @@ namespace zetscript{
 						// if symbol is function, then there's two possible actions:
 						// 1. call function
 						// 2. load function
+						if(unresolved_instruction->byte_code!=BYTE_CODE_THIS_CALL){
 
-						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
-							// if byte code has not defined number of parameters, it loads the function
-							unresolved_instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-						}else{
-							unresolved_instruction->byte_code=BYTE_CODE_CALL;
+							if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
+								// if byte code has not defined number of parameters, it loads the function
+								unresolved_instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+							}else{
+								unresolved_instruction->byte_code=BYTE_CODE_CALL;
+							}
 						}
 						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable

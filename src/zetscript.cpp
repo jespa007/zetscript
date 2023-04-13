@@ -975,7 +975,7 @@ namespace zetscript{
 
 			if(error){
 				if(error_file.empty()==false){
-					ZS_THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
+					ZS_THROW_EXCEPTION_FILE_LINE(error_file.c_str(),error_line,str_error.c_str());
 				}else{
 					ZS_THROW_EXCEPTION(str_error.c_str());
 				}

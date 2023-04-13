@@ -190,7 +190,7 @@ namespace zetscript{
 					what="it conflicts with member variable";
 				}
 			}
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
+			ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
 				,attrib_name.c_str()
 				,what
 				,zs_path::get_filename(symbol_member_property->file).c_str()
@@ -231,7 +231,7 @@ namespace zetscript{
 
 
 		if(MetamethodMembers::isMetamethodMember(_byte_code_metamethod)==false){
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
+			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 				,_property_name.c_str()
 			);
@@ -269,7 +269,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_POST_INC:
 			if(mp->metamethod_members.post_inc != NULL){
 
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -279,7 +279,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_POST_DEC:
 			if(mp->metamethod_members.post_dec != NULL){
 
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -289,7 +289,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_PRE_INC:
 			if(mp->metamethod_members.pre_inc != NULL){
 
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -299,7 +299,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_PRE_DEC:
 			if(mp->metamethod_members.pre_dec != NULL){
 
-				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -353,7 +353,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.getter != NULL){
 
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
+			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a getter"
 				,_property_name.c_str()
 			);
 		}
@@ -400,7 +400,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.getter != NULL){
 
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
+			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a getter"
 				,_property_name.c_str()
 			);
 		}
@@ -443,7 +443,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.neg != NULL){
 
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already registered 'neg' property"
+			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already registered 'neg' property"
 				,_property_name.c_str()
 			);
 		}
@@ -486,7 +486,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.bwc != NULL){
 
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already registered 'bwc' property"
+			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already registered 'bwc' property"
 				,_property_name.c_str()
 			);
 		}
@@ -722,7 +722,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_POST_INC:
 						if(metamethod_members.post_inc != NULL){
 
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
+							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -731,7 +731,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_POST_DEC:
 						if(metamethod_members.post_dec != NULL){
 
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
+							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -740,7 +740,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_PRE_INC:
 						if(metamethod_members.pre_inc != NULL){
 
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
+							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -749,7 +749,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_PRE_DEC:
 						if(metamethod_members.pre_dec != NULL){
 
-							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
+							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
 								,str_script_type.c_str()
 							);
 						}

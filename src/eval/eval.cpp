@@ -92,7 +92,7 @@ namespace zetscript{
 
 
 		if(error){
-			ZS_THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
+			ZS_THROW_EXCEPTION_FILE_LINE(error_file.c_str(),error_line,str_error.c_str());
 		}
 	}
 
@@ -609,15 +609,7 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->size(); j++){
-						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
-						if(
-							   sv->name==eval_instruction->symbol_name
-						){
-							eval_instruction->vm_instruction.value_op2=(zs_int)sv;
-							break;
-						}
-					}
+					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_INSTANCEOF:

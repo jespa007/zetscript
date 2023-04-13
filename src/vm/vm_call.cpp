@@ -131,7 +131,7 @@ namespace zetscript{
 				 }else{ // Member function not exist try to get variable to call if exist
 					 sf_call_stk_function_ref=_this_object->getStackElement(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					 sf_call_is_member_function=false;
-					 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
+					 if(sf_call_stk_function_ref==NULL){
 						 ZS_VM_STOP_EXECUTE("Error calling 'this.%s': member variable or function '%s::%s' not exist"
 							, SFI_GET_SYMBOL_NAME(_script_function,instruction)
 							,_this_object->getScriptType()->str_script_type.c_str()
