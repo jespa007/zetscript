@@ -134,9 +134,9 @@ Apart there's a description per instruction with the following columns,
 To know more about the meaning of byte codes see section <<Byte codes>>
 
 
-=== Call C function from script side
+=== register function
 
-To call a C function from script side it must meet the following signature,
+A native function to register must meet the following signature,
 
 - *Return* :It can returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
 - *Parameters* : It includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other registered type.
@@ -150,7 +150,13 @@ ReturnType c_function_to_register(zetscript::ZetScript *_zs, Type1 _arg1, Type2 
 }
 ----
 
-After the C function is created, it has to be registered by calling `ZetScript::registerFunction` passing the name of function and its reference.
+After function is created it has to register by calling `ZetScript::registerFunction` passing a name that will be exposed as symbol name in the script side for its call and the native function reference.
+
+For example,
+
+ ZetScript zs;
+ zs.registerFunction("script_symbol_name",c_function_to_register)
+
 
 *Example*
 
@@ -171,7 +177,7 @@ include::../examples/the_api/bind_function/bind_function_out.txt[]
 
 ==== Return types
 
-This section will explain all cases of register a C function that returns the following script types,
+This section will explain how to register function that return the following types in the script side,
 
 - Boolean
 - Integer
