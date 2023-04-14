@@ -189,7 +189,7 @@ This section will explain how to register function that return the following typ
 
 ===== Boolean
 
-To register a C function that returns a _Boolean_ value to the script side, its C return type has to be _bool_.
+To register a function that returns a _Boolean_ value on the script side, the function must define the type _bool_ as the return type.
 
 *Example*
 
