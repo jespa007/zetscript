@@ -10,7 +10,6 @@
 #define ZS_THROW_RUNTIME_ERROR(_str_error, ...)							::zetscript::throw_exception_file_line(__FILENAME__,__LINE__,_str_error, __VA_ARGS__)
 #define ZS_THROW_RUNTIME_ERRORF(_str_error)								ZS_THROW_RUNTIME_ERROR(_str_error,NULL)
 
-#define ZS_THROW_SCRIPT_ERROR 											::zetscript::throw_exception_file_line
 #define ZS_THROW_EXCEPTION_FILE_LINE									::zetscript::throw_exception_file_line
 #define ZS_THROW_EXCEPTION												::zetscript::throw_exception
 
