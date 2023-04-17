@@ -134,28 +134,30 @@ Apart there's a description per instruction with the following columns,
 To know more about the meaning of byte codes see section <<Byte codes>>
 
 
-=== register function
+=== Calling native code from ZetScript
 
-A native function to register must meet the following signature,
-
-- *Return* :It can returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
-- *Parameters* : It includes `zetscript::ZetScript *` as first parameter and a maximum of 9 parameters as one defined in  <<Built-in types>> or other registered type.
+For a native function to be called from _ZetScript_ it must follow apropiate signature to get its arguments and return its results and finally register that function.
+As parameters, the native function to be exposed in _ZetScript_ must always include `zetscript::ZetScript *` type as first parameter and then a maximum of 9 parameters as types in one defined in  <<Built-in types>> or other registered type. As return, the native function to be exposed in _ZetScript_ it can returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
 
 *Syntax*
 
 [source,c++]
 ----
-ReturnType c_function_to_register(zetscript::ZetScript *_zs, Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 ){
+ReturnType zetscriptFunctionInterface(zetscript::ZetScript *_zs, ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 ){
 	....
 }
 ----
 
-After function is created it has to register by calling `ZetScript::registerFunction` passing a name that will be exposed as symbol name in the script side for its call and the native function reference.
+Where,
 
-For example,
+- _ReturnType_: It can be `void` or some type from <<Built-in types>> or other registered type.
+- _ParamType_: It can be one defined in  <<Built-in types>> or other registered type.
+
+
+To register the native function its done by `ZetScript::registerFunction` passing a name as the symbol_name in _ZetScript_ and the native function reference.
 
  ZetScript zs;
- zs.registerFunction("script_symbol_name",c_function_to_register)
+ zs.registerFunction("zetscriptFunctionInterface",zetscriptFunctionInterface)
 
 
 *Example*
@@ -164,7 +166,7 @@ The following example it register wrapper function called "sayHelloWorld" withou
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function.cpp[]
+include::../examples/the_api/register_function/register_function.cpp[]
 ----
 
 
@@ -172,12 +174,12 @@ Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_out.txt[]
+include::../examples/the_api/register_function/register_function_out.txt[]
 ----
 
 ==== Return types
 
-This section will explain how to register function that return the following types in the script side,
+This section will explain how to register functions to return the following ZetScript types:
 
 - Boolean
 - Integer
@@ -185,24 +187,24 @@ This section will explain how to register function that return the following typ
 - String
 - Array
 - Object
-- Registered type
+- A registered type
 
 ===== Boolean
 
-To register a function that returns a _Boolean_ value on the script side, the function must define the type _bool_ as the return type.
+To register a function that returns a _Boolean_ value in ZetScript it must create native function as _bool_ as the return type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_bool.cpp[]
+include::../examples/the_api/register_function/register_function_return_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_bool_out.txt[]
+include::../examples/the_api/register_function/register_function_return_bool_out.txt[]
 ----
 
 
