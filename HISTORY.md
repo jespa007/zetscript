@@ -1,7 +1,7 @@
 
 
 Version: 2.0.0
-Date: XX-XX-2023 (Expected to finish on end december 2022)
+Date: XX-XX-2023 (Expected to finish on end 1st June 2023)
 
 Main improvements: 
 
@@ -11,12 +11,11 @@ Main improvements:
 - Optimize size/compile times ~x2
 - ZetScript can be instanced more than once
 - Implements multiple Return/Assignments
-- Anonymous functions created within class can use "this" keyword in its body.
 - Implements arguments with options: default, variable arguments and by reference
 - Implements setter/getter for member variables
 - Implements keywords 'const'
 - Implements operators 'in','typeof'
-- Implements builtin iterators for String, Vector and Objects
+- Implements builtin iterators for String, Array and Objects
 - Implements builtin obj: 'DateTime'
 - Implements builtin modules: 'System', 'Math', 'Json' and 'String'
 - The use of "function" keyword on class function members are not mandatory
@@ -92,11 +91,11 @@ Solved issues
 - #137 Callback function support
 - #138 remove all std::vector and std::string access on VM
 - #139 Implement const operator
-- #140 Implement Vector methods  
+- #140 Implement Array methods  
 - #141 limit n params only for c functions 
 - #142 Try to optimize bind function member 
 - #144 Implement System helper class PART1
-- #145 Implement eval Vector object
+- #145 Implement eval Array object
 - #146 Implement eval Dictionary object
 - #147 Implement bind class const static variable
 - #148 replace all writeError functions by throw and remove error param 
@@ -126,9 +125,9 @@ Solved issues
 - #179 Bug if-else fails {max scope reached} 
 - #180 Return vector or dictionary not deref its user properties 
 - #181 Implement var args 
-- #182 Make ScriptVarStringr iterable like Vector 
+- #182 Make StringStringObject iterable like Array 
 - #183 Implement Object methods
-- #184 Implement + for Vector 
+- #184 Implement + for Array 
 - #185 parser char as integer
 - #186 Implement StriptVarString methods
 - #187 Implement Console helper class
@@ -145,7 +144,7 @@ Solved issues
 - #201 System.print: convert any stackelement in string if argument itself is not string var  
 - #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 - #203 Implement operator + object
-- #204 Implement indexs as ScriptObjectVector in ScriptObject 
+- #204 Implement indexs as ArrayScriptObject in ScriptObject 
 - #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 - #206 Override global functions 
 - #207 ScriptObjectString: Implement operator [] 
@@ -166,7 +165,7 @@ Solved issues
 - #224 implement keyword static
 - #215 Implement typeof operator
 - #227 implement DateTime class
-- #229 Implement toJson(bool formated=false) for Vector and Object 
+- #229 Implement toJson(bool formated=false) for Array and Object 
 - #230 Control return ScriptObject[String] values that are not deallocated by user 
 - #231 register class passing C function constructor and destructor
 - #232 Implement setter/getter for member variables 
@@ -221,7 +220,7 @@ Solved issues
 - #294 undefined behaviour when call delete 
 - #295 Allow switch to have expressions/variables in the case 
 - #296 Create inc/dec metamethods and include in attribute metamethods 
-- #297 Vector/Object & class by default it gives all public members in json format by default when prints or do toString()
+- #297 Array/Object & class by default it gives all public members in json format by default when prints or do toString()
 - #298 Do not store function members in ScriptObject 
 - #299 Do not allocate for attribute member in script object 
 - #300 Use linear array instead of zs_vector in vm runtime 
@@ -242,8 +241,8 @@ Solved issues
 - #317 Change concept of class by type 
 - #302 Improve zs_map
 - #319 Detect when function member object is called and its own object is destroyed 
-- #323 Implement operator "==" for Vector 
-- #323 Implement operator "==" for Vector
+- #323 Implement operator "==" for Array 
+- #323 Implement operator "==" for Array
 - #324 Mandatory Zetscript *_zs first param for to all binding functions 
 - #325 evaluation inherited class doesn't update references from its parent 
 - #326 Constructor member as named "constructor" 

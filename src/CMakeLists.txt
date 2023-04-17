@@ -465,6 +465,7 @@ SET(
 	vm/vm.h
 	vm/vm.tcc
 	vm/vm_common.h
+	vm/vm_share_manager.h
 	
 	# main
 	ByteCode.h
