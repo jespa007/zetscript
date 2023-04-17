@@ -411,6 +411,7 @@ SET(
 	script/zs_script.h
 	script/MemberProperty.h
 	script/MetamethodMembers.h
+	script/StackElementMemberProperty.h
 		
 	# script/function	
 	script/function/ScriptFunction.h
