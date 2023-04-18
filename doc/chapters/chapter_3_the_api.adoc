@@ -136,8 +136,8 @@ To know more about the meaning of byte codes see section <<Byte codes>>
 
 === Calling native code from ZetScript
 
-For a native function to be called from _ZetScript_ it must follow apropiate signature to get its arguments and return its results and finally register that function.
-As parameters, the native function to be exposed in _ZetScript_ must always include `zetscript::ZetScript *` type as first parameter and then a maximum of 9 parameters as types in one defined in  <<Built-in types>> or other registered type. As return, the native function to be exposed in _ZetScript_ it can returns `void` (it doesn't returns any parameter) or some type from <<Built-in types>> or other registered type.
+To call native code from _ZetScript_ it must create a C function with an apropiate prototype to get its arguments and return its results and finally register that function.
+As the parameters, the function must always include `zetscript::ZetScript *` type as first parameter and then a maximum of 9 parameters as types in one defined in  <<Built-in types>> or other registered type. As return, the function it can return `void` (it doesn't returns any parameter) or some type defined in <<Built-in types>> or other registered type.
 
 *Syntax*
 
@@ -150,11 +150,11 @@ ReturnType zetscriptFunctionInterface(zetscript::ZetScript *_zs, ParamType _arg1
 
 Where,
 
-- _ReturnType_: It can be `void` or some type from <<Built-in types>> or other registered type.
+- _ReturnType_: It can be `void` or some type defined in <<Built-in types>> or other registered type.
 - _ParamType_: It can be one defined in  <<Built-in types>> or other registered type.
 
 
-To register the native function its done by `ZetScript::registerFunction` passing a name as the symbol_name in _ZetScript_ and the native function reference.
+To register the function its done by `ZetScript::registerFunction` passing a name as the symbol_name in _ZetScript_ and function reference.
 
  ZetScript zs;
  zs.registerFunction("zetscriptFunctionInterface",zetscriptFunctionInterface)
@@ -162,7 +162,7 @@ To register the native function its done by `ZetScript::registerFunction` passin
 
 *Example*
 
-The following example it register wrapper function called "sayHelloWorld" without arguments and without any return.
+The following example it registers a function called "sayHelloWorld" with no arguments and no return.
 
 [source,c++]
 ----
@@ -189,9 +189,9 @@ This section will explain how to register functions that returns the following Z
 - Object
 - A registered type
 
-===== Boolean
+===== Return a Boolean
 
-To register a function that returns a _Boolean_ value in ZetScript it must define a C function with _bool_ as the return type.
+To call a C function that returns a ZetScript _Boolean_, it must create and register a C function that returns _bool_ as the return type.
 
 *Example*
 
@@ -208,167 +208,163 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 ----
 
 
-===== Integer
+===== Return a Integer
 
-A native function that returns a _integer_ value must define return type as _<<zs_int>>_.
+To call a C function that returns a ZetScript _Integer_, it must create and register a C function that returns _<<zs_int>>_ as the return type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_int.cpp[]
+include::../examples/the_api/register_function/register_function_return_zs_int.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_int_out.txt[]
+include::../examples/the_api/register_function/register_function_return_zs_int_out.txt[]
 ----
 
-===== Float
+===== Return a Float
 
-A native function that returns a _float_ value must define return type as  _zs_float_.
+To call a C function that returns a ZetScript _Float_, it must create and register a C function that returns _<<zs_float>>_ as the return type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_float.cpp[]
+include::../examples/the_api/register_function/register_function_return_zs_float.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_float_out.txt[]
+include::../examples/the_api/register_function/register_function_return_zs_float_out.txt[]
 ----
 
-===== String
+===== Return a String
 
-A native function that returns a _string_ value can be defined by the following types:
+To call a C function that returns a ZetScript _String_, it must create and register a C function that returns one the following as return types,
 
-- String as _const char *
-- String as _zs_string_
-- String as _StringScriptObject *_
+- _const char *_
+- _zs_string_
+- _StringScriptObject *_
 
-====== String as const char *
+====== Return a String as const char *
 
-A native function that returns a _string_ value can define return type as _const char *_.
+To call a C function that returns a ZetScript _String_, it can create and register a C function that returns _const char *_ as return type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_const_char.cpp[]
+include::../examples/the_api/register_function/register_function_return_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_const_char_out.txt[]
+include::../examples/the_api/register_function/register_function_return_const_char_out.txt[]
 ----
 
-====== String as zs_string
+====== Return a String as zs_string
 
-A native function that returns a _string_ value can define return type as _zs_string_.
+To call a C function that returns a ZetScript _String_, it can create and register a C function that returns _<<zs_string>>_ as return type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_string.cpp[]
+include::../examples/the_api/register_function/register_function_return_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_string_out.txt[]
+include::../examples/the_api/register_function/register_function_return_zs_string_out.txt[]
 ----
 
-====== String as StringScriptObject *
+====== Return a String as StringScriptObject *
 
-A native function that returns a _string_ value can define return type as _StringScriptObject *_. The instantiation of _StringScriptObject_ it's done throught _ZetScript::newStringScriptObject_ using _ZetScript *_ context.
+To call a C function that returns a ZetScript _String_, it can create and register a C function that returns _<<StringScriptObject>>_ as return type. The instantiation of _<<StringScriptObject>>_ it's done throught _ZetScript::newStringScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_string_script_object.cpp[]
+include::../examples/the_api/register_function/register_function_return_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_string_script_object_out.txt[]
+include::../examples/the_api/register_function/register_function_return_string_script_object_out.txt[]
 ----
 
-===== Array
+===== Return an Array
 
-A native function that returns a _array_ script object value must define return _ArrayScriptObject *_. The instantiation of _ArrayScriptObject_ it's done through _ZetScript::newArrayScriptObject_ using _ZetScript *_ context.
+To call a C function that returns a ZetScript _Array_, it must create and register a C function that returns _<<ArrayScriptObject>>_ as return type. The instantiation of _<<ArrayScriptObject>>*_ it's done through _ZetScript::newArrayScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_array_script_object.cpp[]
+include::../examples/the_api/register_function/register_function_return_array_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_array_script_object_out.txt[]
+include::../examples/the_api/register_function/register_function_return_array_script_object_out.txt[]
 ----
 
-===== Object
+===== Return a Object
 
-A native function that returns a _object_ script object value must define return _ObjectScriptObject *_. The instantiation of _ObjectScriptObject_ it's done through _ZetScript::newObjectScriptObject_ using _ZetScript *_ context.
+To call a C function that returns a ZetScript _Object_, it must create and register a C function that returns _<<ObjectScriptObject>>*_ as return type. The instantiation of _<<ObjectScriptObject>>_ it's done through _ZetScript::newObjectScriptObject_ using _ZetScript *_ context.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_object_script_object.cpp[]
+include::../examples/the_api/register_function/register_function_return_object_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_object_script_object_out.txt[]
+include::../examples/the_api/register_function/register_function_return_object_script_object_out.txt[]
 ----
 
 
-===== Custom type
+===== Return a registered type
 
-A native function that returns a custom type value must define return type as _ClassScriptObject *_. The instantiation and setup of _ClassScriptObject_ it's done through these steps:
-
- . The custom type must to be binded through <<ZetScript::registerClass>>.
- . The custom type must to be instanced whithin native function.
- . Finally it instantiates _newClassScriptObject_ through _ZetScript::newClassScriptObject_ using _ZetScript *_ context passing instantiated custom type by parameter.
+To call a C function that returns a registered type, it must create and register a C function that returns _<<_ClassScriptObject>>*_ as return type. To instantiate _ClassScriptObject_ is done through _<<ZetScript::newClassScriptObject>>_ using _ZetScript *_ context passing instantiated registered type by parameter.
 
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_class_script_object.cpp[]
+include::../examples/the_api/register_function/register_function_return_class_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_class_script_object_out.txt[]
+include::../examples/the_api/register_function/register_function_return_class_script_object_out.txt[]
 ----
 
 ==== Parameter types
 
-A native function to be binded always defines `zetscript::ZetScript *` as first parameter type and then it can define until 9 parameters as one of <<built-in types>> or custom types defined by user. In the next sections will explain which argument types accepts the following values,
+This section will explain how to register functions that accepts the following ZetScript types as parameter,
 
 - Boolean
 - Integer
@@ -377,24 +373,24 @@ A native function to be binded always defines `zetscript::ZetScript *` as first 
 - Array
 - Object
 - Function
-- Custom type
+- Registered type
 
-===== Boolean
+===== Parameter as Boolean
 
-A native function that accepts an input _boolean_ value must define _bool *_ as parameter type.
+To call a C function that accepts ZetScript _Boolean_, it must create and register a C function with _bool *_ as parameter type.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_param_bool.cpp[]
+include::../examples/the_api/register_function/register_function_param_bool.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_param_bool_out.txt[]
+include::../examples/the_api/register_function/register_function_param_bool_out.txt[]
 ----
 
 ===== Integer
