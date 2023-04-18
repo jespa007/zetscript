@@ -179,7 +179,7 @@ include::../examples/the_api/register_function/register_function_out.txt[]
 
 ==== Return types
 
-This section will explain how to register functions to return the following ZetScript types:
+This section will explain how to register functions that returns the following ZetScript types:
 
 - Boolean
 - Integer
@@ -191,7 +191,7 @@ This section will explain how to register functions to return the following ZetS
 
 ===== Boolean
 
-To register a function that returns a _Boolean_ value in ZetScript it must create native function as _bool_ as the return type.
+To register a function that returns a _Boolean_ value in ZetScript it must define a C function with _bool_ as the return type.
 
 *Example*
 
