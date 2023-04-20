@@ -2,18 +2,19 @@
 
 using zetscript::ZetScript;
 
-// Definition of the native function interface returnBoolean
+// C function
 bool returnBoolean(ZetScript *_zs){
     return true;
 }
 
 int main(){
+
 	ZetScript zs;
 
-	// bind native function returnBoolean named as 'returnBoolean'
+	// register C function
     zs.registerFunction("returnBoolean",returnBoolean);
 
-    // Eval script that calls native function 'returnBoolean'
+    // Eval script that calls C function and prints its result by console
     zs.eval(
         "Console::outln(\"result : \"+returnBoolean());"
  	);

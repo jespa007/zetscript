@@ -1,9 +1,8 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_int;
 
-// c function
+// The C function to register that prints parameter value by console
 void paramBool(ZetScript *_zs, bool *_bool){
     printf("Result : %s\n",*_bool?"true":"false");
 }
@@ -11,9 +10,10 @@ void paramBool(ZetScript *_zs, bool *_bool){
 int main(){
 	ZetScript zs;
 
+    // Register C function
     zs.registerFunction("paramBool",paramBool);
 
-    // call c function with int param
+    // Evaluates the script that calls C function with 'true' value as argument
     zs.eval(
         "paramBool(true);"
  	);

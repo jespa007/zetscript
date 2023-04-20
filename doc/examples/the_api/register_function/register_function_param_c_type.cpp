@@ -3,7 +3,7 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 
-// C structure to be binded
+// C structure to be registered
 struct Point{
 	int x,y;
 
@@ -21,22 +21,22 @@ Point *PointWrap_new(ZetScript *_zs){
 	return new  Point();
 }
 
-// defines setter property interface for Point::x
+// defines setter property for Point::x
 void PointWrap_set_x(ZetScript *_zs, Point *_this, zs_int _x){
 	_this->x=_x;
 }
 
-// defines setter property interface for Point::y
+// defines setter property for Point::y
 void PointWrap_set_y(ZetScript *_zs, Point *_this, zs_int _y){
 	_this->y=_y;
 }
 
-// defines getter property interface for Point::x
+// defines getter property for Point::x
 zs_int PointWrap_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
-// defines getter property interface for Point::y
+// defines getter property for Point::y
 zs_int PointWrap_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
@@ -49,37 +49,35 @@ void PointWrap_delete(ZetScript *_zs, Point *_this){
 // WRAP POINT
 //------------------------------
 
-// Definition of the native function interface returnPoint
-void mulPoint(ZetScript *_zs, Point *_point, zs_int _mul){
-	// define class script object
-	
+// C function the accepts native Point
+void mul10Point(ZetScript *_zs, Point *_point){
 	// initialize x and y
-	_point->x*=_mul;
-	_point->y*=_mul;
+	_point->x*=10;
+	_point->y*=10;
 
 }
 
 int main(){
 	ZetScript zs;
 
-	// bind type Point
+	// Register class Point
 	zs.registerClass<Point>("Point",PointWrap_new,PointWrap_delete);
 
 
-	// bind property setter Point::x
+	// Register property setter Point::x
 	zs.registerMemberPropertySetter<Point>("x",PointWrap_set_x);
 
-	// bind property setter Point::y
+	// Register property setter Point::y
 	zs.registerMemberPropertySetter<Point>("y",PointWrap_set_y);    
 
-	// bind property getter Point::x
+	// Register property getter Point::x
 	zs.registerMemberPropertyGetter<Point>("x",PointWrap_get_x);
 
-	// bind property getter Point::y
+	// Register property getter Point::y
 	zs.registerMemberPropertyGetter<Point>("y",PointWrap_get_y);
 
-	// bind native function mulPoint named as 'mulPoint'
-    zs.registerFunction("mulPoint",mulPoint);
+	// Register native function mulPoint named as 'mulPoint'
+    zs.registerFunction("mul10Point",mul10Point);
 
     // Eval script that calls native function 'mulPoint'
     zs.eval(
@@ -87,7 +85,7 @@ int main(){
         "point.x=10;\n"
         "point.y=20;\n"
         "Console::outln(\"before : \"+point);\n"
-        "mulPoint(point,5)\n"
+        "mul10Point(point)\n"
         "Console::outln(\"after : \"+point);"
  	);
 

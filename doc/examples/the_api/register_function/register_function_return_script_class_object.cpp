@@ -4,7 +4,7 @@ using zetscript::ZetScript;
 using zetscript::ClassScriptObject;
 using zetscript::zs_int;
 
-// C structure to be binded
+// C structure to register
 struct Point{
 	int x,y;
 
@@ -17,22 +17,22 @@ struct Point{
 //------------------------------
 // WRAP POINT
 
-// defines new function for Point object
+// defines new function Point ClassScriptObject
 Point *PointWrap_new(ZetScript *_zs){
 	return new  Point();
 }
 
-// defines getter property interface for Point::x
+// defines getter property Point::x ClassScriptObject
 zs_int PointWrap_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
-// defines getter property interface for Point::y
+// defines getter property Point::y ClassScriptObject
 zs_int PointWrap_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
 
-// defines delete function for Point object
+// defines delete function Point ClassScriptObject
 void PointWrap_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
@@ -40,8 +40,9 @@ void PointWrap_delete(ZetScript *_zs, Point *_this){
 // WRAP POINT
 //------------------------------
 
-// Definition of the native function interface returnPoint
+// C function that returns classScriptObject
 ClassScriptObject *returnPoint(ZetScript *_zs){
+
 	// define class script object
 	ClassScriptObject *class_script_object=NULL;
 
@@ -62,19 +63,19 @@ ClassScriptObject *returnPoint(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// bind type Point
+	// Register class Point as instanciable
 	zs.registerClass<Point>("Point",PointWrap_new,PointWrap_delete);
 
-	// bind property getter Point::x
+	// register property getter Point::x
 	zs.registerMemberPropertyGetter<Point>("x",PointWrap_get_x);
 
-	// bind property getter Point::y
+	// register property getter Point::y
 	zs.registerMemberPropertyGetter<Point>("y",PointWrap_get_y);
 
-	// bind native function returnString named as 'returnString'
+	// register C function that returns Point ScriptClassObject
     zs.registerFunction("returnPoint",returnPoint);
 
-    // Eval script that calls native function 'returnPoint'
+    // Eval script that C function and prints the result by console
     zs.eval(
         "Console::outln(\"result : \"+returnPoint());"
  	);
