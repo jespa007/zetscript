@@ -187,7 +187,7 @@ This section will explain how to register functions that returns the following Z
 - String
 - Array
 - Object
-- Registered class
+- Registered class 
 
 ===== Return Boolean
 
@@ -345,7 +345,24 @@ include::../examples/the_api/register_function/register_function_return_object_s
 
 ===== Return registered class
 
-To call a C function that returns a registered class (see section <<Register class>> to know more about how to register a class), it must create and register a C function that returns _<<_ClassScriptObject>>*_ as return type. To instantiate _ClassScriptObject_ is done through _<<ZetScript::newClassScriptObject>>_ using _ZetScript *_ context passing instantiated registered class by parameter.
+To call a C function that returns a registered class (see section <<Register class>> to know more about how to register a class), it can create and register a C function that  returns one the following as return types,
+- Its native pointer type
+- ClassScriptObject
+
+===== Return registered class as its native pointer type
+
+To call a C function that returns a registered class, it can create and register a C function that returns its native pointer type return type. 
+
+ZetScript *never* destroy native pointers returned from C function. That's why it cannot create and return a type from the function itself because this would generate a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
+
+*Example*
+
+This example shows bla, bla, bla
+
+
+===== Return registered class as ClassScriptObject
+
+To call a C function that returns a registered class, it can create and register a C function _<<_ClassScriptObject>>*_ as return type. To instantiate _ClassScriptObject_ is done through _<<ZetScript::newClassScriptObject>>_ using _ZetScript *_ context passing instantiated registered class by parameter.
 
 
 *Example*

@@ -35,7 +35,7 @@ namespace zetscript{
 
 
 			auto so_script=ClassScriptObject::newClassScriptObject(this,idx_script_type,(void *)_instance);
-			so_script->deleteNativeObjectOnDestroy(true);
+			so_script->deleteNativeObjectOnDestroy(true); // <-- this destroy the native pointer on destroy script class
 			return so_script;
 		}
 
