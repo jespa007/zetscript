@@ -345,20 +345,35 @@ include::../examples/the_api/register_function/register_function_return_object_s
 
 ===== Return registered class
 
-To call a C function that returns a registered class (see section <<Register class>> to know more about how to register a class), it can create and register a C function that  returns one the following as return types,
+To call a C function that returns a registered class, it can create and register a C function that  returns one the following as return types,
+
 - Its native pointer type
 - ClassScriptObject
 
+see section <<Register class, register cala>> to know more about how to register a class
+ 
 ===== Return registered class as its native pointer type
 
 To call a C function that returns a registered class, it can create and register a C function that returns its native pointer type return type. 
 
-ZetScript *never* destroy native pointers returned from C function. That's why it cannot create and return a type from the function itself because this would generate a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
+ZetScript *never* destroy native pointers returned from C function. That's why it cannot allocate and return a type from the function itself because this would generate a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
 
 *Example*
 
-This example shows bla, bla, bla
+In the following example it registers a native type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that returns a `Point` a type pointer. In the main program it creates a `Point` type and that is acceded globally, so the registered native function can access and return this instanced `Point` type.
 
+
+[source,c++]
+----
+include::../examples/the_api/register_function/register_function_return_native_type.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/register_function/register_function_return_native_type_out.txt[]
+----
 
 ===== Return registered class as ClassScriptObject
 
@@ -366,6 +381,8 @@ To call a C function that returns a registered class, it can create and register
 
 
 *Example*
+
+In the following example it registers a native type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that instances and returns a `ClassScriptObject` as `Point` type. 
 
 [source,c++]
 ----
@@ -390,7 +407,7 @@ This section will explain how to register functions that accepts the following Z
 - Array
 - Object
 - Function
-- C type
+- Registered class 
 
 ===== Parameter Boolean
 

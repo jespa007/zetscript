@@ -16,7 +16,7 @@ do
 	for j in $dir
 	do
 		base_file="$(basename $j .zs)"
-		../../build/gcc/Release/zs --no-execution-time "the_language/"$i"/"$base_file".zs" > "the_language/"$i"/"$base_file"_out.txt"
+		../../bin/gcc/Release/zs --no-execution-time "the_language/"$i"/"$base_file".zs" > "the_language/"$i"/"$base_file"_out.txt"
 		
 	done
 done
@@ -44,7 +44,7 @@ do
 	for j in $dir_cpp
 	do
 		base_file="$(basename $j .cpp)"
-		g++ -std=gnu++0x -Wall -pedantic -O2 "the_api/"$i"/"$base_file".cpp" ../../build/gcc/Release/libzetscript-2-0-0-static.a -o "the_api/build/"$base_file$EXTENSION_EXE -I ../../src
+		g++ -std=gnu++0x -Wall -pedantic -O2 "the_api/"$i"/"$base_file".cpp" ../../bin/gcc/Release/libzetscript-2-0-0-static.a -o "the_api/build/"$base_file$EXTENSION_EXE -I ../../src
 		if [ $? -eq 0 ] 
 		then
 			current=$PWD
