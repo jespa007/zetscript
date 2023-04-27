@@ -579,22 +579,24 @@ Out:
 include::../examples/the_api/register_function/register_function_param_script_function_out.txt[]
 ----
 
-===== Parameter C type
+===== Parameter native pointer of registered class
 
-A native function that accepts a C type of a registered class, it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
+A native function that accepts native pointer of registered class, it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
 
 *Example*
 
+In the following example it registers a native type Point and its properties x and y and it registers native function `mul10Point` that accepts a Point pointer type as parameter. In the script program it creates a Point type and it calls `mul10Point` that multiply x10 its properties.
+
 [source,c++]
 ----
-include::../examples/the_api/register_function/register_function_param_c_type.cpp[]
+include::../examples/the_api/register_function/register_function_param_native_type.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/register_function/register_function_param_c_type_out.txt[]
+include::../examples/the_api/register_function/register_function_param_native_type_out.txt[]
 ----
 
 === Bind script function
@@ -610,7 +612,6 @@ When a script function is evaluated through `ZetScript::eval` or  `ZetScript::ev
  ZetScript::bindScriptFunction<ReturnType(Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 )>("name_script_function")
 ----
 
-Note that `ZetScript::bindScriptFunction` doesn't needs to have _ZetScript *_ defined as first parameter.
 
 *Example*
 
