@@ -1,0 +1,92 @@
+=== Literals
+
+ZetScript supports the following literals,
+
+* Boolean
+* Integer
+* Float
+* String
+
+==== Boolean
+
+Boolean literals is represented as true or false.
+
+Example,
+
+[source,javascript]
+----
+true // true value
+false // false value
+----
+
+==== Integer
+
+Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
+
+Example,
+
+[source,javascript]
+----
+10; // decimal value
+0x1a; // hexadecimal value
+11010b; // 0x1a as binary value
+'b'; // char value
+----
+
+Integer literlas supports the following pre operators,
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Example
+
+|Negate
+|-integer 
+|Negated value
+|
+[source,javascript]
+ -10
+ 
+|Bitwise complement
+|~integer 
+|Invert all bits
+|
+[source,javascript]
+~011010b // (-27)
+|====
+
+==== Float
+
+Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
+
+Example,
+
+[source,javascript]
+----
+1.2 // decimal form
+2.0e-2 // cientific notation form
+----
+
+Float literals supports the following pre operators,
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Example
+
+|Negate
+|-float
+|Negated value
+|
+[source,javascript]
+ -10.5
+|====
+
+==== String
+
+String literal is represented as string within quotes (").
+
+Example,
+
+[source,javascript]
+----
+"this is a string"
+----
