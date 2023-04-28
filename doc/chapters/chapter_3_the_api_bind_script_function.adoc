@@ -1,0 +1,157 @@
+=== Bind script function
+
+This section will explain the how to create a function interface to call a script function from C++ side.
+
+When a script function is evaluated through `ZetScript::eval` or  `ZetScript::evalFile`, it can bind that script function through _ZetScript::bindFunction_ passing function signature template and the name of script function by parameter. The function signature must be configured with types defined in one of <<Built-in types>> or other types.
+
+*Syntax*
+
+[source,c++]
+----
+ ZetScript::bindScriptFunction<ReturnType(Type1 _arg1, Type2 _arg2, ..., Type9 _arg9 )>("name_script_function")
+----
+
+
+*Example*
+
+The following example shows the binding of a script function without parameters and no return
+
+[source,c++]
+----
+include::../examples/the_api/bind_script_function/bind_script_function.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_out.txt[]
+----
+
+==== Return types
+
+===== Boolean
+
+To create binding of a script function that returns a _boolean_ value to C++ side it has to define function signature that returns _bool_
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_bool.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_bool_out.txt[]
+----
+
+===== Integer
+
+A script function that returns an _integer_ it must bind with a function signature that returns _zs_int_.
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int_out.txt[]
+----
+
+===== Float
+
+A script function that returns an _float_ it must bind with a function signature that returns _zs_float_.
+
+*Example*
+
+[source,c++]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_float.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_float_out.txt[]
+----
+
+
+==== bind member function from instanced global object
+
+It can also call from instanced object
+
+[source,c++]
+----
+include::../examples/the_api/bind/bin_object_script_function.cpp[]
+----
+
+Out:
+
+[source,txt]
+----
+include::../examples/the_api/bind/bin_object_script_function_out.txt[]
+----
+
+==== Life time objects returned
+//      zs_int,zs_float,bool
+//      other times should bee freed. Show error if not freed
+
+=== Bind function
+
+To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are <<built-in types>> or types binded by the user. 
+
+Example,
+
+Parameters
+
+ZetScript supports builtin *zs_int, zs_int *, zs_float *, bool *, char * and zs_string ** as arguments types or other types. 
+
+Example,
+
+Return
+
+For return values it supports the same basic types as arguments plus *bool, zs_float and zs_string (no pointer)*. Is also possible to pass custom registered types (see section 4.3).
+
+Example,
+
+Is important to say that ZetScript has a constraint *maximum of 8 parameters* for any C function to be bind in the script engine. If a function more than 8 parameters is tried to be registered, ZetScript will throw an error. To bind C function is done through macro registerFunction. You have to provide the name that will be referenced in script side.
+
+Syntax,
+
+[source,cpp]
+zs.registerFunction("function_name", c_function);
+
+Example,
+
+[source,cpp]
+----
+#include "ZetScript.h"
+
+zetscript::zs_int add(zetscript::zs_int  op1, zetscript::zs_int op2)
+{
+	return op1+op2;
+}
+
+int main(int argc, char *argv[])
+{
+	zetscript::ZetScript zs;
+	
+	// binds native function "add"
+	zs.registerFunction("add",add);
+	
+ 	zs.eval(
+ 		"Console::outln(\"result:\"+add(5,4));" // prints "result: 9"
+ 	);
+	 
+ 	return 0;
+} 
+---- 

@@ -1,0 +1,269 @@
+=== Operators
+
+ZetScript has the following type of operators
+
+* Arithmetic operators
+* Relational operators
+* Logical operators
+* Bit operators
+
+==== Arithmetic operators
+
+Arithmetic operators performs arithmetic operations between two values. The arithmetic operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|+
+|Add 
+a|
+
+It performs a these operations:
+
+* Add operation between two integer or float values 
+* Concatenates two strings or other values
+* Concatenates two arrays 
+* Concatenates two objects 
+
+|
+[source,javascript]
+----
+ 5+10; // = 15
+ 1.5+6;// = 7.5
+ "string_"+"string";// ="string_string"
+ "string_"+1;// ="string_1"
+ [1]+[2,3];// [1,2,3]
+ {a:1}+{b:2,c:3}; //{a:1,b:2,c:3}
+----
+
+|-
+|Subtract
+|Performs a substract operation between two integer/float values
+|
+[source,javascript]
+10-5; // = 5
+2.5-1;// = 1.5
+
+|* 
+|Multiply 
+|Performs a multiplication between two integer/float values
+|
+[source,javascript]
+10*5; //= 50
+1.5*2;//= 3.0
+
+|/ 
+|Divide 
+|Performs a division between two integer/float values
+|
+[source,javascript]
+10/2; // = 5
+3/2.0 // = 1.5
+
+|% 
+|Modulus 
+|Performs a division between two integer/float values
+|
+[source,javascript]
+3%2; //it results 1.0
+23.6%2; // it results 1.6
+|====
+
+==== Relational operators
+
+Relational operators evaluates relations through two values. The relational operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|==
+|Equal 
+|Check whether two values are equal
+|
+[source,javascript]
+ 10==10;// = true
+"hello"=="bye"; // = false
+
+|!= 
+|Not equal 
+|Check whether two values are not equal
+|
+[source,javascript]
+10!=10; // = false
+"hello"!="bye"; // = true
+
+|< 
+|Less than 
+|Checks whether first value is less than second value
+|
+[source,javascript]
+10<20; // = true
+20<10; // = false
+
+|> 
+|Greater than 
+|Checks whether first value is greater than second value
+|
+[source,javascript]
+10>20; // = false
+20>10; // = true
+
+| \<= 
+|Less equal than 
+|Checks whether first value is less equal than second value
+|
+[source,javascript]
+10<=10; //= true
+11<=10; // = false
+
+|>= 
+|Greater equal than 
+|Checks whether first value is greater equal than second value
+|
+[source,javascript]
+10>=11; // = false
+11>=10; // = true
+
+|instanceof 
+|Instance of 
+|Checks if a value is instance of a type. 
+|
+[source,javascript]
+0 instanceof Integer; //= true
+"hello" instanceof Integer;//= false
+
+|in 
+|in 
+a|
+Performs the following operations:
+
+* Checks if a value exist in a string or array
+* Checks a key exist in object
+|
+[source,javascript]
+'a' in "abc" // true
+'d' in "abc" // false
+"string" in [1,"string",false,10.5] // true
+10       in [1,"string",false,10.5] // false
+"a" in {a:1,b:2,c:3} // true
+"d" in {a:1,b:2,c:3} // false
+
+
+|====
+
+
+
+==== Logic operators
+
+Logic operators combines operations between two boolean values. The logic operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|&& 
+|Logic And 
+|Performs an AND operation between two boolean values
+|
+[source,javascript]
+true && true;// = true
+true&& false;// = false
+
+| \|\|
+|Logic Or 
+|Performs an OR operation between two Boolean values
+|
+[source,javascript]
+true \|\| false;// = true
+false \|\| false;// = false
+
+|! 
+|Logic Not 
+|Negates boolean value
+|
+[source,javascript]
+!true; // = false
+!false; // = true
+!(true \|\| false) // = false 
+!(true && false) // = true
+|====
+
+==== Binary operators
+
+Binary operators combines operations between two integer values. The binary operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|& 
+|Binary And 
+|Performs binary AND operation between two integers
+|
+[source,javascript]
+0xa & 0x2; // = 0x2
+0xff & 0xf0; // = 0xf0
+
+|\|
+|Binary Or
+|Performs binary OR operation between two integers
+|
+[source,javascript]
+0xa \| 0x5; // = 0xf
+0x1 \| 0xe; // = 0xf
+
+|^ 
+|Binary Xor 
+|Performs binary XOR between two integers
+|
+[source,javascript]
+0xa ^ 0xa; // = 0x0
+0xa ^ 0x5; // = 0xf
+
+|<< 
+|Binary shift left
+|Performs binary shift left between two integers
+|
+[source,javascript]
+0x1 << 2; // = 0x4
+
+|>> 
+|Binary shift right
+|Performs binary shift right between two integers
+|
+[source,javascript]
+0xff >> 1; // = 0x7f
+
+|~
+|Bitwise complement
+|Performs bitwise complement operation from integer value
+|
+[source,javascript]
+~0xa; // = 0x7f
+
+|====
+
+==== Operator priority
+Each operator it has priority in a evaluation. The priority of each operator in ZetScript is the following,
+
+`in,instanceof,<<,>>,&,|,^,*,/,%,+,-,==,!=,>=,\<=,>,<,&&,||`
+
+Starting from left to right, the most left operator is the more priority and the most right one the less priority
+
+For example this expression,
+
+[source,javascript]
+----
+2+4*5; // will result 22
+----
+
+You can change the evaluation priority usign parenthesis.
+
+For example,
+
+[source,javascript]
+----
+(2+4)*5; // will result 36
+---- 

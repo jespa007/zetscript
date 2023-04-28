@@ -1,0 +1,1968 @@
+=== Class
+
+A class is a template for create objects wiith its own variables and functions. A class is defined using keyword _class_ followed by the name. 
+
+
+[source,javascript]
+----
+class Test{
+	
+
+};
+----
+
+==== Class instantiantion
+
+To instanciate a class is done by the operator _new_
+
+[source,javascript]
+----
+class Test{
+	
+
+};
+
+
+var t= new Test(); // t instanced as class Test
+
+----
+
+==== Member functions
+
+===== Member function
+
+A function member aims to do operations or management with its class members. It's acceded through field operator ('.') and preceded by _this_ keyword when is acceded within a member function. A  member function can be implemented outside of the class too. 
+
+
+*Example*
+
+[source,javascript]
+----
+class Test{
+
+	// a member function
+	method1(){
+		Console::out("Access method 1")
+		
+		// call member function within a member function through 'this'
+		this.method3();
+	}
+	
+	// another member function
+	method2(){
+		Console::outln(" and method 3")
+	}
+
+};
+
+// Test::method2 implementated outside of class Test 
+function Test::method2(){
+	Console::outln("Access method 2")
+}
+
+var t=new Test()
+
+t.method1(); // prints "Access method 1 and method 3"
+t.method2(); // prints "Access method 2"
+
+
+----
+
+===== Static function
+
+Static function is a kind of helper function of generic purposes about the class type. To declare static function it should be defined with static keyword. To access static function it has to type the name of containing class and '::' operator followed with the name of the function.
+
+*Example*
+
+[source,javascript]
+----
+class Test{
+
+	// static function
+	static staticMethod(){
+		Console::outln("Access static method")
+	}
+
+};
+
+Test::staticMethod(); // prints "Access static method"
+
+----
+
+==== Member variables
+
+Member variables (also called fields) are data that live within the instanced class. To access a member variable is done through field operator ('.') and preceded by _this_ keyword when is acceded within its member function
+
+[source,javascript]
+----
+class Test{
+	method3(){
+		this.a=0;
+	}
+};
+
+
+var t=new Test(); // t.a==undefined
+t.method(); 	  // t.a==0
+t.a=10; 		  // t.a==10
+
+----
+
+In the code it can see that when _t_ is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
+
+
+===== Variable inicialization
+
+====== Body
+
+A class can initialize its variables defining them at its body with _var_ and assignment operator (=)
+
+[source,javascript]
+----
+class Test{
+
+	// Declaration and initialization of member variable 'a' as 10
+	var a=10;
+}
+
+var t=new Test(); // t.a==10
+----
+
+====== Constructor
+
+A constructor is a special member function that is called when the class is instanced with the _new_ operator. To create and initialize a variable member within _constructor_ function is done through _this_ keyword and member field operator ('.').  
+
+[source,javascript]
+----
+class Test{
+
+ 	// Constructor function
+	constructor(){
+		this.a=10; // initialize member variable 'a' as 10
+ 	}
+}
+
+var t=new Test(); // t.a==10
+----
+
+==== Inheritance
+
+A class can inherit another class through _extends_ keyword. The new extended class will copy all functions and variable initialization from base class. The extended class can call parent functions through _super_ keyword.
+
+Example,
+
+[source,javascript]
+----
+
+class A {
+	constructor(){
+		this.a=10;
+	}
+}; 
+
+
+class B extends A{
+	constructor(){
+		super(); // call A::constructor
+		this.b=10 + this.a; 
+ 	}
+ 	
+}; 
+
+var b=new B(); // b.a==10, b.b=20
+----
+
+==== Metamethods
+
+Metamethods are special member functions that links with operators seen on section section X.XX. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+
+===== Member functions
+
+====== _tostring()
+
+Returns custom string when string operation operation is invoved
+
+*Syntax*
+
+[source,javascript]
+----
+_tostring()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A string as a result when string operation operation is invoved
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_tostring.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
+----
+
+===== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ :Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_addset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_addset_out.txt[]
+----
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_subset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_mulset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_divset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shlset_out.txt[]
+----
+
+===== _not()
+
+Implements _not_ pre operator (aka !)  
+
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- Boolean value as a result of not operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_not.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_not_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A new object as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_neg_out.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_postdec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+Implements _pre decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_predec_out.txt[]
+----
+
+===== _in()
+
+Implements _in_ operator 
+
+*Syntax*
+
+[source,javascript]
+----
+_in(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as value to check whether exist or not in the containing class
+
++++<u>Returns</u>+++
+
+Boolean telling whether the _value exist in or not
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_in.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_in_out.txt[]
+---- 
+
+===== Static functions
+
+====== _equ()
+
+Implements _equal_ operator (aka == ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_equ(_op1,_op2)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 and op2 are EQUAL
+- False if op1 and op2 are NOT EQUAL
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_equ.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_equ_out.txt[]
+----
+
+===== _nequ()
+
+Implements _not equal_ operator (aka != ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_nequ(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 and op2 are NOT EQUAL
+- False if op1 and op2 are EQUAL
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_nequ.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
+----
+
+===== _lt()
+
+Implements _less than_ operator (aka < ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_lt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is LESS THAN op2
+- False if op1 is GRATHER EQUAL THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_lt.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_lt_out.txt[]
+----
+
+===== _lte()
+
+Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_lte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is LESS THAN OR EQUAL op2
+- False if op1 is GRATHER THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_lte.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_lte_out.txt[]
+----
+
+===== _gt()
+
+Implements _greather than_ operator (aka > ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_gt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is GREATHER THAN op2
+- False if op1 is LESS OR EQUAL THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_gt.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_gt_out.txt[]
+----
+
+===== _gte(_op1,_op2)
+
+Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_gte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is GREATHER THAN OR EQUAL op2
+- False if op1 is LESS THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_gte.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_gte_out.txt[]
+----
+
+===== _add()
+
+Implements _add_ operator (aka + ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_add(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of add operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_add.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_add_out.txt[]
+----
+
+===== _div()
+
+Implements _division_ operator (aka / ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_div(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of division operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_div.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_div_out.txt[]
+----
+
+
+===== _mul()
+
+Implements _multiplication_ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_mul(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of multiplication operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mul.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mul_out.txt[]
+----
+
+===== _mod()
+
+Implements _modulus_ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_mod(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of modulus operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_mod.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_mod_out.txt[]
+----
+
+===== _and()
+
+Implements _bitwise and_ operator (aka & ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_and(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise and operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_and.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_and_out.txt[]
+----
+
+===== _or()
+
+Implements _bitwise or_ operator (aka | ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_or(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise or operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_or.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_or_out.txt[]
+----
+
+===== _xor()
+
+Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_xor(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise xor operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_xor.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_xor_out.txt[]
+----
+===== _shl()
+
+Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shl(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift left operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shl.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shl_out.txt[]
+----
+
+===== _shr()
+
+Implements _bitwise shift right_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shr(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift right operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shr.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shr_out.txt[]
+----
+
+ 
+==== Properties
+
+A property is a kind of variable that are acceded through a metamethods.
+
+*Syntax*
+
+[source,javascript]
+----
+class Test{
+
+	// property
+	property{
+			...
+	}
+
+}
+----
+
+==== Member functions
+
+===== _get()
+
+__get_ returns the value of the property
+
+*Syntax*
+
+[source,javascript]
+----
+_get()
+----
+
+*Parameters
+
+None
+
++++<u>Returns</u>+++
+
+Returns the value of the property
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_get.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_get_out.txt[]
+----
+
+===== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ :Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_addset_out.txt[]
+----
+
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A the value as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_neg_out.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_postdec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_predec_out.txt[]
+----
+
+==== Iterator class
+
+An iterator class is a class with a set of metamethods defined that allow iteration from an instance from custom container class given. To declare a class as iterator it has to define the following metamethods,
+
+
+- __get()_: it returns a value according current index
+- __end()_: it returns a boolean value telling whether the iterator has finished or not
+- __postinc()_: it increments the iterator
+
+So a iterator class could be defined as below,
+
+[source,javascript]
+----
+class IteratorContainer{
+	_get(){
+		//...
+		return value;
+	}
+    _end(){
+    	//...
+    	return [true or false]
+    }
+    _postinc(){
+    	//...
+    	// increment index
+    }
+}
+
+----   
+
+After iterator class is defined, the class container for iterate has to implement __iter_ metamethod that returns an instance of the new object iterator
+
+[source,javascript]
+----
+class Container{
+	_iter(){
+		return new IteratorContainer();
+	}
+}
+
+----
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_iterator.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_iterator_out.txt[]
+----

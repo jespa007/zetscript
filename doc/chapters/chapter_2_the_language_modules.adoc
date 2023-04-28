@@ -1,0 +1,1137 @@
+=== Modules
+
+==== Console
+
+`Console` module implements a set of functions for console
+
+===== Console::out()
+
+Prints message to the console with a ending carry return
+
+[source,zetscript]
+Console::out(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_out.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_out_out.txt[]
+----
+
+===== Console::outln()
+
+Prints message to the console with a ending carry return
+
+*Syntax*
+
+[source,zetscript]
+Console::outln(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_outln.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_outln_out.txt[]
+----
+
+===== Console::error()
+
+Prints error message to the console
+
+[source,zetscript]
+Console::out(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_error.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_error_out.txt[]
+----
+
+===== Console::errorln()
+
+Prints error message to the console with a ending carry return
+
+*Syntax*
+
+[source,zetscript]
+Console::outln(_value,..._args)
+
++++<u>Parameters</u>+++
+
+- __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
+- __args_:  variable args to be replaced if __value_ is string representation
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/console/console_errorln.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/console/console_errorln_out.txt[]
+----
+
+===== Console::readChar()
+
+it waits untill reads a character from console
+
+*Syntax*
+
+[source,zetscript]
+Console::readChar()
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+The integer as the equivalent character readed from console
+
+*Example*
+
+[source,zetscript]
+----
+ // waits until reads a char
+ var c=Console::readChar();
+ 
+ // prints readed char
+ Console::outln("Key pressed: {0}",c) 
+  
+----
+
+==== System
+
+`System` module implements a set of functions for system
+
+===== System::clock()
+
+Returns the amount of time in seconds
+
+Syntax,
+
+[source,zetscript]
+System::clock()
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+The amount of time in seconds as Float type
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/system/system_clock.zs[]
+----
+
+
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_clock_out.txt[]
+----
+
+===== System::eval()
+
+Evals an expression
+
+Syntax,
+
+[source,zetscript]
+System::eval(_expression_,_args)
+
++++<u>Parameters</u>+++
+
+- __expresion_: String as the expression to be evaluated
+- __args_ (optional): Arguments that will be used as variables within the evaluation
+
++++<u>Returns</u>+++
+
+
+Example,
+
+
+[source,zetscript]
+----
+include::../examples/the_language/system/system_eval.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/system/system_eval_out.txt[]
+----
+
+===== System::assert()
+
+Evals an assert and raise an error if the condition is false
+
+*Syntax*
+
+[source,zetscript]
+System::assert(_expression,_message)
+
++++<u>Parameters</u>+++
+
+- __expression_: the expression to be evaluated
+- __message (options): the message about the error. If message is not provided, a default message is assigned
+
++++<u>Returns</u>+++
+
+*Example*
+
+
+[source,zetscript]
+----
+var m=30
+System::assert(m < 20,"n > m")
+----
+
+Output:
+
+[source,txt]
+----
+Assert error :n > m
+----
+
+===== System::error
+
+Raises custom error by user
+
+*Syntax*
+
+[source,zetscript]
+System::error(_message,..._args)
+
++++<u>Parameters</u>+++
+
+- __message_: the message to print as the error. The message representation can be specify arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format (see <<String::format()>>).
+- __args_ (optional): variable args to be replaced in the string representation
+
++++<u>Returns</u>+++
+
+*Example*
+
+
+[source,zetscript]
+----
+var m=30
+if(!(m < 20)){
+	System::error("Error !(m < 20). 'm' is {0}", m)
+}
+----
+
+Output:
+
+[source,txt]
+----
+Error !(m < 20). 'm' is 30
+----
+
+==== Math
+
+`Math` module implements a set of functions and properties related with maths
+
+===== Static member properties
+
+====== Math::PI
+
+The number PI
+
+*Syntax*
+
+[source,zetscript]
+Math::PI
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_pi.zs[]
+----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/math/math_pi_out.txt[]
+----
+
+
+===== Static functions
+
+====== Math::sin()
+
+Performs a sinus
+
+*Syntax*
+
+[source,zetscript]
+Math::sin(_radians)
+
++++<u>Parameters</u>+++
+
+- __radians_:
+
++++<u>Returns</u>+++
+
+Sinus of _radians between 0..1
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_sin.zs[]
+----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/math/math_sin_out.txt[]
+----
+
+====== Math::cos()
+
+Performs a cosinus
+
+*Syntax*
+
+[source,zetscript]
+Math::cos(_radians)
+
++++<u>Parameters</u>+++
+
+- __radians_:
+
++++<u>Returns</u>+++
+
+Cosinus of _radians between 0..1
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_cos.zs[]
+----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/math/math_cos_out.txt[]
+----
+
+====== Math::abs()
+
+Performs a absolute
+
+*Syntax*
+
+[source,zetscript]
+Math::abs(_value)
+
++++<u>Parameters</u>+++
+
+- _value: Numeric input value
+
++++<u>Returns</u>+++
+
+Absolute value
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_abs.zs[]
+----
+
+Output
+
+[source,text]
+----
+include::../examples/the_language/math/math_abs_out.txt[]
+----
+
+====== Math::pow()
+
+Performs a power
+
+*Syntax*
+
+[source,zetscript]
+Math::pow(_base,_exponent)
+
++++<u>Parameters</u>+++
+
+- _base: Base value
+- _exponent: Exponent value
+
++++<u>Returns</u>+++
+
+The result of raising __base_ to the __power_ exponent.
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_pow.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_pow_out.txt[]
+----
+
+====== Math::degToRad()
+
+Converts degres to radiants
+
+*Syntax*
+
+[source,zetscript]
+Math::degToRad(_degrees)
+
++++<u>Parameters</u>+++
+
+- __degrees_: Degrees value
+
++++<u>Returns</u>+++
+
+The result of degrees as radians   
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_deg_to_rad.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_deg_to_rad_out.txt[]
+----
+
+====== Math::random()
+
+Returns random float number between [0..1)
+
+*Syntax*
+
+[source,zetscript]
+Math::random()
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A float between [0..1)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_random.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_random_out.txt[]
+----
+
+====== Math::max()
+
+Returns maximmum of two input values
+
+*Syntax*
+
+[source,zetscript]
+Math::max(_v1,_v2)
+
++++<u>Parameters</u>+++
+
+- __v1_: First value
+- __v2_: Second value
+
++++<u>Returns</u>+++
+
+Returns the maximum of __v1_ and __v2_
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_max.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_max_out.txt[]
+----
+
+====== Math::min()
+
+Returns minimmum of two input values
+
+*Syntax*
+
+[source,zetscript]
+Math::min(_v1,_v2)
+
++++<u>Parameters</u>+++
+
+- __v1_: First value
+- __v2_: Second value
+
++++<u>Returns</u>+++
+
+Returns the minimmum of __v1_ and __v2_
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_min.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_min_out.txt[]
+----
+
+====== Math::sqrt()
+
+Computes the square root of input value
+
+*Syntax*
+
+[source,zetscript]
+Math::sqrt(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: Input value
+
++++<u>Returns</u>+++
+
+Returns the square root of __value_
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_sqrt.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_sqrt_out.txt[]
+----
+
+====== Math::floor()
+
+Rounds a value downward
+
+*Syntax*
+
+[source,zetscript]
+Math::floor(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: Value to round down 
+
++++<u>Returns</u>+++
+
+The value of __x_ rounded downward 
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_floor.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_floor_out.txt[]
+----
+
+====== Math::ceil()
+
+Rounds a value upward
+
+*Syntax*
+
+[source,zetscript]
+Math::ceil(_x)
+
++++<u>Parameters</u>+++
+
+- __x_: Value to round up 
+
++++<u>Returns</u>+++
+
+The largest integral value that is not greater than __x_
+
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_ceil.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_ceil_out.txt[]
+----
+
+====== Math::round()
+
+Rounds a value to the nearest integral
+
+*Syntax*
+
+[source,zetscript]
+Math::round(_value)
+
++++<u>Parameters</u>+++
+
+- __x_: Value to round
+
++++<u>Returns</u>+++
+
+The value of __x_ to the nearest integral
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/math/math_round.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/math/math_round_out.txt[]
+----
+
+==== Json
+
+`Json` module implements a set of functions to serialize and deserialize json format from/to zetscript types
+
+===== Json::serialize()
+
+Serializes to json string
+
+*Syntax*
+
+[source,zetscript]
+Json::serialize(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: Literal or variable
+
++++<u>Returns</u>+++
+
+The equivalent representation in json format
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/json/json_serialize.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/json/json_serialize_out.txt[]
+----
+
+===== Json::deserialize()
+
+Deserializes json string
+
+*Syntax*
+
+[source,zetscript]
+Json::deserialize(_value)
+
++++<u>Parameters</u>+++
+
+- __value_: value or variable as string in json format
+
++++<u>Returns</u>+++
+
+Converts the equivalent json string to literal or object
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/json/json_deserialize.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/json/json_deserialize_out.txt[]
+----
+
+==== TimeSpan
+
+TimeSpan represents a time interval that is difference between two times measured in number of days, hours, minutes, and seconds. TimeSpan is used to compare two DateTime (see in section <<DateTime>>) objects to find the difference between two dates
+
+===== Member properties
+
+Datetime has the following memeber properties,
+
+[cols="1m,3d"]
+|====
+|Variable |description
+
+|days
+|days
+|hours
+|hours
+|minutes
+|minutes
+|seconds
+|seconds
+|====
+
+
+==== DateTime
+
+Represents an instant in time as a date and time of day.
+
+===== Static functions
+
+====== DateTime::_sub()
+
+Perform sub (aka -)  operation between two objects type DateTime
+
+*Syntax*
+[source,javascript]
+----
+_sub(_op1,_op2)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_: First operand type DateTime as the minuend
+- __op2_: Second operand type DateTime as subtrahend
+
++++<u>Returns</u>+++
+
+TimeSpan object as a difference of __op1_ - __op2_
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_metamethod_sub.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_metamethod_sub_out.txt[]
+----
+
+====== DateTime::now()
+
+Creates a new _DateTime_ object at LOCAL time
+
+*Syntax*
+[source,javascript]
+DateTime::now()
+
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_now.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_now_out.txt[]
+----
+
+====== DateTime::nowUtc()
+
+Creates a new _DateTime_ object at UTC time
+
+*Syntax*
+[source,javascript]
+DateTime::nowUtc()
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_now_utc.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_now_utc_out.txt[]
+----
+
+===== Member function
+
+====== DateTime::constructor()
+
+DateTime constructor 
+
+*Syntax*
+[source,javascript]
+constructor(_year,_month,_day,_hour,_minute,_second)
+
+
++++<u>Parameters</u>+++
+
+- __year_: Integer of the year
+- __month_: Integer in [1..12] as month
+- __day_: Integer in [1..31] as day
+- __hour_: Integer in [0..23] as hour
+- __minute_: Integer in [0..59] as minute
+- __second_: Integer in [0..59] as second
+
+
++++<u>Returns</u>+++
+
+A _DateTime_ object
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/datetime/datetime_constructor.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_constructor_out.txt[]
+----
+
+===== Member properties
+
+Datetime has the following memeber properties,
+
+[cols="1m,3d"]
+|====
+|Variable |description
+
+|week_day
+|The week's day
+|month_day
+|The month's day
+|year_day
+|The year's day
+|second
+|seconds
+|minute
+|minutes
+|hour 
+|hours
+|day
+|day
+|month
+|month
+|year
+|year
+|====
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_member_properties.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_member_properties_out.txt[]
+----
+
+===== Member functions
+
+====== DateTime::addSeconds()
+
+Adds seconds to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addSeconds(_seconds)
+
++++<u>Parameters</u>+++
+
+- __seconds_: Integer value or variable to add as seconds
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_seconds.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_seconds_out.txt[]
+----
+
+====== DateTime::addMinutes()
+
+Adds minutes to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addMinutes(_minutes)
+
++++<u>Parameters</u>+++
+
+- __minutes_: Integer value or variable to add as minutes
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_minutes.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_minutes_out.txt[]
+----
+
+
+====== DateTime::addHours()
+
+Adds hours to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addHours(_hours)
+
++++<u>Parameters</u>+++
+
+- __hours_: Integer value or variable to add as hours
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_hours.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_hours_out.txt[]
+----
+
+====== DateTime::addDays()
+
+Adds days to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addDays(_days)
+
++++<u>Parameters</u>+++
+
+- __days_: Integer value or variable to add as days
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_days.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_days_out.txt[]
+----
+
+====== DateTime::addMonths()
+
+Adds months to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addMonths(_months)
+
++++<u>Parameters</u>+++
+
+- __months_: Integer value or variable to add as months
+
++++<u>Returns</u>+++
+
+None
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_months.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_months_out.txt[]
+----
+
+====== DateTime::addYears()
+
+Adds years to datetime object
+
+*Syntax*
+
+[source,zetscript]
+DateTime::addYears(_years)
+
+*Example*
+
+[source,zetscript]
+----
+include::../examples/the_language/datetime/datetime_add_years.zs[]
+----
+
+Output:
+
+[source,txt]
+----
+include::../examples/the_language/datetime/datetime_add_years_out.txt[]
+----
+
