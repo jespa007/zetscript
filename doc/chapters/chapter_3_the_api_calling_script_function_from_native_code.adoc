@@ -1,4 +1,4 @@
-=== Bind script function
+=== Calling script function from native code
 
 This section will explain the how to create a function interface to call a script function from C++ side.
 
