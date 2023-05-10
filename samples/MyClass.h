@@ -1,28 +1,24 @@
-/*
- *  This file is distributed under the MIT License.
- *  See LICENSE file for details.
- */
-#include "zetscript.h"
+#pragma once
 
-// A function wrapper to bind C function into ZetScript
-// All ZetScript wrappers needs to have zetscript::ZetScript *_zs as FIRST parameter
-void say_helloworld(zetscript::ZetScript *_zs){
-	printf("Hello World from C!\n");
-}
+class MyClass{
+public:
+	int data1;
+	int data2;
+	int data3;
 
-int main(){
+	MyClass(){
+		this->data1=5;
+		this->data2=10;
+		this->data3=20;
+	}
 
-	// ZetScript instance
-	zetscript::ZetScript zs;
+	void function0(){
+		printf("function0\n");
+	}
 
-	// Binds 'say_helloworld' function to be accessible from script
-	zs.registerFunction("say_helloworld",say_helloworld);
+	void function1(int arg){
+		this->data1 = arg;
+		printf("int argument is %i\n",this->data1);
+	}
 
-	 // Prints 'Hello World from script!'
-	zs.eval("Console::outln(\"Hello World from script!\")");
-
-	// Call C function and prints 'Hello World from C!'
-	zs.eval("say_helloworld();");
-
-	return 0;
-}
+};
