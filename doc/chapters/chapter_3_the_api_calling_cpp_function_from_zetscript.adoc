@@ -1,6 +1,6 @@
-=== Calling native code from ZetScript
+=== Calling c++ from ZetScript
 
-To call native code from _ZetScript_ it must create a C function with an apropiate prototype to get its arguments and return its results and finally register that function.
+To call c++ code from _ZetScript_ it must create and register a C function with an apropiate prototype to get its arguments and return its results.
 As the parameters, the function must always include `zetscript::ZetScript *` type as first parameter and then a maximum of 9 parameters as types in one defined in  <<Built-in types>> or other registered type. As return, the function it can return `void` (it doesn't returns any parameter) or some type defined in <<Built-in types>> or other registered type.
 
 *Syntax*
@@ -18,7 +18,7 @@ Where,
 - _ParamType_: It can be one defined in  <<Built-in types>> or other registered type.
 
 
-To register the function its done by `ZetScript::registerFunction` passing a name as the symbol_name in _ZetScript_ and function reference.
+After the function is created it has to register the function to be exposed in _ZetScript_. To register the function its done by `ZetScript::registerFunction` passing a name as the symbol_name in _ZetScript_ and function reference.
 
  ZetScript zs;
  zs.registerFunction("zetscriptFunctionInterface",zetscriptFunctionInterface)

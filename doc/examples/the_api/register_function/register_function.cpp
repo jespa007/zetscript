@@ -2,7 +2,7 @@
 
 using zetscript::ZetScript;
 
-// Native function
+// C++ ZetScript function interface
 void sayHelloWorld(ZetScript *_zs){
     printf("Hello world\n");
 }
