@@ -536,7 +536,7 @@ namespace zetscript{
 				break;
 			default:
 				_error="cannot convert '"
-					+zs_rtti::demangle(k_str_zs_float_type_ptr)
+					+zs_rtti::demangle(k_str_float_type_ptr)
 					+"' to '"
 					+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this->getScriptTypeFactory(),_idx_builtin_type))
 					+"'";
@@ -596,7 +596,7 @@ namespace zetscript{
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->getConstChar());
 						}else{
 							_error="cannot convert '"
-									+zs_rtti::demangle((k_str_zs_string_type_ptr))
+									+zs_rtti::demangle((k_str_string_type_ptr))
 									+"' to '"
 									+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this->getScriptTypeFactory(),_idx_builtin_type))
 									+"'";

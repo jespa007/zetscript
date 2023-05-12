@@ -241,7 +241,7 @@ namespace zetscript{
 		}
 	}
 
-	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
+	void eval_deallocate_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
 		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.size(); i++ ){
 			delete zs_ei_assign_loader_instructions_post_expression.items[i];
 		}
@@ -581,7 +581,7 @@ namespace zetscript{
 			);
 		}
 
-		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		eval_deallocate_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return aux_p;
 
@@ -592,7 +592,7 @@ eval_error_byte_code:
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
 
-		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		eval_deallocate_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return NULL;
 

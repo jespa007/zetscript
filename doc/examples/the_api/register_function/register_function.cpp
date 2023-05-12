@@ -2,7 +2,7 @@
 
 using zetscript::ZetScript;
 
-// C++ ZetScript function interface
+// ZetScript register function 'sayHelloWorld'
 void sayHelloWorld(ZetScript *_zs){
     printf("Hello world\n");
 }
@@ -10,7 +10,7 @@ void sayHelloWorld(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// register function sayHelloWorld named as 'sayHelloWorld'
+	// register function 'sayHelloWorld' named as 'sayHelloWorld'
     zs.registerFunction("sayHelloWorld",sayHelloWorld);
 
     // Eval script that calls native function 'sayHelloWorld'

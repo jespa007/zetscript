@@ -7,19 +7,19 @@
 
 #define EVAL_OPERATION_ARITHMETIC(ARITHMETIC_OP) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
-		result_op_zs_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
+		result_op_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_float=(i1->value_op2) ARITHMETIC_OP (ZS_READ_INTPTR_FLOAT(i2->value_op2));\
-		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
+		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_float=(ZS_READ_INTPTR_FLOAT(i1->value_op2)) ARITHMETIC_OP (i2->value_op2);\
-		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
+		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_float=(ZS_READ_INTPTR_FLOAT(i1->value_op2)) ARITHMETIC_OP (ZS_READ_INTPTR_FLOAT(i2->value_op2));\
-		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
+		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else{\
 		ZS_THROW_EXCEPTION_FILE_LINE(\
@@ -63,7 +63,7 @@
 
 #define EVAL_OPERATION_BINARY(BINARY_OP) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
-		result_op_zs_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
+		result_op_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
 	}else{\
 		ZS_THROW_EXCEPTION_FILE_LINE(\
@@ -183,7 +183,7 @@ namespace zetscript{
 			, EvalInstruction *ei2
 	){
 		zs_float  result_op_float=0;
-		zs_int result_op_zs_int=0;
+		zs_int result_op_int=0;
 		bool	result_op_bool=false;
 		zs_string result_op_str="";
 		zs_string str_constant_key="";
@@ -234,19 +234,19 @@ namespace zetscript{
 			}
 			if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_float=((zs_float)(i1->value_op2))/((zs_float)(i2->value_op2));
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/(i2->value_op2);
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/(i2->value_op2);
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/ ZS_READ_INTPTR_FLOAT(i2->value_op2);
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_FILE_LINE(
@@ -267,19 +267,19 @@ namespace zetscript{
 			}
 			if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_float=fmod((i1->value_op2),(i2->value_op2));
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2),(i2->value_op2));
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2),(i2->value_op2));
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2), ZS_READ_INTPTR_FLOAT(i2->value_op2));
-				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
+				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_FILE_LINE(
@@ -376,14 +376,14 @@ namespace zetscript{
 			result_instruction=new EvalInstruction(
 					result_bc
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-					,result_op_zs_int
+					,result_op_int
 			);
 			break;
 		case BYTE_CODE_LOAD_ZS_FLOAT:
 			result_instruction=new EvalInstruction(
 					result_bc
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-					,result_op_zs_int
+					,result_op_int
 			);
 			break;
 		case BYTE_CODE_LOAD_STRING:

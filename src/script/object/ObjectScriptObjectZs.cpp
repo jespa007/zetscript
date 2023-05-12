@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ArrayScriptObject *ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1){
+	ArrayScriptObject *ObjectScriptObject_keys(ZetScript *_zs,ObjectScriptObject *o1){
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		ArrayScriptObject *sv= ZS_NEW_ARRAY_OBJECT(_zs);
 
@@ -28,31 +28,31 @@ namespace zetscript{
 
 	}
 
-	/*static ObjectIteratorScriptObject *ObjectScriptObjectWrap_iteratorSf(ObjectScriptObject *o1){
+	/*static ObjectIteratorScriptObject *ObjectScriptObject_iteratorSf(ObjectScriptObject *o1){
 
 	}*/
 
 
-	bool ObjectScriptObjectWrap_contains(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
+	bool ObjectScriptObject_contains(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
 		ZS_UNUSUED_PARAM(_zs);
 		return o1->exists(key->c_str());
 	}
 
-	void ObjectScriptObjectWrap_clear(ZetScript *_zs,ObjectScriptObject *o1){
+	void ObjectScriptObject_clear(ZetScript *_zs,ObjectScriptObject *o1){
 		ZS_UNUSUED_PARAM(_zs);
 		o1->eraseAll();
 	}
 
-	void ObjectScriptObjectWrap_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
+	void ObjectScriptObject_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
 		ZS_UNUSUED_PARAM(_zs);
 		o1->erase(key->c_str());
 	}
 
-	ObjectIteratorScriptObject * ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *_oo){
+	ObjectIteratorScriptObject * ObjectScriptObject_iter(ZetScript *_zs,ObjectScriptObject *_oo){
 		return ZS_NEW_OBJECT_ITERATOR_OBJECT(_zs,_oo);
 	}
 
-	void						 	ObjectScriptObjectWrap_extend(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+	void						 	ObjectScriptObject_extend(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		ObjectScriptObject::append(_zs,o1,o2);
 	}
 

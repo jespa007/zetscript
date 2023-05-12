@@ -157,7 +157,7 @@ namespace zetscript{
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				VM_PUSH_STK_BOOLEAN(
-					StringScriptObjectWrap_contains(
+					StringScriptObject_contains(
 						data->zs
 						,((StringScriptObject *)so_aux)
 						,(zs_int)stk_result_op1->value
@@ -166,7 +166,7 @@ namespace zetscript{
 			}else if(STK_IS_STRING_SCRIPT_OBJECT(&stk_result_op1_aux)){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				VM_PUSH_STK_BOOLEAN(
-					StringScriptObjectWrap_contains(
+					StringScriptObject_contains(
 						data->zs
 						,(StringScriptObject *)so_aux
 						,&str_op1)
@@ -178,7 +178,7 @@ namespace zetscript{
 			case IDX_TYPE_SCRIPT_OBJECT_ARRAY: // check whether value exists...
 			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				VM_PUSH_STK_BOOLEAN(
-				ArrayScriptObjectWrap_contains(
+				ArrayScriptObject_contains(
 					data->zs,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
 				)
 			);
@@ -187,7 +187,7 @@ namespace zetscript{
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				VM_PUSH_STK_BOOLEAN(
-					ObjectScriptObjectWrap_contains(
+					ObjectScriptObject_contains(
 						data->zs,(ObjectScriptObject *)so_aux,&str_op1
 					)
 				);

@@ -6,17 +6,17 @@
 
 namespace zetscript{
 
-	void	 StringIteratorScriptObjectWrap_get(ZetScript *_zs,StringIteratorScriptObject *si){
+	void	 StringIteratorScriptObject_get(ZetScript *_zs,StringIteratorScriptObject *si){
 		ZS_UNUSUED_PARAM(_zs);
 		si->get();
 	}
 
-	void	 StringIteratorScriptObjectWrap_next(ZetScript *_zs,StringIteratorScriptObject *si){
+	void	 StringIteratorScriptObject_next(ZetScript *_zs,StringIteratorScriptObject *si){
 		ZS_UNUSUED_PARAM(_zs);
 		si->next();
 	}
 
-	bool	 StringIteratorScriptObjectWrap_end(ZetScript *_zs,StringIteratorScriptObject *si){
+	bool	 StringIteratorScriptObject_end(ZetScript *_zs,StringIteratorScriptObject *si){
 		ZS_UNUSUED_PARAM(_zs);
 		return si->end();
 	}

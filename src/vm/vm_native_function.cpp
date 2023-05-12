@@ -202,10 +202,10 @@ namespace zetscript{
 					aux_string=data->zs->stackElementToStringTypeOf(current_arg);
 					break;
 				case STK_PROPERTY_ZS_INT:
-					aux_string=k_str_zs_int_type;
+					aux_string=k_str_int_type;
 					break;
 				case STK_PROPERTY_ZS_FLOAT:
-					aux_string=k_str_zs_float_type;
+					aux_string=k_str_float_type;
 					break;
 				case STK_PROPERTY_BOOL:
 					aux_string=k_str_bool_type;

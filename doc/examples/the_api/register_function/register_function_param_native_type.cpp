@@ -17,32 +17,32 @@ struct Point{
 // WRAP POINT
 
 // defines new function for Point object
-Point *PointWrap_new(ZetScript *_zs){
+Point *Point_new(ZetScript *_zs){
 	return new  Point();
 }
 
 // defines setter property for Point::x
-void PointWrap_set_x(ZetScript *_zs, Point *_this, zs_int _x){
+void Point_set_x(ZetScript *_zs, Point *_this, zs_int _x){
 	_this->x=_x;
 }
 
 // defines setter property for Point::y
-void PointWrap_set_y(ZetScript *_zs, Point *_this, zs_int _y){
+void Point_set_y(ZetScript *_zs, Point *_this, zs_int _y){
 	_this->y=_y;
 }
 
 // defines getter property for Point::x
-zs_int PointWrap_get_x(ZetScript *_zs, Point *_this){
+zs_int Point_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
 // defines getter property for Point::y
-zs_int PointWrap_get_y(ZetScript *_zs, Point *_this){
+zs_int Point_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
 
 // defines delete function for Point object
-void PointWrap_delete(ZetScript *_zs, Point *_this){
+void Point_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
 
@@ -61,20 +61,20 @@ int main(){
 	ZetScript zs;
 
 	// Register class Point
-	zs.registerClass<Point>("Point",PointWrap_new,PointWrap_delete);
+	zs.registerClass<Point>("Point",Point_new,Point_delete);
 
 
 	// Register property setter Point::x
-	zs.registerMemberPropertySetter<Point>("x",PointWrap_set_x);
+	zs.registerMemberPropertySetter<Point>("x",Point_set_x);
 
 	// Register property setter Point::y
-	zs.registerMemberPropertySetter<Point>("y",PointWrap_set_y);    
+	zs.registerMemberPropertySetter<Point>("y",Point_set_y);    
 
 	// Register property getter Point::x
-	zs.registerMemberPropertyGetter<Point>("x",PointWrap_get_x);
+	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);
 
 	// Register property getter Point::y
-	zs.registerMemberPropertyGetter<Point>("y",PointWrap_get_y);
+	zs.registerMemberPropertyGetter<Point>("y",Point_get_y);
 
 	// Register native function mulPoint named as 'mulPoint'
     zs.registerFunction("mul10Point",mul10Point);

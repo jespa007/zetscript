@@ -21,19 +21,19 @@ public:
 
 
 //---- BINDINGS
-MyClass * MyClassPtrWrap_new(zetscript::ZetScript *_zs){
+MyClass * MyClassPtr_new(zetscript::ZetScript *_zs){
 	return new MyClass();
 }
 
-void MyClassPtrWrap_constructor(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _data1){
+void MyClassPtr_constructor(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _data1){
 	_this->data1=_data1;
 }
 
-zetscript::zs_int MyClassPtrWrap_function1(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _arg){
+zetscript::zs_int MyClassPtr_function1(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _arg){
 	return _this->function1(_arg);
 }
 
-void MyClassPtrWrap_delete(zetscript::ZetScript *_zs, MyClass *_this){
+void MyClassPtr_delete(zetscript::ZetScript *_zs, MyClass *_this){
 	delete _this;
 }
 
@@ -44,7 +44,7 @@ int main(){
 	zetscript::ZetScript zs; // instance zetscript
 
 	// register MyClass as MyClass in script side
-	zs.registerClass<MyClass>("MyClass",MyClassPtrWrap_new,MyClassPtrWrap_delete);
+	zs.registerClass<MyClass>("MyClass",MyClassPtr_new,MyClassPtr_delete);
 
 	// register MyClass as MyClass in script side
 	zs.registerClass<MyClassExtend>("MyClassExtend");
@@ -53,10 +53,10 @@ int main(){
 	zs.extends< MyClassExtend,MyClass >();
 
 	// register MyClass::constructor
-	zs.registerConstructor<MyClass>(MyClassPtrWrap_constructor);
+	zs.registerConstructor<MyClass>(MyClassPtr_constructor);
 
 	//reg MyClass:: function1
- 	zs.registerMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
+ 	zs.registerMemberFunction<MyClass>("function1",MyClassPtr_function1);
 
 	// eval print
 	zs.eval(

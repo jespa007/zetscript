@@ -28,7 +28,7 @@
 		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(type_class));\
 		return;\
 	}\
-	registerClass<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
+	registerClass<type_class>(name_class,type_class##_New,type_class##_Delete);
 
 #define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
@@ -78,17 +78,17 @@ namespace zetscript{
 
 
 	const char * k_str_void_type =typeid(void).name();
-	const char * k_str_zs_int_type_ptr=typeid(zs_int *).name();
-	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
-	const char * k_str_zs_float_type_ptr=typeid(zs_float *).name();
-	const char * k_str_const_zs_float_type_ptr=typeid(const zs_float *).name();
-	const char * k_str_zs_string_type_ptr=typeid(zs_string *).name();
+	const char * k_str_int_type_ptr=typeid(zs_int *).name();
+	const char * k_str_const_int_type_ptr=typeid(const zs_int *).name();
+	const char * k_str_float_type_ptr=typeid(zs_float *).name();
+	const char * k_str_const_float_type_ptr=typeid(const zs_float *).name();
+	const char * k_str_string_type_ptr=typeid(zs_string *).name();
 	const char * k_str_char_type_ptr=typeid(char *).name();
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
 	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
-	const char * k_str_zs_int_type=typeid(zs_int).name();
-	const char * k_str_zs_float_type=typeid(zs_float).name();
+	const char * k_str_int_type=typeid(zs_int).name();
+	const char * k_str_float_type=typeid(zs_float).name();
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 	const char * k_str_zetscript_type_ptr=typeid(ZetScript *).name();
@@ -150,7 +150,7 @@ namespace zetscript{
 	zs_float parseFloat(ZetScript *_zs,zs_string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
-		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
+		zs_float *result_ptr=zs_strutils::parse_float(*number_str);
 
 		if(result_ptr != NULL){
 			result=*result_ptr;
@@ -173,7 +173,7 @@ namespace zetscript{
 	zs_int parseInt(ZetScript *_zs,zs_string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
-		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
+		zs_int *result_ptr=zs_strutils::parse_int(*number_str);
 		if(result_ptr!=NULL){
 			result=*result_ptr;
 			delete result_ptr;
@@ -273,80 +273,80 @@ namespace zetscript{
 		// String
 
 		// properties
-		registerMemberPropertyGetter<StringScriptObject>("length",StringScriptObjectWrap_length);
+		registerMemberPropertyGetter<StringScriptObject>("length",StringScriptObject_length);
 
 		// members
 		registerStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
-		registerMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectWrap_eraseAt);
-		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObjectWrap_insertAt));
-		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_string *)>(StringScriptObjectWrap_insertAt));
-		registerMemberFunction<StringScriptObject>("clear",StringScriptObjectWrap_clear);
-		registerMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
-		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
-		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
-		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
-		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));
+		registerMemberFunction<StringScriptObject>("eraseAt",StringScriptObject_eraseAt);
+		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObject_insertAt));
+		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_string *)>(StringScriptObject_insertAt));
+		registerMemberFunction<StringScriptObject>("clear",StringScriptObject_clear);
+		registerMemberFunction<StringScriptObject>("replace",StringScriptObject_replace);
+		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObject_split));
+		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObject_split));
+		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObject_contains));
+		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObject_contains));
 
-		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_indexOf));
-		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_indexOf));
+		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObject_indexOf));
+		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObject_indexOf));
 
-		registerMemberFunction<StringScriptObject>("startsWith",StringScriptObjectWrap_startsWith);
-		registerMemberFunction<StringScriptObject>("endsWith",StringScriptObjectWrap_endsWith);
-		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int,zs_int )>(&StringScriptObjectWrap_substring));
-		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_substring));
-		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, StringScriptObject *)>(&StringScriptObjectWrap_append));
-		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, zs_int )>(&StringScriptObjectWrap_append));
-		registerMemberFunction<StringScriptObject>("toLowerCase",StringScriptObjectWrap_toLowerCase);
-		registerMemberFunction<StringScriptObject>("toUpperCase",StringScriptObjectWrap_toUpperCase);
+		registerMemberFunction<StringScriptObject>("startsWith",StringScriptObject_startsWith);
+		registerMemberFunction<StringScriptObject>("endsWith",StringScriptObject_endsWith);
+		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int,zs_int )>(&StringScriptObject_substring));
+		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObject_substring));
+		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, StringScriptObject *)>(&StringScriptObject_append));
+		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, zs_int )>(&StringScriptObject_append));
+		registerMemberFunction<StringScriptObject>("toLowerCase",StringScriptObject_toLowerCase);
+		registerMemberFunction<StringScriptObject>("toUpperCase",StringScriptObject_toUpperCase);
 
-		registerMemberFunction<StringScriptObject>("_iter",StringScriptObjectWrap_iter);
+		registerMemberFunction<StringScriptObject>("_iter",StringScriptObject_iter);
 
 		// IteratorString
-		registerMemberFunction<StringIteratorScriptObject>("_postinc",StringIteratorScriptObjectWrap_next);
-		registerMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObjectWrap_end);
-		registerMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectWrap_get);
+		registerMemberFunction<StringIteratorScriptObject>("_postinc",StringIteratorScriptObject_next);
+		registerMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObject_end);
+		registerMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObject_get);
 
 		//---------------------------------------------
 		// Array
 
 		// properties
-		registerMemberPropertyGetter<ArrayScriptObject>("length",&ArrayScriptObjectWrap_length);
+		registerMemberPropertyGetter<ArrayScriptObject>("length",&ArrayScriptObject_length);
 
 		// members
-		registerMemberFunction<ArrayScriptObject>("push",&ArrayScriptObjectWrap_push);
-		registerMemberFunction<ArrayScriptObject>("pop",&ArrayScriptObjectWrap_pop);
-		registerMemberFunction<ArrayScriptObject>("insertAt",&ArrayScriptObjectWrap_insertAt);
-		registerMemberFunction<ArrayScriptObject>("eraseAt",&ArrayScriptObjectWrap_eraseAt);
-		registerMemberFunction<ArrayScriptObject>("clear",&ArrayScriptObjectWrap_clear);
-		registerMemberFunction<ArrayScriptObject>("join",&ArrayScriptObjectWrap_join);
-		registerMemberFunction<ArrayScriptObject>("extend",&ArrayScriptObjectWrap_extend);
-		registerStaticMemberFunction<ArrayScriptObject>("concat",&ArrayScriptObjectWrap_concat);
-		registerMemberFunction<ArrayScriptObject>("contains",&ArrayScriptObjectWrap_contains);
+		registerMemberFunction<ArrayScriptObject>("push",&ArrayScriptObject_push);
+		registerMemberFunction<ArrayScriptObject>("pop",&ArrayScriptObject_pop);
+		registerMemberFunction<ArrayScriptObject>("insertAt",&ArrayScriptObject_insertAt);
+		registerMemberFunction<ArrayScriptObject>("eraseAt",&ArrayScriptObject_eraseAt);
+		registerMemberFunction<ArrayScriptObject>("clear",&ArrayScriptObject_clear);
+		registerMemberFunction<ArrayScriptObject>("join",&ArrayScriptObject_join);
+		registerMemberFunction<ArrayScriptObject>("extend",&ArrayScriptObject_extend);
+		registerStaticMemberFunction<ArrayScriptObject>("concat",&ArrayScriptObject_concat);
+		registerMemberFunction<ArrayScriptObject>("contains",&ArrayScriptObject_contains);
 
-		registerMemberFunction<ArrayScriptObject>("_iter",&ArrayScriptObjectWrap_iter);
-		registerStaticMemberFunction<ArrayScriptObject>("_equ",&ArrayScriptObjectWrap_equal);
-		//registerStaticMemberFunction<ArrayScriptObject>("_add",&ArrayScriptObjectWrap_equal_add);
+		registerMemberFunction<ArrayScriptObject>("_iter",&ArrayScriptObject_iter);
+		registerStaticMemberFunction<ArrayScriptObject>("_equ",&ArrayScriptObject_equal);
+		//registerStaticMemberFunction<ArrayScriptObject>("_add",&ArrayScriptObject_equal_add);
 
 		// IteratorArray
-		registerMemberFunction<ArrayIteratorScriptObject>("_postinc",ArrayIteratorScriptObjectWrap_next);
-		registerMemberFunction<ArrayIteratorScriptObject>("_end",ArrayIteratorScriptObjectWrap_end);
-		registerMemberFunction<ArrayIteratorScriptObject>("_get",ArrayIteratorScriptObjectWrap_get);
+		registerMemberFunction<ArrayIteratorScriptObject>("_postinc",ArrayIteratorScriptObject_next);
+		registerMemberFunction<ArrayIteratorScriptObject>("_end",ArrayIteratorScriptObject_end);
+		registerMemberFunction<ArrayIteratorScriptObject>("_get",ArrayIteratorScriptObject_get);
 
 
 		//---------------------------------------------
 		// Object
-		registerStaticMemberFunction<ObjectScriptObject>("clear",&ObjectScriptObjectWrap_clear);
-		registerStaticMemberFunction<ObjectScriptObject>("erase",&ObjectScriptObjectWrap_erase);
-		registerStaticMemberFunction<ObjectScriptObject>("contains",&ObjectScriptObjectWrap_contains);
-		registerStaticMemberFunction<ObjectScriptObject>("extend",&ObjectScriptObjectWrap_extend);
+		registerStaticMemberFunction<ObjectScriptObject>("clear",&ObjectScriptObject_clear);
+		registerStaticMemberFunction<ObjectScriptObject>("erase",&ObjectScriptObject_erase);
+		registerStaticMemberFunction<ObjectScriptObject>("contains",&ObjectScriptObject_contains);
+		registerStaticMemberFunction<ObjectScriptObject>("extend",&ObjectScriptObject_extend);
 		registerStaticMemberFunction<ObjectScriptObject>("concat",ObjectScriptObject::concat);
-		registerStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObjectWrap_keys);
-		registerStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectWrap_iter);
+		registerStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObject_keys);
+		registerStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObject_iter);
 
 		// IteratorObject
-		registerMemberFunction<ObjectIteratorScriptObject>("_postinc",ObjectIteratorScriptObjectWrap_next);
-		registerMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObjectWrap_end);
-		registerMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObjectWrap_get);
+		registerMemberFunction<ObjectIteratorScriptObject>("_postinc",ObjectIteratorScriptObject_next);
+		registerMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObject_end);
+		registerMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObject_get);
 
 		zs->saveState();
 	}

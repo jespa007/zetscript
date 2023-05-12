@@ -436,19 +436,19 @@ SET(
 	script/object/ContainerSlot.h
 	script/object/ObjectScriptObject.h
 	script/object/ObjectScriptObject.tcc
-	script/object/ObjectScriptObjectWrap.h
+	script/object/ObjectScriptObjectZs.h
 	script/object/ObjectIteratorScriptObject.h
-	script/object/ObjectIteratorScriptObjectWrap.h
+	script/object/ObjectIteratorScriptObjectZs.h
 	script/object/StringScriptObject.h
-	script/object/StringScriptObjectWrap.h
+	script/object/StringScriptObjectZs.h
 	script/object/StringIteratorScriptObject.h
-	script/object/StringIteratorScriptObjectWrap.h
+	script/object/StringIteratorScriptObjectZs.h
 	script/object/VarRefScriptObject.h
 	script/object/ArrayScriptObject.h
 	script/object/ArrayScriptObject.tcc
-	script/object/ArrayScriptObjectWrap.h
+	script/object/ArrayScriptObjectZs.h
 	script/object/ArrayIteratorScriptObject.h
-	script/object/ArrayIteratorScriptObjectWrap.h
+	script/object/ArrayIteratorScriptObjectZs.h
 	
 			
 	# scope

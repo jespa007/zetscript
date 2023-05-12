@@ -20,22 +20,22 @@ Point *_point=NULL;
 // WRAP POINT
 
 // defines new function Point ClassScriptObject
-Point *PointWrap_new(ZetScript *_zs){
+Point *Point_new(ZetScript *_zs){
 	return new  Point();
 }
 
 // defines getter property Point::x ClassScriptObject
-zs_int PointWrap_get_x(ZetScript *_zs, Point *_this){
+zs_int Point_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
 // defines getter property Point::y ClassScriptObject
-zs_int PointWrap_get_y(ZetScript *_zs, Point *_this){
+zs_int Point_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
 
 // defines delete function Point ClassScriptObject
-void PointWrap_delete(ZetScript *_zs, Point *_this){
+void Point_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
 
@@ -58,13 +58,13 @@ int main(){
 	_point->y=10;
 
 	// registers class Point
-	zs.registerClass<Point>("Point",PointWrap_new,PointWrap_delete);
+	zs.registerClass<Point>("Point",Point_new,Point_delete);
 
 	// registers property getter Point::x
-	zs.registerMemberPropertyGetter<Point>("x",PointWrap_get_x);
+	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);
 
 	// registers property getter Point::y
-	zs.registerMemberPropertyGetter<Point>("y",PointWrap_get_y);
+	zs.registerMemberPropertyGetter<Point>("y",Point_get_y);
 
 	// registers C function that returns a Point type pointer
     zs.registerFunction("returnPoint",returnPoint);

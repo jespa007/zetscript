@@ -46,7 +46,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		zs_int *  parse_zs_int(const zs_string & val){
+		zs_int *  parse_int(const zs_string & val){
 			zs_int *n=NULL;
 			NumberType number_type = is_number(val);
 			zs_int value=0;
@@ -90,7 +90,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		zs_float *  parse_zs_float(const zs_string & s){
+		zs_float *  parse_float(const zs_string & s){
 
 			char *end;
 			char *data=(char *)s.c_str();
@@ -148,7 +148,7 @@ namespace zetscript{
 				if(*it_str == 'd'){ // decimal
 					zs_int *zs_int_aux=NULL;
 					zs_int num_zeros=0;
-					if((zs_int_aux=parse_zs_int(it_str+1))!=NULL){
+					if((zs_int_aux=parse_int(it_str+1))!=NULL){
 						num_zeros=*zs_int_aux;
 						delete zs_int_aux;
 						zs_int_aux=NULL;

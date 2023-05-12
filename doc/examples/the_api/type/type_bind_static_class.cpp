@@ -21,11 +21,11 @@ void setMyClassPtr(MyClass *_my_class_ptr){
 
 
 //---- BINDINGS
-MyClass * MyClassPtrWrap_getMyClassPtr(zetscript::ZetScript *_zs){
+MyClass * MyClassPtr_getMyClassPtr(zetscript::ZetScript *_zs){
 	return my_class;
 }
 
-zetscript::zs_int MyClassPtrWrap_function1(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _arg){
+zetscript::zs_int MyClassPtr_function1(zetscript::ZetScript *_zs, MyClass *_this, zetscript::zs_int _arg){
 	return _this->function1(_arg);
 }
 
@@ -43,9 +43,9 @@ int main(){
  	//register MyClass as static (i.e no instantiable) in script side.
  	zs.registerClass<MyClass>("MyClass");
 
- 	zs.registerFunction("getMyClass",MyClassPtrWrap_getMyClassPtr);
+ 	zs.registerFunction("getMyClass",MyClassPtr_getMyClassPtr);
 
- 	zs.registerMemberFunction<MyClass>("function1",MyClassPtrWrap_function1);
+ 	zs.registerMemberFunction<MyClass>("function1",MyClassPtr_function1);
 
 	// It throws an error that MyClass is not instanciable because is static
  	zs.eval(

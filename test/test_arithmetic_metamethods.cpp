@@ -93,7 +93,7 @@ void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true
 	//zetscript::zs_float result_float_assign=20;
 
 	// register wraps
-	NumberWrap_register(_zs);
+	Number_register(_zs);
 
 	_zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 

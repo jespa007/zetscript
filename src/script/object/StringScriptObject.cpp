@@ -181,7 +181,7 @@ namespace zetscript{
 
 						//----------------------------------------------------------
 						// INDEX ...
-						if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
+						if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
 							idx_num=*ptr_idx_num;
 							delete ptr_idx_num;
 							ptr_idx_num=NULL;
@@ -196,7 +196,7 @@ namespace zetscript{
 									str_num_aux+=*str_begin_padding_it++;
 								}
 
-								if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
+								if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
 									padding=*ptr_idx_num;
 									delete ptr_idx_num;
 									ptr_idx_num=NULL;

@@ -6,4 +6,4 @@
 
 #include "Number.h"
 
-void NumberWrap_register(zetscript::ZetScript *_zs);
+void Number_register(zetscript::ZetScript *_zs);

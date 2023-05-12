@@ -12,12 +12,12 @@ namespace zetscript{
 
 		if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type
-			|| k_str_zs_string_type_ptr == symbol->str_native_type
+			|| k_str_string_type_ptr == symbol->str_native_type
 			) {
 			StringScriptObject *s = ZS_NEW_STRING_OBJECT(zs);
 
 
-			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
+			if (k_str_string_type_ptr == symbol->str_native_type) {
 				// assign native zs_string ptr
 				s->str_ptr = (zs_string *)ptr_variable;
 			}else{

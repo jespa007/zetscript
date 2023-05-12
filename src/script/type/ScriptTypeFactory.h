@@ -26,18 +26,18 @@
 namespace zetscript{
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
-	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
-	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(zs_int *).name()
-	extern const char * k_str_zs_float_type_ptr;			//	typeid(zs_float *).name()
-	extern const char * k_str_const_zs_float_type_ptr;		//	typeid(zs_float *).name()
-	extern const char * k_str_zs_string_type_ptr;			//	typeid(zs_string *).name()
+	extern const char * k_str_int_type_ptr;			//	typeid(zs_int *).name()
+	extern const char * k_str_const_int_type_ptr;	//	typeid(zs_int *).name()
+	extern const char * k_str_float_type_ptr;			//	typeid(zs_float *).name()
+	extern const char * k_str_const_float_type_ptr;		//	typeid(zs_float *).name()
+	extern const char * k_str_string_type_ptr;			//	typeid(zs_string *).name()
 	extern const char * k_str_char_type_ptr;			//	typeid(zs_string *).name()
 	extern const char * k_str_const_char_type_ptr;		//	typeid(zs_string *).name()
 	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
 	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
-	extern const char *	k_str_zs_int_type;				//	typeid(zs_int).name()
+	extern const char *	k_str_int_type;				//	typeid(zs_int).name()
 
-	extern const char * k_str_zs_float_type;				//	typeid(int).name()
+	extern const char * k_str_float_type;				//	typeid(int).name()
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 

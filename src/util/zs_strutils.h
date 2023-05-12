@@ -43,8 +43,8 @@ namespace zetscript{
 		}NumberType;
 
 		 bool  		* parse_bool(const zs_string & );
-		 zs_int		* parse_zs_int(const zs_string & );
-		 zs_float	* parse_zs_float(const zs_string & );
+		 zs_int		* parse_int(const zs_string & );
+		 zs_float	* parse_float(const zs_string & );
 
 
 		 zs_string 	zs_int_to_str(zs_int _number, const zs_string & _format = "");

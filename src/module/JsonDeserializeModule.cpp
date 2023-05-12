@@ -256,7 +256,7 @@ namespace zetscript{
 					str_current+=bytes_readed;
 
 					zs_float *number_value = 0;
-					if((number_value=zs_strutils::parse_zs_float(default_str_value)) != NULL){
+					if((number_value=zs_strutils::parse_float(default_str_value)) != NULL){
 						ZS_FLOAT_COPY(&stk_json_element->value,number_value);
 						stk_json_element->properties=STK_PROPERTY_ZS_FLOAT;
 						delete number_value;
