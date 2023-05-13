@@ -6,4 +6,4 @@
 
 #include "Number.h"
 
-void Number_register(zetscript::ZetScript *_zs);
+void NumberZs_register(zetscript::ZetScript *_zs);

@@ -4,7 +4,7 @@
  */
 
 #include "test_arithmetic_common.h"
-#include "NumberWrap.cpp"
+#include "NumberZs.cpp"
 
 
 #define COMPLETE_TEST_ARITHMETIC_INTEGER_OP_WITH_CLASS_NUMBER_CC(_zs,val1,val2)  _complete_test_arithmetic_integer_op(_zs,val1,val2,"it1=("\
@@ -93,7 +93,7 @@ void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true
 	//zetscript::zs_float result_float_assign=20;
 
 	// register wraps
-	Number_register(_zs);
+	NumberZs_register(_zs);
 
 	_zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 

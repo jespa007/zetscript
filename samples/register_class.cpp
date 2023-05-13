@@ -5,9 +5,9 @@
 #include "zetscript.h"
 
 #include "MyClass.h"
-#include "MyClassWrap.h"
+#include "MyClassZs.h"
 #include "MyClassExtend.h"
-#include "MyClassExtendWrap.h"
+#include "MyClassExtendZs.h"
 
 
 int main(){
@@ -15,34 +15,34 @@ int main(){
 	zetscript::ZetScript zs;
 
 	// register MyClass with name MyClass in script side.
-	zs.registerClass<MyClass>("MyClass",MyClass_new,MyClass_delete);
+	zs.registerClass<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);
 
 	 // register MyClassExtend with name MyClassExtend in script side.
-	zs.registerClass<MyClassExtend>("MyClassExtend",MyClassExtend_new,MyClassExtend_delete);
+	zs.registerClass<MyClassExtend>("MyClassExtend",MyClassExtendZs_new,MyClassExtendZs_delete);
 
 	// register data1 named data1 in script side as variable member and read/write.
-	zs.registerMemberPropertySetter<MyClass>("data1",&MyClass_set_data1);
-	zs.registerMemberPropertyGetter<MyClass>("data1",&MyClass_get_data1);
+	zs.registerMemberPropertySetter<MyClass>("data1",&MyClassZs_set_data1);
+	zs.registerMemberPropertyGetter<MyClass>("data1",&MyClassZs_get_data1);
 
 	// register data2 named data1 in script side as variable member (only read).
-	zs.registerMemberPropertyGetter<MyClass>("data2",&MyClass_get_data2);
+	zs.registerMemberPropertyGetter<MyClass>("data2",&MyClassZs_get_data2);
 
 	// register data1 named data1 in script side as variable member (only write).
-	zs.registerMemberPropertySetter<MyClass>("data3",&MyClass_set_data3);
+	zs.registerMemberPropertySetter<MyClass>("data3",&MyClassZs_set_data3);
 
 	// register function0 named function1 in script side as function member.
-	zs.registerMemberFunction<MyClass>("function0",&MyClass_function0);
+	zs.registerMemberFunction<MyClass>("function0",&MyClassZs_function0);
 
 	// register function1 named function1 in script side as function member.
-	zs.registerMemberFunction<MyClass>("function1",&MyClass_function1);
+	zs.registerMemberFunction<MyClass>("function1",&MyClassZs_function1);
 
 
 	// register data2 named data1 in script side as variable member.
-	zs.registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtend_set_data4);
-	zs.registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtend_get_data4);
+	zs.registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtendZs_set_data4);
+	zs.registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtendZs_get_data4);
 
 	// register function2 named function2 in script side as function member.
-	zs.registerMemberFunction<MyClassExtend>("function2",&MyClassExtend_function2);
+	zs.registerMemberFunction<MyClassExtend>("function2",&MyClassExtendZs_function2);
 
 	// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 	zs.extends<MyClassExtend,MyClass>();
