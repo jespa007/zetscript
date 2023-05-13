@@ -146,7 +146,7 @@
 			<target name="CMake" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-Bbuild/gcc/${ConfigName} -DCMAKE_BUILD_TYPE=${ConfigName} -DSUITTESTS:BOOL=true</buildTarget>
+				<buildTarget>-Bbin/gcc/${ConfigName} -DCMAKE_BUILD_TYPE=${ConfigName} -DSUITTESTS:BOOL=true</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

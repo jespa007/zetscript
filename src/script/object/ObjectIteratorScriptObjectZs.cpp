@@ -5,18 +5,18 @@
 #include "zetscript.h"
 
 namespace zetscript{
-	void	 ObjectIteratorScriptObject_next(ZetScript *_zs,ObjectIteratorScriptObject *oi){
+	void	 ObjectIteratorScriptObjectZs_next(ZetScript *_zs,ObjectIteratorScriptObject *oi){
 		ZS_UNUSUED_PARAM(_zs);
 		oi->next();
 	}
 
-	void	ObjectIteratorScriptObject_get(ZetScript *_zs,ObjectIteratorScriptObject *oi){
+	void	ObjectIteratorScriptObjectZs_get(ZetScript *_zs,ObjectIteratorScriptObject *oi){
 		ZS_UNUSUED_PARAM(_zs);
 		oi->get();
 	}
 
 
-	bool	 ObjectIteratorScriptObject_end(ZetScript *_zs,ObjectIteratorScriptObject *oi){
+	bool	 ObjectIteratorScriptObjectZs_end(ZetScript *_zs,ObjectIteratorScriptObject *oi){
 		ZS_UNUSUED_PARAM(_zs);
 		return oi->end();
 	}

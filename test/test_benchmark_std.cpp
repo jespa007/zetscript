@@ -56,7 +56,7 @@ void test_std_map(){
 
 }
 
-void test_map(){
+void test_zs_map(){
 
 	zetscript::zs_map	map;
 	zetscript::zs_map	map1;
@@ -111,7 +111,7 @@ void test_std_string(){
 	zetscript::zs_io::read_char();
 }
 
-void test_string(){
+void test_zs_string(){
 	zetscript::zs_string str;
 	printf("=======================================\n");
 	printf("Test zs_string\n");
@@ -158,7 +158,7 @@ void test_std_vector(){
 
 }
 
-void test_vector(){
+void test_zs_vector(){
 	zetscript::zs_vector<int> vec;
 	printf("=======================================\n");
 	printf("Test zs_vector<int>\n");
