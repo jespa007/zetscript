@@ -1,4 +1,4 @@
-=== Calling script function from native code
+=== Call ZetScript from c++
 
 This section will explain the how to create a function interface to call a script function from C++ side.
 
