@@ -2,7 +2,7 @@
 
 using zetscript::ZetScript;
 
-// C function
+// ZetScript C++ interface function
 bool returnBoolean(ZetScript *_zs){
     return true;
 }
@@ -11,10 +11,10 @@ int main(){
 
 	ZetScript zs;
 
-	// register C function
+	// Registers function interface
     zs.registerFunction("returnBoolean",returnBoolean);
 
-    // Eval script that calls C function and prints its result by console
+    // Evaluates a script that calls the registered function and prints its result by console
     zs.eval(
         "Console::outln(\"result : \"+returnBoolean());"
  	);

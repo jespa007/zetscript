@@ -3,7 +3,7 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 
-// Definition of the native function interface returnInteger
+// ZetScript C++ interface function
 zs_int returnInteger(ZetScript *_zs){
     return 10;
 }
@@ -11,10 +11,10 @@ zs_int returnInteger(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// bind native function returnInteger named as 'returnInteger'
+	// Registers function interface
     zs.registerFunction("returnInteger",returnInteger);
 
-    // Eval script that calls native function 'returnInteger'
+    // Evaluates a script that calls the registered function and prints its result by console
     zs.eval(
         "Console::outln(\"result : \"+returnInteger());"
  	);

@@ -2,7 +2,7 @@
 
 using zetscript::ZetScript;
 
-// Definition of the native function interface returnString
+// ZetScript C++ interface function
 const char * returnString(ZetScript *_zs){
     return "Hello world (const char *)";
 }
@@ -10,10 +10,10 @@ const char * returnString(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// bind native function returnString named as 'returnString'
+	// Registers function interface
     zs.registerFunction("returnString",returnString);
 
-    // Eval script that calls native function 'returnString'
+    // Evaluates a script that calls the registered function and prints its result by console
     zs.eval(
         "Console::outln(\"result : \"+returnString());"
  	);

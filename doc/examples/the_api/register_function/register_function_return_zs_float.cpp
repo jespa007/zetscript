@@ -3,7 +3,7 @@
 using zetscript::ZetScript;
 using zetscript::zs_float;
 
-// Definition of the native function interface returnFloat
+// ZetScript C++ interface function
 zs_float returnFloat(ZetScript *_zs){
     return 10.5;
 }
@@ -11,10 +11,10 @@ zs_float returnFloat(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// bind native function returnFloat named as 'returnFloat'
+	// Registers function interface
     zs.registerFunction("returnFloat",returnFloat);
 
-    // Eval script that calls native function 'returnFloat'
+    // Evaluates a script that calls the registered function and prints its result by console
     zs.eval(
         "Console::outln(\"result : \"+returnFloat());"
  	);
