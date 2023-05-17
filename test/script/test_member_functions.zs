@@ -2,10 +2,14 @@
 class Test{
 	
 	var a
+	
+	// constructor function
 	constructor(a){
 		this.a=a; // ini built-in
 	}
-	function1(a){
+	
+	// function keyword is optional in member functions
+	function function1(a){
 		this.a+=10+a;
 		this.function0();
 	}
@@ -26,12 +30,11 @@ class TestExtended extends Test{
 	constructor(a){
 		super(a); // it calls base constructor (by default it doesn't call)
 	}
-	
-	function // function keyword is optional in member functions
+		
 	function0(a){ 
 		this.a+=10; 	
 	}
-	
+		
 	function2(a){
 		super(a+10); // it calls Test::function2(2)
 		this.a+=5; 	
