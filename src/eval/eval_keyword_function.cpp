@@ -642,13 +642,13 @@ namespace zetscript{
 			// global variables should not deref object references due they are not incs its references through
 			// calling functions
 			if(partial_ex.size()==1){
-				EvalInstruction *ei_arg=(EvalInstruction *)partial_ex.items[0];
+				EvalInstruction *ei_arg=partial_ex.items[0];
 				ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
 				// If byte code is a global var load (find var is also global) set as push stk to
 				// avoid deref global objects
 				if(byte_code_aux ==BYTE_CODE_LOAD_GLOBAL){
-					ei_arg->vm_instruction=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
+					ei_arg->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
 				}else if(byte_code_aux ==BYTE_CODE_FIND_VARIABLE){
 					ei_arg->vm_instruction.value_op1=ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO;
 				}
