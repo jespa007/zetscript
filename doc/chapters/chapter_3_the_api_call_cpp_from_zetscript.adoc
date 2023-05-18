@@ -61,7 +61,7 @@ This section will explain how to register functions that return the following ty
 
 ===== Return Boolean
 
-To register a function that returns a _Boolean_ value, it must create and register a C function that returns _bool_ as return type.
+To register a function that returns a <<_Boolean_>> type, it must create and register a C function that returns _bool_ as return type.
 
 *Example*
 
