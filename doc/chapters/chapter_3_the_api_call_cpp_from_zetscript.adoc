@@ -1,9 +1,11 @@
 
 === Call c++ from ZetScript
 
-To call C&plus;&plus; code from _ZetScript_ it has to create and register a C function with a particular prototype. That function acts as interface between ZetScript and C++ side. 
+To call C&plus;&plus; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and C++. 
 
-As parameters, the function interface must always include `zetscript::ZetScript *` as the first parameter and then a maximum of 9 parameters of <<ZetScript built-in types,built-in type>> or other registered types. As a return, it can return nothing, or a <<ZetScript built-in types,built-in type>> or other registered type.
+As parameters, the function must always include `zetscript::ZetScript *` as the first parameter and a maximum of 9 parameters as <<ZetScript built-in type>> or other registered type. 
+
+As a return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
 
 *Syntax*
 
@@ -20,7 +22,7 @@ Where,
 - _ParamType_: It can be one defined in  <<ZetScript built-in types>> or other registered type.
 
 
-After the function is created it has be registered with `ZetScript::registerFunction` in order to be exposed in _ZetScript_. As a paramters, it passes a string value that will be the symbol name to be refered later in _ZetScript_ and the C function reference.
+After the function is created it has be registered with ZetScript::registerFunction in order to be exposed in ZetScript. As a parameters, it passes a string value that will be the symbol name to be refered later in ZetScript and the C function reference.
 
 Example, 
 
@@ -30,7 +32,7 @@ Example,
 
 *Example*
 
-The following example it registers a function called "sayHelloWorld"
+The following example registers a C function and calls it within an evaluated script.
 
 [source,c++]
 ----
@@ -47,7 +49,7 @@ include::../examples/the_api/register_function/register_function_out.txt[]
 
 ==== Return types
 
-When _ZetScript_ calls registered functions, sometimes it needs to  return some value as a result of an operation like a boolean, string, etc. This section will explain how to register functions that return the following types to the script side:
+This section will explain how to register functions that return the following types,
 
 - Boolean
 - Integer
@@ -59,7 +61,7 @@ When _ZetScript_ calls registered functions, sometimes it needs to  return some 
 
 ===== Return Boolean
 
-To register a function that returns a _Boolean_ type to _ZetScript_, it must create and register a C function that returns _bool_ as return type.
+To register a function that returns a _Boolean_ value, it must create and register a C function that returns _bool_ as return type.
 
 *Example*
 
