@@ -1,3 +1,4 @@
+
 === Call c++ from ZetScript
 
 To call C&plus;&plus; code from _ZetScript_ it has to create and register a C function with a particular prototype. That function acts as interface between ZetScript and C++ side. 
@@ -139,7 +140,7 @@ include::../examples/the_api/register_function/register_function_return_const_ch
 
 ====== Return String as zs_string
 
-To register a function that returns a _String_ type to _ZetScript_, it can create and register a C function that returns _<<zs_string>>_ as return type.
+To register a function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ type, it can create and register a C function that returns _<<zs_string>>_ as return type.
 
 *Example*
 

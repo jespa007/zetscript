@@ -1,6 +1,6 @@
 === Class
 
-A class is a template for create objects wiith its own variables and functions. A class is defined using keyword _class_ followed by the name. 
+A class is a template for create objects with its own variables and functions. A class is defined using keyword _class_ followed by the name. 
 
 
 [source,javascript]
@@ -13,7 +13,7 @@ class Test{
 
 ==== Class instantiantion
 
-To instanciate a class is done by the operator _new_
+Para instanciar un objeto de un tipo de clase definido, se  hace mediante el operador _new_
 
 [source,javascript]
 ----
