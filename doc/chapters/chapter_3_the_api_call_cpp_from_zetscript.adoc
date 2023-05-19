@@ -534,9 +534,7 @@ include::../examples/the_api/register_function/register_function_param_script_fu
 
 ===== Parameter native pointer of registered class
 
-To register a C function that accepts a pointer type of a registered class it must specify *ScriptFunction &ast;* as parameter type on its function prototype.
-
-A native function that accepts native pointer of registered class, it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
+A native function that accepts pointer type of a registered class , it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
 
 *Example*
 
