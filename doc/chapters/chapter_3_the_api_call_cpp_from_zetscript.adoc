@@ -61,7 +61,7 @@ This section will explain how to register C functions that return the following 
 
 ===== Return Boolean
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* type it must specify *bool* return type on its function prototype.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* return type on its function prototype.
 
 *Prototype*
 
@@ -84,7 +84,11 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 
 ===== Return Integer
 
-To register a C function that returns a <<_Integer_>> type it must specify *zs_int* return type on its function prototype.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* return type on its function prototype.
+
+*Prototype*
+
+  zs_int returnInteger(ZetScript * _zs);
 
 *Example*
 
@@ -102,7 +106,11 @@ include::../examples/the_api/register_function/register_function_return_zs_int_o
 
 ===== Return Float
 
-To register a function that returns a _Float_ type to _ZetScript_, it must create and register a C function that returns _zs_float_ as return type.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* return type on its function prototype.
+
+*Prototype*
+
+  zs_float returnFloat(ZetScript * _zs);
 
 *Example*
 
@@ -120,7 +128,7 @@ include::../examples/the_api/register_function/register_function_return_zs_float
 
 ===== Return a String
 
-To register a function that returns a _String_ type to _ZetScript_, it must create and register a C function that returns one of the following types,
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can be done by specifying the following return types in its prototype,
 
 - _const char *_
 - _zs_string_
@@ -128,7 +136,11 @@ To register a function that returns a _String_ type to _ZetScript_, it must crea
 
 ====== Return String as const char *
 
-To register a function that returns a _String_ type to _ZetScript_, it can create and register a C function that returns _const char *_ as return type.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *const char &ast;* return type on its function prototype.
+
+*Prototype*
+
+  const char * returnString(ZetScript * _zs);
 
 *Example*
 
@@ -146,7 +158,11 @@ include::../examples/the_api/register_function/register_function_return_const_ch
 
 ====== Return String as zs_string
 
-To register a function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ type, it can create and register a C function that returns _<<zs_string>>_ as return type.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *zs_string* return type on its function prototype.
+
+*Prototype*
+
+  zs_string returnString(ZetScript * _zs);
 
 *Example*
 
@@ -164,7 +180,11 @@ include::../examples/the_api/register_function/register_function_return_zs_strin
 
 ====== Return String as StringScriptObject *
 
-To register a function that returns a _String_ type to _ZetScript_, it can create and register a C function that returns _<<StringScriptObject>>_ as return type. The instantiation of _<<StringScriptObject>>_ it's done throught _ZetScript::newStringScriptObject_ using _ZetScript_ context.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *StringScriptObject &ast;* return type on its function prototype. The instantiation of *StringScriptObject &ast;* it's done throught _ZetScript::newStringScriptObject_ using ZetScript context.
+
+*Prototype*
+
+  StringScriptObject &ast; returnString(ZetScript * _zs);
 
 *Example*
 
@@ -182,7 +202,11 @@ include::../examples/the_api/register_function/register_function_return_string_s
 
 ===== Return Array
 
-To register a function that returns a _Array_ type to _ZetScript_, it must create and register a C function that returns _<<ArrayScriptObject>>_ as return type. The instantiation of _<<ArrayScriptObject>>*_ it's done through _ZetScript::newArrayScriptObject_ using _ZetScript_ context.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Array]* it must specify *ArrayScriptObject &ast;* return type on its function prototype. The instantiation of *ArrayScriptObject &ast;* it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
+
+*Prototype*
+
+  ArrayScriptObject &ast; returnString(ZetScript * _zs);
 
 *Example*
 
@@ -200,7 +224,11 @@ include::../examples/the_api/register_function/register_function_return_array_sc
 
 ===== Return Object
 
-To register a function that returns a _Object_ type to _ZetScript_, it must create and register a C function that returns _<<ObjectScriptObject>>*_ as return type. The instantiation of _<<ObjectScriptObject>>_ it's done through _ZetScript::newObjectScriptObject_ using _ZetScript *_ context.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it must specify *ObjectScriptObject &ast;* return type on its function prototype. The instantiation of *ObjectScriptObject &ast;* it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
+
+*Prototype*
+
+  ObjectScriptObject &ast; returnString(ZetScript * _zs);
 
 *Example*
 
@@ -219,22 +247,26 @@ include::../examples/the_api/register_function/register_function_return_object_s
 
 ===== Return registered class
 
-To call a C function that returns a registered class, it can create and register a C function that  returns one the following as return types,
+
+To register a C function that returns a *<<Registered Class>>* it can be done by specifying the following return types in its prototype,
 
 - Its native pointer type
 - ClassScriptObject
 
-see section <<Register class, register cala>> to know more about how to register a class
  
 ===== Return registered class as its native pointer type
 
-To call a C function that returns a registered class, it can create and register a C function that returns its native pointer type return type. 
+To register a C function that returns a *<<Registered Class>>* it can specify its native pointer type as return in the function prototype.
 
-ZetScript *never* destroy native pointers returned from C function. That's why it cannot allocate and return a type from the function itself because this would become a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
+ZetScript *never* destroy native pointers returned from C function. This is why it cannot allocate and return a type from the function itself because this would become a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
+
+*Prototype*
+
+  ClassType &ast; returnClassTypePointer(ZetScript * _zs);
 
 *Example*
 
-In the following example it registers a native type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that returns a `Point` a type pointer. In the main program it creates a `Point` type and that is acceded globally, so the registered native function can access and return this instanced `Point` type.
+In the following example it registers type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that returns a `Point` a type pointer. In the main program it creates a `Point` type and that is acceded globally, so the registered native function can access and return this instanced `Point` type.
 
 
 [source,c++]
@@ -251,7 +283,15 @@ include::../examples/the_api/register_function/register_function_return_native_t
 
 ===== Return registered class as ClassScriptObject
 
-To call a C function that returns a registered class, it can create and register a C function _<<_ClassScriptObject>>*_ as return type. To instantiate _ClassScriptObject_ is done through _<<ZetScript::newClassScriptObject>>_ using _ZetScript *_ context passing instantiated registered class by parameter.
+To register a C function that returns a *<<Registered Class>>* it can specify *ClassScriptObject &ast;* return type on its function prototype. To instantiate *ClassScriptObject &ast;*  is done through _<<ZetScript::newClassScriptObject>>_ using ZetScript context and the registered class instantiated.
+
+A difference from returning a pointer type of a registered class, when the C function returns a *ClassScriptObject &ast;* object ZetScript is in charge to deallocate automatically when there's no more references. 
+
+To be have the class wrappable inside *ClassScriptObject &ast;*, it must be registered as instancialbe (see <<Register class as instanciable>>)
+
+*Prototype*
+
+  ClassScriptObject &ast; returnClassScriptObject(ZetScript * _zs);
 
 
 *Example*
@@ -272,7 +312,8 @@ include::../examples/the_api/register_function/register_function_return_class_sc
 
 ==== Parameter types
 
-This section will explain how to register functions that accepts the following ZetScript types as parameter,
+
+This section will explain how to register C functions that accepts the following types as parameters,
 
 - Boolean
 - Integer
@@ -285,7 +326,11 @@ This section will explain how to register functions that accepts the following Z
 
 ===== Parameter Boolean
 
-To call a C function that accepts a ZetScript _Boolean_, it must create and register a C function with _bool *_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramBoolean(ZetScript * _zs, bool _value);
 
 *Example*
 
@@ -303,7 +348,11 @@ include::../examples/the_api/register_function/register_function_param_bool_out.
 
 ===== Parameter Integer
 
-To call a C function that accepts a ZetScript _Integer_, it must create and register a C function with _zs_int_ or _zs_int *_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramInteger(ZetScript * _zs, zs_int _value);
 
 *Example*
 
@@ -321,7 +370,11 @@ include::../examples/the_api/register_function/register_function_param_zs_int_ou
 
 ===== Parameter Float
 
-To call a C function that accepts a ZetScript _Float_, it must create and register a C function with _zs_float *_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramFloat(ZetScript * _zs, zs_float _value);
 
 *Example*
 
@@ -339,7 +392,7 @@ include::../examples/the_api/register_function/register_function_param_zs_float_
 
 ===== Parameter String
 
-To call a C function that accepts a ZetScript _String_, it can create and register a C function with one of the following parameter types,
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify the following types as a parameter on its function prototype,
 
 - const char *
 - zs_string *
@@ -347,7 +400,12 @@ To call a C function that accepts a ZetScript _String_, it can create and regist
 
 ===== Parameter String as const char *
 
-To call a C function that accepts a ZetScript _String_, it can create and register a C function with _const char *_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *const char &ast;* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramConstChar(ZetScript * _zs, const char * _value);
+
 
 *Example*
 
@@ -365,7 +423,11 @@ include::../examples/the_api/register_function/register_function_param_const_cha
 
 ===== Parameter String as zs_string *
 
-To call a C function that accepts a ZetScript _String_, it can create and register a C function with _<<zs_string>>*_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *zs_string &ast;* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramZsString(ZetScript * _zs, zs_string * _value);
 
 *Example*
 
@@ -383,7 +445,12 @@ include::../examples/the_api/register_function/register_function_param_zs_string
 
 ===== Parameter String as StringScriptObject *
 
-To call a C function that accepts a ZetScript _String_, it can create and register a C function with _<<StringScriptObject>>*_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *StringScriptObject &ast;* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramStringScriptObject(ZetScript * _zs, StringScriptObject * _value);
+
 
 *Example*
 
@@ -401,7 +468,11 @@ include::../examples/the_api/register_function/register_function_param_string_sc
 
 ===== Parameter Array
 
-To call a C function that accepts a ZetScript _Array_, it must create and register a C function with _<<ArrayScriptObject>>*_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Array]* it can specify *ArrayScriptObject &ast;* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramStringScriptObject(ZetScript * _zs, ArrayScriptObject * _value);
 
 *Example*
 
@@ -419,7 +490,11 @@ include::../examples/the_api/register_function/register_function_param_array_scr
 
 ===== Parameter Object
 
-To call a C function that accepts a ZetScript _Object_, it must create and register a C function with _<<ObjectScriptObject>>*_ as parameter type.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it can specify *ObjectScriptObject &ast;* as parameter type on its function prototype.
+
+*Prototype*
+
+  void paramStringScriptObject(ZetScript * _zs, ObjectScriptObject * _value);
 
 *Example*
 
@@ -437,7 +512,11 @@ include::../examples/the_api/register_function/register_function_param_object_sc
 
 ===== Parameter Function
 
-To call a C function that accepts a ZetScript _Function_, it must create and register a C function with _<<ScriptFunction>>*_ as parameter type. To make  _ScriptFunction_ callable it must to bind that using <<bindScriptFunction>>.
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Function]* it can specify *ScriptFunction &ast;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
+
+*Prototype*
+
+  void paramStringScriptObject(ZetScript * _zs, ScriptFunction * _value);
 
 *Example*
 
@@ -454,6 +533,8 @@ include::../examples/the_api/register_function/register_function_param_script_fu
 ----
 
 ===== Parameter native pointer of registered class
+
+To register a C function that accepts a pointer type of a registered class it must specify *ScriptFunction &ast;* as parameter type on its function prototype.
 
 A native function that accepts native pointer of registered class, it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
 
