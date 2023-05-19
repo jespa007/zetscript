@@ -49,7 +49,7 @@ include::../examples/the_api/register_function/register_function_out.txt[]
 
 ==== Return types
 
-This section will explain how to register functions that return the following types,
+This section will explain how to register C functions that return the following types,
 
 - Boolean
 - Integer
@@ -61,8 +61,12 @@ This section will explain how to register functions that return the following ty
 
 ===== Return Boolean
 
-To register a function that returns a <<_Boolean_>> type, it must create and register a C function that returns _bool_ as return type.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* type it must specify *bool* return type on its function prototype.
 
+*Prototype*
+
+  bool returnBoolean(ZetScript * _zs);
+ 
 *Example*
 
 [source,c++]
@@ -80,7 +84,7 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 
 ===== Return Integer
 
-To register a function that returns a _Integer_ type to _ZetScript_, it must create and register a C function that returns _zs_int_ type.
+To register a C function that returns a <<_Integer_>> type it must specify *zs_int* return type on its function prototype.
 
 *Example*
 
