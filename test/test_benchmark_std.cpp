@@ -35,12 +35,14 @@ void test_std_map(){
 	std::map<std::string,std::string> std_map;
 	std::map<std::string,std::string> std_map1;
 
+	printf("=======================================\n");
+	printf("Test std::map\n");
 	printf("sizeof(std::map):%i\n",(int)sizeof(std_map));
 
-	printf("Inserting elements...");
+	printf("Inserting 1000000 elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 100000; i++){
+	for(int i=0; i < 1000000; i++){
 		std_map[std_random_key()]="a";
 	}
 
@@ -62,14 +64,15 @@ void test_zs_map(){
 	zetscript::zs_map	map1;
 
 
-
+	printf("=======================================\n");
+	printf("Test zs_map\n");
 	printf("sizeof(zs_map):%i\n",(int)sizeof(map));
 
 
-    printf("Inserting elements...");
+    printf("Inserting 1000000 elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 100000; i++){
+	for(int i=0; i < 1000000; i++){
 		map.set(std_random_key().c_str(),(zetscript::zs_int)(new zetscript::zs_string("a")));
 	}
 
@@ -90,13 +93,13 @@ void test_std_string(){
 	std::string str;
 
 	printf("=======================================\n");
-	printf("Test zs_string\n");
+	printf("Test std::string\n");
 	printf("sizeof(std::std_string):%i\n",(int)sizeof(str));
 
-	printf("Append elements...");
+	printf("Append 1000000 elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 100000; i++){
+	for(int i=0; i < 1000000; i++){
 		str+=';';
 		if((i%100000)==0){
 			printf("%i\n",i);
@@ -117,10 +120,10 @@ void test_zs_string(){
 	printf("Test zs_string\n");
 	printf("sizeof(zs_string):%i\n",(int)sizeof(str));
 
-	printf("Append elements...");
+	printf("Append 1000000 elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 100000; i++){
+	for(int i=0; i < 1000000; i++){
 		str+=';';//.append(zs_std_random_key());
 		if((i%100000)==0){
 			printf("%i\n",i);
@@ -142,10 +145,10 @@ void test_std_vector(){
 	printf("Test std::vector<int>\n");
 	printf("sizeof(std::vector<int>):%i\n",(int)sizeof(std::vector<int>));
 
-	printf("Append elements...");
+	printf("Append 1000000 elements...");
 		int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 999999; i++){
+	for(int i=0; i < 1000000; i++){
 		vec.push_back(0);
 		if((i%100000)==0){
 			printf("%i\n",i);
@@ -164,10 +167,10 @@ void test_zs_vector(){
 	printf("Test zs_vector<int>\n");
 	printf("sizeof(zs_vector<int>):%i\n",(int)sizeof(zetscript::zs_vector<int>));
 
-	printf("Append elements...");
+	printf("Append 1000000 elements...");
 		int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 999999; i++){
+	for(int i=0; i < 1000000; i++){
 		vec.push_back(0);
 		if((i%100000)==0){
 			printf("%i\n",i);
@@ -185,24 +188,25 @@ void test_zs_vector(){
 
 void test_vector(){
 	test_std_vector();
-	test_vector();
+	test_zs_vector();
 }
 
 
 void test_map(){
 	test_std_map();
-	test_map();
+	test_zs_map();
 }
+
 
 void test_string(){
 	test_std_string();
-	test_string();
+	test_zs_string();
 }
 
 int main(int argc, char *argv[]){
 	ZS_UNUSUED_2PARAMS(argc,argv);
 	//test_vector();
 	test_map();
-	//test_string();
+	test_string();
 
 }

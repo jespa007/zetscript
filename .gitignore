@@ -10,3 +10,4 @@ Makefile
 /config.h
 /release/
 /debug/
+/Release/
