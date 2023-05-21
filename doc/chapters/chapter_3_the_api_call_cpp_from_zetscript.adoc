@@ -63,10 +63,6 @@ This section will explain how to register C functions that return the following 
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* return type on its function prototype.
 
-*Prototype*
-
-  bool returnBoolean(ZetScript * _zs);
- 
 *Example*
 
 [source,c++]
@@ -86,10 +82,6 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* return type on its function prototype.
 
-*Prototype*
-
-  zs_int returnInteger(ZetScript * _zs);
-
 *Example*
 
 [source,c++]
@@ -107,10 +99,6 @@ include::../examples/the_api/register_function/register_function_return_zs_int_o
 ===== Return Float
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* return type on its function prototype.
-
-*Prototype*
-
-  zs_float returnFloat(ZetScript * _zs);
 
 *Example*
 
@@ -138,10 +126,6 @@ To register a C function that returns a *xref:chapter_2_the_language_data_types.
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *const char &ast;* return type on its function prototype.
 
-*Prototype*
-
-  const char * returnString(ZetScript * _zs);
-
 *Example*
 
 [source,c++]
@@ -159,10 +143,6 @@ include::../examples/the_api/register_function/register_function_return_const_ch
 ====== Return String as zs_string
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *zs_string* return type on its function prototype.
-
-*Prototype*
-
-  zs_string returnString(ZetScript * _zs);
 
 *Example*
 
@@ -182,10 +162,6 @@ include::../examples/the_api/register_function/register_function_return_zs_strin
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *StringScriptObject &ast;* return type on its function prototype. The instantiation of *StringScriptObject &ast;* it's done throught _ZetScript::newStringScriptObject_ using ZetScript context.
 
-*Prototype*
-
-  StringScriptObject &ast; returnString(ZetScript * _zs);
-
 *Example*
 
 [source,c++]
@@ -204,10 +180,6 @@ include::../examples/the_api/register_function/register_function_return_string_s
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Array]* it must specify *ArrayScriptObject &ast;* return type on its function prototype. The instantiation of *ArrayScriptObject &ast;* it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
 
-*Prototype*
-
-  ArrayScriptObject &ast; returnString(ZetScript * _zs);
-
 *Example*
 
 [source,c++]
@@ -225,10 +197,6 @@ include::../examples/the_api/register_function/register_function_return_array_sc
 ===== Return Object
 
 To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it must specify *ObjectScriptObject &ast;* return type on its function prototype. The instantiation of *ObjectScriptObject &ast;* it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
-
-*Prototype*
-
-  ObjectScriptObject &ast; returnString(ZetScript * _zs);
 
 *Example*
 
@@ -260,10 +228,6 @@ To register a C function that returns a *<<Registered Class>>* it can specify it
 
 ZetScript *never* destroy native pointers returned from C function. This is why it cannot allocate and return a type from the function itself because this would become a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
 
-*Prototype*
-
-  ClassType &ast; returnClassTypePointer(ZetScript * _zs);
-
 *Example*
 
 In the following example it registers type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that returns a `Point` a type pointer. In the main program it creates a `Point` type and that is acceded globally, so the registered native function can access and return this instanced `Point` type.
@@ -288,11 +252,6 @@ To register a C function that returns a *<<Registered Class>>* it can specify *C
 A difference from returning a pointer type of a registered class, when the C function returns a *ClassScriptObject &ast;* object ZetScript is in charge to deallocate automatically when there's no more references. 
 
 To be have the class wrappable inside *ClassScriptObject &ast;*, it must be registered as instancialbe (see <<Register class as instanciable>>)
-
-*Prototype*
-
-  ClassScriptObject &ast; returnClassScriptObject(ZetScript * _zs);
-
 
 *Example*
 
@@ -328,10 +287,6 @@ This section will explain how to register C functions that accepts the following
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* as parameter type on its function prototype.
 
-*Prototype*
-
-  void paramBoolean(ZetScript * _zs, bool _value);
-
 *Example*
 
 [source,c++]
@@ -350,10 +305,6 @@ include::../examples/the_api/register_function/register_function_param_bool_out.
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* as parameter type on its function prototype.
 
-*Prototype*
-
-  void paramInteger(ZetScript * _zs, zs_int _value);
-
 *Example*
 
 [source,c++]
@@ -371,10 +322,6 @@ include::../examples/the_api/register_function/register_function_param_zs_int_ou
 ===== Parameter Float
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* as parameter type on its function prototype.
-
-*Prototype*
-
-  void paramFloat(ZetScript * _zs, zs_float _value);
 
 *Example*
 
@@ -402,11 +349,6 @@ To register a C function that accepts a *xref:chapter_2_the_language_data_types.
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *const char &ast;* as parameter type on its function prototype.
 
-*Prototype*
-
-  void paramConstChar(ZetScript * _zs, const char * _value);
-
-
 *Example*
 
 [source,c++]
@@ -424,10 +366,6 @@ include::../examples/the_api/register_function/register_function_param_const_cha
 ===== Parameter String as zs_string *
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *zs_string &ast;* as parameter type on its function prototype.
-
-*Prototype*
-
-  void paramZsString(ZetScript * _zs, zs_string * _value);
 
 *Example*
 
@@ -447,11 +385,6 @@ include::../examples/the_api/register_function/register_function_param_zs_string
 
 To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *StringScriptObject &ast;* as parameter type on its function prototype.
 
-*Prototype*
-
-  void paramStringScriptObject(ZetScript * _zs, StringScriptObject * _value);
-
-
 *Example*
 
 [source,c++]
@@ -468,11 +401,7 @@ include::../examples/the_api/register_function/register_function_param_string_sc
 
 ===== Parameter Array
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Array]* it can specify *ArrayScriptObject &ast;* as parameter type on its function prototype.
-
-*Prototype*
-
-  void paramStringScriptObject(ZetScript * _zs, ArrayScriptObject * _value);
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Array]* it must specify *ArrayScriptObject &ast;* as parameter type on its function prototype.
 
 *Example*
 
@@ -490,11 +419,7 @@ include::../examples/the_api/register_function/register_function_param_array_scr
 
 ===== Parameter Object
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it can specify *ObjectScriptObject &ast;* as parameter type on its function prototype.
-
-*Prototype*
-
-  void paramStringScriptObject(ZetScript * _zs, ObjectScriptObject * _value);
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it must specify *ObjectScriptObject &ast;* as parameter type on its function prototype.
 
 *Example*
 
@@ -512,11 +437,7 @@ include::../examples/the_api/register_function/register_function_param_object_sc
 
 ===== Parameter Function
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Function]* it can specify *ScriptFunction &ast;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
-
-*Prototype*
-
-  void paramStringScriptObject(ZetScript * _zs, ScriptFunction * _value);
+To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Function]* it must specify *ScriptFunction &ast;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
 
 *Example*
 
@@ -532,13 +453,13 @@ Out:
 include::../examples/the_api/register_function/register_function_param_script_function_out.txt[]
 ----
 
-===== Parameter native pointer of registered class
+===== Parameter Registered Class
 
-A native function that accepts pointer type of a registered class , it must create and register a C function with the C type pointer of the registered class (see section <<Register class>> to know more about how to register a class)
+To register a C function that accepts a <<Registered class>> as a parameter, it must specify the *Registered class pointer* as parameter type on its function prototype.
 
 *Example*
 
-In the following example it registers a native type Point and its properties x and y and it registers native function `mul10Point` that accepts a Point pointer type as parameter. In the script program it creates a Point type and it calls `mul10Point` that multiply x10 its properties.
+In the following example it registers the Point type and its properties `x` and `y`  (see <<Register class>> section to know about how to register class and properties) and it registers function `mul10Point` that accepts a Point type pointer as parameter. In the script execution it instances a Point type and is passed as argument to `mul10Point` that multiply its properties by 10.
 
 [source,c++]
 ----
