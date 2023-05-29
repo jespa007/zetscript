@@ -14,13 +14,12 @@ int main()
  	);
 
     // It binds 'returnObject' as 'ObjectScriptObject *(void)'
-    auto returnObject=zs.bindScriptFunction<ObjectScriptObject *()>("returnArray");
+    auto returnObject=zs.bindScriptFunction<ObjectScriptObject *()>("returnObject");
     auto object=returnObject();
 
     // Calls ZetScript function and prints return value by console.
-    for(int i=0; i < array->length(); i++){
-      printf("Array[%i]= : %s\n",array->toString().c_str());
-    }
+    printf("result : %s\n",object->toString().c_str());
+    
 
  	return 0;
 }

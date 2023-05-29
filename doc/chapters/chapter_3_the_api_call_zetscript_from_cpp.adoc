@@ -114,9 +114,9 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_zs
 
 To bind a ZetScript function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can be done by specifying the following return types in its function signature,
 
- -const char *
- -zs_string
- -StringScriptObject *
+ - const char *
+ - zs_string
+ - StringScriptObject *
 
 ====== Return String as const char *
 
@@ -126,14 +126,14 @@ To register a C function that returns a *xref:chapter_2_the_language_data_types.
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_const_char.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_const_char.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_const_char_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_const_char_out.txt[]
 ----
 
 ====== Return String as zs_string
@@ -144,33 +144,33 @@ To register a C function that returns a *xref:chapter_2_the_language_data_types.
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_string.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_string.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_zs_string_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_zs_string_out.txt[]
 ----
 
 
 ====== Return String as StringScriptObject *
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *zs_sStringScriptObject &ast;* return type on its function signature.
+To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify *StringScriptObject &ast;* return type on its function signature.
 
 *Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind_function/bind_function_return_string_script_object.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_string_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_function/bind_function_return_string_script_object_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_string_script_object_out.txt[]
 ----
 
 ===== Return Array
@@ -220,14 +220,14 @@ To bind the ZetScript function that returns a <<registered class>>, you must spe
 
 [source,c++]
 ----
-include::../examples/the_api/bind_script_function/bind_script_function_return_registered_class.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_class_script_object.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_script_function/bind_script_function_return_registered_class_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_class_script_object_out.txt[]
 ----
 
 ==== Parameter types
@@ -302,9 +302,9 @@ include::../examples/the_api/bind_function/bind_function_param_zs_float_out.txt[
 
 To bind a ZetScript function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify the following types as a parameter on its function signature,
 
-- const char *
-- zs_string *
-- StringScriptObject *
+ - const char *
+ - zs_string *
+ - StringScriptObject *
 
 ===== Parameter String as const char *
 

@@ -1,21 +1,31 @@
 #include "zetscript.h"
 
+using zetscript::ObjectScriptObject;
+
 int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript function 'returnBoolean' that returns 'Boolean' value
+    // Evaluates ZetScript function 'returnNewA' that returns 'Boolean' value
     zs.eval(
- 		"function returnBoolean(){\n"
-        "    return true;\n"
-        "}\n"
+      "class A{ \n"
+      "  var a=10;\n"
+      "  var b=true;\n"
+      "  var c=\"String\";\n"
+      "}\n"
+      "function returnNewA(){\n"
+      "   return new A();\n"
+      "}\n"
  	);
 
-    // It binds 'returnBoolean' as 'bool(void)'
-    auto returnBoolean=zs.bindScriptFunction<bool()>("returnBoolean");
+    // It binds 'returnNewA' as '(ObjectScriptObject *)(void)'
+    auto returnNewA=zs.bindScriptFunction<ObjectScriptObject *()>("returnNewA");
 
-    // Calls ZetScript function and prints return value by console.
-    printf("result : %s\n",returnBoolean()?"true":"false");
+    auto a=returnNewA();
+
+    // Prints return value by console.
+    printf("result : %s\n",a->toString().c_str());
+    
 
  	return 0;
 }
