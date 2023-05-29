@@ -1,26 +1,34 @@
 === Call ZetScript from c++
 
-To call ZetScript from C++ is it done through `ZetScript::bindScriptFunction` that it makes a ZetScript function callable for C&plus;&plus;. `ZetScript::bindScriptFunction` is sets the  function signature and the name of symbol or ScriptFunction to be binded of.
+To make a ZetScript function previosly evaluated callable from C&plus;&plus is done through `ZetScript::bindScriptFunction`. `ZetScript::bindScriptFunction` it binds ZetScript function by setting expected signature and the name of symbol or ScriptFunction to be binded of.
+
+As a signature parameters, it can define untill 9 parameters as <<ZetScript built-in type>> or other registered type. 
+
+As a signature return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
 
 *Syntax*
 
 [source,c++]
 ----
-// bind script function from function name
- ZetScript::bindScriptFunction<ReturnType(ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 )>("name_script_function");
-
-// bind script function from ScriptFunction 
- ZetScript::bindScriptFunction<ReturnType(ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 )>(ScriptFunction * _script_function)
+ ZetScript::bindScriptFunction<ReturnType(ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 )>(_script_function);
 ----
 
-Where,
++++<u>Parameters</u>+++
 
- - ReturnType: It can be void or some type defined in [ZetScript built-in types] or other registered type.
- - ParamType: It can be one defined in [ZetScript built-in types] or other registered type.
+ - __script_function_: `ZetScript::zs_string` or `ScriptFunction *` as the name or the script function reference to be binded.
+
++++<u>Template arguments</u>+++
+
+ - ReturnType: It can be void or some type defined in <<ZetScript built-in types>> or other registered type.
+ - ParamType: It can be one defined in <<ZetScript built-in types>> or other registered type.
+
++++<u>Returns</u>+++
+
+Returns a `std::function<ReturnType(ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 )>`
 
 *Example*
 
-The following example it binds hellow world function without no parameters and no return
+The following example it binds hello world function without no parameters and no return
 
 [source,c++]
 ----

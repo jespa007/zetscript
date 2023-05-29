@@ -4,17 +4,17 @@ int main(){
 
 	zetscript::ZetScript zs;
 
-    // eval script that defines "sayHelloWorld" script function
+    // Evaluates ZetScript function 'sayHelloWorld' that prints a "Hello world" by console
     zs.eval(
  		"function sayHelloWorld(){\n"
         "    Console::outln(\"Hello world\");\n"
         "}\n"
  	);
 
-    // binds script function "sayHelloWorld" with no parameter and no return
+    // It binds 'sayHelloWorld' as 'void(void)'
     auto sayHelloWorld=zs.bindScriptFunction<void(void)>("sayHelloWorld");
 
-    // call script function
+    // Calls ZetScript function
     sayHelloWorld();
 
  	return 0;

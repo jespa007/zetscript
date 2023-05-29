@@ -6,17 +6,17 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    // eval script that defines "returnInteger" script function
+    // Evaluates ZetScript function 'returnInteger' that returns 'Integer' value
     zs.eval(
  		"function returnInteger(){\n"
         "    return 10;\n"
         "}\n"
  	);
 
-    // binds script function "returnInteger" that returns integer value
+    // It binds 'returnInteger' as 'zs_int(void)'
     auto returnInteger=zs.bindScriptFunction<zs_int()>("returnInteger");
 
-    // call script function 
+    // Calls ZetScript function and prints return value by console.
     printf("result : %ld\n",returnInteger());
 
  	return 0;
