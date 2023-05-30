@@ -15,7 +15,7 @@ struct Point{
 };
 
 //------------------------------
-// WRAP POINT
+// Point class functions to register
 
 // defines new function Point ClassScriptObject
 Point *Point_new(ZetScript *_zs){
@@ -37,7 +37,7 @@ void Point_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
 
-// WRAP POINT
+// 
 //------------------------------
 
 // C function that returns classScriptObject

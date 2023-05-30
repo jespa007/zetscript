@@ -16,8 +16,14 @@ int main()
     // It binds 'returnString' as 'StringScriptObject *(void)'
     auto returnString=zs.bindScriptFunction<StringScriptObject *()>("returnString");
 
-    // Calls ZetScript function and prints return value by console.
-    printf("result : %s\n",returnString()->get().c_str());
+    // Calls ZetScript function which it returns 'StringScriptObject'
+    auto script_object=returnString();
+
+    // Prints its value by console.
+    printf("result : %s\n",script_object->get().c_str());
+
+   // Decreases the reference count of script object
+   zs.unrefLifetimeObject(script_object);
 
  	return 0;
 }

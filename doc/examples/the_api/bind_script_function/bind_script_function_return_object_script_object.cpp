@@ -15,11 +15,16 @@ int main()
 
     // It binds 'returnObject' as 'ObjectScriptObject *(void)'
     auto returnObject=zs.bindScriptFunction<ObjectScriptObject *()>("returnObject");
-    auto object=returnObject();
 
-    // Calls ZetScript function and prints return value by console.
-    printf("result : %s\n",object->toString().c_str());
+    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
+    auto object_object=returnObject();
+
+    // Prints its value by console.
+    printf("result : %s\n",object_object->toString().c_str());
     
+
+    // 'unrefLifetimeObject' it decreases the reference count of thr script object to tell is not used anymore
+    zs.unrefLifetimeObject(object_object);
 
  	return 0;
 }
