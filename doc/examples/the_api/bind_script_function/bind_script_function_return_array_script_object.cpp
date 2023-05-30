@@ -16,10 +16,10 @@ int main()
   // It binds 'returnArray' as 'StringScriptObject *(void)'
   auto returnArray=zs.bindScriptFunction<ArrayScriptObject *()>("returnArray");
 
-  // Calls ZetScript function which it returns 'ArrayScriptObject'
+  // Calls ZetScript function which it returns 'ArrayScriptObject *' reference
   auto array_object=returnArray();
 
-  // Calls ZetScript function and prints return value by console.
+  // Prints its value by console.
   printf("result : %s\n",array_object->toString().c_str());
 
    // 'unrefLifetimeObject' it decreases the reference count of thr script object to tell is not used anymore

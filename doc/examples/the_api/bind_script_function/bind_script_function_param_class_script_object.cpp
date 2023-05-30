@@ -48,7 +48,7 @@ int main()
 	// register property getter Point::y
 	zs.registerMemberPropertyGetter<Point>("y",Point_get_y);
 
-    // Evaluates ZetScript function 'concat' that accepts two 'Array' values as parameter
+    // Evaluates ZetScript function 'paramPoint' that prints the contents of '_point'
     zs.eval(
  		"function paramPoint(_point){\n"
         "    Console::outln(\"result : \"+_point);\n"

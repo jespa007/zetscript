@@ -901,8 +901,8 @@ namespace zetscript{
 		return ObjectScriptObject::newObjectScriptObject(this);
 	}
 
-	StringScriptObject * ZetScript::newStringScriptObject(){
-		return StringScriptObject::newStringScriptObject(this);
+	StringScriptObject * ZetScript::newStringScriptObject(const zs_string & _s){
+		return StringScriptObject::newStringScriptObject(this,_s);
 	}
 
 	ArrayScriptObject * ZetScript::newArrayScriptObject(){

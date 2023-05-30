@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript function 'add' that accepts two 'Integer' values as parameter
+    // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
     zs.eval(
  		"function add(_value1,_value2){\n"
         "    Console::outln(\"result : \"+_value1 + _value2);\n"
