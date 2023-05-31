@@ -23,7 +23,7 @@ int main()
 
 
     // Calls ZetScript function by value
-    concat(&value1,&value2);
+    concat(value1,value2);
 
 
  	return 0;

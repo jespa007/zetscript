@@ -8,30 +8,29 @@ int main()
 
     // Evaluates ZetScript class A and function 'returnNewA' that returns an instance of type 'A'
     zs.eval(
-      "class A{ \n"
-      "  var a=10;\n"
-      "  var b=true;\n"
-      "  var c=\"String\";\n"
+      "class Point{ \n"
+      "  var x=10;\n"
+      "  var y=20;\n"
       "}\n"
       "\n"
-      "// 'returnNewA' instances A type\n"
+      "// 'returnPoint' instances 'Point' type\n"
       "\n"
-      "function returnNewA(){\n"
-      "   return new A();\n"
+      "function returnPoint(){\n"
+      "   return new Point();\n"
       "}\n"
  	);
 
     // It binds 'returnNewA' as '(ObjectScriptObject *)(void)'
-    auto returnNewA=zs.bindScriptFunction<ObjectScriptObject *()>("returnNewA");
+    auto returnPoint=zs.bindScriptFunction<ObjectScriptObject *()>("returnPoint");
 
    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
-    auto a=returnNewA();
+    auto point=returnPoint();
 
     // Prints return value by console.
-    printf("result : %s\n",a->toString().c_str());
+    printf("result : %s\n",point->toString().c_str());
 
    // 'unrefLifetimeObject' it decreases the reference count of thr script object to tell is not used anymore
-   zs.unrefLifetimeObject(a);    
+   zs.unrefLifetimeObject(point);    
 
  	return 0;
 }

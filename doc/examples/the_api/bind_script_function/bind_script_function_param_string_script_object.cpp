@@ -21,7 +21,7 @@ int main()
     auto value2=zs.newStringScriptObject("World");
 
     // Calls ZetScript function by value
-    concat(&value1,&value2);
+    concat(value1,value2);
 
 
  	return 0;

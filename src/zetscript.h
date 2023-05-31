@@ -216,7 +216,7 @@ namespace zetscript{
 		bool isFilenameAlreadyParsed(const zs_string & filename);
 		//
 		ObjectScriptObject * newObjectScriptObject();
-		StringScriptObject * newStringScriptObject(const zs_string & _s);
+		StringScriptObject * newStringScriptObject(const zs_string & _str="");
 		ArrayScriptObject * newArrayScriptObject();
 
 		template<typename _C>
