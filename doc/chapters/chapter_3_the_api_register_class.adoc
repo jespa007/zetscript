@@ -1,14 +1,16 @@
-=== Bind type
+=== Register C++ type
 
 [source,cpp]
 ----
 include::../examples/the_api/type/type_bind_type.cpp[]
 ----
 
-==== Bind static type
+==== Register no instantiable type
 
-Binding a native class or type as static it means it's not instantiable in the script side , so it cannot use *new* keyword.
-To bind type as static is done through *registerClass* function by passing the type as template and the name that will be referenced in the script.
+Register not instantiable type it means that it cannot create new objects (i.e use *new* keyword).
+To register type no instantible type is done simple by calling *ZetScript::registerClass* with type as template and the name that will be referenced in the script.
+
+Wht it can be useful the using of non instantiable types ? For example to have control of instantiated types in the C++ program
 
 Example,
 
@@ -114,7 +116,7 @@ void main(argc, char *argv[])
  
 Note: Is valuable to see that static types are safety because never are created in the script side, they are created by the C++ side 
  
-==== Bind instantiable type
+==== Register instantiable type
 
 Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *registerClass* passing the type as template,the name and the interface new/delete functions,
 
