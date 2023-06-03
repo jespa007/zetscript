@@ -39,6 +39,36 @@ namespace zetscript{
 			return so_script;
 		}
 
+		template<typename R>
+		R ZetScript::checkAndConvertStackElement(StackElement *_stk, int _idx_return){
+			zetscript::zs_string str_error;
+			R ret_value;
+
+			// returning instanced types it cannot be C++ types due it can become memory leaks
+			if((_idx_return >= IDX_TYPE_MAX) && (_stk->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+				ClassScriptObject *class_script_object=(ClassScriptObject *)_stk->value;
+				if(class_script_object->was_created_by_constructor == true){
+					ZS_THROW_RUNTIME_ERROR("run-time converting result value to '%s'. Returning registered class type objects, return type from bind function signature should be set as 'Class ScriptObject * to be dereferenced after its use. (i.e bindScriptFunction<ClassScriptObject *(_type1, _type2, ...)> )"
+						,zetscript::zs_rtti::demangle(class_script_object->getScriptType()->str_script_type_ptr.c_str()).c_str()
+					);
+				}
+			}
+
+			if(!this->stackElementTo(_stk,_idx_return, (zs_int*)(&ret_value),str_error)){
+				ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+			}
+
+			// particular case return type is string and stk is string script object
+			if(_idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(_stk)){
+				ScriptObject *so_string=(ScriptObject *)_stk->value;
+				this->unrefLifetimeObject(so_string);
+			}
+
+
+
+
+			return ret_value;
+		}
 
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -76,8 +106,8 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<R ()>(
 				[&,file,line,calling_obj,fun_obj,idx_return](){
-						zs_string str_error;
-						R ret_value;
+						//zs_string str_error;
+						//R ret_value;
 
 						StackElement stk = vm_execute(
 								virtual_machine
@@ -90,7 +120,7 @@ namespace zetscript{
 								,line
 						);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -98,10 +128,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
 
-						return ret_value;
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 
@@ -154,8 +184,8 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1](Param1 p1){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[1]={
 								this->toStackElement((zs_int)p1,idx_param1)
@@ -171,7 +201,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk,idx_return, (zs_int*)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -179,9 +209,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
-						return ret_value;
+
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 		}
@@ -243,8 +274,8 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](Param1 p1,Param2 p2){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[2]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -263,7 +294,7 @@ namespace zetscript{
 							,line
 						);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -271,9 +302,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
-						return ret_value;
+
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 
@@ -341,8 +373,8 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](Param1 p1,Param2 p2,Param3 p3){
-					R ret_value;
-					zs_string str_error;
+					//R ret_value;
+					//zs_string str_error;
 
 					StackElement args[3]={
 							 this->toStackElement((zs_int)p1,idx_param1)
@@ -361,7 +393,7 @@ namespace zetscript{
 						,line
 					);
 
-					if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+					/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 
@@ -369,9 +401,10 @@ namespace zetscript{
 					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
-					}
+					}*/
 
-					return ret_value;
+
+					return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 		}
@@ -442,8 +475,8 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[4]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -463,7 +496,7 @@ namespace zetscript{
 								,line
 								);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -471,10 +504,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
 
-						return ret_value;
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 
@@ -553,8 +586,8 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4,Param5)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
 
-					R ret_value;
-					zs_string str_error;
+					//R ret_value;
+					//zs_string str_error;
 
 					StackElement args[5]={
 							 this->toStackElement((zs_int)p1,idx_param1)
@@ -575,7 +608,7 @@ namespace zetscript{
 							,file
 							,line);
 
-					if(!this->stackElementTo(&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+					/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 
@@ -583,9 +616,10 @@ namespace zetscript{
 					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
-					}
+					}*/
 
-					return ret_value;
+
+					return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 				}
 			)));
 		}
@@ -667,8 +701,8 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4,Param5,Param6)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[6]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -689,7 +723,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -697,9 +731,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
-						return ret_value;
+
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 
 				}
 			)));
@@ -842,8 +877,8 @@ namespace zetscript{
 					 ,Param7 p7
 				){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[7]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -865,7 +900,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -873,10 +908,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
 
-						return ret_value;
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 
 				}
 			)));
@@ -1029,8 +1064,8 @@ namespace zetscript{
 					 ,Param8 p8
 				){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[8]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -1053,7 +1088,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -1061,10 +1096,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
 
-						return ret_value;
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 
 				}
 			)));
@@ -1229,8 +1264,8 @@ namespace zetscript{
 					 ,Param9 p9
 				){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[9]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -1254,7 +1289,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -1262,9 +1297,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
-						return ret_value;
+
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 
 				}
 			)));
@@ -1440,8 +1476,8 @@ namespace zetscript{
 					 ,Param10 p10
 				){
 
-						R ret_value;
-						zs_string str_error;
+						//R ret_value;
+						//zs_string str_error;
 
 						StackElement args[10]={
 								 this->toStackElement((zs_int)p1,idx_param1)
@@ -1466,7 +1502,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						/*if(!this->stackElementTo(&stk, idx_return, (zs_int *)(&ret_value),str_error)){
 							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 
@@ -1474,9 +1510,10 @@ namespace zetscript{
 						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
-						}
+						}*/
 
-						return ret_value;
+
+						return this->checkAndConvertStackElement<R>(&stk, idx_return);//;ret_value;
 
 				}
 			)));

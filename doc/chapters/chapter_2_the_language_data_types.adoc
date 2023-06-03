@@ -11,6 +11,7 @@ ZetScript supports the following builtin data types,
 * Array
 * Object
 * Function
+* Class
 
 ==== Undefined
 
@@ -1412,38 +1413,3 @@ class B extends A{
 
 For more information about class type go to section X.XX
 
-==== The instanceof operator
-
-The _instanceof_ operator returns true if the operand's match or derives from type object.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/type/type_instanceof.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/type/type_instanceof_out.txt[]
-----
-
-==== The typeof operator
-
-The _typeof_ operator returns the type of operand's value.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/type/type_typeof.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/type/type_typeof_out.txt[]
-----

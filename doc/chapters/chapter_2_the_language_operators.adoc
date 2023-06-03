@@ -3,9 +3,11 @@
 ZetScript has the following type of operators
 
 * Arithmetic operators
+* Bitwise operators
+* Assignment Operators
 * Relational operators
 * Logical operators
-* Bit operators
+* Type operators
 
 ==== Arithmetic operators
 
@@ -19,20 +21,14 @@ Arithmetic operators performs arithmetic operations between two values. The arit
 |Add 
 a|
 
-It performs a these operations:
-
-* Add operation between two integer or float values 
-* Concatenates two strings or other values
-* Concatenates two arrays 
-* Concatenates two objects 
+It performs add operation between two integer or float values or  
+concatenates strings, arrays or objects
 
 |
 [source,javascript]
 ----
- 5+10; // = 15
  1.5+6;// = 7.5
  "string_"+"string";// ="string_string"
- "string_"+1;// ="string_1"
  [1]+[2,3];// [1,2,3]
  {a:1}+{b:2,c:3}; //{a:1,b:2,c:3}
 ----
@@ -68,6 +64,177 @@ It performs a these operations:
 [source,javascript]
 3%2; //it results 1.0
 23.6%2; // it results 1.6
+|====
+
+==== Bitwise operators
+
+Bitwise operators combines operations between two integer values. The bitwise operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|& 
+|Bitwise And 
+|Performs Bitwise AND operation between two integers
+|
+[source,javascript]
+0xa & 0x2; // = 0x2
+0xff & 0xf0; // = 0xf0
+
+|\|
+|Bitwise Or
+|Performs Bitwise OR operation between two integers
+|
+[source,javascript]
+0xa \| 0x5; // = 0xf
+0x1 \| 0xe; // = 0xf
+
+|^ 
+|Bitwise Xor 
+|Performs bitwise XOR between two integers
+|
+[source,javascript]
+0xa ^ 0xa; // = 0x0
+0xa ^ 0x5; // = 0xf
+
+|<< 
+|Bitwise shift left
+|Performs bitwise shift left between two integers
+|
+[source,javascript]
+0x1 << 2; // = 0x4
+
+|>> 
+|Bitwise shift right
+|Performs bitwise shift right between two integers
+|
+[source,javascript]
+0xff >> 1; // = 0x7f
+
+|~
+|Bitwise complement
+|Performs bitwise complement operation from integer value
+|
+[source,javascript]
+~0xa; // = 0x7f
+
+|====
+
+==== Assigment operators
+
+Assignment operators assign values to ZetScript variables. The assigment operators are the following,
+
+[cols="1m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|=
+|Assigment
+a|
+
+It performs an assigment
+
+|
+[source,javascript]
+----
+ i=5;
+----
+
+|+=
+|Add assigment
+a|
+
+Add and assigment from left integer, float, string, array or object
+
+|
+[source,javascript]
+----
+ var i=1.5;
+ i+=6; // i == 7.5
+
+ var s="string";
+ s+="_string";// s == "string_string"
+
+ var v=[1];
+ v+=[2,3];// v == [1,2,3]
+
+ var o={a:1};
+ o+={b:2,c:3}; // o == {a:1,b:2,c:3}
+----
+
+|-=
+|Subtract assigment
+|Performs a substract operation between two integer/float values
+|
+[source,javascript]
+var i=10;
+i-=5; // i == 5
+
+|*=
+|Multiply assigment
+|Performs a multiplication between two integer/float values
+|
+[source,javascript]
+var i=10
+i*=5; // i == 50
+
+|/=
+|Divide assigment
+|Performs a division between two integer/float values
+|
+[source,javascript]
+var i=10;
+i/=2; // i == 5.0
+
+|%=
+|Modulus assigment
+|Performs a division between two integer/float values
+|
+[source,javascript]
+var i=50
+i%=100; // i == 50.0
+
+|&=
+|Bitwise And assigment
+|Performs Bitwise AND operation between two integers
+|
+[source,javascript]
+var i=0xff;
+i&=0xf0; // i == 0xf0
+
+|\|
+|Bitwise Or assigment
+|Performs Bitwise OR operation between two integers
+|
+[source,javascript]
+var i=0xa
+i\|=0x5; // i == 0xf
+
+|^ 
+|Bitwise Xor assigment
+|Performs bitwise XOR between two integers
+|
+[source,javascript]
+var i=0xa
+i^=0xa; // i == 0x0
+
+|<< 
+|Bitwise shift left assigment
+|Performs bitwise shift left between two integers
+|
+[source,javascript]
+var i=0x1;
+i<<=2; // i == 0x4
+
+|>> 
+|Bitwise shift right assigment
+|Performs bitwise shift right between two integers
+|
+[source,javascript]
+var i=0xff;
+i>>=1; // i == 0x7f
+
 |====
 
 ==== Relational operators
@@ -126,14 +293,6 @@ Relational operators evaluates relations through two values. The relational oper
 10>=11; // = false
 11>=10; // = true
 
-|instanceof 
-|Instance of 
-|Checks if a value is instance of a type. 
-|
-[source,javascript]
-0 instanceof Integer; //= true
-"hello" instanceof Integer;//= false
-
 |in 
 |in 
 a|
@@ -154,10 +313,9 @@ Performs the following operations:
 |====
 
 
+==== Logical operators
 
-==== Logic operators
-
-Logic operators combines operations between two boolean values. The logic operators are the following,
+Logical operators combines operations between two boolean values. The logic operators are the following,
 
 [cols="1m,2d,3d,6a"]
 |====
@@ -190,60 +348,44 @@ false \|\| false;// = false
 !(true && false) // = true
 |====
 
-==== Binary operators
 
-Binary operators combines operations between two integer values. The binary operators are the following,
+=== Data Type operators
 
-[cols="1m,2d,3d,6a"]
-|====
-|Operator |Name |Description |Example
+==== The instanceof operator
 
-|& 
-|Binary And 
-|Performs binary AND operation between two integers
-|
+The _instanceof_ operator returns true if the operand's match or derives from type object.
+
+*Example*
+
 [source,javascript]
-0xa & 0x2; // = 0x2
-0xff & 0xf0; // = 0xf0
+----
+include::../examples/the_language/type/type_instanceof.zs[]
+----
 
-|\|
-|Binary Or
-|Performs binary OR operation between two integers
-|
+Output:
+
+[source,text]
+----
+include::../examples/the_language/type/type_instanceof_out.txt[]
+----
+
+==== Type operators
+
+The _typeof_ operator returns the type of operand's value.
+
+*Example*
+
 [source,javascript]
-0xa \| 0x5; // = 0xf
-0x1 \| 0xe; // = 0xf
+----
+include::../examples/the_language/type/type_typeof.zs[]
+----
 
-|^ 
-|Binary Xor 
-|Performs binary XOR between two integers
-|
-[source,javascript]
-0xa ^ 0xa; // = 0x0
-0xa ^ 0x5; // = 0xf
+Output:
 
-|<< 
-|Binary shift left
-|Performs binary shift left between two integers
-|
-[source,javascript]
-0x1 << 2; // = 0x4
-
-|>> 
-|Binary shift right
-|Performs binary shift right between two integers
-|
-[source,javascript]
-0xff >> 1; // = 0x7f
-
-|~
-|Bitwise complement
-|Performs bitwise complement operation from integer value
-|
-[source,javascript]
-~0xa; // = 0x7f
-
-|====
+[source,text]
+----
+include::../examples/the_language/type/type_typeof_out.txt[]
+----
 
 ==== Operator priority
 Each operator it has priority in a evaluation. The priority of each operator in ZetScript is the following,
@@ -267,3 +409,4 @@ For example,
 ----
 (2+4)*5; // will result 36
 ---- 
+

@@ -59,8 +59,6 @@ namespace zetscript{
 				value=strtoll (binary.c_str(), NULL, 2);
 			}
 			else{
-
-				//throw std::runtime_error(format("cannot convert \"%s\" to zs_int",val.c_str()));
 				return NULL;
 			}
 
@@ -83,8 +81,6 @@ namespace zetscript{
 				*b=false;
 				return b;
 			}
-
-			//throw std::runtime_error(format("cannot convert \"%s\" to bool",s.c_str()));
 
 			// TODO: develop exception handler.
 			return NULL;

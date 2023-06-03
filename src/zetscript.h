@@ -960,6 +960,9 @@ namespace zetscript{
 		void clearGlobalVariables(int _idx_start_variable=ZS_IDX_UNDEFINED, int _idx_start_function=ZS_IDX_UNDEFINED);
 		bool getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf);
 
+		template<typename R>
+		R checkAndConvertStackElement(StackElement *_stk, int _idx_return);
+
 
 	};
 
