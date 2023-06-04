@@ -1,6 +1,9 @@
 #include "zetscript.h"
 
 using zetscript::ObjectScriptObject;
+using zetscript::zs_int;
+using zetscript::zs_float;
+using zetscript::zs_string;
 
 int main()
 {
@@ -9,7 +12,7 @@ int main()
     // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
     zs.eval(
  		"function concat(_value1, _value2){\n"
-        "    Console::outln(\"result : \"+_value1+_value2);\n"
+        "    Console::outln(\"result : \"+(_value1+_value2));\n"
         "}\n"
  	);
 
@@ -17,13 +20,22 @@ int main()
     auto concat=zs.bindScriptFunction<void(ObjectScriptObject * _value1, ObjectScriptObject * _value2)>("concat");
 
     // Prepare param values
-    auto value1=zs.newObjectScriptObject();
-    auto value2=zs.newObjectScriptObject();
-
+    auto object1=zs.newObjectScriptObject();
+    auto object2=zs.newObjectScriptObject();
+    
+    // push values for object1
+    object1->set<bool>("a",true);
+    object1->set<zs_int>("b",10);
+    object1->set<const char *>("c","Hello");
+    
+    // push values for object2
+    object2->set<bool>("d",false);
+    object2->set<zs_float>("e",20.5);
+    object2->set<const char *>("f","World");
 
 
     // Calls ZetScript function by value
-    concat(value1,value2);
+    concat(object1,object2);
 
 
  	return 0;

@@ -114,7 +114,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_SCOPE_FUNCTION_MAIN 				(data->vm_scope_function+0)
 #define ZS_VM_SCOPE_FUNCTION_FIRST 				(data->vm_scope_function+1)
 #define ZS_VM_CURRENT_SCOPE_FUNCTION			(data->vm_current_scope_function-1)
-#define ZS_VM_CURRENT_SCOPE_BLOCK				(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1)
+#define ZS_VM_CURRENT_SCOPE_BLOCK				(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block>ZS_VM_MAIN_SCOPE_BLOCK?ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1:ZS_VM_MAIN_SCOPE_BLOCK)
 #define ZS_VM_MAIN_SCOPE_BLOCK					(ZS_VM_SCOPE_FUNCTION_MAIN->scope_block)
 
 #define ZS_VM_STR_AUX_PARAM_0					(data->vm_str_aux[0])

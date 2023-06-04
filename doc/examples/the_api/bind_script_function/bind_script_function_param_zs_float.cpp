@@ -9,7 +9,7 @@ int main()
     // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
     zs.eval(
  		"function add(_value1,_value2){\n"
-        "    Console::outln(\"result : \"+_value1 + _value2);\n"
+        "    Console::outln(\"result : \"+(_value1 + _value2));\n"
         "}\n"
  	);
 

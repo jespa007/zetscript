@@ -235,11 +235,9 @@ Out:
 include::../examples/the_api/bind_script_function/bind_script_function_return_class_script_object_out.txt[]
 ----
 
-===== Return registered class type
+===== Return registered type
 
-Like we've seen in the returning type for registered class that creates *ClassScriptObject &ast;* and wraps the instatiated C++ type, here it does the same but in reverse mode. So to bind a ZetScript function that returns *xref:chapter_3_the_api.adoc#_registered_class[Registered Class]* type it must specify *ClassScriptObject &ast;* return type on its function signature. *ClassScriptObject &ast;* is 
-
-After returning ZetScript class type object, it can fetch C++ registered type by applying "ClassScriptObject::to<_T>".
+To bind a ZetScript function that returns *xref:chapter_3_the_api.adoc#_registered_type[Registered Type]* type it must specify *ClassScriptObject &ast;* return type on its function signature. After returning ZetScript class script object, it can fetch its C++ registered type by calling "ClassScriptObject::to<_T *>", where _T is the C&plus;&plus; type.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -410,7 +408,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_param_arr
 
 ===== Parameter Object
 
-To bind a ZetScript function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it must specify or *ObjectScriptObject &ast;* as parameter type on its function signature.
+To bind a ZetScript function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Object]* it must specify *ObjectScriptObject &ast;* as parameter type on its function signature.
 
 *Example*
 
@@ -426,73 +424,22 @@ Out:
 include::../examples/the_api/bind_script_function/bind_script_function_param_object_script_object_out.txt[]
 ----
 
-==== bind member function from instantiated global object
 
-It can also call from instantiated object
+===== Parameter registered type
+
+To bind a ZetScript function that accepts a <<registered type,Register type>> it must specify the C++ pointer type as parameter type on its function signature.
+
+*Example*
 
 [source,c++]
 ----
-include::../examples/the_api/bind/bin_object_script_function.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_param_registered_type.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind/bin_object_script_function_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_param_registered_type_out.txt[]
 ----
 
-==== Life time objects returned
-//      zs_int,zs_float,bool
-//      other times should bee freed. Show error if not freed
-
-=== Bind function
-
-To bind a function first it has to declare a function with a signature compatible to ZetScript. All signatures in a function binding interface have ZetScript pointer as first parameter, and the others are <<built-in types>> or types binded by the user. 
-
-Example,
-
-Parameters
-
-ZetScript supports builtin *zs_int, zs_int *, zs_float *, bool *, char * and zs_string ** as arguments types or other types. 
-
-Example,
-
-Return
-
-For return values it supports the same basic types as arguments plus *bool, zs_float and zs_string (no pointer)*. Is also possible to pass custom registered types (see section 4.3).
-
-Example,
-
-Is important to say that ZetScript has a constraint *maximum of 8 parameters* for any C function to be bind in the script engine. If a function more than 8 parameters is tried to be registered, ZetScript will throw an error. To bind C function is done through macro registerFunction. You have to provide the name that will be referenced in script side.
-
-Syntax,
-
-[source,cpp]
-zs.registerFunction("function_name", c_function);
-
-Example,
-
-[source,cpp]
-----
-#include "ZetScript.h"
-
-zetscript::zs_int add(zetscript::zs_int  op1, zetscript::zs_int op2)
-{
-	return op1+op2;
-}
-
-int main(int argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-	
-	// binds native function "add"
-	zs.registerFunction("add",add);
-	
- 	zs.eval(
- 		"Console::outln(\"result:\"+add(5,4));" // prints "result: 9"
- 	);
-	 
- 	return 0;
-} 
----- 

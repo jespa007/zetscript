@@ -20,6 +20,11 @@ namespace zetscript{
 			_vm_scope_block=ZS_VM_CURRENT_SCOPE_BLOCK;
 		}
 
+		// if vm_scope_block is NULL it seems user wants to register a type out of ZetScript function. It assings globally
+		if(_vm_scope_block == NULL){
+			_vm_scope_block=ZS_VM_MAIN_SCOPE_BLOCK;
+		}
+
 		if(_obj->shared_pointer == NULL){
 			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
 			// init
@@ -35,6 +40,7 @@ namespace zetscript{
 		}else{
 			ZS_THROW_EXCEPTION("Internal : shared ptr already has a shared pointer data");
 		}
+
 	}
 
 	void  vm_insert_shared_node(VirtualMachine *_vm, InfoSharedList * _list, InfoSharedPointerNode *_node){
@@ -66,6 +72,7 @@ namespace zetscript{
 	){
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
+
 		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to share constant script object");
 		}
@@ -87,7 +94,6 @@ namespace zetscript{
 			vm_deattach_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node);
 			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_type,_node->data.ptr_script_object_shared);
 		}
-
 	}
 
 	void vm_unref_shared_script_object(
