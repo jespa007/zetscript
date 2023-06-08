@@ -2,6 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+#include "zs_exception.h"
 #include "zs_system.h"
 #include "zs_vector.h"
 #include "zs_list.h"
@@ -21,4 +22,5 @@
 #include "zs_datetime.h"
 #include "zs_io.h"
 #include "zs_mem.h"
+
 

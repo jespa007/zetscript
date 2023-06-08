@@ -8,7 +8,7 @@
 #include "Instruction.cpp"
 #include "StackElement.cpp"
 #include "Symbol.cpp"
-#include "zs_exception.cpp"
+
 
 namespace zetscript{
 

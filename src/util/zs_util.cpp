@@ -19,3 +19,4 @@
 #include 	"zs_datetime.cpp"
 #include 	"zs_io.cpp"
 #include 	"zs_mem.cpp"
+#include 	"zs_exception.cpp"
