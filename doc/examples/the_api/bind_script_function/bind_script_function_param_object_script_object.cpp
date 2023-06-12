@@ -34,7 +34,7 @@ int main()
     object2->set<const char *>("f","World");
 
 
-    // Calls ZetScript function with parameters
+    // Calls binded ZetScript function with parameters
     printConcat(object1,object2);
 
 

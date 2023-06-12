@@ -1,12 +1,14 @@
 === Register C++ type
 
-To register C&plus;&plus; class it's done by passing the C&plus;&plus; class or struct type with `ZetScript::registerClass<_Type>(_script_name)`
+To register C&plus;&plus; class it's done by passing the C&plus;&plus; class or struct type with `ZetScript::registerType<_Type>(_script_name)`
 
 Syntax
 
+ScriptType * registerType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
 
 
-- _T: Struct/Class type type 
+- _Type: Struct/Class type type 
+- _symbol_name: Symbol name linked to class name in ZetScript.
 
 
 [source,cpp]

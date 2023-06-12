@@ -20,7 +20,7 @@ int main()
     zs_float value1=3.5;
     zs_float value2=10.7;
 
-    // Calls ZetScript function
+    // Calls binded ZetScript function with parameters
     printAdd(&value1,&value2);
 
  	return 0;
