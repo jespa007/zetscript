@@ -407,14 +407,14 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->registerClass<ClassA>("ClassA", ClassA_new, ClassA_delete);
-	_zs->registerClass<ClassB>("ClassB",ClassB_new,ClassB_delete);
-	_zs->registerClass<ClassC>("ClassC",ClassC_new,ClassC_delete);
-	_zs->registerClass<Num>("Num");
-	_zs->registerClass<ClassD>("ClassD");
+	_zs->registerType<ClassA>("ClassA", ClassA_new, ClassA_delete);
+	_zs->registerType<ClassB>("ClassB",ClassB_new,ClassB_delete);
+	_zs->registerType<ClassC>("ClassC",ClassC_new,ClassC_delete);
+	_zs->registerType<Num>("Num");
+	_zs->registerType<ClassD>("ClassD");
 
-	_zs->registerClass<ParamA>("ParamA",ParamA_new,ParamA_delete);
-	_zs->registerClass<ParamB>("ParamB",ParamB_new,ParamB_delete);
+	_zs->registerType<ParamA>("ParamA",ParamA_new,ParamA_delete);
+	_zs->registerType<ParamB>("ParamB",ParamB_new,ParamB_delete);
 
 
 	_zs->registerFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);

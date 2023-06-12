@@ -13,7 +13,7 @@
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerClass<type_class>(ZS_STR(type_class));
+	registerType<type_class>(ZS_STR(type_class));
 
 
 #define SCF_REGISTER_CLASS(name_class, type_class, idx_script_type)\
@@ -28,21 +28,21 @@
 		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(type_class));\
 		return;\
 	}\
-	registerClass<type_class>(name_class,type_class##_New,type_class##_Delete);
+	registerType<type_class>(name_class,type_class##_New,type_class##_Delete);
 
 #define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerClass<type_class>(ZS_STR(type_class));
+	registerType<type_class>(ZS_STR(type_class));
 
 #define SCF_REGISTER_SINGLETON_NAME_CLASS(name, type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerClass<type_class>(name);
+	registerType<type_class>(name);
 
 #define SCF_REGISTER_NATIVE_TYPE(type, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\

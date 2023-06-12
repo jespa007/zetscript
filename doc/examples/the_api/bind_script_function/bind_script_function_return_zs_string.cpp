@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript function 'returnString' that returns 'Boolean' value
+    // Evaluates ZetScript function 'returnString' that returns 'String' value
     zs.eval(
  		"function returnString(){\n"
         "    return \"Hello World\";\n"

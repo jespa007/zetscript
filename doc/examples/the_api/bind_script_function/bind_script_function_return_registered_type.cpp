@@ -55,7 +55,7 @@ int main()
 {
 	ZetScript zs;
 
-   // Register class Point
+   // Register class 'Point' as instantiable
 	zs.registerClass<Point>("Point",Point_new,Point_delete);
 
 	// Register constructor
@@ -84,10 +84,10 @@ int main()
 	// Prints the contents by console.
 	printf("From zetscript object : %s\n",class_script_object_point->toString().c_str());
 
-	// Cast ZetScript class object to 'Point' type pointer
+	// Cast C++ 'Point' type pointer
 	auto point=class_script_object_point->to<Point *>();
 
-	// Prints the contents of 'Point' type by console.
+	// Prints Point's properties by console.
 	printf("From C++ pointer type : point->x=%i point->y=%i\n",point->x,point->y);
 
 	// 'unrefLifetimeObject' it decreases the reference count of script object to tell is not used anymore

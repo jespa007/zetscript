@@ -99,8 +99,8 @@ int main(int argc, char * argv[]) {
 
 				try{
 					zs.eval(expression);
-				}catch(std::exception & ex){
-					fprintf(stderr,"%s\n",ex.what());
+				}catch(zetscript::zs_exception & ex){
+					fprintf(stderr,"[line %i] %s\n",ex.getLine(),ex.what());
 				}
 			}
 
@@ -120,8 +120,8 @@ int main(int argc, char * argv[]) {
 
 			try{
 				zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
-			}catch(std::exception & ex){
-				fprintf(stderr,"%s\n",ex.what());
+			}catch(zetscript::zs_exception & ex){
+				fprintf(stderr,"[%s:%i] %s\n",ex.getFilename(),ex.getLine(),ex.what());
 			}
 
 			if(no_execution_time==false){

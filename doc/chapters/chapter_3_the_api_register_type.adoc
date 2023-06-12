@@ -1,11 +1,20 @@
 === Register C++ type
 
+To register C&plus;&plus; class it's done by passing the C&plus;&plus; class or struct type with `ZetScript::registerClass<_Type>(_script_name)`
+
+Syntax
+
+
+
+- _T: Struct/Class type type 
+
+
 [source,cpp]
 ----
 include::../examples/the_api/type/type_bind_type.cpp[]
 ----
 
-==== Register no instantiable type
+==== Register no instantiable class
 
 Register not instantiable type it means that it cannot create new objects (i.e use *new* keyword).
 To register type no instantible type is done simple by calling *ZetScript::registerClass* with type as template and the name that will be referenced in the script.

@@ -8,16 +8,16 @@ int main()
 
     // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
     zs.eval(
- 		"function concat(_value1, _value2){\n"
+ 		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+_value1+\" \"+_value2);\n"
         "}\n"
  	);
 
     // It binds 'concat' as '(void *)(const char *, const char *)'
-    auto concat=zs.bindScriptFunction<void(const char * _value1, const char * _value2)>("concat");
+    auto printConcat=zs.bindScriptFunction<void(const char * _value1, const char * _value2)>("printConcat");
 
-    // Calls ZetScript function by value
-    concat("Hello","World");
+    // Calls binded ZetScript function with parameters
+    printConcat("Hello","World");
 
 
  	return 0;

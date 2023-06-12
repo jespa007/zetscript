@@ -108,7 +108,7 @@ namespace zetscript{
 		 * Instenceable Register C type
 		 */
 		template<typename C>
-		ScriptType * registerClass(
+		ScriptType * registerType(
 			const zs_string & str_script_type
 			, C * (*_constructor)(ZetScript *_zs)=NULL
 			, void (*_destructor)(ZetScript *_zs,C *)=NULL

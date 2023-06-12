@@ -413,7 +413,7 @@ void NumberZs_delete(zetscript::ZetScript *_zs,Number *_this){
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
-	_zs->registerClass<Number>("Number",NumberZs_new,NumberZs_delete);
+	_zs->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_set));
 	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("toInt",&NumberZs_toInt);

@@ -23,7 +23,7 @@ namespace zetscript {
 
 			int getLine();
 
-			const char * getDescription();
+			//const char * getDescription();
 
 			const char * getFilename();
 		private:
@@ -31,7 +31,7 @@ namespace zetscript {
 
 			zs_string	file;
 			int	   		line;
-			zs_string	error_description;
+			//zs_string	error_description;
 			zs_string 	what_msg;
 			zs_string 	stk_trace;
 	};
@@ -39,10 +39,10 @@ namespace zetscript {
 	class zs_exception_error: public zs_exception{
 	public:
 
-		zs_exception_error(const char *  _file, int _line, const zs_string & _error);
+		zs_exception_error(const char *  _file, int _line, const zs_string & _what);
 	};
 
-	void throw_exception_file_line(const char *filename, int line,const char *error,...);
+	void throw_exception_file_line(const char *filename, int line,const char *_what,...);
 	void throw_exception(const char  * error,...);
 
 

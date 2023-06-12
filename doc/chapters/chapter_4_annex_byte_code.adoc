@@ -1,6 +1,8 @@
+=== Byte code
+
 === Byte codes
 
-The following table shows the byte codes and its meaning
+The following table shows the byte codes and its meaning,
 
 [cols="1m,2d,3d,6a"]
 |====

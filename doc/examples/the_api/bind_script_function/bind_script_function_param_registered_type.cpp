@@ -61,7 +61,7 @@ int main()
     // Prepare parameters
     auto point=Point(10,20);
 
-    // Calls ZetScript function
+    // Calls binded ZetScript function with parameters
     paramPoint(&point);
 
 

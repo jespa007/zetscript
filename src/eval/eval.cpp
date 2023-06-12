@@ -351,7 +351,7 @@ namespace zetscript{
 							eval_data->str_error=zs_strutils::format(
 									"%s \n"
 									"[%s:%i] from import '%s'"
-									,ex.getDescription()
+									,ex.what()
 									,zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str()
 							);
 							//sprintf(eval_data->str_error,"%s\n",ex.getDescription());

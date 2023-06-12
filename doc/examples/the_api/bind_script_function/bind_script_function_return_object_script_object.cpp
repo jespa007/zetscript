@@ -21,7 +21,6 @@ int main()
 
     // Prints its value by console.
     printf("result : %s\n",object_object->toString().c_str());
-    
 
     // 'unrefLifetimeObject' it decreases the reference count of thr script object to tell is not used anymore
     zs.unrefLifetimeObject(object_object);

@@ -9,15 +9,15 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
+    // Evaluates ZetScript function 'printConcat' that prints the result of the operation '+' from two arguments
     zs.eval(
- 		"function concat(_value1, _value2){\n"
+ 		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+(_value1+_value2));\n"
         "}\n"
  	);
 
-    // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto concat=zs.bindScriptFunction<void(ObjectScriptObject * _value1, ObjectScriptObject * _value2)>("concat");
+    // It binds 'printConcat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
+    auto printConcat=zs.bindScriptFunction<void(ObjectScriptObject * _value1, ObjectScriptObject * _value2)>("printConcat");
 
     // Prepare param values
     auto object1=zs.newObjectScriptObject();
@@ -34,8 +34,8 @@ int main()
     object2->set<const char *>("f","World");
 
 
-    // Calls ZetScript function by value
-    concat(object1,object2);
+    // Calls ZetScript function with parameters
+    printConcat(object1,object2);
 
 
  	return 0;

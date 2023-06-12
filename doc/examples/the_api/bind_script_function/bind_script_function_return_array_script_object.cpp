@@ -6,14 +6,14 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-  // Evaluates ZetScript function 'returnString' that returns 'Array' value
+  // Evaluates ZetScript function 'returnArray' that returns 'Array' value
   zs.eval(
   "function returnArray(){\n"
       "    return [1,true,\"String\"];\n"
       "}\n"
   );
 
-  // It binds 'returnArray' as 'StringScriptObject *(void)'
+  // It binds 'returnArray' as 'ArrayScriptObject *(void)'
   auto returnArray=zs.bindScriptFunction<ArrayScriptObject *()>("returnArray");
 
   // Calls ZetScript function which it returns 'ArrayScriptObject *' reference

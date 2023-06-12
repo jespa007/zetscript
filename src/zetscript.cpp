@@ -81,7 +81,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan
-		cl=registerClass<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
+		cl=registerType<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
 		registerMemberPropertyGetter<zs_timespan>("days",TimeSpanModule_get_days);
 		registerMemberPropertyGetter<zs_timespan>("hour",TimeSpanModule_get_hours);
 		registerMemberPropertyGetter<zs_timespan>("minute",TimeSpanModule_get_minutes);
@@ -89,7 +89,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// DateTime
-		cl=registerClass<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
+		cl=registerType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 		registerConstructor<zs_datetime>(DateTimeModule_constructor);
 		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);*/
 		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);
@@ -967,7 +967,7 @@ namespace zetscript{
 				error=true;
 				error_file=e.getFilename();
 				error_line=e.getLine();
-				str_error=e.getDescription();
+				str_error=e.what();
 			}catch(std::exception & e){
 				error=true;
 				str_error=e.what();

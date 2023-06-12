@@ -1,10 +1,6 @@
-=== Call ZetScript from c++
+=== Call ZetScript from C++
 
-To make a ZetScript function callable from C&plus;&plus; is done through `ZetScript::bindScriptFunction`. `ZetScript::bindScriptFunction` it binds ZetScript function by setting function signature and the name of symbol or ScriptFunction to be binded of.
-
-As a signature parameters, it can define untill 9 parameters as <<ZetScript built-in type>> or other registered type. 
-
-As a signature return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
+To make a ZetScript function callable from C&plus;&plus; is done through `ZetScript::bindScriptFunction`. `ZetScript::bindScriptFunction` it binds ZetScript function by the C&plus;&plus; function signature and the symbol name or ScriptFunction object.
 
 *Syntax*
 
@@ -22,11 +18,11 @@ As a signature return, the function it can return nothing, or a <<ZetScript buil
 
 +++<u>Returns</u>+++
 
-Returns a `std::function` with the signature provided in its template signature
+Returns a `std::function` with the signature provided
 
 *Example*
 
-The following example it binds hello world function without no parameters and no return
+The following example it binds a `sayHelloWorld`` function
 
 [source,c++]
 ----
@@ -50,7 +46,8 @@ This section will explain how to bind script functions that return the following
 - String
 - Array
 - Object
-- instantiated type
+- Instance of class type object
+- Instance of registered type object
 
 ===== Return Boolean
 
@@ -215,9 +212,9 @@ Out:
 include::../examples/the_api/bind_script_function/bind_script_function_return_object_script_object_out.txt[]
 ----
 
-===== Return ZetScript class type
+===== Return instance of class type object
 
-To bind a ZetScript function that returns a *xref:chapter_2_the_language_data_types.adoc#_script_class[Class]* type it can specify *ObjectScriptObject &ast;* or *ClassScriptObject &ast;* return type on its function signature.
+To bind a ZetScript function that returns an *xref:chapter_2_the_language_data_types.adoc#_script_class[instance of class type object]* it can specify *ObjectScriptObject &ast;* or *ClassScriptObject &ast;* return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -235,26 +232,26 @@ Out:
 include::../examples/the_api/bind_script_function/bind_script_function_return_class_script_object_out.txt[]
 ----
 
-===== Return registered type
+===== Return instance of registered type object
 
-To bind a ZetScript function that returns *xref:chapter_3_the_api.adoc#_registered_type[Registered Type]* type it must specify *ClassScriptObject &ast;* return type on its function signature. After returning ZetScript class script object, it can fetch its C++ registered type by calling "ClassScriptObject::to<_T *>", where _T is the C&plus;&plus; type.
+To bind a ZetScript function that returns an instance of *xref:chapter_3_the_api.adoc#_registerer_type[registered type]* object it must specify *ClassScriptObject &ast;* return type on its function signature. After returning  *ClassScriptObject &ast;*, it can fetch its C++ registered type by calling `ClassScriptObject::to<_T *>`, where _T is the C&plus;&plus; type.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
 *Example*
 
-In this example, it registers `Point` type, its constructor and its properties `x` and `y`. After evaluate ZetScript code that defines a function that return a new object type `Point`, it is binded to be callable in C++.  When it calls `returnPoint`in C&plus;&plus;, it returns a variable as type ZetScript *ClassScriptObject &ast;* object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
+In this example, it registers `Point` type, its constructor and its properties `x` and `y`. After evaluate ZetScript code that defines a function that return a new object type `Point`, it is binded to be callable in C++.  When it calls `returnPoint` in C&plus;&plus;, it returns a variable as type *ClassScriptObject &ast;* object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
 
 [source,c++]
 ----
-include::../examples/the_api/bind_script_function/bind_script_function_return_registered_class.cpp[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_registered_type.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/bind_script_function/bind_script_function_return_registered_class_out.txt[]
+include::../examples/the_api/bind_script_function/bind_script_function_return_registered_type_out.txt[]
 ----
 
 ==== Parameter types

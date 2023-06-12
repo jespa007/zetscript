@@ -1,5 +1,5 @@
 
-=== Call c++ from ZetScript
+=== Call C++ from ZetScript
 
 To call C&plus;&plus; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and C++. 
 

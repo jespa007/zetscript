@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript class A and function 'returnNewA' that returns an instance of type 'A'
+    // Evaluates ZetScript class Point and function 'returnNewPoint' that returns an instance of type 'Point'
     zs.eval(
       "class Point{ \n"
       "  var x=10;\n"
@@ -20,7 +20,7 @@ int main()
       "}\n"
  	);
 
-    // It binds 'returnNewA' as '(ObjectScriptObject *)(void)'
+    // It binds 'returnNewPoint' as '(ObjectScriptObject *)(void)'
     auto returnPoint=zs.bindScriptFunction<ObjectScriptObject *()>("returnPoint");
 
    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
