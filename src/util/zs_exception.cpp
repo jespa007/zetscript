@@ -9,19 +9,30 @@ namespace zetscript {
 	zs_exception::zs_exception(const char *  _file, int _line, const zs_string & _error_description, const char *_error_type){
 		error_type=_error_type;
 		line=_line;
+		file="";
 		error_description = _error_description;
-		if((_file==0 || *_file==0) && _line == ZS_IDX_UNDEFINED){
-			what_msg=zs_strutils::format("%s", _error_description.c_str());
-		}else if((_file==0 || *_file==0)){
-			what_msg=zs_strutils::format("line %i: %s", _line, _error_description.c_str());
-		}else{
+		if(_file!=NULL){
 			file=zs_path::get_filename(_file);
-			what_msg=zs_strutils::format("[%s:%i] %s",file.c_str(), _line, _error_description.c_str());
 		}
+		//if((_file==0 || *_file==0) && _line == ZS_IDX_UNDEFINED){
+		//	what_msg=zs_strutils::format("%s", _error_description.c_str());
+		//}else if((_file==0 || *_file==0)){
+		//	what_msg=zs_strutils::format("line %i: %s", _line, _error_description.c_str());
+		//}else{
+		//	file=zs_path::get_filename(_file);
+		//	what_msg=zs_strutils::format("[%s:%i] %s",file.c_str(), _line, _error_description.c_str());
+		//}
 
 	}
 
 	const char* zs_exception::what() const noexcept{
+		if((zs_strutils::is_empty(file)) && line == ZS_IDX_UNDEFINED){
+			what_msg=error_description;
+		}else if(zs_strutils::is_empty(file)){
+			what_msg=zs_strutils::format("line %i: %s", line,error_description.c_str());
+		}else{
+			what_msg=zs_strutils::format("[%s:%i] %s",zs_path::get_filename(file).c_str(), line, error_description.c_str());
+		}
 		return what_msg.c_str();
 	}
 

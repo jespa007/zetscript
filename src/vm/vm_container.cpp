@@ -511,11 +511,11 @@ lbl_exit_function:
 					}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
 						index_aux1=ZS_READ_INTPTR_FLOAT(stk_result_op2->value);
 					}else{
-						ZS_VM_STOP_EXECUTEF("Expected index value for vector access");
+						ZS_VM_STOP_EXECUTEF("Expected index value for array access");
 					}
 
 					if(index_aux1 >= (int)((ArrayScriptObject *)so_aux)->length() || index_aux1 < 0){
-						ZS_VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
+						ZS_VM_STOP_EXECUTEF("Error accessing array, index out of bounds");
 					}
 
 					if((stk_var =((ArrayScriptObject *)so_aux)->getStackElement(index_aux1))==NULL){
