@@ -102,12 +102,23 @@ namespace zetscript{
 				}
 
 				if(operator_type==Operator::OPERATOR_UNKNOWN){
-					EVAL_ERROR_FILE_LINE_GOTO(
-							eval_data->current_parsing_file
-							,line
-							,eval_error_sub_expression
-							,"Expected operator after '%s'"
-							,((TokenNode *)token_nodes.items[token_nodes.size()-1])->value.c_str());
+					char ch=*aux_p;
+					if(is_special_char(&ch)){
+						EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
+								,line
+								,eval_error_sub_expression
+								,"Unexpected '%c'"
+								,ch);
+					}else{
+
+						EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
+								,line
+								,eval_error_sub_expression
+								,"Expected operator after '%s'"
+								,((TokenNode *)token_nodes.items[token_nodes.size()-1])->value.c_str());
+					}
 				}
 
 				operator_token_node=new TokenNode();
