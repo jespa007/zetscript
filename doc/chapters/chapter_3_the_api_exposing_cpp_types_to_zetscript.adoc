@@ -1,51 +1,35 @@
-=== Register C++ type
+=== Exposing C++ types to ZetScript
 
-To register C&plus;&plus; class it's done by passing the C&plus;&plus; class or struct type with `ZetScript::registerType<_Type>(_script_name)`
+To expose C&plus;&plus; type it's done by calling `ZetScript::registerType` passing its native type, symbol name and, optionally, pointer functions for its native constructor and destructor in case it register instantiable class
 
-Syntax
-
-ScriptType * registerType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
-
-
-- _Type: Struct/Class type type 
-- _symbol_name: Symbol name linked to class name in ZetScript.
-
-
-[source,cpp]
-----
-include::../examples/the_api/type/type_bind_type.cpp[]
-----
 
 ==== Register no instantiable class
 
 Register not instantiable type it means that it cannot create new objects (i.e use *new* keyword).
-To register type no instantible type is done simple by calling *ZetScript::registerClass* with type as template and the name that will be referenced in the script.
+To no instantible type is done simple by calling *ZetScript::registerType* with type as template and the name that will be referenced in the script.
 
 Wht it can be useful the using of non instantiable types ? For example to have control of instantiated types in the C++ program
 
-Example,
-
- zs.registerClass<type_class>("name_class");
+*Syntax*
+[source,cpp]
+----
+template<typename _Type>
+ScriptType * registerType(const zs_string & _symbol_name);
+----
  
-The following code shows an example of a registering a C++ class,
+Where,
+
+- _Type: As C++ struct/class type
+- _symbol_name: Symbol name referenced into ZetScript context
+
+
+The following code shows an example of a registering non instantiable type,
 
 [source,cpp]
 ----
-class MyClass{
-public:
-	int data1;
-	void init(int arg){
-		printf("data1 is initialized as %i\n",arg);
-		this->data1=arg;
-	}
 
-	void function1(int arg){
- 		this->data1 = arg;
- 		printf("c++ argument is %i\n",this->data1);
- 	}
-};
 ----
-List 4.1
+
 
 Using the list 4.1, to bind MyClass as static (i.e no instantiable) in script side is proceded as follows,
 
@@ -129,44 +113,31 @@ Note: Is valuable to see that static types are safety because never are created 
  
 ==== Register instantiable type
 
-Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *registerClass* passing the type as template,the name and the interface new/delete functions,
+Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *registerType* passing the type as template,the name and the interface new/delete functions,
+
+*Syntax*
+[source,cpp]
+----
+template<typename _Type>
+ScriptType * registerType(const zs_string & _symbol_name, _Type * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL);
+----
+
+Where,
+
+- _Type: As C++ struct/class type
+- _symbol_name: Symbol name referenced into ZetScript context
+- _constructor (optional): A C pointer function in case to register instantiable type
+- _destructor (optional): A C pointer function in case to register instantiable type
+
+
 
 Example,
 
 [source,cpp]
 ----
- zs.registerClass<MyClass>("MyClass",new_function, delete_function);
+ 
 ----
 
-Using the list 4.1, to bind MyClass as instanciable in script side is proceded as follows,
-
-[source,cpp]
-----
-
-MyClass *MyClass_new(){
-	return new MyClass(); 
-}
-
-void MyClass_delete(MyClass *_this){
-	delete _this;
-}
-
-
-void main(argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-
-	//register MyClass as instantiable type in script side.
-	zs.registerClass<MyClass>("MyClass",MyClass_new,MyClass_delete); 
-	
-	// It instances MyClass
- 	zs.eval(
- 		"var my_class= new MyClass();" 
- 	);
-	
-	return 0;
-}
-----
  
 ==== Delete C Class
 
@@ -179,7 +150,7 @@ ZetScript it has a garbage collector to delete unreferenced script variables whe
   
 === Bind members
 
-==== Bind Function Member
+==== Register function member
 
 The binding of variable member is done like binding c function but in this case is done through the macro function registerMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 
