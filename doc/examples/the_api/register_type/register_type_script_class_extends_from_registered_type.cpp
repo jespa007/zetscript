@@ -44,10 +44,10 @@ int main(){
 	zetscript::ZetScript zs; // instance zetscript
 
 	// register MyClass as MyClass in script side
-	zs.registerClass<MyClass>("MyClass",MyClassPtr_new,MyClassPtr_delete);
+	zs.registerType<MyClass>("MyClass",MyClassPtr_new,MyClassPtr_delete);
 
 	// register MyClass as MyClass in script side
-	zs.registerClass<MyClassExtend>("MyClassExtend");
+	zs.registerType<MyClassExtend>("MyClassExtend");
 
 	// tells MyClassExtends extends from MyClass
 	zs.extends< MyClassExtend,MyClass >();

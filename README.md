@@ -170,6 +170,7 @@ class Test{
 	
 	constructor(){
 		this.data1=5;
+		this.
 	}
 	
 	initData2(_a){
@@ -190,13 +191,13 @@ function Test::add(){
 class TestExtended extends Test{
 	initData2(a){
 		initData2(a+2); // Calls 'Test::function1(2)'
-		this.data3=this.add(); // returns 'data1' + 'data2' + Test::MY_CONSTANT = 5 +
 	}
 	
 
 };
 
 var t=new TestExtended(); // instances TestExtended class</pre>
+
 
 <p style="text-align: center">&nbsp;</p>
 
