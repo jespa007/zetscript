@@ -1,19 +1,27 @@
 === Exposing C++ types to ZetScript
 
-To expose C&plus;&plus; type it's done by calling `ZetScript::registerType` passing its native type, symbol name and, optionally, pointer functions for its native constructor and destructor in case it register instantiable class
+In this chapter will see how to to expose C&plus;&plus; types by registering its C&plus;&plus; types,  function members, metamethods and properties.
+
+
+==== Register type
+
+There's two kind of registering types,
+
+- Register type non instantiable
+- Register type instantiable
+
 
 
 ==== Register no instantiable type
 
 Register not instantiable type it means it cannot create new objects of this 'type' in ZetScript context, only can perform operation with its reference. This kind of register is usually used when it wants to have a control of instantitions in the native application.
 
-To register non instantible type is done simple by calling *ZetScript::registerType* with type as template and the name that will be referenced in the script.
+To register non instantible type is done simple by calling `ZetScript::registerType` with type as template and the name that will be referenced in the script.
 
 *Syntax*
 [source,cpp]
 ----
-template<typename _Type>
-ScriptType * registerType(const zs_string & _symbol_name);
+ScriptType * registerType<_Type>(const zs_string & _symbol_name);
 ----
  
 Where,
