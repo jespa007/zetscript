@@ -3,12 +3,11 @@
 To expose C&plus;&plus; type it's done by calling `ZetScript::registerType` passing its native type, symbol name and, optionally, pointer functions for its native constructor and destructor in case it register instantiable class
 
 
-==== Register no instantiable class
+==== Register no instantiable type
 
-Register not instantiable type it means that it cannot create new objects (i.e use *new* keyword).
-To no instantible type is done simple by calling *ZetScript::registerType* with type as template and the name that will be referenced in the script.
+Register not instantiable type it means it cannot create new objects of this 'type' in ZetScript context, only can perform operation with its reference. This kind of register is usually used when it wants to have a control of instantitions in the native application.
 
-Wht it can be useful the using of non instantiable types ? For example to have control of instantiated types in the C++ program
+To register non instantible type is done simple by calling *ZetScript::registerType* with type as template and the name that will be referenced in the script.
 
 *Syntax*
 [source,cpp]
@@ -22,16 +21,20 @@ Where,
 - _Type: As C++ struct/class type
 - _symbol_name: Symbol name referenced into ZetScript context
 
+*Example*
 
-The following code shows an example of a registering non instantiable type,
+The following code shows an example of a registering non instantiable type. Let's define a custom a type called 'MyType' in C++
 
 [source,cpp]
 ----
-
+typedef struct{
+	int x;
+	int y;
+}MyType;
 ----
 
 
-Using the list 4.1, to bind MyClass as static (i.e no instantiable) in script side is proceded as follows,
+Then, using it will register type 'MyType' to expose it in ZetSCript,
 
 [source,cpp]
 ----
@@ -39,14 +42,14 @@ void main(argc, char *argv[])
 {
 	zetscript::ZetScript zs;
 	
- 	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.registerClass<MyClass>("MyClass");
+ 	//register MyType
+ 	zs.registerType<MyType>("MyType");
  	
  	return 0;
  }
 ----
 
-In the following example it evals a code to try instance MyClass type but it will throw an error that MyClass is not instanciable because is static,
+In the following example it evalutates a ZetScript code to try instantiate object as type 'MyType',
 
 [source,cpp]
 ----
@@ -54,18 +57,26 @@ void main(argc, char *argv[])
 {
 	zetscript::ZetScript zs;
 	
- 	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.registerClass<MyClass>("MyClass");
+ 	//register MyType
+ 	zs.registerType<MyClass>("MyType");
 
 	 	
-	// It throws an error that MyClass is not instanciable because is static
+	// It throws an error that MyClass is not instanciable
  	zs.eval(
- 		"var myclass= new MyClass();"
+ 		"var my_type= new MyType();"
  	);
  	
  	return 0;
  }
 ----
+
+The output will be,
+
+[source,text]
+----
+
+----
+
 
 In order to use a MyClass instantiation it has to be done in the C++ aplication. 
 
@@ -91,7 +102,7 @@ void main(argc, char *argv[])
 	
 	
  	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.registerClass<MyClass>("MyClass");
+ 	zs.registerType<MyClass>("MyClass");
  	
  	 //register function interface to get MyClass instantiation
  	zs.registerFunction("getMyClass",getMyClass);
@@ -218,7 +229,7 @@ public:
  	}
 };
 
-zs.registerClass<MyClassExtend>("MyClassExtend"); // register MyClassExtend
+zs.registerType<MyClassExtend>("MyClassExtend"); // register MyClassExtend
 zs.extends<MyClassExtend,MyClass>();
 ----
 List 4.2

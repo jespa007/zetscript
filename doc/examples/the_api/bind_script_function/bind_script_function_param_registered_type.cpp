@@ -40,7 +40,7 @@ int main()
 	ZetScript zs;
 
    // Register class Point
-	zs.registerClass<Point>("Point");
+	zs.registerType<Point>("Point");
 
 	// register property getter Point::x
 	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);

@@ -11,10 +11,9 @@
 	<li>Language syntax close to Javascript</li>
 	<li>MSVC++ 32/64 bits MSVC 2015/2017 or build tools v141</li>
 	<li>Linux/MinGW 32/64 bits, g++ 4.8.1 or above</li>
-	<li>CMake 3.15 or above or above</li>
-	<li>Save current state support</li>
+	<li>CMake 3.15 or above</li>
 	<li>Dynamic Garbage collector</li>
-	<li>Straightforward way to bind C++ variables, functions, classes and its members</li>
+	<li>Straightforward way to expose C++ types and call functions from C++ to ZetScript and Viceversa</li>
 	<li>Override operators through metamethods</li>
 </ul>
 
@@ -25,25 +24,28 @@
 
 using namespace zetscript;
 
-void say_helloworld(){
-	printf(&quot;Hello World!&quot;);
+// Function C++ to be called from ZetScript
+void sayHelloworld(ZetScript *_zs){
+	printf(&quot;Hello World!\n&quot;);
 }
 
 int main(){
 
-	ZetScript *zs = new ZetScript(); // instance zetscript
+	// ZetScript instantiation
+	ZetScript zs;
 
-	register_C_Function(&quot;say_helloworld&quot;,say_helloworld);
+	// register function 'sayHelloworld'
+	zs.registerFunction(&quot;sayHelloworld&quot;,sayHelloworld);
 
-	zs-&gt;eval(&quot;say_helloworld();&quot;); // Call c function and prints hello world!
+	// Evaluates ZetScript code that calls 'sayHelloworld'
+	zs.eval(&quot;sayHelloworld();&quot;); 
 	
-	delete zs; // delete zetscript instance when is not used anymore
 	return 0;
 }</pre>
 
 <p style="text-align: center"><em>List 1.1</em></p>
 
-<p>The code presented on list 1.1 it registers C function<strong><em> </em></strong><em>say_helloworld</em> with just one line of code. Then, it calls&nbsp;<em>eval </em>function that evaluates the string <em>say_helloworld();</em>&nbsp;that means execute&nbsp;a call&nbsp;of C funtion <em>say_helloword</em> from the script engine.</p>
+<p>The code presented on list 1.1 it registers <strong><em> </em></strong><em>sayHelloworld</em> function. Then, it evaluates a code <em>sayHelloworld();</em>&nbsp; that, simply, calls C++ function <em>sayHelloword</em> from ZetScript.</p>
 
 <ul>
 </ul>
@@ -67,17 +69,18 @@ cmake CMakeLists.txt</pre>
 
 <h3>Built-in types</h3>
 
-<p>Zetscript has a built in basic types like integers, numbers, booleans, strings, vectors and objects.</p>
+<p>Zetscript has a built in types Integers, Float, Boolean, String, Array and Object.</p>
 
 <pre lang="javascript">
-var i=10; //integer
-var f=0.5; // number
-var s=&quot;a string&quot;; // string object
-var b=true; // boolean
+var i=10; // Integer
+var f=0.5; // Float
+var s=&quot;a string&quot;; // String
+var b=true; // Boolean
 
-var vector=[1,0.5, &quot;a string&quot;, true]; // vector
+var array=[1,0.5, &quot;a string&quot;, true]; // Array
 
-var object={ // script object
+// Object
+var object={ 
 	i: 10,
 	f: 0.5,
 	s: &quot;a string&quot;,
@@ -157,41 +160,40 @@ for(var j=0; j &lt; 10; j++){
 
 <h3>Classes and inheritance</h3>
 
-<p>Zetscript supports class and inheritance. member and function variables inside class scope are referenced through <em><strong>this </strong></em>keyword. Also it can include variables/functions in post class declaration&nbsp;through operator <strong>::</strong>&nbsp;. Inheritance supports&nbsp;<strong><em>super()</em></strong> function in order to call parent function. To instance class is done through <strong>new </strong>operator.</p>
+<p>Zetscript supports define custom types. Function and variable members are referenced as fields. Inside the function is referenced as <em><strong>this </strong></em>keyword and out is accessed with field operator (i.e <em><strong>.</strong></em>). Also is possible to post declare static variables and functions members. 
+ZetScript also supports inheritance.</p>
 
 <pre lang="javascript">
 // A class example
 class Test{
-	var data1;
+	var data0=10; // Variable members 'data1' is initialized as 10
 	
-	function1(a){
-		this.data1 =a;
-		Console::outln(&quot;calling from Test. Data1:&quot;+this.data1);
+	constructor(){
+		this.data1=5;
+	}
+	
+	initData2(_a){
+		this.data2=a;  // Variable member 'data2' is initialized as '_a'
 	}
 };
 
-// include member variable data2
-var Test::data2; 
+// Postdeclaration of constant Test::MY_CONSTANT;
+const Test::MY_CONSTANT=10; 
 
-// include function function function2
-function Test::function2(){ 
-	this.data2=&quot;a string&quot;;
+// Postdeclaration of function member Test::function2
+function Test::add(){ 
+	return this.data0+this.data1+this.data2+Test::MY_CONSTANT; // returns 'data1' + 'data2' + Test::MY_CONSTANT
 }
 
 // A inheritance class example. 
 // TestExtended inherites data1,data2,function1 and function2. 
 class TestExtended extends Test{
-	var data3;
-	function1(a){
-		super(2); // it calls Test::function1(2)
-		this.data1+=5; // Now data1=5+2 = 7
-		Console::outln(&quot;calling from TestExtended. Data1:&quot;+this.data1);
+	initData2(a){
+		initData2(a+2); // Calls 'Test::function1(2)'
+		this.data3=this.add(); // returns 'data1' + 'data2' + Test::MY_CONSTANT = 5 +
 	}
 	
-	function3(){ // 
-		this.data3=6;
-		Console::outln(&quot;data3 is &quot;+this.data3);
-	}
+
 };
 
 var t=new TestExtended(); // instances TestExtended class</pre>
@@ -392,7 +394,7 @@ int main(){
 	try{
 
 		// register MyClass with name MyClass in script side.
-		zs->registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+		zs->register<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
 		 // register MyClassExtend with name MyClassExtend in script side.
 		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);

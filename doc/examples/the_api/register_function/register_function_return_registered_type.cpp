@@ -58,7 +58,7 @@ int main(){
 	_point->y=10;
 
 	// registers class Point
-	zs.registerClass<Point>("Point",Point_new,Point_delete);
+	zs.registerType<Point>("Point",Point_new,Point_delete);
 
 	// registers property getter Point::x
 	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);

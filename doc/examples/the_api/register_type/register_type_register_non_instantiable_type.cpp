@@ -41,7 +41,7 @@ int main(){
 
 
  	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.registerClass<MyClass>("MyClass");
+ 	zs.registerType<MyClass>("MyClass");
 
  	zs.registerFunction("getMyClass",MyClassPtr_getMyClassPtr);
 

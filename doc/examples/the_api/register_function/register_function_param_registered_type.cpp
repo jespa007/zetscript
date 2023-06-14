@@ -61,7 +61,7 @@ int main(){
 	ZetScript zs;
 
 	// Register class Point
-	zs.registerClass<Point>("Point",Point_new,Point_delete);
+	zs.registerType<Point>("Point",Point_new,Point_delete);
 
 
 	// Register property setter Point::x
