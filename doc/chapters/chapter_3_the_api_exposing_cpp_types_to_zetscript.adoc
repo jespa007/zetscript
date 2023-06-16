@@ -7,14 +7,14 @@ In this chapter will see how to to expose C&plus;&plus; types by registering its
 
 There's two kind of registering types,
 
-- Register type non instantiable
-- Register type instantiable
+- Register type non instanciable
+- Register type instanciable
 
 
 
-==== Register no instantiable type
+==== Register no instanciable type
 
-Register not instantiable type it means it cannot create new objects of this 'type' in ZetScript context, only can perform operation with its reference. This kind of register is usually used when it wants to have a control of instantitions in the native application.
+Register a not instanciable type it means that it CANNOT create new objects of that 'type' in any ZetScript code using operator new, so the object only can be acceded by reference returned by some function C&plus;&plus; registered. This kind of register type is usueful when it wants to have a control of instantiated objects in the native application.
 
 To register non instantible type is done simple by calling `ZetScript::registerType` with type as template and the name that will be referenced in the script.
 
@@ -23,15 +23,24 @@ To register non instantible type is done simple by calling `ZetScript::registerT
 ----
 ScriptType * registerType<_Type>(const zs_string & _symbol_name);
 ----
- 
-Where,
 
-- _Type: As C++ struct/class type
-- _symbol_name: Symbol name referenced into ZetScript context
++++<u>Template</u>+++ 
+
+- _Type: C&plus;&plus; struct/class type
+
++++<u>Parameters</u>+++ 
+
+- _symbol_name: Symbol name that will be referenced in ZetScript
+
++++<u>Returns</u>+++ 
+
+A `ScriptType` object
 
 *Example*
 
-The following code shows an example of a registering non instantiable type. Let's define a custom a type called 'MyType' in C++
+The following code shows an example of a registering non instanciable type. 
+
+Let's define a C/C&plus;&plus; type 'MyType',
 
 [source,cpp]
 ----
@@ -42,7 +51,7 @@ typedef struct{
 ----
 
 
-Then, using it will register type 'MyType' to expose it in ZetSCript,
+Then, register type 'MyType' and symbol name as 'MyType',
 
 [source,cpp]
 ----
@@ -57,7 +66,7 @@ void main(argc, char *argv[])
  }
 ----
 
-In the following example it evalutates a ZetScript code to try instantiate object as type 'MyType',
+Let's supose we want to instantiate a 'MyType' object in the following code,
 
 [source,cpp]
 ----
@@ -78,96 +87,65 @@ void main(argc, char *argv[])
  }
 ----
 
-The output will be,
+The evaluation will fail with the following output,
 
-[source,text]
-----
-
-----
+ 'MyType' type is not object instanceable
 
 
-In order to use a MyClass instantiation it has to be done in the C++ aplication. 
+The only way to operate with a 'MyType' object non intanciable is by a reference returned by a registered function as it shows in the following example,
 
-For example,
 
 [source,cpp]
 ----
-
-MyClass *my_class=NULL;
-
-// interface function to get MyClass instantiation
-MyClass *getMyClass(){
-	return 	my_class;
-}
-
-
-void main(argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-	
-	// create MyClass instantiation from C++
-	my_class=new MyClass();
-	
-	
- 	//register MyClass as static (i.e no instantiable) in script side.
- 	zs.registerType<MyClass>("MyClass");
- 	
- 	 //register function interface to get MyClass instantiation
- 	zs.registerFunction("getMyClass",getMyClass);
- 	
- 	
-	// It get MyClass reference
- 	zs.eval(
- 		"var my_class= getMyClass();" 
- 	);
- 	
- 	// delete MyClass instantiation from C++
- 	delete my_class;
- 	
- 	return 0;
- }
+include::../examples/the_api/register_type/register_type_register_non_instanciable_type.cpp[]
 ----
- 
-Note: Is valuable to see that static types are safety because never are created in the script side, they are created by the C++ side 
- 
-==== Register instantiable type
+  
+==== Register instanciable type
 
-Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *registerType* passing the type as template,the name and the interface new/delete functions,
+
+Register a instanciable type it means that it CAN create new objects of that 'type' in ZetScript code using operator new.
+
+To register instanciable type it's done also with registerType but, furthermore, it has to pass two additional parameters : A constructor function and destructor function.
 
 *Syntax*
 [source,cpp]
 ----
-template<typename _Type>
-ScriptType * registerType(const zs_string & _symbol_name, _Type * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL);
+ScriptType * registerType<_Type>(const zs_string & _symbol_name, _Type * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,_Type *));
 ----
 
-Where,
++++<u>Template</u>+++ 
 
-- _Type: As C++ struct/class type
-- _symbol_name: Symbol name referenced into ZetScript context
-- _constructor (optional): A C pointer function in case to register instantiable type
-- _destructor (optional): A C pointer function in case to register instantiable type
+- _Type: C&plus;&plus; struct/class type
 
++++<u>Parameters</u>+++ 
 
+- _symbol_name: Symbol name that will be referenced in ZetScript
+- _constructor: A function that creates an returns a new instance. The constructor functor has the following signature,
+
+[source,cpp]
+----
+_Type * Type_constructor(ZetScript *_zs);
+----
+
+- _destructor: A function that destructs native instance. The destructor functor has the following signature,
+
+[source,cpp]
+----
+void Type_constructor(ZetScript *_zs, _Type *_this);
+----
+
++++<u>Returns</u>+++ 
+
+A `ScriptType` object
 
 Example,
 
 [source,cpp]
 ----
- 
+include::../examples/the_api/register_type/register_type_register_instanciable_type.cpp[]
 ----
 
- 
-==== Delete C Class
-
-ZetScript it has a garbage collector to delete unreferenced script variables when the end of scope is reached but it keeps alive its internal native pointer to avoid unintended segmentation faults. So to avoid memory leaks due this issue, the user has to delete manually any instanced C Class variable with delete keyword. The following code shows an example of using delete keyword,
-
-[source,javascript]
-----
- delete myclass; // script and c variable is destroyed.
----- 
-  
-=== Bind members
+=== Register member functions
 
 ==== Register function member
 
