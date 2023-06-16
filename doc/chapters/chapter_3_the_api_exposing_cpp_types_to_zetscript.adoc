@@ -147,9 +147,7 @@ include::../examples/the_api/register_type/register_type_register_instanciable_t
 
 === Register member functions
 
-==== Register function member
-
-The binding of variable member is done like binding c function but in this case is done through the macro function registerMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
+The bindnig of variable member is done like binding c function but in this case is done through the macro function registerMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 
  registerMemberFunction<ObjectType>("function_name",&ObjectType::function_name);
 
