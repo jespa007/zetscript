@@ -1,7 +1,7 @@
 
 
 Version: 2.0.0
-Date: XX-XX-2023 (Expected to finish on end 1st June 2023)
+Date: XX-XX-2023 (Expected to finish on end 1st August 2023)
 
 Main improvements: 
 
@@ -256,6 +256,7 @@ Solved issues
 - #336 Solve problem ciclic references 
 - #339 Conditionals evaluates whole condition instead of first breaking condition improvement
 - #340 StackOverflow core dumped in deep recursion 
+> #346 ZetScript it can allow register two same C++ types 
 
 ---
 Version: 1.3.0
