@@ -240,9 +240,14 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		ScriptType * registerType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
+		ScriptType * registerType(
+				const zs_string & str_script_type
+				, C  * (*_new_native_instance)(ZetScript *_zs)=NULL
+				, void (*_delete_native_instance)(ZetScript *_zs,C *)=NULL
+				, const char *_registered_file="",short _registered_line=-1
+		){
 			try{
-				return script_type_factory->registerType<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
+				return script_type_factory->registerType<C>(str_script_type, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.what());
 				return NULL;

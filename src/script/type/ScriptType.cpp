@@ -25,8 +25,8 @@ namespace zetscript{
 		sf_field_initializer=NULL;
 
 		str_script_type_ptr=NULL;
-		c_destructor = NULL;
-		c_constructor=NULL;
+		delete_native_instance = NULL;
+		new_native_instance=NULL;
 		idx_function_member_constructor = ZS_IDX_UNDEFINED;
 		idx_script_type=_idx_script_type;
 		idx_starting_this_member_variables=0;

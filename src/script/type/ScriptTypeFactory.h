@@ -110,8 +110,8 @@ namespace zetscript{
 		template<typename C>
 		ScriptType * registerType(
 			const zs_string & str_script_type
-			, C * (*_constructor)(ZetScript *_zs)=NULL
-			, void (*_destructor)(ZetScript *_zs,C *)=NULL
+			, C * (*_new_native_instance)(ZetScript *_zs)=NULL
+			, void (*_delete_native_instance)(ZetScript *_zs,C *)=NULL
 			, const char *registered_file=""
 			,short registered_line=-1
 		);

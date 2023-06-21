@@ -11,7 +11,7 @@ As a return, the function it can return nothing, or a <<ZetScript built-in type>
 
 [source,c++]
 ----
-ReturnType zetscriptCppInterface(zetscript::ZetScript *_zs, ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 ){
+ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType _arg1, ParamType _arg2, ..., ParamType _arg9 ){
 	....
 }
 ----
@@ -23,6 +23,15 @@ Where,
 
 
 After the function is created it has be registered with ZetScript::registerFunction in order to be exposed in ZetScript. As a parameters, it passes a string value that will be the symbol name to be refered later in ZetScript and the C function reference.
+
+*Syntax*
+
+[source,c++]
+----
+template <typename F>
+void registerFunction( const zs_string & _name_script_function,F _ptr_function)
+----
+
 
 Example, 
 

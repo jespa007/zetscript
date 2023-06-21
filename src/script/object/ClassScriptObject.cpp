@@ -4,8 +4,8 @@
  */
 #include "zetscript.h"
 
-#define CALL_CONSTRUCTOR_CLASS(_zs,sc) (*((void *(*)(zetscript::ZetScript *))sc->c_constructor))(_zs)
-#define CALL_DESTRUCTOR_CLASS(_zs,sc,obj) (*((void (*)(zetscript::ZetScript *, void *))sc->c_destructor))(_zs,obj)
+#define CALL_CONSTRUCTOR_CLASS(_zs,sc) (*((void *(*)(zetscript::ZetScript *))sc->new_native_instance))(_zs)
+#define CALL_DESTRUCTOR_CLASS(_zs,sc,obj) (*((void (*)(zetscript::ZetScript *, void *))sc->delete_native_instance))(_zs,obj)
 
 namespace zetscript{
 
@@ -89,7 +89,7 @@ namespace zetscript{
 		// create object if type is native or it derives from a native type
 		if(c_object == NULL && script_class_native != NULL){
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-			created_object = CALL_CONSTRUCTOR_CLASS(zs,script_class_native); // (*script_type->c_constructor)();
+			created_object = CALL_CONSTRUCTOR_CLASS(zs,script_class_native); // (*script_type->new_native_instance)();
 			was_created_by_constructor=true;
 			c_object = created_object;
 			delete_c_object_on_destroy=true; // destroy object when type is destroyed. It will be safe (in principle)
@@ -207,7 +207,7 @@ namespace zetscript{
 
 		if(created_object != 0 && delete_c_object_on_destroy){
 
-			if(script_class_native->c_destructor==NULL){
+			if(script_class_native->delete_native_instance==NULL){
 				ZS_THROW_RUNTIME_ERROR(
 						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newClassScriptObject'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
 						,script_class_native->str_script_type.c_str()
@@ -216,7 +216,7 @@ namespace zetscript{
 				);
 			}
 			 // only erases pointer if basic type or user/auto delete is required ...
-			CALL_DESTRUCTOR_CLASS(zs,script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
+			CALL_DESTRUCTOR_CLASS(zs,script_class_native,created_object);//(*(script_class_native->delete_native_instance))(created_object);
 		}else if(was_created_by_constructor){
 			fprintf(stderr,"%s",zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)

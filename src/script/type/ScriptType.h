@@ -37,8 +37,8 @@ namespace zetscript{
 		//------------- VARIABLES STRUCT ---------------
 		int									idx_function_member_constructor;
 
-		void								* 	c_constructor;
-		void 								*	c_destructor;
+		void								* 	function_new_native_instance;
+		void 								*	function_delete_native_instance;
 
 		zs_vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
 

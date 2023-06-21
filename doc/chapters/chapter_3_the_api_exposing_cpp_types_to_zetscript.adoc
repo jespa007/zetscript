@@ -110,28 +110,28 @@ To register instanciable type it's done also with registerType but, furthermore,
 *Syntax*
 [source,cpp]
 ----
-ScriptType * registerType<_Type>(const zs_string & _symbol_name, _Type * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,_Type *));
+ScriptType * registerType<_Type>(const zs_string & _symbol_name, _Type * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs,_Type *));
 ----
 
 +++<u>Template</u>+++ 
 
-- _Type: C&plus;&plus; struct/class type
+- __Type_: C&plus;&plus; struct/class type
 
 +++<u>Parameters</u>+++ 
 
-- _symbol_name: Symbol name that will be referenced in ZetScript
-- _constructor: A function that creates an returns a new instance. The constructor functor has the following signature,
+- __symbol_name_: Symbol name that will be referenced in ZetScript
+- __new_native_instance_: A function that creates an returns a new instance. This function has the following signature,
 
 [source,cpp]
 ----
-_Type * Type_constructor(ZetScript *_zs);
+_Type * Type_new(ZetScript *_zs);
 ----
 
-- _destructor: A function that destructs native instance. The destructor functor has the following signature,
+- __delete_native_instance_: A function that deletes native instance. The function has the following signature,
 
 [source,cpp]
 ----
-void Type_constructor(ZetScript *_zs, _Type *_this);
+void Type_delete(ZetScript *_zs, _Type *_this);
 ----
 
 +++<u>Returns</u>+++ 
@@ -145,7 +145,47 @@ Example,
 include::../examples/the_api/register_type/register_type_register_instanciable_type.cpp[]
 ----
 
-=== Register member functions
+===== Register constructor
+
+In some cases is intersting to register a constructor that acts as function that initializes some fields after instance the object like it has been seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
+
+To register a constructor function it has to follow a similar signature as it has seen on ?????.
+
+As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer type of instanced object  as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
+
+*Syntax*
+
+[source,c++]
+----
+void MyType_constructor(zetscript::ZetScript *_zs, MyType *_this, ParamType _arg1, ..., ParamType _arg8 ){
+	....
+}
+----
+
+Where,
+
+- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered type.
+- _ParamType_: It can be one defined in  <<ZetScript built-in types>> or other registered type.
+
+
+After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. `registerConstructor` it has the following signature,
+
+
+*Syntax*
+[source,cpp]
+----
+template <typename F>
+void registerConstructor( F _ptr_function);
+----
+
+*Syntax*
+[source,cpp]
+----
+include::../examples/the_api/register_type/register_type_register_instanciable_type_with_constructor.cpp[]
+----
+
+
+==== Register member functions
 
 The bindnig of variable member is done like binding c function but in this case is done through the macro function registerMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 

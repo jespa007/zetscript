@@ -52,8 +52,8 @@ namespace zetscript{
 	template<class T>
 	ScriptType * ScriptTypeFactory::registerType(
 		const zs_string & str_script_type
-		,T * (*_constructor)(ZetScript *_zs)
-		,void (*_destructor)(ZetScript *_zs,T *)
+		,T * (*_new_native_instance)(ZetScript *_zs)
+		,void (*_delete_native_instance)(ZetScript *_zs,T *)
 		,const char *registered_file
 		,short registered_line
 	){//, const zs_string & base_class_name=""){
@@ -84,14 +84,14 @@ namespace zetscript{
 		// in C there's no script constructor ...
 		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
-		sc->c_constructor = NULL;
-		sc->c_destructor = NULL;
+		sc->_new_native_instance = NULL;
+		sc->delete_native_instance = NULL;
 		script_types->push_back(sc);
 
 
-		if((_constructor != NULL) && (_destructor != NULL)){ // it can instanced, not static
-			sc->c_constructor = (void *)_constructor;
-			sc->c_destructor = (void *)_destructor;
+		if((_new_native_instance != NULL) && (_delete_native_instance != NULL)){ // it can instanced, not static
+			sc->new_native_instance = (void *)_new_native_instance;
+			sc->delete_native_instance = (void *)_delete_native_instance;
 
 		}else{ // Cannot be instanced so is static
 			sc->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
