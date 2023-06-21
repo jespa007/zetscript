@@ -63,7 +63,9 @@ namespace zetscript{
 		if(aux_p!=NULL){
 			if(*aux_p=='}'){
 				eval_data->error=true;
-				eval_data->str_error=zs_strutils::format_file_line(_filename,line,"unexpected ending block ('}')");
+				eval_data->error_file=_filename;
+				eval_data->error_line=line;
+				eval_data->str_error="unexpected ending block ('}')";
 			}
 		}
 
