@@ -84,7 +84,7 @@ namespace zetscript{
 		// in C there's no script constructor ...
 		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
-		sc->_new_native_instance = NULL;
+		sc->new_native_instance = NULL;
 		sc->delete_native_instance = NULL;
 		script_types->push_back(sc);
 
