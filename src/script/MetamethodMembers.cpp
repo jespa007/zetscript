@@ -94,22 +94,66 @@ namespace zetscript{
 		return info;
 	}
 
-	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(const char *_symbol_name){
+
+	Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg,*bwc; // getter
+
+	MetamethodMemberGetterInfo MetamethodMembers::getGetterInfo(ByteCodeMetamethod _byte_code_metamethod){
+		MetamethodMemberGetterInfo info;
+		info.byte_code_metamethod= _byte_code_metamethod;
+		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
+		switch(_byte_code_metamethod){
+			case BYTE_CODE_METAMETHOD_POST_INC:
+				info.getter=post_inc;
+				break;
+			case BYTE_CODE_METAMETHOD_POST_DEC:
+				 info.getter=post_dec;
+				break;
+			case BYTE_CODE_METAMETHOD_PRE_INC:
+				info.getter=pre_inc;
+				break;
+			case BYTE_CODE_METAMETHOD_PRE_DEC:
+				info.getter=pre_dec;
+				break;
+			case BYTE_CODE_METAMETHOD_NEG:
+				info.getter=neg;
+				break;
+			case BYTE_CODE_METAMETHOD_BWC:
+				info.getter=bwc;
+				break;
+			default:
+				break;
+			}
+		return info;
+	}
+
+	MetamethodMemberGetterInfo MetamethodMembers::getSetterInfo(const char *_symbol_name){
 
 		// search setter
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
 		ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID;
-		while(*it!=0){
-			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
-			if(strcmp(_symbol_name,_mt_name)==0){
-				_byte_code_metamethod=*it;
-				break;
+
+		// particular case
+		if(strcmp(_symbol_name,"_get")==0){
+			return MetamethodMemberGetterInfo(
+				BYTE_CODE_METAMETHOD_GET
+				,get
+				,"_get"
+			);
+		}else{
+
+			while(*it!=0){
+				const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+				if(strcmp(_symbol_name,_mt_name)==0){
+					_byte_code_metamethod=*it;
+					break;
+				}
+
+				it++;
 			}
 
-			it++;
+			return getSetterInfo(_byte_code_metamethod);
 		}
 
-		return getSetterInfo(_byte_code_metamethod);
 	}
 
 	void MetamethodMembers::addSetter(ByteCodeMetamethod _byte_code_metamethod, Symbol *symbol_function){
@@ -165,6 +209,23 @@ namespace zetscript{
 			if(*it == _byte_code_metamethod){
 				return true;
 			}
+			it++;
+		}
+
+		return false;
+	}
+
+	static bool MetamethodMembers::isSetter(const char * _byte_code_metamethod_str){
+		// search setter
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
+		ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID;
+		while(*it!=0){
+			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+			if(strcmp(_byte_code_metamethod_str,_mt_name)==0){
+				return true;
+				break;
+			}
+
 			it++;
 		}
 

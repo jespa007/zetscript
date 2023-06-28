@@ -347,10 +347,53 @@ namespace zetscript{
 		return registerMemberFunction<C>(ZS_CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
 	}
 
+
+	// register member property shr set operation
+	template <typename C,typename F>
+	void ScriptTypeFactory::registerMemberProperty(
+			const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+		ScriptFunctionParam *params=NULL;
+		int params_len=0;
+		zs_string str_script_type_ptr = typeid( C *).name();
+
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+		if(script_type == NULL){
+			ZS_THROW_RUNTIME_ERROR(
+				"native type '%s' not registered"
+				,str_script_type_ptr.c_str()
+			);
+		}
+
+		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+			this
+			,script_type
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		script_type->registerMemberPropertyMetamethod(
+			 _property_name
+			 ,_metamethod_name
+			,&params
+			,params_len
+			,idx_script_type_return
+			,(zs_int)_ptr_function
+			,registered_file
+			,registered_line
+		);
+	}
+
 	/*
 	 * register static property getter
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerStaticMemberPropertyGetter(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -385,12 +428,12 @@ namespace zetscript{
 		);
 
 
-	}
+	}*/
 
 	/*
 	 * register property member setter
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertySetter(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -425,11 +468,11 @@ namespace zetscript{
 			,_registered_line
 		);
 	}
-
+*/
 	/*
 	 * register property getter
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyGetter(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -464,13 +507,13 @@ namespace zetscript{
 		);
 
 
-	}
+	}*/
 
 
 	/*
 	 * register property neg
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyNeg(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -504,12 +547,12 @@ namespace zetscript{
 				,_registered_line
 		);
 
-	}
+	}*/
 
 	/*
 	 * register property neg
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyBwc(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -543,12 +586,12 @@ namespace zetscript{
 				,_registered_line
 		);
 
-	}
+	}*/
 
 	/*
 	 * register member property  post_increment
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyPostInc(
 		const zs_string & _property_name
 		,F _ptr_function
@@ -583,12 +626,12 @@ namespace zetscript{
 			,_registered_file
 			,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register member property  post_decrement
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyPostDec(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -623,12 +666,12 @@ namespace zetscript{
 			,_registered_file
 			,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register member property  pre_increment
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyPreInc(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -666,12 +709,12 @@ namespace zetscript{
 			,_registered_file
 			,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register member property  pre_decrement
 	 */
-	template <typename C,typename F>
+	/*template <typename C,typename F>
 	void ScriptTypeFactory::registerMemberPropertyPreDec(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -1119,7 +1162,7 @@ namespace zetscript{
 			,registered_file
 			,registered_line
 		);
-	}
+	}*/
 
 
 	/**

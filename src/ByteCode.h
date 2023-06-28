@@ -237,6 +237,7 @@ namespace zetscript{
 
 	typedef enum: uint8_t {
 		// static
+		BYTE_CODE_METAMETHOD_GET=254,  // ==
 		BYTE_CODE_METAMETHOD_INVALID=255,  // ==
 		BYTE_CODE_METAMETHOD_EQU=0,  // ==
 		BYTE_CODE_METAMETHOD_NOT_EQU,  // !=

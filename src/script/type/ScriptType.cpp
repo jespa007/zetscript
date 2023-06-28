@@ -208,7 +208,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptType::registerMemberPropertyMetamethod(
 			const zs_string & _property_name
-			,ByteCodeMetamethod _byte_code_metamethod
+			,const zs_string & _property_name
 			,ScriptFunctionParam **_params
 			,int _params_len
 			,int _idx_return_type
@@ -329,7 +329,6 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-
 	Symbol				* 	ScriptType::registerStaticMemberPropertyGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
@@ -417,6 +416,79 @@ namespace zetscript{
 		);
 
 		mp->metamethod_members.getter=symbol_function;
+
+		return symbol_member_property;
+	}
+
+	Symbol				* 	ScriptType::registerMemberProperty(
+			 const zs_string & _property_name
+			 ,const zs_string & _metamethod_name
+			 ,ScriptFunctionParam **_params
+			 ,int8_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,const char *_file
+			,short _line
+	){
+
+		Symbol *symbol_member_property=NULL;
+		Symbol *symbol_function=NULL;
+		Symbol **metamethod_symbol_ref;
+		MetamethodMemberSetterInfo setter_info;
+
+
+		MemberProperty *mp=NULL;
+		if((symbol_member_property=getSymbol(_property_name)) == NULL){
+			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
+		}
+
+		mp=(MemberProperty *)symbol_member_property->ref_ptr;
+
+		setter_info=MetamethodMembers::getSetterInfo(_metamethod_name);
+		if(setter_info.byte_code_metamethod != BYTE_CODE_METAMETHOD_INVALID){
+			// is setter
+
+
+		}else{
+			// is getter
+			MetamethodMemberGetterInfo getter_info=MetamethodMembers::getGetterInfo(_metamethod_name);
+			if(getter_info.byte_code_metamethod != BYTE_CODE_METAMETHOD_INVALID){
+
+
+				if(*getter_info.getter != NULL){
+
+					ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already registered '%s' property"
+						,_property_name.c_str()
+						,_metamethod_name.c_str()
+					);
+				}
+
+				symbol_function=registerMemberFunction(
+						zs_strutils::format("%s@%s",_metamethod_name.c_str(),_property_name,
+						_params,
+						_params_len,
+						FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
+						_idx_return_type,
+						_ref_ptr,
+						_file,
+						_line
+				);
+
+				//mp->metamethod_members.neg=symbol_function;
+
+				*getter_info.getter=symbol_function;
+
+			}else{
+				// metamethod not supported
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Error registering property '%s': Metamethod '%s' not supported or not exist"
+					,_property_name.c_str()
+					,_metamethod_name.c_str()
+				);
+			}
+
+		}
+
+
 
 		return symbol_member_property;
 	}
