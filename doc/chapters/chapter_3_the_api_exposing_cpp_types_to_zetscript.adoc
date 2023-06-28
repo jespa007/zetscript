@@ -110,12 +110,12 @@ To register instanciable type it's done also with registerType but, furthermore,
 *Syntax*
 [source,cpp]
 ----
-ScriptType * registerType<_Type>(const zs_string & _symbol_name, _Type * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs,_Type *));
+ScriptType * registerType<RegisteredType>(const zs_string & _symbol_name, RegisteredType * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs, RegisteredType * _this));
 ----
 
 +++<u>Template</u>+++ 
 
-- __Type_: C&plus;&plus; struct/class type
+- __RegisteredType_: The registered type
 
 +++<u>Parameters</u>+++ 
 
@@ -124,14 +124,14 @@ ScriptType * registerType<_Type>(const zs_string & _symbol_name, _Type * (*_new_
 
 [source,cpp]
 ----
-_Type * Type_new(ZetScript *_zs);
+RegsiteredType * RegisteredType_new(ZetScript *_zs);
 ----
 
 - __delete_native_instance_: A function that deletes native instance. The function has the following signature,
 
 [source,cpp]
 ----
-void Type_delete(ZetScript *_zs, _Type *_this);
+void RegisteredType_delete(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Returns</u>+++ 
@@ -149,23 +149,21 @@ include::../examples/the_api/register_type/register_type_register_instanciable_t
 
 In some cases is intersting to register a constructor that acts as function that initializes some fields after instance the object like it has been seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
 
-To register a constructor function it has to follow a similar signature as it has seen on ?????.
-
-As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer type of instanced object  as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
+As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer of the registered type as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
 
 *Syntax*
 
 [source,c++]
 ----
-void MyType_constructor(zetscript::ZetScript *_zs, MyType *_this, ParamType _arg1, ..., ParamType _arg8 ){
+void RegisteredType_constructor(zetscript::ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
 
 Where,
 
-- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered type.
-- _ParamType_: It can be one defined in  <<ZetScript built-in types>> or other registered type.
+- _RegisteredType_: The registered type
+- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
 
 
 After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. `registerConstructor` it has the following signature,
@@ -174,1195 +172,1788 @@ After the constructor function is defined it has to be registered with `ZetScrip
 *Syntax*
 [source,cpp]
 ----
-template <typename F>
-void registerConstructor( F _ptr_function);
+void registerConstructor<RegisteredType>( Function _constructor_function);
 ----
 
-*Syntax*
++++<u>Template</u>+++ 
+
+- _RegisteredType_: The registered type
+- _Function_ : Function signature
+
++++<u>Parameters</u>+++ 
+
+- ___constructor_function_: Reference of defined constructor function
+
+
+*Example*
 [source,cpp]
 ----
 include::../examples/the_api/register_type/register_type_register_instanciable_type_with_constructor.cpp[]
 ----
 
 
-==== Register member functions
+==== Register members
 
-The bindnig of variable member is done like binding c function but in this case is done through the macro function registerMemberFunction. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
+Register member function
 
- registerMemberFunction<ObjectType>("function_name",&ObjectType::function_name);
 
-As an example, the following code registers function member MyClass::function1 seen on List 4.1
+Register static member function
 
-[source,cpp]
+
+
+registerMemberFunction
+
+
+registerStaticMemberFunction
+
+
+To register 
+
+==== Register metamethods
+
+explaing that to register metamethods you have to use
+
+registerMemberFunction
+
+===== Register member metamethods
+
+====== _tostring()
+
+Returns custom string when string operation operation is invoved
+
+*Syntax*
+
+[source,javascript]
 ----
-zs.bindFunctionMember<MyClass>("function1",&native_function1);
+_tostring()
 ----
 
-And then it can access to function1 member through field access ('.')
++++<u>Parameters</u>+++
 
-[source,cpp]
+None
+
++++<u>Returns</u>+++
+
+A string as a result when string operation operation is invoved
+
+*Example*
+
+[source,javascript]
 ----
-var myclass= new MyClass();
+include::../examples/the_api/register_type/register_type_metamethod_tostring.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_tostring_out.txt[]
+----
+
+===== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ :Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_addset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_addset_out.txt[]
+----
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_subset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_mulset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_divset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shlset_out.txt[]
+----
+
+===== _not()
+
+Implements _not_ pre operator (aka !)  
+
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- Boolean value as a result of not operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_not.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_not_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A new object as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_neg_out.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_postdec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+Implements _pre decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_predec_out.txt[]
+----
+
+===== _in()
+
+Implements _in_ operator 
+
+*Syntax*
+
+[source,javascript]
+----
+_in(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as value to check whether exist or not in the containing class
+
++++<u>Returns</u>+++
+
+Boolean telling whether the _value exist in or not
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_in.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_in_out.txt[]
 ---- 
 
-myclass.function1(10); // prints "c++ argument is10"
+===== Static functions
 
-==== Bind function constructor
+====== _equ()
 
-ZetScript always calls default C++ constructor when a variable is instanced with C++ type. ZetScript has no support of parameterized constructors but, instead, it can be done by registering a function with same name as the class name registered. As an example, the following code registers function member MyClass::init seen on List 4.1 as constructor3,
+Implements _equal_ operator (aka == ) between first operand and second operand
 
-[source,cpp]
-----
-zs.bindFunctionMember<MyClass>("MyClass",&MyClass::init);
-----
-
-And then, when variable is intancedwe can instance the class passing a integer as parameter to the c contructor
+*Syntax*
 
 [source,javascript]
 ----
-var myclass= new MyClass(10); // prints "data1 is initialized as 10"
+_equ(_op1,_op2)
 ----
 
-4.3.6 Inheritance
++++<u>Parameters</u>+++
 
-Inherited classes needs to know its base classes in order to register its parent variables
-and symbols already registered with the functions already seen in the section 4.3.3 and
-4.3.4 respectively. To tell the which base class has an inherited class is done through
-class_C_baseof with two parameters: The first parameter as the inherited class type
-and second parameter as its base class type.
-Syntax,
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
 
++++<u>Returns</u>+++
 
-[source,cpp]
+- True if op1 and op2 are EQUAL
+- False if op1 and op2 are NOT EQUAL
+
+*Example*
+
+[source,javascript]
 ----
-zs.extends<class, base_class>();
-----
-
-
-If for example we want to register MyClassExtend and tell that is base of MyClass Is
-done with the following snipped,
-
-[source,cpp]
-----
-class MyClassExtend:public MyClass{
-public:
-	float data2;
-	void function2(float * arg){
- 		this->data2 = *arg;
- 		printf("Float argument is %.02f\n",this->data2);
- 	}
-};
-
-zs.registerType<MyClassExtend>("MyClassExtend"); // register MyClassExtend
-zs.extends<MyClassExtend,MyClass>();
-----
-List 4.2
-
-3
- Note that the name of the function is the same as the name of the class
-
-
-
-=== Bind static constant variable
-
-The binding of variable member is done through the macro function *bindMemberVariable*. You have to provide the type class, the string name that
-will be referenced in script side and variable object reference.
-
-Sintax,
-
-[source,cpp]
-----
-zs.bindStaticConstantVariableMember<ObjectType>("variable_name",&ObjectType::variable_name);
+include::../examples/the_api/register_type/register_type_metamethod_equ.zs[]
 ----
 
+Output:
 
-As an example, the following code register variable member MyClass::data1 seen on
-List 4.1,
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_equ_out.txt[]
+----
+
+===== _nequ()
+
+Implements _not equal_ operator (aka != ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_nequ(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 and op2 are NOT EQUAL
+- False if op1 and op2 are EQUAL
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_nequ.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_nequ_out.txt[]
+----
+
+===== _lt()
+
+Implements _less than_ operator (aka < ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_lt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is LESS THAN op2
+- False if op1 is GRATHER EQUAL THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_lt.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_lt_out.txt[]
+----
+
+===== _lte()
+
+Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_lte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is LESS THAN OR EQUAL op2
+- False if op1 is GRATHER THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_lte.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_lte_out.txt[]
+----
+
+===== _gt()
+
+Implements _greather than_ operator (aka > ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_gt(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is GREATHER THAN op2
+- False if op1 is LESS OR EQUAL THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_gt.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_gt_out.txt[]
+----
+
+===== _gte(_op1,_op2)
+
+Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_gte(_op1,_op2)
+---- 
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- True if op1 is GREATHER THAN OR EQUAL op2
+- False if op1 is LESS THAN op2
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_gte.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_gte_out.txt[]
+----
+
+===== _add()
+
+Implements _add_ operator (aka + ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_add(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of add operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_add.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_add_out.txt[]
+----
+
+===== _div()
+
+Implements _division_ operator (aka / ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_div(_op1,_op2)
+----  
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of division operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_div.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_div_out.txt[]
+----
 
 
-register_C_VariableMember<MyClass>("data1",&MyClass::data1);
-And then it can access to data1 member through field access ('.')
+===== _mul()
 
+Implements _multiplication_ operator (aka * ) between first operand and second operand
 
-var myclass= new MyClass();
-print("data1"+myclass.data1);
+*Syntax*
 
+[source,javascript]
+----
+_mul(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of multiplication operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mul.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mul_out.txt[]
+----
+
+===== _mod()
+
+Implements _modulus_ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_mod(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of modulus operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mod.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_mod_out.txt[]
+----
+
+===== _and()
+
+Implements _bitwise and_ operator (aka & ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_and(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise and operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_and.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_and_out.txt[]
+----
+
+===== _or()
+
+Implements _bitwise or_ operator (aka | ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_or(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise or operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_or.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_or_out.txt[]
+----
+
+===== _xor()
+
+Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_xor(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise xor operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_xor.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_xor_out.txt[]
+----
+===== _shl()
+
+Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shl(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift left operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shl.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shl_out.txt[]
+----
+
+===== _shr()
+
+Implements _bitwise shift right_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shr(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift right operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shr.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_metamethod_shr_out.txt[]
+----
 
  
- 4.4 Inheritance script class from c++ class
-An important feature of ZetScript is that it supports c++ class inheritance for any in
-script class and the this (section 3.9) and super (seccion 3.9.5.1) keywords works as a
-normal behavior
-For example, we could inherit MyClassExtend from 4.2 that is shown in the following
-code,
+==== Properties
 
+explaing that to register properties you have to use
+
+registerMemberProperty
+
+*Syntax*
 
 [source,javascript]
 ----
-class ScriptMyClassExtended extends MyClassExtend{
- function1(arg1){
- 	Console::outln("script argument is "+arg1)
- 	super(this.data1+arg1); // calls function1 c++
- }
+class Test{
+
+	// property
+	property{
+			...
+	}
+
 }
-
-
-var myclass=new ScriptMyClassExtend(10);
-Myclass.function1(5);
-
 ----
 
-data1 is initialized as 10
-script argument is 5
-c++ argument is 15 
-
-Complete example
-
-
-
-4.5 Call script function in C++
-To bind script call in c++ it can be done through bind_function passing the function type
-as template parameter and the function name as parameter4
-. It can bind a script
-function member from an already instanced object.
-Example,
-#include "CZetScript.h"
-using namespace zetscript;
-int main(){
- CZetScript *zs = CZetScript::getInstance(); // instance zetscript
- zs->eval(
- "class Test{"
- " var data1;"
- " function function1(arg){"
- " print(\"calling Test.Function:\"+arg);"
- " }"
- "};"
- ""
- "function delete_test(){"
- " delete test;"
- " print(\"test variable was deleted\");"
- "}"
- ""
- "var test=new Test();"
- );
- // delete_test function is evaluated now test variable is instanced as Test type, so it can
- // bind test.function1
-
-// instance function delete_test function.
-std::function<void()> * delete_test=bind_function<void()>("delete_test");
-// instance member function test.function1.
-std::function<void(int)> * test_function1=bind_function<void (int)>("test.function1");
- (*test_function1)(10); // it calls "test.function" member function with 10 as parameter.
- (*delete_test)(); // it calls "delete_test" function with no parameters
- // delete functions when they are used anymore
- delete test_function1;
- delete delete_test;
-}
-
-4 C++ function binding is limited by a maximum of 6 parameters
-
-== 3.10 Metamethods
-Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on
-variable/function members as well it happens on c++ static function.]  depending whether the operation affects or not the object itself.
-
-ZetScript supports the following metamethods:
-
-* _equ
-* _not_equ
-* _lt
-* _lte
-* _gt
-* _gte
-* _not
-* _neg
-* _add
-* _div
-* _mul
-* _mod
-* _and
-* _or
-* _xor
-* _shl
-* _shr
-* _set
-
-
-=== 5.5.1 _equ (aka ==)
-
-@Description: Performs relational equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if equal, false otherwise.
-Script Example
-Example how to use _equ metamethod within script class,
-
-class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _equ(op1, op2){
- return op1.num==op2.num;
- }
-};
-
-var n1 = new MyNumber (1), n2=new MyNumber (1);
-
-if(n1==n2){ // we use here the metamethod ==
- print("n1 ("+n1.num+") is equal to n2 ("+n2.num+")");
-} 
-
-C++ Example
-The same it can be done with C++. The C++ metamethod function associated with
-must be static.
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _equ(MyNumber *op1, MyNumber *op2){
- return op1->num == op2->num;
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _equ as metamethod
- registerStaticMemberFunction<MyNumber>("_equ",&MyNumber::_equ);
- if(!zs->eval(
-"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
-"if(n1==n2){ // we use here the metamethod ==\n "
-" print(\"n1 (\"+n1.num+\") is equal to n2 (\"+n2.num+\")\");\n "
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.2 _nequ (aka !=)
-
-@Description: Performs relational not equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if not equal, false otherwise.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _nequ(MyNumber *op1, MyNumber *op2){
- return op1->num != op2->num;
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _not_equ as metamethod
- registerStaticMemberFunction<MyNumber>("_nequ",&MyNumber::_nequ);
- if(!zs->eval(
-"var n1 = new MyNumber (1), n2=new MyNumber (0); \n "
-"if(n1!=n2){ // we use here the metamethod != \n "
-" print(\"n1 (\"+n1.num+\") is not equal to n2 (\"+n2.num+\")\");\n "
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-} 
-
-=== 5.5.3 _lt (aka <)
-
-@Description: Performs relational less equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if less equal, false otherwise.
-
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _lt(MyNumber *op1, MyNumber *op2){
- return op1->num < op2->num;
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _lt as metamethod
- registerStaticMemberFunction<MyNumber>("_lt",&MyNumber::_lt);
- if(!zs->eval(
- "var n1 = new MyNumber (0), n2=new MyNumber (1);\n"
-"if(n1<n2){ \n "
-" print(\"n1 (\"+n1.num+\") is less than n2 (\"+n2.num+\")\");\n "
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.4 _lte (aka <=)
-
-@Description: Performs relational less equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if less equal, false otherwise.
-
-C++ Example
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _lte (MyNumber *op1, MyNumber *op2){
- return op1->num <= op2->num;
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _lte as metamethod
- registerStaticMemberFunction<MyNumber>("_lte",&MyNumber::_lte);
- if(!zs->eval(
-"var n1 = new MyNumber (1), n2=new MyNumber (1);\n"
-"if(n1<=n2){\n"
-" print(\"n1 (\"+n1.num+\") is less equal than n2 (\"+n2.num+\")\");\n"
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.5 _gt (aka >)
-
-@Description: Performs relational greater operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if greater, false otherwise.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _gt(MyNumber *op1, MyNumber *op2){
- return op1->num > op2->num;
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _gt as metamethod
- registerStaticMemberFunction<MyNumber>("_gt",&MyNumber::_gt);
- if(!zs->eval(
-"var n1 = new MyNumber (1), n2=new MyNumber (0);\n"
-"if(n1>n2){ \n"
-" print(\"n1 (\"+n1.num+\") is greater than n2 (\"+n2.num+\")\");\n"
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.6 _gte (aka >=)
-
-@Description: Performs relational greater equal operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : true if greater equal, false otherwise.
-
-C++ Example
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void set(int _n){
- this->num=_n;
- }
- static bool _gte(MyNumber *op1, MyNumber *op2){
- return op1->num >= op2->num;
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _gte as metamethod
- registerStaticMemberFunction<MyNumber>("_gte",&MyNumber::_gte);
- if(!zs->eval(
-"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
-"if(n1>=n2){ \n "
-" print(\"n1 (\"+n1.num+\") is greater equal than n2 (\"+n2.num+\")\");\n "
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.7 static _not (aka !)
-
-@Description: Performs a not operation.
-@Param1 : Object custom class type.
-@Returns : A Boolean type as a result of not operation.
-
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyBoolean{
-public:
- bool b;
- MyBoolean (){
- this->b=false;
- }
- void set(bool _b){
- this->b=_b;
- }
- static bool _not(MyBoolean *op1){
- return !op1->b;
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class< MyBoolean >("MyBoolean");
- // register variable member num
- register_C_VariableMember<MyBoolean>("b", &MyBoolean::b);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyBoolean>("MyBoolean", &MyBoolean:: set);
- // register static function _not as metamethod
- registerStaticMemberFunction<MyBoolean>("_not", &MyBoolean::_not);
- if(!zs->eval(
-"var b = new MyBoolean (false);\n"
-"if(!b){ \n"
-" print(\"b was false\");\n"
-"}\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-} 
-
-=== 5.5.8 _neg (aka -)
-
-@Description: Performs negate operation.
-@Param1 : operand to negate.
-@Returns : A new object custom class type with result of negate operation.
-
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _num){
- this->num=_num;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber * _neg(MyNumber *op1){
- return new MyNumber(-op1->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _neg as metamethod
- registerStaticMemberFunction<MyNumber>("_neg",&MyNumber::_neg);
- if(!zs->eval (
-"var n1 = new MyNumber (1);\n"
-"var n2 = -n1;\n"
-"print(\"neg of n1 (\"+n1.num+\") is (\"+n2.num+\")\");\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.9 _add (aka +)
-
-@Description: Performs add operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result add operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber * _add(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num + op2->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _add as metamethod
- registerStaticMemberFunction<MyNumber>("_add",&MyNumber::_add);
- if(!zs->eval(
-"var n1 = new MyNumber (20);\n"
-"var n2 = new MyNumber (10); \n"
-"var n3 =n1+n2; \n "
-"print(\"n1 (\"+n1.num+\") + n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-} 
-
-=== 5.5.10 _div (aka /)
-
-@Type: Static
-@Description: Performs divide operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result divide operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber *_div(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num / op2->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _div as metamethod
- registerStaticMemberFunction<MyNumber>("_div",&MyNumber::_div);
- if(!zs->eval(
-"var n1 = new MyNumber (20);\n"
-"var n2 = new MyNumber (10);\n"
-"var n3 =n1/n2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") / n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.11 _mul (aka *)
-
-@Type: Static
-@Description: Performs multiply operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result multiply operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber *_mul(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num * op2->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _mul as metamethod
- registerStaticMemberFunction<MyNumber>("_mul",&MyNumber::_mul);
- if(!zs->eval(
-"var n1 = new MyNumber (20);\n"
-"var n2 = new MyNumber (10);\n"
-"var n3 =n1*n2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") * n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.12 _mod (aka %)
-
-@Description: Performs modulus operation.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result modulus operation.
-
-C++ Example
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber *_mod(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num % op2->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _mod as metamethod
- registerStaticMemberFunction<MyNumber>("_mod",&MyNumber::_mod);
- if(!zs->eval(
-"var n1 = new MyNumber (20);\n"
-"var n2 = new MyNumber (15);\n"
-"var n3 =n1%n2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") % n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.13 _and (aka &)
-
-@Description: Performs binary and operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary and operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber * _and(MyNumber *op1, MyNumber *op2){
- return new MyNumber (op1->num & op2->num);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _and as metamethod
- registerStaticMemberFunction<MyNumber>("_and",&MyNumber::_and);
- if(!zs->eval(
-"var n1 = new MyNumber (0xff);\n"
-"var n2 = new MyNumber (0x0f);\n"
-"var n3 =n1&n2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") & n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-} 
-
-=== 5.5.14 _or (aka |)
-
-@Description: Performs binary or operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary or operation.
-
-C++ Example
-The same it can be done with C++. The C++ metamethod function associated with
-must be static.
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber * _or(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num | op2->num);
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _or as metamethod
- registerStaticMemberFunction<MyNumber>("_or",&MyNumber::_or);
- if(!zs->eval(
-"var n1 = new MyNumber (0xf0);\n"
-"var n2 = new MyNumber (0x0f);\n"
-"var n3 =n1|n2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") | n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-} 
-
-=== 5.5.15 _xor (aka ^)
-@Description: Performs a binary xor operation between two integer
-operands.
-@Param1 : 1st operand.
-@Param2 : 2nd operand.
-@Returns : A new object custom class type with result of binary xor operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber *_xor(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num ^ op2->num);
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _xor as metamethod
- registerStaticMemberFunction<MyNumber>("_xor",&MyNumber::_xor);
- if(!zs->eval(
-"var n1 = new MyNumber (0xf1);\n"
-"var n2 = new MyNumber (0x0f);\n"
-"var n3 =n1^n2;"
-"\n"
-"print(\"n1 (\"+n1.num+\") ^ n2 (\"+n2.num+\") = \"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.16 _shl (aka <<)
-
-@Description: Performs shift left operation.
-@Param1 : Variable to apply shift left.
-@Param2 : Tells number shifts to the left.
-@Returns : A new object custom class type with n shifts left operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber *_shl(MyNumber *op1, int n_shifts){
- return new MyNumber(op1->num << n_shifts);
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _shl as metamethod
- registerStaticMemberFunction<MyNumber>("_shl",&MyNumber::_shl);
- if(!zs->eval(
-"var n1 = new MyNumber (0x1);\n"
-"var n2 = n1 << 3;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") << 3 = \"+n2.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.17 _shr (aka >>)
-
-@Description: Performs shift right operation.
-@Param1 : Variable to apply shift right.
-@Param2 : Tells number shifts to the right.
-@Returns : A new object custom class type with n shifts right operation.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- static MyNumber * _shr(MyNumber *op1,int n_shifts){
- return new MyNumber(op1->num >> n_shifts);
- }
-};
-
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register static function _shr as metamethod
- registerStaticMemberFunction<MyNumber>("_shr",&MyNumber::_shr);
- if(!zs->eval(
-"var n1 = new MyNumber (0xf);\n"
-"var n2 = n1 >> 2;\n"
-"\n"
-"print(\"n1 (\"+n1.num+\") >> 2 = \"+n2.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.19 _set (aka =)
-
-@Description: Performs a set operation6.
-@Param1 : Source variable to set.
-@Returns : None.
-
-The same it can be done with C++. The C++ metamethod function associated with must be static.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- int num;
- MyNumber(){
- this->num=0;
- }
- void _set(int _n){
- this->num=_n;
- }
- void _set(MyNumber *_n){
- this->num=_n->num;
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- // register variable member num
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::_set
- registerMemberFunction<MyNumber>(
-"MyNumber"
-, static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
- );
- // register two types function _set as metamethod (same as constructor)
- registerMemberFunction<MyNumber>(
-"_set"
-,static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
- );
- registerMemberFunction<MyNumber>(
-"_set"
-, static_cast<void (MyNumber::*)(MyNumber *)>(&MyNumber::_set)
- );
- if(!zs->eval(
-"var n1 = new MyNumber (10);\n"
-"var n2 = new MyNumber (20); \n"
-"var n3; //  n3 is undefined! \n"
-"n3 = n2; //  it assigns n2 pointer. \n"
-"print(\"n3:\"+n3.num); \n"
-"n3=n1; //  n3.num = n2.num = n1.num. \n"
-"print(\"n3:\"+n3.num); \n"
-"n3=50; //  n3.num = n2.num = 10. \n"
-"print(\"n3:\"+n3.num); \n"
-"n3=false; //  stops execution with error because is not supported.\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
-
-=== 5.5.20 Mixing operand types
-
-Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.
-The following example performs a sums of a combination of object, integers or floats.
-
-var num1= new MyNumber(1), num2=new MyNumber(2);
-var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;
-
-The expression cannot be performed with only objects as we have been shown in the
-last sections. You can use instanceof operator to check each type of argument and
-perform the needed operation.
-
-We present an example for _add metamethod function that implements a support to
-operate with MyNumber object, integer or float. Other types will cause a execution
-error.
-
-The same example for C++ we can to do an extra effort. We have to implement all possibilities that operator contemplates with operation within MyNumber, int or float.
-
-#include "CZetScript.h"
-using namespace zetscript;
-class MyNumber{
-public:
- float num;
- MyNumber(){
- this->num=0;
- }
- MyNumber(int _n){
- this->num=_n;
- }
- void set(int _n){
- this->num=_n;
- }
- // MyNumber,MyNumber combination
- static MyNumber * _add(MyNumber *op1, MyNumber *op2){
- return new MyNumber(op1->num + op2->num);
- }
- // int,MyNumber combination
- static MyNumber * _add(int op1, MyNumber *op2){
- return new MyNumber(op1 + op2->num);
- }
- // MyNumber,int combination
- static MyNumber * _add( MyNumber *op1, int op2){
- return new MyNumber(op1->num + op2);
- }
- // float,MyNumber combination
- static MyNumber * _add(float *op1, MyNumber *op2){
- return new MyNumber(*op1 + op2->num);
- }
- // MyNumber,float combination
- static MyNumber * _add( MyNumber *op1, float *op2){
- return new MyNumber(op1->num + *op2);
- }
-};
-int main(){
- CZetScript *zs = CZetScript::getInstance();
- // register class MyNumber
- register_C_Class<MyNumber>("MyNumber");
- register_C_VariableMember<MyNumber>("num",&MyNumber::num);
- // register constructor through function MyNumber::set
- registerMemberFunction<MyNumber>("MyNumber",&MyNumber:: set);
- // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combination�
- registerStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, MyNumber *)>(&MyNumber::_add));
- // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combination�
- registerStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(int, MyNumber *)>(&MyNumber::_add));
- // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combination�
- registerStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, int)> (&MyNumber::_add));
- // register 4th _add metamethod function to satisfy operand (float,MyNumber) combination�
- registerStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(float *, MyNumber *)>(&MyNumber::_add));
- // register 5th _add metamethod function to satisfy operand (MyNumber,float) combination�
- registerStaticMemberFunction<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, float *)>(&MyNumber::_add));
- if(!zs->eval(
-"var n1 = new MyNumber (20);\n"
-"var n2 = new MyNumber (10);\n"
-"var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number\n"
-"print(\"n3:\"+n3.num);\n"
- )){
- fprintf(stderr,ZS_GET_ERROR_MSG());
- }
- return 0;
-}
+==== Register property functions
+
+===== _get()
+
+__get_ returns the value of the property
+
+*Syntax*
+
+[source,javascript]
+----
+_get()
+----
+
+*Parameters
+
+None
+
++++<u>Returns</u>+++
+
+Returns the value of the property
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_get.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_get_out.txt[]
+----
+
+===== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ :Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_addset_out.txt[]
+----
+
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
++++<u>Parameters</u>+++
+
+- __value_ : Value or variable as right operand
+
++++<u>Returns</u>+++
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_shlset_out.txt[]
+----
+
+===== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+- A the value as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_neg_out.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_postdec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
++++<u>Parameters</u>+++
+
+None
+
++++<u>Returns</u>+++
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_type_property_metamethod_predec_out.txt[]
+----
+
+
+
+
+==== Register properties
+

@@ -422,26 +422,26 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *, zetscript::zs_float *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 
-	_zs->registerMemberPropertySetter<Number>("num",NumberZs_num_setter);
-	_zs->registerMemberPropertyGetter<Number>("num",NumberZs_num_getter);
-	_zs->registerMemberPropertyNeg<Number>("num",NumberZs_num_neg);
-	_zs->registerMemberPropertyBwc<Number>("num",NumberZs_num_bwc);
-	_zs->registerMemberPropertyAddSetter<Number>("num",NumberZs_num_addset);
-	_zs->registerMemberPropertySubSetter<Number>("num",NumberZs_num_subset);
-	_zs->registerMemberPropertyMulSetter<Number>("num",NumberZs_num_mulset);
-	_zs->registerMemberPropertyDivSetter<Number>("num",NumberZs_num_divset);
-	_zs->registerMemberPropertyModSetter<Number>("num",NumberZs_num_modset);
-	_zs->registerMemberPropertyXorSetter<Number>("num",NumberZs_num_xorset);
-	_zs->registerMemberPropertyOrSetter<Number>("num",NumberZs_num_orset);
-	_zs->registerMemberPropertyAndSetter<Number>("num",NumberZs_numandset);
-	_zs->registerMemberPropertyShrSetter<Number>("num",NumberZs_num_shrset);
-	_zs->registerMemberPropertyShlSetter<Number>("num",NumberZs_num_shlset);
+	_zs->registerMemberProperty<Number>("num","_set",NumberZs_num_setter);
+	_zs->registerMemberProperty<Number>("num","_get",NumberZs_num_getter);
+	_zs->registerMemberProperty<Number>("num","_neg",NumberZs_num_neg);
+	_zs->registerMemberProperty<Number>("num","_bwc",NumberZs_num_bwc);
+	_zs->registerMemberProperty<Number>("num","_addset",NumberZs_num_addset);
+	_zs->registerMemberProperty<Number>("num","_subset",NumberZs_num_subset);
+	_zs->registerMemberProperty<Number>("num","_mulset",NumberZs_num_mulset);
+	_zs->registerMemberProperty<Number>("num","_divset",NumberZs_num_divset);
+	_zs->registerMemberProperty<Number>("num","_modset",NumberZs_num_modset);
+	_zs->registerMemberProperty<Number>("num","_xorset",NumberZs_num_xorset);
+	_zs->registerMemberProperty<Number>("num","_orset",NumberZs_num_orset);
+	_zs->registerMemberProperty<Number>("num","_andset",NumberZs_num_andset);
+	_zs->registerMemberProperty<Number>("num","_shrset",NumberZs_num_shrset);
+	_zs->registerMemberProperty<Number>("num","_shlset",NumberZs_num_shlset);
 
-	_zs->registerMemberPropertyPostInc<Number>("num",NumberZs_num_postinc);
-	_zs->registerMemberPropertyPostDec<Number>("num",NumberZs_num_postdec);
+	_zs->registerMemberProperty<Number>("num","_postinc",NumberZs_num_postinc);
+	_zs->registerMemberProperty<Number>("num","_postdec",NumberZs_num_postdec);
 
-	_zs->registerMemberPropertyPreInc<Number>("num",NumberZs_num_preinc);
-	_zs->registerMemberPropertyPreDec<Number>("num",NumberZs_num_predec);
+	_zs->registerMemberProperty<Number>("num","_preinc",NumberZs_num_preinc);
+	_zs->registerMemberProperty<Number>("num","_predec",NumberZs_num_predec);
 
 
 	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_add));
