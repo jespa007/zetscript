@@ -77,14 +77,62 @@ namespace zetscript{
 
 		Symbol				* 	registerMemberPropertyMetamethod(
 			const zs_string & _property_name
-			,const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,ScriptFunctionParam **_params
+			,int _params_len
+			,uint16_t _function_properties
+			,int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,const char * _file=""
+			,short _line=-1
+		);
+
+		/*Symbol				* 	registerStaticMemberPropertyMetamethod(
+			const zs_string & _property_name
+			,const zs_string & _metamethod_name
 			,ScriptFunctionParam **_params
 			,int _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""
 			,short _line=-1
+		);*/
+
+
+
+		template <typename F>
+		void registerMemberPropertyMetamethod(
+			const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,F _function_ptr
+			, const char *_registered_file=""
+			,short _registered_line=-1
 		);
+
+		template <typename F>
+		void registerStaticMemberPropertyMetamethod(
+			 const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,F _function_type
+			, const char *_registered_file=""
+			,short _registered_line=-1
+		);
+
+		/*template <typename F>
+		void registerMemberPropertyGetter(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *_registered_file=""
+			,short _registered_line=-1
+		);
+
+		template <typename F>
+		void registerStaticMemberPropertyGetter(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *_registered_file=""
+			,short _registered_line=-1
+		);*/
 
 		/*Symbol				* 	registerStaticMemberPropertyGetter(
 			 const zs_string & _property_name
@@ -135,7 +183,7 @@ namespace zetscript{
 			 const zs_string & _function_name
 			,ScriptFunctionParam **_params=NULL
 			,int _params_len=0
-			, unsigned short _function_properties=0
+			, uint16_t _function_properties=0
 			, int _idx_return_type=ZS_IDX_UNDEFINED
 			, zs_int _ref_ptr=0
 			, const char * _file=""
@@ -143,13 +191,6 @@ namespace zetscript{
 
 		);
 
-		template <typename F>
-		void registerStaticMemberPropertyGetter(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file=""
-			,short _registered_line=-1
-		);
 
 
 		template <typename F>

@@ -94,7 +94,7 @@ namespace zetscript{
 
 
 		/**
-		 * Register C function
+		 * Register T function
 		 */
 		 template <typename F>
 		 void registerFunction(
@@ -105,127 +105,153 @@ namespace zetscript{
 		);
 
 		/**
-		 * Instenceable Register C type
+		 * Instenceable Register T type
 		 */
-		template<typename C>
+		template<typename T>
 		ScriptType * registerType(
 			const zs_string & str_script_type
-			, C * (*_new_native_instance)(ZetScript *_zs)=NULL
-			, void (*_delete_native_instance)(ZetScript *_zs,C *)=NULL
+			, T * (*_new_native_instance)(ZetScript *_zs)=NULL
+			, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 			, const char *registered_file=""
 			,short registered_line=-1
 		);
 
 		/**
-		 * Built in register C Class, like ScriptObject,StringScriptObject...
+		 * Built in register T Class, like ScriptObject,StringScriptObject...
 		 */
-		template<class C, class B>
+		template<class T, class B>
 		void extends();
 
 		void registerMemberSymbols();
 
 		/**
-		 * Register C Member constructor
+		 * Register T Member constructor
 		 */
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerConstructor(
 				F function_type
 				, const char *registered_file=""
 				,short registered_line=-1
 		);
 
+
+		/*
+		 * register static member property metamethod
+		 */
+		template <typename T,typename F>
+		void registerStaticMemberPropertyMetamethod(
+			const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,F _ptr_function
+			, const char *registered_file=NULL
+			,short registered_line=-1
+		);
+
+		/*
+		 * register member property metamethod
+		 */
+
+		template <typename T,typename F>
+		void registerMemberPropertyMetamethod(
+			const zs_string & _property_name
+			,const zs_string & _metamethod_name
+			,F _ptr_function
+			, const char *registered_file=NULL
+			,short registered_line=-1
+		);
+
 		/*
 		 * register static property getter
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerStaticMemberPropertyGetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register property setter
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertySetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register property getter
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyGetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register property neg
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyNeg(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register property bwc
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyBwc(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register member property post_inc
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyPostInc(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register member property post_dec
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyPostDec(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register member property pre_inc
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyPreInc(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/*
 		 * register member property pre_dec
 		 */
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void registerMemberPropertyPreDec(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -234,7 +260,7 @@ namespace zetscript{
 		);
 
 		// register member property add set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyAddSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -243,7 +269,7 @@ namespace zetscript{
 		);
 
 		// register member property sub set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertySubSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -252,7 +278,7 @@ namespace zetscript{
 		);
 
 		// register mul set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyMulSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -261,7 +287,7 @@ namespace zetscript{
 		);
 
 		// register div set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyDivSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -270,7 +296,7 @@ namespace zetscript{
 		);
 
 		// register mod set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyModSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -279,7 +305,7 @@ namespace zetscript{
 		);
 
 		// register and set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyAndSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -288,7 +314,7 @@ namespace zetscript{
 		);
 
 		// register or set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyOrSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -297,7 +323,7 @@ namespace zetscript{
 		);
 
 		// register xor set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyXorSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -306,7 +332,7 @@ namespace zetscript{
 		);
 
 		// register shl set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyShlSetter(
 				const zs_string & _property_name
 				,F _ptr_function
@@ -315,18 +341,18 @@ namespace zetscript{
 		);
 
 		// register shr set operation
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerMemberPropertyShrSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
-		);
+		);*/
 
 		/**
-		 * Register C Member function static Class
+		 * Register T Member function static Class
 		 */
-		template <typename C, typename F>
+		template <typename T, typename F>
 		void registerStaticMemberFunction(
 				const zs_string & _function_name
 				,F _ptr_function
@@ -336,9 +362,9 @@ namespace zetscript{
 
 
 		/**
-		 * Register C function as function member
+		 * Register T function as function member
 		 */
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberFunction(
 				const zs_string & name_script_function
 				,F ptr_function

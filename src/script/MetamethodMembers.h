@@ -8,38 +8,38 @@ namespace zetscript{
 
 
 	struct MetamethodMemberSetterInfo {
-		ByteCodeMetamethod byte_code_metamethod;
+		MetamethodByteCode metamethod_byte_code;
 		zs_vector<StackElement *> *setters;
-		const char *str_byte_code_metamethod;
+		const char *metamethod_name;
 
 		MetamethodMemberSetterInfo() {
-			byte_code_metamethod = ByteCodeMetamethod::BYTE_CODE_METAMETHOD_INVALID;
+			metamethod_byte_code = MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
 			setters = NULL;
-			str_byte_code_metamethod = NULL;
+			metamethod_name = NULL;
 
 		}
 	};
 
 	struct MetamethodMemberGetterInfo {
-		ByteCodeMetamethod byte_code_metamethod;
-		Symbol *getter;
-		const char *str_byte_code_metamethod;
+		MetamethodByteCode metamethod_byte_code;
+		Symbol **getter;
+		const char *metamethod_name;
 
 		MetamethodMemberGetterInfo() {
-			byte_code_metamethod = ByteCodeMetamethod::BYTE_CODE_METAMETHOD_INVALID;
+			metamethod_byte_code = MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
 			getter = NULL;
-			str_byte_code_metamethod = NULL;
+			metamethod_name = NULL;
 
 		}
 
 		MetamethodMemberGetterInfo(
-				ByteCodeMetamethod _byte_code_metamethod
-				,Symbol *_getter
-				,const char *_str_byte_code_metamethod
+				MetamethodByteCode _metamethod_byte_code
+				,Symbol **_getter
+				,const char *_metamethod_name
 		) {
-			byte_code_metamethod = _byte_code_metamethod;
+			metamethod_byte_code = _metamethod_byte_code;
 			getter = _getter;
-			str_byte_code_metamethod = _str_byte_code_metamethod;
+			metamethod_name = _metamethod_name;
 
 		}
 	};
@@ -59,23 +59,28 @@ namespace zetscript{
 		zs_vector<StackElement *> shr_setters; // >>=
 		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg,*bwc; // getter
 
-		const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
-		const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];
+		const static MetamethodByteCode 	metamethod_byte_code_member_setter_list[];
+		const static MetamethodByteCode 	metamethod_byte_code_member_list[];
 
-		//const static zs_string & 			byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
-		bool static 						isMetamethodMember(ByteCodeMetamethod _byte_code);
-		static 	ByteCodeMetamethod symbolNameToSetterMetamethod(const char *_symbol_name);
-		static bool isSetter(ByteCodeMetamethod _byte_code_metamethod);
-		static bool isSetter(const char * _byte_code_metamethod);
+		//const static zs_string & 			metamethod_byte_code_to_symbol_str(MetamethodByteCode _byte_code, const zs_string & _property_name);
+		//bool static 						isMetamethodMember(MetamethodByteCode _metamethod_byte_code);
+	//	bool static 						isMetamethodMember(const zs_string & _metamethod_byte_code);
+		static 	MetamethodByteCode 			symbolNameToSetterMetamethod(const zs_string & _metamethod_name);
+		bool 								isSetter(MetamethodByteCode _metamethod_byte_code);
+		bool 								isSetter(const zs_string & _metamethod_name);
+		bool 								isGetter(MetamethodByteCode _metamethod_byte_code);
+		bool 								isGetter(const zs_string & _metamethod_name);
+
 
 		MetamethodMembers();
-		MetamethodMemberSetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
-		MetamethodMemberSetterInfo 	getSetterInfo(const char *_symbol_name);
+		MetamethodMemberSetterInfo 			getSetterInfo(MetamethodByteCode _metamethod_byte_code);
+		MetamethodMemberSetterInfo 			getSetterInfo(const zs_string & _metamethod_name);
 
-		MetamethodMemberGetterInfo 	getGetterInfo(ByteCodeMetamethod _byte_code);
-		MetamethodMemberGetterInfo 	getGetterInfo(const char *_symbol_name);
-		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,Symbol *f);
-		zs_vector<StackElement *> * 				getArraySetter(ByteCodeMetamethod _byte_code_metamethod);
+		MetamethodMemberGetterInfo 			getGetterInfo(MetamethodByteCode _metamethod_byte_code);
+		MetamethodMemberGetterInfo 			getGetterInfo(const zs_string & _metamethod_name);
+
+		void								addSetter(MetamethodByteCode _metamethod_byte_code,Symbol *f);
+		zs_vector<StackElement *> * 		getArraySetter(MetamethodByteCode _metamethod_byte_code);
 
 
 

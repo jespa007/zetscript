@@ -257,7 +257,7 @@ namespace zetscript{
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
 
 		ScriptType *float_type=this->getScriptType(ZS_TYPE_NAME_FLOAT);
-		float_type->registerStaticMemberPropertyGetter("MAX_VALUE",floatMaxValue);
+		float_type->registerStaticMemberPropertyMetamethod("MAX_VALUE","_get",floatMaxValue);
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
@@ -273,7 +273,7 @@ namespace zetscript{
 		// String
 
 		// properties
-		registerMemberPropertyGetter<StringScriptObject>("length",StringScriptObjectZs_length);
+		registerMemberPropertyMetamethod<StringScriptObject>("length","_get",StringScriptObjectZs_length);
 
 		// members
 		registerStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
@@ -310,7 +310,7 @@ namespace zetscript{
 		// Array
 
 		// properties
-		registerMemberPropertyGetter<ArrayScriptObject>("length",&ArrayScriptObjectZs_length);
+		registerMemberPropertyMetamethod<ArrayScriptObject>("length","_get",&ArrayScriptObjectZs_length);
 
 		// members
 		registerMemberFunction<ArrayScriptObject>("push",&ArrayScriptObjectZs_push);
@@ -506,7 +506,7 @@ namespace zetscript{
 						mp_dst->metamethod_members.neg=mp_src->metamethod_members.neg;
 						mp_dst->metamethod_members.bwc=mp_src->metamethod_members.bwc;
 
-						const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
+						const MetamethodByteCode *it_setters=MetamethodMembers::metamethod_byte_code_member_setter_list;
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);

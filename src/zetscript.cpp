@@ -44,7 +44,7 @@ namespace zetscript{
 		// Math mod
 		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
-		cl->registerStaticMemberPropertyGetter("PI",MathModule_PI);
+		cl->registerStaticMemberPropertyMetamethod("PI","_get",MathModule_PI);
 		cl->registerStaticMemberFunction("sin",MathModule_sin);
 		cl->registerStaticMemberFunction("cos",MathModule_cos);
 		cl->registerStaticMemberFunction("abs",MathModule_abs);
@@ -82,10 +82,10 @@ namespace zetscript{
 		//---------------------------------------------
 		// TimeSpan
 		cl=registerType<zs_timespan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
-		registerMemberPropertyGetter<zs_timespan>("days",TimeSpanModule_get_days);
-		registerMemberPropertyGetter<zs_timespan>("hour",TimeSpanModule_get_hours);
-		registerMemberPropertyGetter<zs_timespan>("minute",TimeSpanModule_get_minutes);
-		registerMemberPropertyGetter<zs_timespan>("second",TimeSpanModule_get_seconds);
+		registerMemberPropertyMetamethod<zs_timespan>("days","_get",TimeSpanModule_get_days);
+		registerMemberPropertyMetamethod<zs_timespan>("hour","_get",TimeSpanModule_get_hours);
+		registerMemberPropertyMetamethod<zs_timespan>("minute","_get",TimeSpanModule_get_minutes);
+		registerMemberPropertyMetamethod<zs_timespan>("second","_get",TimeSpanModule_get_seconds);
 
 		//---------------------------------------------
 		// DateTime
@@ -106,17 +106,17 @@ namespace zetscript{
 		// metamethods...
 		registerMemberFunction<zs_datetime>("_tostring",DateTimeModule_tostring);
 
-		registerMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
-		registerMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
-		registerMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
+		registerMemberPropertyMetamethod<zs_datetime>("week_day","_get",DateTimeModule_get_week_day);
+		registerMemberPropertyMetamethod<zs_datetime>("month_day","_get",DateTimeModule_get_month_day);
+		registerMemberPropertyMetamethod<zs_datetime>("year_day","_get",DateTimeModule_get_year_day);
 
-		registerMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
-		registerMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
-		registerMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
+		registerMemberPropertyMetamethod<zs_datetime>("second","_get",DateTimeModule_get_second);
+		registerMemberPropertyMetamethod<zs_datetime>("minute","_get",DateTimeModule_get_minute);
+		registerMemberPropertyMetamethod<zs_datetime>("hour","_get",DateTimeModule_get_hour);
 
-		registerMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
-		registerMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
-		registerMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
+		registerMemberPropertyMetamethod<zs_datetime>("day","_get",DateTimeModule_get_day);
+		registerMemberPropertyMetamethod<zs_datetime>("month","_get",DateTimeModule_get_month);
+		registerMemberPropertyMetamethod<zs_datetime>("year","_get",DateTimeModule_get_year);
 
 
 		// Custom user function or classes

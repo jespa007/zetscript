@@ -218,7 +218,7 @@ namespace zetscript{
 		VirtualMachine			*	_vm
 		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
-		,ByteCodeMetamethod 		_byte_code_metamethod
+		,MetamethodByteCode 		_metamethod_byte_code
 		,StackElement 			*	_stk_result_op1
 		,StackElement 			*	_stk_result_op2
 		, bool 						_is_static=true
@@ -246,14 +246,14 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
-		,ByteCodeMetamethod 		_byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID
+		,MetamethodByteCode 		_metamethod_byte_code=METAMETHOD_BYTE_CODE_INVALID
 	);
 
 	void vm_push_stk_boolean_equal_strings(
 		VirtualMachine			*	_vm
 		, StackElement 			*	_stk1
 		, StackElement 			*	_stk2
-		, ByteCodeMetamethod 		_byte_code_metamethod
+		, MetamethodByteCode 		_metamethod_byte_code
 	);
 
 	ScriptFunction * vm_find_native_function(

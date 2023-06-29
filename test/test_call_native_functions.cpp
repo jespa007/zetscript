@@ -434,11 +434,11 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->registerMemberFunction<ClassC>("newNum",ClassC_newNum);
 
-	_zs->registerMemberPropertyGetter<ClassC>("num",ClassC_num_getter);
+	_zs->registerMemberPropertyMetamethod<ClassC>("num","_get",ClassC_num_getter);
 	_zs->registerMemberFunction<Num>("_preinc",Num_pre_increment);
 	_zs->registerMemberFunction<Num>("_predec",Num_pre_decrement);
 
-	_zs->registerMemberPropertyGetter<Num>("x",Num_x_getter);
+	_zs->registerMemberPropertyMetamethod<Num>("x","_get",Num_x_getter);
 	_zs->registerMemberFunction<Num>("setPosition",Num_setPosition);
 
 	_zs->registerMemberFunction<ClassC>("get_d",ClassC_get_d);

@@ -5,18 +5,18 @@
 #define EXTRACT_STK_RESULT_OP1 \
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 
-#define METAMETHOD_OPERATION_NOT_FOUND(__BYTE_CODE_METAMETHOD__) \
+#define METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD_BYTE_CODE__) \
 		if(member_property!=NULL){\
 			ZS_VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED\
 				,stk_result_op1\
-				,__BYTE_CODE_METAMETHOD__\
+				,__METAMETHOD_BYTE_CODE__\
 			);\
 		}else{\
 			ZS_VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED\
 				,stk_result_op1\
-				,__BYTE_CODE_METAMETHOD__\
+				,__METAMETHOD_BYTE_CODE__\
 			);\
 		}
 
@@ -77,7 +77,7 @@
 				_vm\
 				,_script_function\
 				,instruction\
-				,BYTE_CODE_METAMETHOD_DIV\
+				,METAMETHOD_BYTE_CODE_DIV\
 				,stk_result_op1\
 				,stk_result_op2\
 		)==false){\
@@ -105,7 +105,7 @@
 				_vm\
 				,_script_function\
 				,instruction\
-				,BYTE_CODE_METAMETHOD_ADD\
+				,METAMETHOD_BYTE_CODE_ADD\
 				,stk_result_op1\
 				,stk_result_op2\
 		)==false){\
@@ -143,7 +143,7 @@
 		break;\
 	}\
 
-#define VM_OPERATION_COMPARE(__C_OP__, __BYTE_CODE_METAMETHOD_OPERATION__,__IS_JE_CASE__)\
+#define VM_OPERATION_COMPARE(__C_OP__, __METAMETHOD_BYTE_CODE_OPERATION__,__IS_JE_CASE__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -165,11 +165,11 @@
 		if(STK_VALUE_IS_TYPE(stk_result_op1)){\
 			PRAGMA_PUSH\
 			PRAGMA_DISABLE_WARNING(4127)\
-			if(__BYTE_CODE_METAMETHOD_OPERATION__ ==BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ ==BYTE_CODE_METAMETHOD_NOT_EQU){\
+			if(__METAMETHOD_BYTE_CODE_OPERATION__ ==METAMETHOD_BYTE_CODE_EQU || __METAMETHOD_BYTE_CODE_OPERATION__ ==METAMETHOD_BYTE_CODE_NOT_EQU){\
 				PRAGMA_POP\
-				if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties == IDX_TYPE_UNDEFINED) && (__BYTE_CODE_METAMETHOD_OPERATION__ ==BYTE_CODE_METAMETHOD_EQU)){\
+				if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties == IDX_TYPE_UNDEFINED) && (__METAMETHOD_BYTE_CODE_OPERATION__ ==METAMETHOD_BYTE_CODE_EQU)){\
 					VM_PUSH_STK_BOOLEAN(true);\
-				}else if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties != IDX_TYPE_UNDEFINED) && (__BYTE_CODE_METAMETHOD_OPERATION__ ==BYTE_CODE_METAMETHOD_NOT_EQU)){\
+				}else if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties != IDX_TYPE_UNDEFINED) && (__METAMETHOD_BYTE_CODE_OPERATION__ ==METAMETHOD_BYTE_CODE_NOT_EQU)){\
 					VM_PUSH_STK_BOOLEAN(true);\
 				}else{\
 					VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -178,22 +178,22 @@
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
 		}else if( STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1) && STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){\
-			vm_push_stk_boolean_equal_strings(_vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__);\
+			vm_push_stk_boolean_equal_strings(_vm,stk_result_op1,stk_result_op2,__METAMETHOD_BYTE_CODE_OPERATION__);\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
-				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
+				&& (__METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_EQU || __METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_NOT_EQU)\
 				){\
 			if((stk_result_op1->properties == STK_PROPERTY_UNDEFINED) && (stk_result_op2->properties == STK_PROPERTY_UNDEFINED)){\
-				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU);\
+				VM_PUSH_STK_BOOLEAN(__METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_EQU);\
 			}else{\
-				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ != BYTE_CODE_METAMETHOD_EQU);\
+				VM_PUSH_STK_BOOLEAN(__METAMETHOD_BYTE_CODE_OPERATION__ != METAMETHOD_BYTE_CODE_EQU);\
 			}\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
-				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
+				&& (__METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_EQU || __METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_NOT_EQU)\
 				){\
 			if((stk_result_op1->properties == STK_PROPERTY_NULL) && (stk_result_op2->properties == STK_PROPERTY_NULL)){\
-				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU);\
+				VM_PUSH_STK_BOOLEAN(__METAMETHOD_BYTE_CODE_OPERATION__ == METAMETHOD_BYTE_CODE_EQU);\
 			}else{\
-				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ != BYTE_CODE_METAMETHOD_EQU);\
+				VM_PUSH_STK_BOOLEAN(__METAMETHOD_BYTE_CODE_OPERATION__ != METAMETHOD_BYTE_CODE_EQU);\
 			}\
 		}else{\
 			stk_aux1=*stk_result_op1, stk_aux2=*stk_result_op2;\
@@ -201,7 +201,7 @@
 				_vm\
 				,_script_function\
 				,instruction\
-				, __BYTE_CODE_METAMETHOD_OPERATION__\
+				, __METAMETHOD_BYTE_CODE_OPERATION__\
 				,&stk_aux1\
 				,&stk_aux2\
 				,true\
@@ -244,7 +244,7 @@
 			_vm\
 			,_script_function\
 			,instruction\
-			,BYTE_CODE_METAMETHOD_MOD\
+			,METAMETHOD_BYTE_CODE_MOD\
 			,stk_result_op1\
 			,stk_result_op2\
 		)==false){\
@@ -297,7 +297,7 @@
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
-			,BYTE_CODE_METAMETHOD_NEG\
+			,METAMETHOD_BYTE_CODE_NEG\
 		)==false){\
 			goto lbl_exit_function;\
 		}\
@@ -322,7 +322,7 @@
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
-			,BYTE_CODE_METAMETHOD_BWC\
+			,METAMETHOD_BYTE_CODE_BWC\
 		)==false){\
 			goto lbl_exit_function;\
 		}\

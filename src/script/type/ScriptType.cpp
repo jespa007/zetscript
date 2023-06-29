@@ -206,11 +206,13 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
+
 	Symbol				* 	ScriptType::registerMemberPropertyMetamethod(
 			const zs_string & _property_name
-			,const zs_string & _property_name
+			,const zs_string & _metamethod_name
 			,ScriptFunctionParam **_params
 			,int _params_len
+			,uint16_t _properties
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file
@@ -222,6 +224,7 @@ namespace zetscript{
 		Symbol *symbol_function=NULL;
 		char symbol_metamethod_function[100];
 		Symbol **ptr_getter_script_function=NULL;
+		MetamethodByteCode metamethod_byte_code=MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
 
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
@@ -230,43 +233,52 @@ namespace zetscript{
 		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
-		if(MetamethodMembers::isMetamethodMember(_byte_code_metamethod)==false){
-			ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
-				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
-				,_property_name.c_str()
-			);
-		}
-
-		ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
-			symbol_metamethod_function
-			,_byte_code_metamethod
-			, _property_name.c_str()
-		);
-
-		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
-		switch(_byte_code_metamethod){
-		default:
-			break;
-		case BYTE_CODE_METAMETHOD_SET:
-		case BYTE_CODE_METAMETHOD_ADD_SET:
-		case BYTE_CODE_METAMETHOD_SUB_SET:
-		case BYTE_CODE_METAMETHOD_MUL_SET:
-		case BYTE_CODE_METAMETHOD_DIV_SET:
-		case BYTE_CODE_METAMETHOD_MOD_SET:
-		case BYTE_CODE_METAMETHOD_AND_SET:
-		case BYTE_CODE_METAMETHOD_OR_SET:
-		case BYTE_CODE_METAMETHOD_XOR_SET:
-		case BYTE_CODE_METAMETHOD_SHL_SET:
-		case BYTE_CODE_METAMETHOD_SHR_SET:
-			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+		//zs_string member_property_metamethod_name=metamethod_byte_code_to_symbol_str(_metamethod)+"@"+_property_name;
+		mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
+		if(mp_setter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID){
+			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
 				symbol_metamethod_function
-				,_byte_code_metamethod
-				, symbol_member_property->name.c_str()
+				,_metamethod_name.c_str()
+				, _property_name.c_str()
 			);
-			mp_setter_info=mp->metamethod_members.getSetterInfo(_byte_code_metamethod);
+			mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
+			metamethod_byte_code=mp_setter_info.metamethod_byte_code;
+		}
+		else{
+
+			MetamethodMemberGetterInfo mp_getter_info=mp->metamethod_members.getGetterInfo(_metamethod_name);
+			if(mp_getter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID){
+
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
+					symbol_metamethod_function
+					,mp_getter_info.metamethod_name
+					, _property_name.c_str()
+				);
+
+				if(*mp_getter_info.getter != NULL){
+
+					ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Error registering property metamethod '%s::%s@%s': Metamethod '%s' already registered"
+						,this->str_script_type.c_str()
+						,_property_name.c_str()
+						,_metamethod_name.c_str()
+						,_metamethod_name.c_str()
+					);
+				}
+
+				metamethod_byte_code=mp_getter_info.metamethod_byte_code;
+
+				ptr_getter_script_function=mp_getter_info.getter;
+
+			/*if(mp->metamethod_members.bwc != NULL){
+
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
+					,_property_name.c_str()
+					,_property_name.c_str()
+				);
+			}
+			ptr_getter_script_function=&mp->metamethod_members.bwc;
 			break;
-		// particular case
-		case BYTE_CODE_METAMETHOD_POST_INC:
+		case METAMETHOD_BYTE_CODE_POST_INC:
 			if(mp->metamethod_members.post_inc != NULL){
 
 				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
@@ -276,7 +288,7 @@ namespace zetscript{
 			}
 			ptr_getter_script_function=&mp->metamethod_members.post_inc;
 			break;
-		case BYTE_CODE_METAMETHOD_POST_DEC:
+		case METAMETHOD_BYTE_CODE_POST_DEC:
 			if(mp->metamethod_members.post_dec != NULL){
 
 				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
@@ -286,7 +298,7 @@ namespace zetscript{
 			}
 			ptr_getter_script_function=&mp->metamethod_members.post_dec;
 			break;
-		case BYTE_CODE_METAMETHOD_PRE_INC:
+		case METAMETHOD_BYTE_CODE_PRE_INC:
 			if(mp->metamethod_members.pre_inc != NULL){
 
 				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
@@ -296,7 +308,7 @@ namespace zetscript{
 			}
 			ptr_getter_script_function=&mp->metamethod_members.pre_inc;
 			break;
-		case BYTE_CODE_METAMETHOD_PRE_DEC:
+		case METAMETHOD_BYTE_CODE_PRE_DEC:
 			if(mp->metamethod_members.pre_dec != NULL){
 
 				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
@@ -305,14 +317,22 @@ namespace zetscript{
 				);
 			}
 			ptr_getter_script_function=&mp->metamethod_members.pre_dec;
-			break;
+			break;*/
+			}else{
+
+				ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Error registering property '%s' metamethod '%s': Metamethod not supported or not implemented"
+					,_property_name.c_str()
+					,_metamethod_name.c_str()
+				);
+
+			}
 		}
 
 		symbol_function=registerMemberFunction(
 				symbol_metamethod_function,
 				_params,
 				_params_len,
-				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
+				_properties,
 				_idx_return_type,
 				_ref_ptr,
 				_file,
@@ -322,14 +342,28 @@ namespace zetscript{
 		if(ptr_getter_script_function!=NULL){ // getter
 			*ptr_getter_script_function=symbol_function;
 		}else{ // setter
-			mp->metamethod_members.addSetter(_byte_code_metamethod,symbol_function);
+			mp->metamethod_members.addSetter(metamethod_byte_code,symbol_function);
 			//mp_setter_info.setters->push_back(symbol_function->ref_ptr);
 		}
 
 		return symbol_member_property;
 	}
 
-	Symbol				* 	ScriptType::registerStaticMemberPropertyGetter(
+	/*Symbol				* 	registerStaticMemberPropertyMetamethod(
+		const zs_string & _property_name
+		,const zs_string & _metamethod_name
+		,ScriptFunctionParam **_params
+		,int _params_len
+		,int _idx_return_type
+		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+		,const char * _file=""
+		,short _line=-1
+	){
+
+	}*/
+
+/*
+	Symbol				* 	ScriptType::registerStaticMemberPropertyMetamethod(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,int8_t _params_len
@@ -420,7 +454,7 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-	Symbol				* 	ScriptType::registerMemberProperty(
+	Symbol				* 	ScriptType::registerMemberPropertyMetamethod(
 			 const zs_string & _property_name
 			 ,const zs_string & _metamethod_name
 			 ,ScriptFunctionParam **_params
@@ -445,14 +479,14 @@ namespace zetscript{
 		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 		setter_info=MetamethodMembers::getSetterInfo(_metamethod_name);
-		if(setter_info.byte_code_metamethod != BYTE_CODE_METAMETHOD_INVALID){
+		if(setter_info.metamethod_byte_code != METAMETHOD_BYTE_CODE_INVALID){
 			// is setter
 
 
 		}else{
 			// is getter
 			MetamethodMemberGetterInfo getter_info=MetamethodMembers::getGetterInfo(_metamethod_name);
-			if(getter_info.byte_code_metamethod != BYTE_CODE_METAMETHOD_INVALID){
+			if(getter_info.metamethod_byte_code != METAMETHOD_BYTE_CODE_INVALID){
 
 
 				if(*getter_info.getter != NULL){
@@ -491,9 +525,9 @@ namespace zetscript{
 
 
 		return symbol_member_property;
-	}
+	}*/
 
-	Symbol				* 	ScriptType::registerMemberPropertyNeg(
+	/*Symbol				* 	ScriptType::registerMemberPropertyNeg(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,int8_t _params_len
@@ -577,7 +611,7 @@ namespace zetscript{
 		mp->metamethod_members.bwc=symbol_function;
 
 		return symbol_member_property;
-	}
+	}*/
 
 	//---------------------------------------------------
 	//
@@ -588,7 +622,7 @@ namespace zetscript{
 		 const zs_string & _function_name
 		 , ScriptFunctionParam **_params
 		 ,int _params_len
-		, unsigned short _function_properties
+		, uint16_t _function_properties
 		, int _idx_return_type
 		,zs_int _ref_ptr
 		, const char * _file
@@ -658,24 +692,24 @@ namespace zetscript{
 		}
 		else{
 			// check metamethod function...
-			for(int i = 0; i < MAX_BYTE_CODE_METAMETHODS; i++){
-				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,_function_name.c_str())){
+			for(int i = 0; i < MAX_METAMETHOD_BYTE_CODES; i++){
+				if(ZS_STRCMP(metamethod_byte_code_to_symbol_str((MetamethodByteCode)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
 					MetamethodMemberSetterInfo info_mp;
-					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
-					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
-					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
-					int n_args_static_metamethod=byte_code_metamethod_get_num_arguments(op); // expected params for static function, n_args -1 else
+					MetamethodByteCode op=(MetamethodByteCode)i;
+					const char *metamethod_byte_code_operator_str=metamethod_byte_code_to_operator_str(op);
+					const char *str_symbol_metamethod=metamethod_byte_code_to_symbol_str(op);
+					int n_args_static_metamethod=metamethod_byte_code_get_num_arguments(op); // expected params for static function, n_args -1 else
 					int this_arg=0;
 
 					// can be one parameter or 0 params...
-					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
+					if(metamethod_byte_code_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
 							,str_script_type.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
-					}else if((byte_code_metamethod_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
+					}else if((metamethod_byte_code_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
 							,str_script_type.c_str()
 							,_function_name.c_str()
@@ -685,7 +719,7 @@ namespace zetscript{
 
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
-						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
+						if(op == METAMETHOD_BYTE_CODE_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
 							ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,str_script_type.c_str()
 								,_function_name.c_str()
@@ -697,13 +731,13 @@ namespace zetscript{
 
 							// check if they are gte,gt,equ, not_equ, lt, lte
 							switch(i){
-							case BYTE_CODE_METAMETHOD_EQU: //STRCMP(name_script_function, == ,"_equ")
-							case BYTE_CODE_METAMETHOD_NOT_EQU: //STRCMP(name_script_function, ==, "_nequ")
-							case BYTE_CODE_METAMETHOD_LT://STRCMP(name_script_function, ==, "_lt")
-							case BYTE_CODE_METAMETHOD_LTE://STRCMP(name_script_function, ==, "_lte")
-							case BYTE_CODE_METAMETHOD_GT://STRCMP(name_script_function, ==, "_gt")
-							case BYTE_CODE_METAMETHOD_GTE://STRCMP(name_script_function, ==, "_gte")
-							case BYTE_CODE_METAMETHOD_NOT://STRCMP(name_script_function, ==, "_gte")
+							case METAMETHOD_BYTE_CODE_EQU: //STRCMP(name_script_function, == ,"_equ")
+							case METAMETHOD_BYTE_CODE_NOT_EQU: //STRCMP(name_script_function, ==, "_nequ")
+							case METAMETHOD_BYTE_CODE_LT://STRCMP(name_script_function, ==, "_lt")
+							case METAMETHOD_BYTE_CODE_LTE://STRCMP(name_script_function, ==, "_lte")
+							case METAMETHOD_BYTE_CODE_GT://STRCMP(name_script_function, ==, "_gt")
+							case METAMETHOD_BYTE_CODE_GTE://STRCMP(name_script_function, ==, "_gte")
+							case METAMETHOD_BYTE_CODE_NOT://STRCMP(name_script_function, ==, "_gte")
 
 								// return type must be bool...
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
@@ -715,16 +749,16 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
-							case BYTE_CODE_METAMETHOD_ADD: // +
-							case BYTE_CODE_METAMETHOD_SUB: // -
-							case BYTE_CODE_METAMETHOD_DIV: // /
-							case BYTE_CODE_METAMETHOD_MUL: // *
-							case BYTE_CODE_METAMETHOD_MOD:  // %
-							case BYTE_CODE_METAMETHOD_AND: // & bitwise logic and
-							case BYTE_CODE_METAMETHOD_OR: // | bitwise logic or
-							case BYTE_CODE_METAMETHOD_XOR: // ^ logic xor
-							case BYTE_CODE_METAMETHOD_SHL: // << shift left
-							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
+							case METAMETHOD_BYTE_CODE_ADD: // +
+							case METAMETHOD_BYTE_CODE_SUB: // -
+							case METAMETHOD_BYTE_CODE_DIV: // /
+							case METAMETHOD_BYTE_CODE_MUL: // *
+							case METAMETHOD_BYTE_CODE_MOD:  // %
+							case METAMETHOD_BYTE_CODE_AND: // & bitwise logic and
+							case METAMETHOD_BYTE_CODE_OR: // | bitwise logic or
+							case METAMETHOD_BYTE_CODE_XOR: // ^ logic xor
+							case METAMETHOD_BYTE_CODE_SHL: // << shift left
+							case METAMETHOD_BYTE_CODE_SHR: // >> shift right
 
 								/*if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
 
@@ -754,7 +788,7 @@ namespace zetscript{
 						ZS_THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
 							,(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
 							,str_symbol_metamethod
-							,byte_code_metamethod_operator_str
+							,metamethod_byte_code_operator_str
 							,n_args_static_metamethod
 						);
 						return NULL;
@@ -765,17 +799,17 @@ namespace zetscript{
 					switch(op){
 					default:
 						break;
-					case BYTE_CODE_METAMETHOD_SET:
-					case BYTE_CODE_METAMETHOD_ADD_SET:
-					case BYTE_CODE_METAMETHOD_SUB_SET:
-					case BYTE_CODE_METAMETHOD_MUL_SET:
-					case BYTE_CODE_METAMETHOD_DIV_SET:
-					case BYTE_CODE_METAMETHOD_MOD_SET:
-					case BYTE_CODE_METAMETHOD_AND_SET:
-					case BYTE_CODE_METAMETHOD_OR_SET:
-					case BYTE_CODE_METAMETHOD_XOR_SET:
-					case BYTE_CODE_METAMETHOD_SHL_SET:
-					case BYTE_CODE_METAMETHOD_SHR_SET:
+					case METAMETHOD_BYTE_CODE_SET:
+					case METAMETHOD_BYTE_CODE_ADD_SET:
+					case METAMETHOD_BYTE_CODE_SUB_SET:
+					case METAMETHOD_BYTE_CODE_MUL_SET:
+					case METAMETHOD_BYTE_CODE_DIV_SET:
+					case METAMETHOD_BYTE_CODE_MOD_SET:
+					case METAMETHOD_BYTE_CODE_AND_SET:
+					case METAMETHOD_BYTE_CODE_OR_SET:
+					case METAMETHOD_BYTE_CODE_XOR_SET:
+					case METAMETHOD_BYTE_CODE_SHL_SET:
+					case METAMETHOD_BYTE_CODE_SHR_SET:
 
 						info_mp=metamethod_members.getSetterInfo(op);
 
@@ -785,13 +819,13 @@ namespace zetscript{
 							// error already set (script functions only can be set once)
 							ZS_THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,str_script_type.c_str()
-									,info_mp.str_byte_code_metamethod);
+									,info_mp.metamethod_name);
 
 							return NULL;
 						}
 						metamethod_members.addSetter(op,symbol_function);
 						break;
-					case BYTE_CODE_METAMETHOD_POST_INC:
+					case METAMETHOD_BYTE_CODE_POST_INC:
 						if(metamethod_members.post_inc != NULL){
 
 							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
@@ -800,7 +834,7 @@ namespace zetscript{
 						}
 						metamethod_members.post_inc=symbol_function;
 						break;
-					case BYTE_CODE_METAMETHOD_POST_DEC:
+					case METAMETHOD_BYTE_CODE_POST_DEC:
 						if(metamethod_members.post_dec != NULL){
 
 							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
@@ -809,7 +843,7 @@ namespace zetscript{
 						}
 						metamethod_members.post_dec=symbol_function;
 						break;
-					case BYTE_CODE_METAMETHOD_PRE_INC:
+					case METAMETHOD_BYTE_CODE_PRE_INC:
 						if(metamethod_members.pre_inc != NULL){
 
 							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
@@ -818,7 +852,7 @@ namespace zetscript{
 						}
 						metamethod_members.pre_inc=symbol_function;
 						break;
-					case BYTE_CODE_METAMETHOD_PRE_DEC:
+					case METAMETHOD_BYTE_CODE_PRE_DEC:
 						if(metamethod_members.pre_dec != NULL){
 
 							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"

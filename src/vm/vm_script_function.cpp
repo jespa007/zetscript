@@ -115,27 +115,27 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,false);
+				VM_OPERATION_COMPARE(==, METAMETHOD_BYTE_CODE_EQU,false);
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(!=, BYTE_CODE_METAMETHOD_NOT_EQU,false);
+				VM_OPERATION_COMPARE(!=, METAMETHOD_BYTE_CODE_NOT_EQU,false);
 				continue;
 			case BYTE_CODE_LT:  // <
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(<, BYTE_CODE_METAMETHOD_LT,false);
+				VM_OPERATION_COMPARE(<, METAMETHOD_BYTE_CODE_LT,false);
 				continue;
 			case BYTE_CODE_LTE:  // <=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(<=, BYTE_CODE_METAMETHOD_LTE,false);
+				VM_OPERATION_COMPARE(<=, METAMETHOD_BYTE_CODE_LTE,false);
 				continue;
 			case BYTE_CODE_GT:  // >
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(>,BYTE_CODE_METAMETHOD_GT,false);
+				VM_OPERATION_COMPARE(>,METAMETHOD_BYTE_CODE_GT,false);
 				continue;
 			case BYTE_CODE_GTE:  // >=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(>=,BYTE_CODE_METAMETHOD_GTE,false);
+				VM_OPERATION_COMPARE(>=,METAMETHOD_BYTE_CODE_GTE,false);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
 				VM_POP_STK_TWO;
@@ -155,11 +155,11 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_SUB: // -
 				VM_POP_STK_TWO;
-				VM_OPERATION_ARITHMETIC(-, BYTE_CODE_METAMETHOD_SUB);
+				VM_OPERATION_ARITHMETIC(-, METAMETHOD_BYTE_CODE_SUB);
 				continue;
 			case BYTE_CODE_MUL: // *
 				VM_POP_STK_TWO;
-				VM_OPERATION_ARITHMETIC(*, BYTE_CODE_METAMETHOD_MUL);
+				VM_OPERATION_ARITHMETIC(*, METAMETHOD_BYTE_CODE_MUL);
 				continue;
 			case BYTE_CODE_DIV: // /
 				VM_POP_STK_TWO;
@@ -167,27 +167,27 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_MOD: // /
 				VM_POP_STK_TWO;
-				VM_OPERATION_MOD(BYTE_CODE_METAMETHOD_MOD);
+				VM_OPERATION_MOD(METAMETHOD_BYTE_CODE_MOD);
 				continue;
 			case BYTE_CODE_BITWISE_AND: // &
 				VM_POP_STK_TWO;
-				VM_OPERATION_BINARY(&, BYTE_CODE_METAMETHOD_AND);
+				VM_OPERATION_BINARY(&, METAMETHOD_BYTE_CODE_AND);
 				continue;
 			case BYTE_CODE_BITWISE_OR: // *
 				VM_POP_STK_TWO;
-				VM_OPERATION_BINARY(| , BYTE_CODE_METAMETHOD_OR);
+				VM_OPERATION_BINARY(| , METAMETHOD_BYTE_CODE_OR);
 				continue;
 			case BYTE_CODE_BITWISE_XOR: // ^
 				VM_POP_STK_TWO;
-				VM_OPERATION_BINARY(^, BYTE_CODE_METAMETHOD_XOR);
+				VM_OPERATION_BINARY(^, METAMETHOD_BYTE_CODE_XOR);
 				continue;
 			case BYTE_CODE_SHR: // >>
 				VM_POP_STK_TWO;
-				VM_OPERATION_BINARY(>> , BYTE_CODE_METAMETHOD_SHR);
+				VM_OPERATION_BINARY(>> , METAMETHOD_BYTE_CODE_SHR);
 				continue;
 			case BYTE_CODE_SHL: // <<
 				VM_POP_STK_TWO;
-				VM_OPERATION_BINARY(<< , BYTE_CODE_METAMETHOD_SHL);
+				VM_OPERATION_BINARY(<< , METAMETHOD_BYTE_CODE_SHL);
 				continue;
 			case BYTE_CODE_NOT: // !
 				VM_POP_STK_ONE;
@@ -198,7 +198,7 @@ namespace zetscript{
 						_vm
 						,_script_function
 						,instruction
-						,BYTE_CODE_METAMETHOD_NOT
+						,METAMETHOD_BYTE_CODE_NOT
 						,stk_result_op1
 						,NULL
 						,false
@@ -218,7 +218,7 @@ namespace zetscript{
 							_vm
 							,_script_function
 							,instruction
-							,BYTE_CODE_METAMETHOD_NEG
+							,METAMETHOD_BYTE_CODE_NEG
 							,stk_result_op1
 							,NULL
 							,false
@@ -236,7 +236,7 @@ namespace zetscript{
 							_vm
 							,_script_function
 							,instruction
-							,BYTE_CODE_METAMETHOD_BWC
+							,METAMETHOD_BYTE_CODE_BWC
 							,stk_result_op1
 							,NULL
 							,false
@@ -304,7 +304,7 @@ namespace zetscript{
 				continue;
 			 case BYTE_CODE_JE_CASE:  // especial j for switch
 				VM_POP_STK_ONE_LOAD2; // reads switch value and case value
-				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,true);
+				VM_OPERATION_COMPARE(==, METAMETHOD_BYTE_CODE_EQU,true);
 				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					// reset stack
@@ -384,28 +384,28 @@ namespace zetscript{
 				 vm_pop_scope(_vm);
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 VM_OPERATION_POST(++,BYTE_CODE_METAMETHOD_POST_INC);
+				 VM_OPERATION_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 VM_OPERATION_NEG_POST(++,BYTE_CODE_METAMETHOD_POST_INC);
+				 VM_OPERATION_NEG_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
 				 continue;
 			 case BYTE_CODE_BWC_POST_INC:
-				 VM_OPERATION_BWC_POST(++,BYTE_CODE_METAMETHOD_POST_INC);
+				 VM_OPERATION_BWC_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
+				 VM_OPERATION_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 VM_OPERATION_NEG_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
+				 VM_OPERATION_NEG_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
 				 continue;
 			 case BYTE_CODE_BWC_POST_DEC:
-				 VM_OPERATION_BWC_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
+				 VM_OPERATION_BWC_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
-				 VM_OPERATION_PRE(++,BYTE_CODE_METAMETHOD_PRE_INC);
+				 VM_OPERATION_PRE(++,METAMETHOD_BYTE_CODE_PRE_INC);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 VM_OPERATION_PRE(--,BYTE_CODE_METAMETHOD_PRE_DEC);
+				 VM_OPERATION_PRE(--,METAMETHOD_BYTE_CODE_PRE_DEC);
 				 continue;
 			case BYTE_CODE_ADD_STORE:
 				LOAD_OPS_SET_OPERATION;
@@ -413,11 +413,11 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_SUB_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET);
+				VM_OPERATION_ARITHMETIC_SET(-=,METAMETHOD_BYTE_CODE_SUB_SET);
 				continue;
 			case BYTE_CODE_MUL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET);
+				VM_OPERATION_ARITHMETIC_SET(*=,METAMETHOD_BYTE_CODE_MUL_SET);
 				continue;
 			case BYTE_CODE_DIV_STORE:
 				LOAD_OPS_SET_OPERATION;
@@ -429,23 +429,23 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_BITWISE_AND_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_AND_SET);
+				VM_OPERATION_BINARY_SET(&=,METAMETHOD_BYTE_CODE_AND_SET);
 				continue;
 			case BYTE_CODE_BITWISE_OR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET);
+				VM_OPERATION_BINARY_SET(|=,METAMETHOD_BYTE_CODE_OR_SET);
 				continue;
 			case BYTE_CODE_BITWISE_XOR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET);
+				VM_OPERATION_BINARY_SET(^=,METAMETHOD_BYTE_CODE_XOR_SET);
 				continue;
 			case BYTE_CODE_SHL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET);
+				VM_OPERATION_BINARY_SET(<<=,METAMETHOD_BYTE_CODE_SHL_SET);
 				continue;
 			case BYTE_CODE_SHR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET);
+				VM_OPERATION_BINARY_SET(>>=,METAMETHOD_BYTE_CODE_SHR_SET);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -694,7 +694,7 @@ namespace zetscript{
 		VirtualMachine			*	_vm
 		, StackElement 			*	_stk1
 		, StackElement 			*	_stk2
-		, ByteCodeMetamethod 		_byte_code_metamethod
+		, MetamethodByteCode 		_metamethod_byte_code
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		zs_string str1="@@@STR1_NOT_INIT@@@@";
@@ -716,27 +716,27 @@ namespace zetscript{
 
 		bool result=false;
 
-		switch(_byte_code_metamethod){
-		case BYTE_CODE_METAMETHOD_NOT_EQU:
+		switch(_metamethod_byte_code){
+		case METAMETHOD_BYTE_CODE_NOT_EQU:
 			result= ZS_STRCMP(str1.c_str(),!=,str2.c_str());
 			break;
-		case BYTE_CODE_METAMETHOD_EQU:
+		case METAMETHOD_BYTE_CODE_EQU:
 			result= ZS_STRCMP(str1.c_str(),==,str2.c_str());
 			break;
-		case BYTE_CODE_METAMETHOD_LT:
+		case METAMETHOD_BYTE_CODE_LT:
 			result= ZS_STRCMP(str1.c_str(),<,str2.c_str());
 			break;
-		case BYTE_CODE_METAMETHOD_GT:
+		case METAMETHOD_BYTE_CODE_GT:
 			result= ZS_STRCMP(str1.c_str(),>,str2.c_str());
 			break;
-		case BYTE_CODE_METAMETHOD_LTE:
+		case METAMETHOD_BYTE_CODE_LTE:
 			result= ZS_STRCMP(str1.c_str(),<=,str2.c_str());
 			break;
-		case BYTE_CODE_METAMETHOD_GTE:
+		case METAMETHOD_BYTE_CODE_GTE:
 			result= ZS_STRCMP(str1.c_str(),>=,str2.c_str());
 			break;
 		default:
-			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected byte_code_metamethod comparer");
+			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected metamethod_byte_code comparer");
 			return;
 			break;
 		}
@@ -750,7 +750,7 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk
-		,ByteCodeMetamethod 		_byte_code_metamethod
+		,MetamethodByteCode 		_metamethod_byte_code
 	){
 
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
@@ -764,9 +764,9 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
+				,metamethod_byte_code_to_operator_str(_metamethod_byte_code)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
+				,metamethod_byte_code_to_operator_str(_metamethod_byte_code)
 				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
@@ -777,8 +777,8 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Member property '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
-				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
+				,metamethod_byte_code_to_symbol_str(_metamethod_byte_code)\
+				,metamethod_byte_code_to_operator_str(_metamethod_byte_code)\
 			);\
 			break;
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED:
@@ -789,8 +789,8 @@ namespace zetscript{
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 				,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
-				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
-				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
+				,metamethod_byte_code_to_symbol_str(_metamethod_byte_code)\
+				,metamethod_byte_code_to_operator_str(_metamethod_byte_code)\
 			);\
 			break;
 		case VM_MAIN_ERROR_CANNOT_FIND_SYMBOL:

@@ -124,7 +124,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getStackElement(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
+		return getStackElement(metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -153,7 +153,7 @@ namespace zetscript{
 
 	zs_string ClassScriptObject::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;

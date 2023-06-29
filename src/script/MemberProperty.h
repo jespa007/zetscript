@@ -4,13 +4,23 @@
  */
 #pragma once
 
-#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(_str_out,_byte_code_metamethod,_property_name) \
-	sprintf(_str_out,"%s@%s,",byte_code_metamethod_to_symbol_str(_byte_code_metamethod),_property_name)
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,_metamethod_name,_property_name) \
+	sprintf(_str_out,"%s@%s,",_metamethod_name,_property_name)
+
+
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(_str_out,_metamethod_byte_code,_property_name) \
+	ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,metamethod_byte_code_to_symbol_str(_metamethod_byte_code),_property_name)
+
+
+/*
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(_str_out,_metamethod_byte_code,_property_name) \
+	sprintf(_str_out,"%s@%s,",metamethod_byte_code_to_symbol_str(_metamethod_byte_code),_property_name)
+*/
 
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER		"_get@"
-#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NEG			"_neg@"
+/*#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NEG			"_neg@"
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BWC			"_bwc@"
-
+*/
 
 
 namespace zetscript{

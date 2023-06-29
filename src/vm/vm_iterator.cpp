@@ -200,7 +200,7 @@ namespace zetscript{
 						_vm,
 						_script_function,
 						_instruction,
-						BYTE_CODE_METAMETHOD_IN,
+						METAMETHOD_BYTE_CODE_IN,
 						&stk_result_op2_aux,
 						&stk_result_op1_aux,
 						false

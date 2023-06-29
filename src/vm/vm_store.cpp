@@ -69,7 +69,7 @@ namespace zetscript{
 		store_lst_setter_functions=NULL;
 
 		if(STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
-			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL){
+			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(METAMETHOD_BYTE_CODE_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
@@ -91,8 +91,8 @@ namespace zetscript{
 
 			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
-			const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET);\
-			const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_SET);\
+			const char *__STR_SETTER_METAMETHOD__=metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET);\
+			const char *__STR_AKA_SETTER_METAMETHOD__=metamethod_byte_code_to_operator_str(METAMETHOD_BYTE_CODE_SET);\
 			*stk_arg=*stk_src;\
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
@@ -105,9 +105,9 @@ namespace zetscript{
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
 				}else{
-					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
 						data->vm_str_metamethod_aux
-						,BYTE_CODE_METAMETHOD_SET
+						,METAMETHOD_BYTE_CODE_SET
 						,stk_mp_aux->member_property->property_name.c_str()
 					); // symbol to find"
 				}

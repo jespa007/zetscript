@@ -130,12 +130,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector<StackElement *> *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
+	zs_vector<StackElement *> *ScriptObject::getSetterList(MetamethodByteCode _metamethod_byte_code){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
-			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_byte_code_metamethod);
+			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod_byte_code);
 			return info.setters;
 		}
 		return NULL;

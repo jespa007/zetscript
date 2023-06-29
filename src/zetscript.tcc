@@ -13,23 +13,23 @@
 
 namespace zetscript{
 
-		template<typename _C>
-		ClassScriptObject * ZetScript::newClassScriptObject(_C *_instance){
+		template<typename T>
+		ClassScriptObject * ZetScript::newClassScriptObject(T *_instance){
 			//return ClassScriptObject::newShareableClassScriptObject<>(this);
-			const char * str_script_type_ptr = typeid(_C *).name();
+			const char * str_script_type_ptr = typeid(T *).name();
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 			if(idx_script_type<IDX_TYPE_MAX){
 				ZS_THROW_RUNTIME_ERROR(
 				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
-				,zs_rtti::demangle(typeid(_C *).name()).c_str()
+				,zs_rtti::demangle(typeid(T *).name()).c_str()
 				);
 			}
 
 			if(idx_script_type==ZS_IDX_UNDEFINED){
 				ZS_THROW_RUNTIME_ERROR(
 				"Cannot instance script object as native type '%s' because is not registered"
-				,zs_rtti::demangle(typeid(_C *).name()).c_str()
+				,zs_rtti::demangle(typeid(T *).name()).c_str()
 				);
 			}
 

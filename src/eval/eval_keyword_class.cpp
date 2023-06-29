@@ -455,16 +455,16 @@ namespace zetscript{
 					}else{ // find setter
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
-						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
+						if(_mp_info.metamethod_byte_code!=METAMETHOD_BYTE_CODE_INVALID){
 							if(_mp_info.setters->size() == 0){
-								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,symbol);
+								mp->metamethod_members.addSetter(_mp_info.metamethod_byte_code,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(
 									eval_data->current_parsing_file
 									,line
 									,"Property '%s' has already a setter '%s'"
 									,property_name.c_str()
-									,_mp_info.str_byte_code_metamethod
+									,_mp_info.metamethod_name
 								);
 							}
 						} else{
@@ -473,24 +473,24 @@ namespace zetscript{
 
 
 
-							list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)+"'\n";
+							list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)+"'\n";
 							list_valid_metamethods+=zs_string("- '_get'\n");
 
 							// get all member list
-							const ByteCodeMetamethod *it_mm=MetamethodMembers::byte_code_metamethod_member_list;
+							const MetamethodByteCode *it_mm=MetamethodMembers::metamethod_byte_code_member_list;
 							while(*it_mm!=0){
-								if(*it_mm!=BYTE_CODE_METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
+								if(*it_mm!=METAMETHOD_BYTE_CODE_SET){
+									list_valid_metamethods+=zs_string("- '")+ metamethod_byte_code_to_symbol_str(*it_mm)+"'\n";
 								}
 								it_mm++;
 							}
 
 
-							// get all member setter listMetamethodMembers::byte_code_metamethod_member_setter_list
-							const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
+							// get all member setter listMetamethodMembers::metamethod_byte_code_member_setter_list
+							const MetamethodByteCode *it_setters=MetamethodMembers::metamethod_byte_code_member_setter_list;
 							while(*it_setters!=0){
-								if(*it_setters!=BYTE_CODE_METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
+								if(*it_setters!=METAMETHOD_BYTE_CODE_SET){
+									list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(*it_setters)+"'\n";
 								}
 								it_setters++;
 							}

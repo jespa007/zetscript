@@ -237,25 +237,25 @@ namespace zetscript{
 		StackElement * getStkConstantStringObject(const zs_string & _key);
 
 		/**
-		 * Register C Class. Return index registered class
+		 * Register T Class. Return index registered class
 		 */
-		template<typename C>
+		template<typename T>
 		ScriptType * registerType(
 				const zs_string & str_script_type
-				, C  * (*_new_native_instance)(ZetScript *_zs)=NULL
-				, void (*_delete_native_instance)(ZetScript *_zs,C *)=NULL
+				, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
+				, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
 		){
 			try{
-				return script_type_factory->registerType<C>(str_script_type, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
+				return script_type_factory->registerType<T>(str_script_type, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.what());
+				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(T).name()).c_str(),str_script_type.c_str(),_ex.what());
 				return NULL;
 			}
 		}
 
 		/**
-		 * Register C function
+		 * Register T function
 		 */
 		template <typename F>
 		void registerFunction( const zs_string & _name_script_function,F ptr_function, const char *_registered_file="",short _registered_line=-1){
@@ -266,30 +266,30 @@ namespace zetscript{
 			}
 		}
 
-		template<class C, class B>
+		template<class T, class B>
 		void extends(){
-			script_type_factory->extends<C,B>();
+			script_type_factory->extends<T,B>();
 		}
 
-		template<typename C,typename F>
+		template<typename T,typename F>
 		void registerConstructor(
 				 F function_type
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerConstructor<C>(function_type, _registered_file,_registered_line );
+				script_type_factory->registerConstructor<T>(function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberFunction(
 				const zs_string & _name_script_function
 				,F function_type
@@ -297,20 +297,20 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
+				script_type_factory->registerMemberFunction<T>(_name_script_function,function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_name_script_function.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
-		void	registerStaticMemberProperty(
+		template <typename T,typename F>
+		void	registerStaticMemberPropertyMetamethod(
 				const zs_string & _property_name
 				,const zs_string & _metamethod_name
 				,F ptr_function
@@ -318,12 +318,17 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerStaticMemberProperty<C>(_property_name,_metamethod_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerStaticMemberPropertyMetamethod<T>(
+					_property_name
+					,_metamethod_name,ptr_function
+					, _registered_file
+					,_registered_line
+				);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
@@ -331,8 +336,35 @@ namespace zetscript{
 		}
 
 
-		template <typename C,typename F>
-		void	registerMemberProperty(
+		template <typename T,typename F>
+		void	registerMemberPropertyMetamethod(
+				const zs_string & _property_name
+				,const zs_string & _metamethod_name
+				,F _ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->registerMemberPropertyMetamethod<T>(
+					_property_name
+					,_metamethod_name
+					,_ptr_function
+					,_registered_file
+					,_registered_line
+				);
+			}catch(zs_exception & _ex){
+				ZS_THROW_RUNTIME_ERROR(
+					"Exception in '%s<%s>(\"%s\",...)': %s"
+					,__func__
+					,zs_rtti::demangle(typeid(T).name()).c_str()
+					,_property_name.c_str()
+					,_ex.what()
+				);
+			}
+		}
+
+		/*template <typename T,typename F>
+		void	registerStaticMemberPropertyMetamethod(
 				const zs_string & _property_name
 				,const zs_string & _metamethod_name
 				,F ptr_function
@@ -340,39 +372,25 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberProperty<C>(_property_name,_metamethod_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerStaticMemberPropertyMetamethod<T>(
+						_property_name
+						,_metamethod_name
+						,ptr_function
+						, _registered_file
+						,_registered_line
+				);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
-		}
+		}*/
 
-		/*template <typename C,typename F>
-		void	registerStaticMemberPropertyGetter(
-				const zs_string & _property_name
-				,F ptr_function
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		){
-			try{
-				script_type_factory->registerStaticMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
-			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR(
-					"Exception in '%s<%s>(\"%s\",...)': %s"
-					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
-					,_property_name.c_str()
-					,_ex.what()
-				);
-			}
-		}
-
-		template <typename C,typename F>
+		/*template <typename T,typename F>
 		void	registerMemberPropertySetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -380,18 +398,18 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertySetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertySetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str(),_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyGetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -399,19 +417,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyGetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyNeg(
 				const zs_string & _property_name
 				,F ptr_function
@@ -419,19 +437,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyNeg<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyNeg<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyBwc(
 				const zs_string & _property_name
 				,F ptr_function
@@ -439,19 +457,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyBwc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyBwc<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyAddSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -459,19 +477,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyAddSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyAddSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertySubSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -479,19 +497,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertySubSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertySubSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyMulSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -499,18 +517,18 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyMulSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyMulSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str(),_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyDivSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -518,18 +536,18 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyDivSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyDivSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str(),_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyModSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -537,19 +555,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyModSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyModSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyXorSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -557,19 +575,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyXorSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyXorSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyOrSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -577,19 +595,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyOrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyOrSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					, __func__
-					, zs_rtti::demangle(typeid(C).name()).c_str()
+					, zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyAndSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -597,19 +615,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyAndSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyAndSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyShrSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -617,19 +635,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyShrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyShrSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyShlSetter(
 				const zs_string & _property_name
 				,F ptr_function
@@ -637,19 +655,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyShlSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyShlSetter<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyPostInc(
 				const zs_string & _property_name
 				,F ptr_function
@@ -657,19 +675,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyPostInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPostInc<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyPostDec(
 				const zs_string & _property_name
 				,F ptr_function
@@ -677,19 +695,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyPostDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPostDec<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyPreInc(
 				const zs_string & _property_name
 				,F ptr_function
@@ -697,19 +715,19 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyPreInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPreInc<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
 			}
 		}
 
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void	registerMemberPropertyPreDec(
 				const zs_string & _property_name
 				,F ptr_function
@@ -717,12 +735,12 @@ namespace zetscript{
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->registerMemberPropertyPreDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->registerMemberPropertyPreDec<T>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_property_name.c_str()
 					,_ex.what()
 				);
@@ -732,15 +750,15 @@ namespace zetscript{
 		/**
 		 * Register Static Function Member Class
 		 */
-		template <typename C,typename F>
+		template <typename T,typename F>
 		void registerStaticMemberFunction(const zs_string & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1){
 			try{
-				script_type_factory->registerStaticMemberFunction<C>(_name_script_function,_fun, _registered_file, _registered_line);
+				script_type_factory->registerStaticMemberFunction<T>(_name_script_function,_fun, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				ZS_THROW_RUNTIME_ERROR(
 					"Exception in '%s<%s>(\"%s\",...)': %s"
 					,__func__
-					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,zs_rtti::demangle(typeid(T).name()).c_str()
 					,_name_script_function.c_str()
 					,_ex.what()
 				);

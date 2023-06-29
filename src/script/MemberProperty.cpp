@@ -13,7 +13,7 @@ namespace zetscript{
 	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){
 		zs_string symbol="N/A";
 		zs_string symbol_name_methametod;
-		const ByteCodeMetamethod *it=MetamethodMembers::byte_code_metamethod_member_list;
+		const MetamethodByteCode *it=MetamethodMembers::metamethod_byte_code_member_list;
 
 		// custom case get...
 		if(zs_strutils::starts_with(_symbol_name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)){
@@ -22,7 +22,7 @@ namespace zetscript{
 
 		//
 		while(*it!=0){
-			symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
+			symbol_name_methametod=metamethod_byte_code_to_symbol_str(*it);
 			symbol_name_methametod.append('@');
 			if(zs_strutils::starts_with(_symbol_name,symbol_name_methametod)){
 				return true;

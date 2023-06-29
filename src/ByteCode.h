@@ -237,58 +237,58 @@ namespace zetscript{
 
 	typedef enum: uint8_t {
 		// static
-		BYTE_CODE_METAMETHOD_GET=254,  // ==
-		BYTE_CODE_METAMETHOD_INVALID=255,  // ==
-		BYTE_CODE_METAMETHOD_EQU=0,  // ==
-		BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
-		BYTE_CODE_METAMETHOD_LT,  // <
-		BYTE_CODE_METAMETHOD_LTE,  // <=
-		BYTE_CODE_METAMETHOD_GT,  // >
-		BYTE_CODE_METAMETHOD_GTE, // >=
-		BYTE_CODE_METAMETHOD_ADD, // +
-		BYTE_CODE_METAMETHOD_SUB, // -
-		BYTE_CODE_METAMETHOD_DIV, // /
-		BYTE_CODE_METAMETHOD_MUL, // *
-		BYTE_CODE_METAMETHOD_MOD,  // %
-		BYTE_CODE_METAMETHOD_AND, // & bitwise logic and
-		BYTE_CODE_METAMETHOD_OR, // | bitwise logic or
-		BYTE_CODE_METAMETHOD_XOR, // ^ logic xor
-		BYTE_CODE_METAMETHOD_SHL, // << shift left
-		BYTE_CODE_METAMETHOD_SHR, // >> shift right
-		BYTE_CODE_METAMETHOD_ADD_SET, // set '+='
-		BYTE_CODE_METAMETHOD_SUB_SET, // set '-='
-		BYTE_CODE_METAMETHOD_MUL_SET, // set '*='
-		BYTE_CODE_METAMETHOD_DIV_SET, // set '/='
-		BYTE_CODE_METAMETHOD_MOD_SET, // set '%='
-		BYTE_CODE_METAMETHOD_AND_SET, // set '&='
-		BYTE_CODE_METAMETHOD_OR_SET,  // set '|='
-		BYTE_CODE_METAMETHOD_XOR_SET, // set '^='
-		BYTE_CODE_METAMETHOD_SHL_SET, // set '<<'
-		BYTE_CODE_METAMETHOD_SHR_SET, // set '>>'
-		BYTE_CODE_METAMETHOD_BTW_SET, // set '~'
+		METAMETHOD_BYTE_CODE_GET=254,  // ==
+		METAMETHOD_BYTE_CODE_INVALID=255,  // ==
+		METAMETHOD_BYTE_CODE_EQU=0,  // ==
+		METAMETHOD_BYTE_CODE_NOT_EQU,  // !=
+		METAMETHOD_BYTE_CODE_LT,  // <
+		METAMETHOD_BYTE_CODE_LTE,  // <=
+		METAMETHOD_BYTE_CODE_GT,  // >
+		METAMETHOD_BYTE_CODE_GTE, // >=
+		METAMETHOD_BYTE_CODE_ADD, // +
+		METAMETHOD_BYTE_CODE_SUB, // -
+		METAMETHOD_BYTE_CODE_DIV, // /
+		METAMETHOD_BYTE_CODE_MUL, // *
+		METAMETHOD_BYTE_CODE_MOD,  // %
+		METAMETHOD_BYTE_CODE_AND, // & bitwise logic and
+		METAMETHOD_BYTE_CODE_OR, // | bitwise logic or
+		METAMETHOD_BYTE_CODE_XOR, // ^ logic xor
+		METAMETHOD_BYTE_CODE_SHL, // << shift left
+		METAMETHOD_BYTE_CODE_SHR, // >> shift right
+		METAMETHOD_BYTE_CODE_ADD_SET, // set '+='
+		METAMETHOD_BYTE_CODE_SUB_SET, // set '-='
+		METAMETHOD_BYTE_CODE_MUL_SET, // set '*='
+		METAMETHOD_BYTE_CODE_DIV_SET, // set '/='
+		METAMETHOD_BYTE_CODE_MOD_SET, // set '%='
+		METAMETHOD_BYTE_CODE_AND_SET, // set '&='
+		METAMETHOD_BYTE_CODE_OR_SET,  // set '|='
+		METAMETHOD_BYTE_CODE_XOR_SET, // set '^='
+		METAMETHOD_BYTE_CODE_SHL_SET, // set '<<'
+		METAMETHOD_BYTE_CODE_SHR_SET, // set '>>'
+		METAMETHOD_BYTE_CODE_BTW_SET, // set '~'
 
-		//BYTE_CODE_METAMETHOD_GET, // get '='
-		BYTE_CODE_METAMETHOD_NOT, // !
-		BYTE_CODE_METAMETHOD_NEG, // -a
-		BYTE_CODE_METAMETHOD_BWC, // ~a
-		BYTE_CODE_METAMETHOD_SET, // set '='
-		BYTE_CODE_METAMETHOD_TO_STRING, // toString
-		BYTE_CODE_METAMETHOD_POST_INC, // i++
-		BYTE_CODE_METAMETHOD_POST_DEC, // i--
-		BYTE_CODE_METAMETHOD_PRE_INC, // ++i
-		BYTE_CODE_METAMETHOD_PRE_DEC, // --i
-		BYTE_CODE_METAMETHOD_IN, // special metamethod in
-		MAX_BYTE_CODE_METAMETHODS,
-	}ByteCodeMetamethod;
+		//METAMETHOD_BYTE_CODE_GET, // get '='
+		METAMETHOD_BYTE_CODE_NOT, // !
+		METAMETHOD_BYTE_CODE_NEG, // -a
+		METAMETHOD_BYTE_CODE_BWC, // ~a
+		METAMETHOD_BYTE_CODE_SET, // set '='
+		METAMETHOD_BYTE_CODE_TO_STRING, // toString
+		METAMETHOD_BYTE_CODE_POST_INC, // i++
+		METAMETHOD_BYTE_CODE_POST_DEC, // i--
+		METAMETHOD_BYTE_CODE_PRE_INC, // ++i
+		METAMETHOD_BYTE_CODE_PRE_DEC, // --i
+		METAMETHOD_BYTE_CODE_IN, // special metamethod in
+		MAX_METAMETHOD_BYTE_CODES,
+	}MetamethodByteCode;
 
 
 	const char * byte_code_to_str(ByteCode  op);
 	const char * byte_code_to_operator_str(ByteCode op);
-	const char * byte_code_metamethod_to_operator_str(ByteCodeMetamethod op);
-	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op);
-	int			 byte_code_metamethod_get_num_arguments(ByteCodeMetamethod op);
-	bool		 byte_code_metamethod_should_be_static(ByteCodeMetamethod op);
-	//int			 get_num_arguments_non_metamethod(ByteCodeMetamethod op);
+	const char * metamethod_byte_code_to_operator_str(MetamethodByteCode op);
+	const char * metamethod_byte_code_to_symbol_str(MetamethodByteCode op);
+	int			 metamethod_byte_code_get_num_arguments(MetamethodByteCode op);
+	bool		 metamethod_byte_code_should_be_static(MetamethodByteCode op);
+	//int			 get_num_arguments_non_metamethod(MetamethodByteCode op);
 	ByteCode	 byte_code_load_var_type_to_push_stk(ByteCode op);
 	bool		 byte_code_is_load_var_type(ByteCode op);
 
