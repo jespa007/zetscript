@@ -6,7 +6,7 @@
 
 #include        <stdlib.h>
 #include        <stdio.h>
-
+#include 		<limits.h>
 
 
 #if defined(__GNUC__)

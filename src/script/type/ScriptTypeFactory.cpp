@@ -132,6 +132,11 @@ namespace zetscript{
 		return (ZetScript *)ptr;
 	}
 
+	zs_int intMaxValue(ZetScript *_zs){
+		ZS_UNUSUED_PARAM(_zs);
+		return INTPTR_MAX;
+	}
+
 	zs_float floatMaxValue(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return FLT_MAX;
@@ -252,6 +257,7 @@ namespace zetscript{
 		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
 
 		ScriptType *integer_type=this->getScriptType(ZS_TYPE_NAME_INT);
+		integer_type->registerConstMemberProperty("MAX_VALUE",intMaxValue);
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
