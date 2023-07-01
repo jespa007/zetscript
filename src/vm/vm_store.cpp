@@ -107,8 +107,8 @@ namespace zetscript{
 				}else{
 					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
 						data->vm_str_metamethod_aux
-						,METAMETHOD_BYTE_CODE_SET
 						,stk_mp_aux->member_property->property_name.c_str()
+						,METAMETHOD_BYTE_CODE_SET
 					); // symbol to find"
 				}
 

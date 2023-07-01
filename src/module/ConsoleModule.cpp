@@ -5,7 +5,6 @@
 #include "zetscript.h"
 
 
-
 namespace zetscript{
 
 	zs_int ConsoleModule_readChar(ZetScript *_zs){
@@ -30,7 +29,6 @@ namespace zetscript{
 			fflush(stdout);
 			delete str_out;
 		}
-
 	}
 
 	void ConsoleModule_errorln(ZetScript *zs,StackElement *str, StackElement *args){

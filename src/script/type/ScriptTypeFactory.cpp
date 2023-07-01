@@ -257,7 +257,7 @@ namespace zetscript{
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
 
 		ScriptType *float_type=this->getScriptType(ZS_TYPE_NAME_FLOAT);
-		float_type->registerStaticMemberPropertyMetamethod("MAX_VALUE","_get",floatMaxValue);
+		float_type->registerConstMemberProperty("MAX_VALUE",floatMaxValue);
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));

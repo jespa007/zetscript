@@ -4,7 +4,6 @@
  */
 #include "zetscript.h"
 
-#include "ByteCode.cpp"
 #include "Instruction.cpp"
 #include "StackElement.cpp"
 #include "Symbol.cpp"
@@ -44,7 +43,7 @@ namespace zetscript{
 		// Math mod
 		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
-		cl->registerStaticMemberPropertyMetamethod("PI","_get",MathModule_PI);
+		cl->registerConstMemberProperty("PI",MathModule_PI);
 		cl->registerStaticMemberFunction("sin",MathModule_sin);
 		cl->registerStaticMemberFunction("cos",MathModule_cos);
 		cl->registerStaticMemberFunction("abs",MathModule_abs);

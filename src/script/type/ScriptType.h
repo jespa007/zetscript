@@ -26,8 +26,6 @@ namespace zetscript{
 		zs_string 							str_script_type_ptr; // type_id().name();
 		uint16_t							properties;
 
-		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
-		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
 		zs_vector<MemberProperty *>		*	allocated_member_properties;
 		ScriptFunction					*	sf_field_initializer;
 		MetamethodMembers					metamethod_members;
@@ -87,19 +85,6 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		/*Symbol				* 	registerStaticMemberPropertyMetamethod(
-			const zs_string & _property_name
-			,const zs_string & _metamethod_name
-			,ScriptFunctionParam **_params
-			,int _params_len
-			,int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,const char * _file=""
-			,short _line=-1
-		);*/
-
-
-
 		template <typename F>
 		void registerMemberPropertyMetamethod(
 			const zs_string & _property_name
@@ -110,69 +95,14 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerStaticMemberPropertyMetamethod(
+		void registerConstMemberProperty(
 			 const zs_string & _property_name
-			,const zs_string & _metamethod_name
 			,F _function_type
 			, const char *_registered_file=""
 			,short _registered_line=-1
 		);
 
-		/*template <typename F>
-		void registerMemberPropertyGetter(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file=""
-			,short _registered_line=-1
-		);
 
-		template <typename F>
-		void registerStaticMemberPropertyGetter(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file=""
-			,short _registered_line=-1
-		);*/
-
-		/*Symbol				* 	registerStaticMemberPropertyGetter(
-			 const zs_string & _property_name
-			 ,ScriptFunctionParam **_params
-			 ,int8_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,const char * _file=""
-			,short _line=-1
-		);
-
-		Symbol				* 	registerMemberPropertyGetter(
-			const zs_string & _property_name
-			 ,ScriptFunctionParam **_params
-			 ,int8_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,const char * _file=""
-			,short _line=-1
-		);
-
-		Symbol				* 	registerMemberPropertyNeg(
-			const zs_string & _property_name
-			 ,ScriptFunctionParam **_params
-			 ,int8_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,const char * _file=""
-			,short _line=-1
-		);
-
-		Symbol				* 	registerMemberPropertyBwc(
-			const zs_string & _property_name
-			 ,ScriptFunctionParam **_params
-			 ,int8_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,const char * _file=""
-			,short _line=-1
-		);*/
 		//---------------------------------------------------
 		//
 		// FUNCTIONS
@@ -190,8 +120,6 @@ namespace zetscript{
 			, short _line=-1
 
 		);
-
-
 
 		template <typename F>
 		void registerStaticMemberFunction(

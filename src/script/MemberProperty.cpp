@@ -15,16 +15,22 @@ namespace zetscript{
 		zs_string symbol_name_methametod;
 		const MetamethodByteCode *it=MetamethodMembers::metamethod_byte_code_member_list;
 
+		const char * at=strchr(_symbol_name.c_str(),'@');
+
+		if(at == NULL){
+			return false;
+		}
+
+		at++;
+
 		// custom case get...
-		if(zs_strutils::starts_with(_symbol_name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)){
+		if(zs_strutils::starts_with(at,ZS_METAMETHOD_BYTE_CODE_SYMBOL_NAME_GETTER)){
 			return true;
 		}
 
 		//
 		while(*it!=0){
-			symbol_name_methametod=metamethod_byte_code_to_symbol_str(*it);
-			symbol_name_methametod.append('@');
-			if(zs_strutils::starts_with(_symbol_name,symbol_name_methametod)){
+			if(zs_strutils::starts_with(at,metamethod_byte_code_to_symbol_str(*it))){
 				return true;
 			}
 			it++;

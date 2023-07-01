@@ -364,8 +364,8 @@ namespace zetscript{
 			}else{
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
 					data->vm_str_metamethod_aux
-					,_metamethod_byte_code
 					,member_property->property_name.c_str()
+					,_metamethod_byte_code
 				);
 			}
 			if((ptr_function_found=vm_find_native_function( \

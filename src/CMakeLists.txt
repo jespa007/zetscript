@@ -203,6 +203,10 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	# Modules
 	module/zs_module.cpp
 	
+	# ByteCode
+	byte_code/zs_byte_code.cpp
+	
+	
 	# VM
 	vm/vm.cpp
 	
@@ -391,6 +395,11 @@ SET(
 	util/zs_buffer.h
 	util/zs_system.h
 	util/zs_list.h
+	
+	#byte_code
+	byte_code/zs_byte_code.h
+	byte_code/ByteCode.h
+	byte_code/MetamethodByteCode.h	
 	
 	#eval
 	eval/eval_keyword.h

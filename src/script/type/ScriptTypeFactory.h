@@ -134,14 +134,12 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-
 		/*
 		 * register static member property metamethod
 		 */
 		template <typename T,typename F>
-		void registerStaticMemberPropertyMetamethod(
+		void registerConstMemberProperty(
 			const zs_string & _property_name
-			,const zs_string & _metamethod_name
 			,F _ptr_function
 			, const char *registered_file=NULL
 			,short registered_line=-1
@@ -160,205 +158,17 @@ namespace zetscript{
 			,short registered_line=-1
 		);
 
-		/*
-		 * register static property getter
-		 */
-		/*template <typename T,typename F>
-		void registerStaticMemberPropertyGetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register property setter
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertySetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=""
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register property getter
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyGetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register property neg
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyNeg(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register property bwc
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyBwc(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register member property post_inc
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyPostInc(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register member property post_dec
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyPostDec(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register member property pre_inc
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyPreInc(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
-
-		/*
-		 * register member property pre_dec
-		 */
-		/*template <typename T,typename F>
-		void registerMemberPropertyPreDec(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register member property add set operation
-		template <typename T,typename F>
-		void registerMemberPropertyAddSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register member property sub set operation
-		template <typename T,typename F>
-		void registerMemberPropertySubSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register mul set operation
-		template <typename T,typename F>
-		void registerMemberPropertyMulSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register div set operation
-		template <typename T,typename F>
-		void registerMemberPropertyDivSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register mod set operation
-		template <typename T,typename F>
-		void registerMemberPropertyModSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register and set operation
-		template <typename T,typename F>
-		void registerMemberPropertyAndSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register or set operation
-		template <typename T,typename F>
-		void registerMemberPropertyOrSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register xor set operation
-		template <typename T,typename F>
-		void registerMemberPropertyXorSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register shl set operation
-		template <typename T,typename F>
-		void registerMemberPropertyShlSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
-		// register shr set operation
-		template <typename T,typename F>
-		void registerMemberPropertyShrSetter(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);*/
 
 		/**
 		 * Register T Member function static Class
 		 */
 		template <typename T, typename F>
 		void registerStaticMemberFunction(
-				const zs_string & _function_name
-				,F _ptr_function
-				, const char *_registered_file=""
-				,short _registered_line=-1);
-
+			const zs_string & _function_name
+			,F _ptr_function
+			, const char *_registered_file=""
+			,short _registered_line=-1
+		);
 
 
 		/**
@@ -366,10 +176,10 @@ namespace zetscript{
 		 */
 		template <typename T,typename F>
 		void	registerMemberFunction(
-				const zs_string & name_script_function
-				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+			const zs_string & name_script_function
+			,F ptr_function
+			 , const char *registered_file=""
+			,short registered_line=-1
 		);
 
 		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);

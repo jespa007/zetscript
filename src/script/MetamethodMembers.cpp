@@ -109,7 +109,6 @@ namespace zetscript{
 
 			it++;
 		}
-
 		return getSetterInfo(metamethod_byte_code);
 	}
 
@@ -170,7 +169,7 @@ namespace zetscript{
 		MetamethodByteCode *it=getter_bytecodes;
 
 		while(*it != METAMETHOD_BYTE_CODE_INVALID){
-			if(_metamethod_name==metamethod_byte_code_to_operator_str(*it)){
+			if(_metamethod_name==metamethod_byte_code_to_symbol_str(*it)){
 				metamethod_byte_code=*it;
 				break;
 			}
@@ -254,43 +253,6 @@ namespace zetscript{
 		return getter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
 
 	}
-
-	/*bool MetamethodMembers::isMetamethodMember(MetamethodByteCode _byte_code){
-		if(isSetter(_byte_code)){
-			return true;
-		}
-
-		return isGetter(_byte_code);
-		zs_string symbol="N/A";
-		const MetamethodByteCode *it=metamethod_byte_code_member_list;
-
-		while(*it!=0){
-			if(_byte_code==*it){
-				return true;
-			}
-			it++;
-		}
-		return false;
-	}*/
-
-	/*bool MetamethodMembers::isMetamethodMember(const zs_string & _metamethod_name){
-
-		if(isSetter(_metamethod_name)){
-			return true;
-		}
-
-		return isGetter(_metamethod_name);
-		zs_string symbol="N/A";
-		const MetamethodByteCode *it=metamethod_byte_code_member_list;
-
-		while(*it!=0){
-			if(_byte_code==*it){
-				return true;
-			}
-			it++;
-		}
-		return false;
-	}*/
 
 	MetamethodMembers::~MetamethodMembers(){
 

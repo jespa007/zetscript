@@ -4,14 +4,13 @@
  */
 namespace zetscript{
 
+
 	/**
-	 * Register C Member function Class
-	 * like register function c but is added to member function list according type C
+	 * Register static member property metamethod. If property is not registered it's registered automatically
 	 */
-	/*template <typename F>
-	void ScriptType::registerStaticMemberPropertyMetamethod(
+	template <typename F>
+	void ScriptType::registerConstMemberProperty(
 			const zs_string & _property_name
-			,const zs_string & _metamethod_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -20,23 +19,31 @@ namespace zetscript{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		const char *return_type;
+		//const char *return_type;
+		Symbol *symbol_member_property=NULL;
+
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
-				this->script_type_factory
-				,NULL
-				,_ptr_function
-				,&params
-				,&params_len
-				,&return_type
+			this->script_type_factory
+			,NULL
+			,_ptr_function
+			,&params
+			,&params_len
 		);
 
-     	// register member function...
-		this->registerStaticMemberPropertyMetamethod(
+
+		//---
+		// Property should be not registered
+		symbol_member_property=registerMemberProperty(_property_name,_registered_file,_registered_line);
+		symbol_member_property->properties|=SYMBOL_PROPERTY_STATIC;
+
+		// register member function...
+		this->registerMemberPropertyMetamethod(
 				_property_name
-				,_metamethod_name
+				,ZS_METAMETHOD_BYTE_CODE_SYMBOL_NAME_GETTER
 				,&params
 				,params_len
+				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				, idx_script_type_return
 				, (zs_int)_ptr_function
 				,_registered_file
@@ -44,8 +51,8 @@ namespace zetscript{
 
 		);
 
-		ZS_LOG_DEBUG("Registered static metamethod '%s' for property '%s::%s'",_metamethod_name.c_str(),this->str_script_type.c_str(), _property_name.c_str());
-	}*/
+		ZS_LOG_DEBUG("Registered const 'getter' property '%s::%s'",this->str_script_type.c_str(), _property_name.c_str());
+	}
 
 	/**
 	 * Register member property metamethod. If property is not registered it's registered automatically
@@ -89,48 +96,7 @@ namespace zetscript{
 
 		ZS_LOG_DEBUG("Registered metamethod '%s' for property '%s::%s'",_metamethod_name.c_str(),this->str_script_type.c_str(), _property_name.c_str());
 	}
-	/**
-	 * Register static member property metamethod. If property is not registered it's registered automatically
-	 */
-	template <typename F>
-	void ScriptType::registerStaticMemberPropertyMetamethod(
-			const zs_string & _property_name
-			,const zs_string & _metamethod_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-		)
-	{
-		zs_string error;
-		ScriptFunctionParam *params=NULL;
-		int params_len=0;
-		const char *return_type;
 
-		int idx_script_type_return=getNativeFunctionRetArgsTypes(
-				this->script_type_factory
-				,NULL
-				,_ptr_function
-				,&params
-				,&params_len
-				,&return_type
-		);
-
-     	// register member function...
-		this->registerMemberPropertyMetamethod(
-				_property_name
-				,_metamethod_name
-				,&params
-				,params_len
-				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
-				, idx_script_type_return
-				, (zs_int)_ptr_function
-				,_registered_file
-				,_registered_line
-
-		);
-
-		ZS_LOG_DEBUG("Registered static metamethod '%s' for property '%s::%s'",_metamethod_name.c_str(),this->str_script_type.c_str(), _property_name.c_str());
-	}
 
 	/**
 	 * Register C Member function Class

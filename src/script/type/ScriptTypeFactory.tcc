@@ -348,9 +348,8 @@ namespace zetscript{
 	}
 
 	template <typename T,typename F>
-	void ScriptTypeFactory::registerStaticMemberPropertyMetamethod(
+	void ScriptTypeFactory::registerConstMemberProperty(
 			const zs_string & _property_name
-			,const zs_string & _metamethod_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -366,9 +365,8 @@ namespace zetscript{
 			);
 		}
 
-		script_type->registerStaticMemberPropertyMetamethod<F>(
+		script_type->registerConstMemberProperty<F>(
 			 _property_name
-			 ,_metamethod_name
 			 ,_ptr_function
 			,registered_file
 			,registered_line
