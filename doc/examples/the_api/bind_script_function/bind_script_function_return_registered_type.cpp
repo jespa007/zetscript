@@ -23,27 +23,27 @@ struct Point{
 // Point class functions to register
 
 // defines new function Point ClassScriptObject
-Point *Point_new(ZetScript *_zs){
+Point *PointZs_new(ZetScript *_zs){
 	return new  Point();
 }
 
-void Point_constructor(ZetScript *_zs, Point *_this, zs_int _x, zs_int _y){
+void PointZs_constructor(ZetScript *_zs, Point *_this, zs_int _x, zs_int _y){
 	_this->x=_x;
 	_this->y=_y;
 }
 
 // defines getter property Point::x ClassScriptObject
-zs_int Point_get_x(ZetScript *_zs, Point *_this){
+zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
 // defines getter property Point::y ClassScriptObject
-zs_int Point_get_y(ZetScript *_zs, Point *_this){
+zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
 
 // defines delete function Point ClassScriptObject
-void Point_delete(ZetScript *_zs, Point *_this){
+void PointZs_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
 
@@ -56,16 +56,16 @@ int main()
 	ZetScript zs;
 
    // Register class 'Point' as instantiable
-	zs.registerClass<Point>("Point",Point_new,Point_delete);
+	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
 
 	// Register constructor
-	zs.registerConstructor<Point>(Point_constructor);
+	zs.registerConstructor<Point>(PointZs_constructor);
 
 	// register property getter Point::x
-	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);
+	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
 
 	// register property getter Point::y
-	zs.registerMemberPropertyGetter<Point>("y",Point_get_y);
+	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
 
 	// Evaluates function 'returnPoint' that returns an instance of registered type 'Point'
 	zs.eval(

@@ -17,32 +17,32 @@ struct Point{
 // WRAP POINT
 
 // defines new function for Point object
-Point *Point_new(ZetScript *_zs){
+Point *PointZs_new(ZetScript *_zs){
 	return new  Point();
 }
 
 // defines setter property for Point::x
-void Point_set_x(ZetScript *_zs, Point *_this, zs_int _x){
+void PointZs_set_x(ZetScript *_zs, Point *_this, zs_int _x){
 	_this->x=_x;
 }
 
 // defines setter property for Point::y
-void Point_set_y(ZetScript *_zs, Point *_this, zs_int _y){
+void PointZs_set_y(ZetScript *_zs, Point *_this, zs_int _y){
 	_this->y=_y;
 }
 
 // defines getter property for Point::x
-zs_int Point_get_x(ZetScript *_zs, Point *_this){
+zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
 	return _this->x;
 }
 
 // defines getter property for Point::y
-zs_int Point_get_y(ZetScript *_zs, Point *_this){
+zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
 	return _this->y;
 }
 
 // defines delete function for Point object
-void Point_delete(ZetScript *_zs, Point *_this){
+void PointZs_delete(ZetScript *_zs, Point *_this){
 	delete _this;
 }
 
@@ -61,20 +61,20 @@ int main(){
 	ZetScript zs;
 
 	// Register class Point
-	zs.registerType<Point>("Point",Point_new,Point_delete);
+	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
 
 
 	// Register property setter Point::x
-	zs.registerMemberPropertySetter<Point>("x",Point_set_x);
+	zs.registerMemberPropertyMetamethod<Point>("x","_set",PointZs_set_x);
 
 	// Register property setter Point::y
-	zs.registerMemberPropertySetter<Point>("y",Point_set_y);    
+	zs.registerMemberPropertyMetamethod<Point>("y","_set",PointZs_set_y);    
 
 	// Register property getter Point::x
-	zs.registerMemberPropertyGetter<Point>("x",Point_get_x);
+	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
 
 	// Register property getter Point::y
-	zs.registerMemberPropertyGetter<Point>("y",Point_get_y);
+	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
 
 	// Register native function mulPoint named as 'mulPoint'
     zs.registerFunction("mul10Point",mul10Point);

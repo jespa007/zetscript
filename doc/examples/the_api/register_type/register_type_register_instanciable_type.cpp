@@ -24,10 +24,10 @@ int main(){
 	ZetScript zs;
 
 	// registers Number exposed as "Number"
-	zs.registerType<Number>("Number",NumberZs_new,NumberZs_new);//,Number_constructorZs,Number_destructorZs);
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);//,Number_constructorZs,Number_destructorZs);
 
 	// eval script that creates object of type "Number"
-	zs.eval("var number=new Number();")
+	zs.eval("var number=new Number();");
 
 	return 0;
 

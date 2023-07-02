@@ -35,7 +35,7 @@ int main(){
 	ZetScript zs;
 
 	// Registers Number type exposed as "Number"
-	zs.registerType<Number>("Number",NumberZs_new,NumberZs_new);//,Number_constructorZs,Number_destructorZs);
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);//,Number_constructorZs,Number_destructorZs);
 
 	// Register Number constructor
 	zs.registerConstructor<Number>(NumberZs_constructor);
@@ -47,7 +47,7 @@ int main(){
 	zs.eval(
 		"var number=new Number(10.5);"
 		"Console::outln(\"Number::toInteger(number) : \",+Number::toInteger(number))"
-	)
+	);
 
 	return 0;
 };

@@ -34,7 +34,7 @@ int main()
  	
 	// Evaluates ZetScript code that calls 'getNumber' to get 'number' object reference
  	zs.eval(
- 		"var number= getMyClass();" 
+ 		"var number= getNumber();" 
  	);
  	
  	// delete
