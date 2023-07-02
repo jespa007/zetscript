@@ -3,18 +3,17 @@
 using zetscript::ZetScript;
 
 typedef struct{
-	int x;
-	int y;
-}MyType;
+	double value;
+}Number;
 
 //-----
-// Function to be registered to create new instance of MyType
-MyType *MyTypeZs_new(ZetScript *_zs){
-	return new MyType();
+// Function to be registered to create new instance of Number
+Number *NumberZs_new(ZetScript *_zs){
+	return new Number();
 }
 
-// Function to be registered to delete instance of MyType
-void MyTypeZs_delete(ZetScript *_zs, MyType * _this){
+// Function to be registered to delete instance of Number
+void NumberZs_delete(ZetScript *_zs, Number * _this){
 	delete _this;
 }
 //-----
@@ -24,13 +23,13 @@ int main(){
 
 	ZetScript zs;
 
-	// registers MyType exposed as "MyType"
-	zs.registerType<MyType>("MyType",MyTypeZs_new,MyTypeZs_new);//,MyType_constructorZs,MyType_destructorZs);
+	// registers Number exposed as "Number"
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_new);//,Number_constructorZs,Number_destructorZs);
 
-	// eval script that creates object of type "MyType"
-	zs.eval("var my_type=new MyType();")
+	// eval script that creates object of type "Number"
+	zs.eval("var number=new Number();")
 
-
+	return 0;
 
 };
 

@@ -2,44 +2,43 @@
 
 using zetscript::ZetScript;
 
-// type 'MyType'
+// type 'Number'
 typedef struct{
-	int x;
-	int y;
-}MyType;
+	double number;
+}Number;
 
 
-// MyType reference
-MyType *my_type=NULL;
+// Number reference
+Number *number=NULL;
 
-// function that returns my_type reference
-MyType *getMyType(ZetScript *_zs){
-	return 	my_type;
+// function that returns number reference
+Number *getNumber(ZetScript *_zs){
+	return 	number;
 }
 
 
-void main(int argc, char *argv[])
+int main()
 {
 	zetscript::ZetScript zs;
 	
-	// create new 'MyType'
-	my_type=new MyType();
+	// create new 'Number'
+	number=new Number();
 	
 	
- 	//register 'MyType' as no instanciable
- 	zs.registerType<MyType>("MyType");
+ 	//register 'Number' as no instanciable
+ 	zs.registerType<Number>("Number");
  	
- 	 //register function 'getMyType' that return 'my_type' reference
- 	zs.registerFunction("getMyType",getMyType);
+ 	 //register function 'getNumber' that return 'number' reference
+ 	zs.registerFunction("getNumber",getNumber);
  	
  	
-	// Evaluates ZetScript code that calls 'getMyType' to get 'my_type' object reference
+	// Evaluates ZetScript code that calls 'getNumber' to get 'number' object reference
  	zs.eval(
- 		"var my_type= getMyClass();" 
+ 		"var number= getMyClass();" 
  	);
  	
  	// delete
- 	delete my_type;
+ 	delete number;
  	
  	return 0;
  }

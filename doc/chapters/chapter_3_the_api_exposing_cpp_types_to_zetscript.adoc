@@ -147,7 +147,8 @@ include::../examples/the_api/register_type/register_type_register_instanciable_t
 
 ===== Register constructor
 
-In some cases is intersting to register a constructor that acts as function that initializes some fields after instance the object like it has been seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
+
+To register a constructor function it has to create and register a C&plus;&plus; function with a particular prototype. That function it acts as it seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
 
 As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer of the registered type as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
 
@@ -162,7 +163,7 @@ void RegisteredType_constructor(zetscript::ZetScript *_zs, _RegisteredType *_thi
 
 Where,
 
-- _RegisteredType_: The registered type
+- _RegisteredType_: The C&plus;&plus; registered type
 - _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
 
 
@@ -194,20 +195,106 @@ include::../examples/the_api/register_type/register_type_register_instanciable_t
 
 ==== Register members
 
-Register member function
+===== Register member function
+
+To register a member function it has to create and register a C function with a particular prototype.
+
+As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer of the registered type as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
+
+As a return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
+
+*Syntax*
+
+[source,c++]
+----
+ReturnType RegisteredType_memberFunction(zetscript::ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+	....
+}
+----
+
+Where,
+
+- _RegisteredType_: The C&plus;&plus; registered type
+- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered 
+- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
 
 
-Register static member function
+After the constructor function is defined it has to be registered with `ZetScript::registerMemberFunction`. `registerMemberFunction` it has the following signature,
 
 
+*Syntax*
+[source,cpp]
+----
+void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
+----
 
-registerMemberFunction
++++<u>Template</u>+++ 
+
+- _RegisteredType_: The registered C&plus;&plus;type
+- _Function_ : Function signature
 
 
-registerStaticMemberFunction
++++<u>Parameters</u>+++ 
+
+- __name_	: Member function name
+- __function_: Member function C reference
+
+*Example*
+[source,cpp]
+----
+include::../examples/the_api/register_type/register_type_register_member_function.cpp[]
+----
 
 
-To register 
+===== Register static member function
+
+To register a static member function it has to create and register a C function with a particular prototype.
+
+As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter and a maximum of 9 parameters as <<ZetScript built-in type>> or other registered type. 
+
+As a return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
+
+*Syntax*
+
+[source,c++]
+----
+ReturnType RegisteredType_staticMemberFunction(zetscript::ZetScript *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
+	....
+}
+----
+
+Where,
+
+- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered 
+- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
+
+
+After the constructor function is defined it has to be registered with `ZetScript::registerStaticMemberFunction`. `registerStaticMemberFunction` it has the following signature,
+
+
+*Syntax*
+[source,cpp]
+----
+void registerStaticMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
+----
+
++++<u>Template</u>+++ 
+
+- _RegisteredType_: The registered C&plus;&plus;type
+- _Function_ : Function signature
+
+
++++<u>Parameters</u>+++ 
+
+- __name_	: Member function name
+- __function_: Member function C reference
+
+*Example*
+[source,cpp]
+----
+include::../examples/the_api/register_type/register_type_register_static_member_function.cpp[]
+----
+
 
 ==== Register metamethods
 
