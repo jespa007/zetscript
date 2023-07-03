@@ -2,11 +2,16 @@
 
 using zetscript::ZetScript;
 using zetscript::zs_float;
-using zetscript::zs_int;
+using zetscript::zs_string;
 
-typedef struct{
+class Number{
+public:
 	double value;
-}Number;
+
+	Number(){
+		value = 0;
+	}
+};
 
 //-----
 // Function to be registered to create new instance of Number
@@ -14,13 +19,14 @@ Number *NumberZs_new(ZetScript *_zs){
 	return new Number();
 }
 
-
+// Function to be registered as constructor
 void NumberZs_constructor(ZetScript *_zs, Number *_this, zs_float * _number){
 	_this->value=*_number;
 }
 
-zs_int NumberZs_toInteger(ZetScript *_zs, Number *_this){
-	return _this->value;
+// Function to be registered as member metamethod _tostring
+zs_string NumberZs_tostring(ZetScript *_zs,Number * _this){
+	return zetscript::zs_strutils::format(" Number : %f", _this->value);
 }
 
 // Function to be registered to delete instance of Number
@@ -34,19 +40,20 @@ int main(){
 
 	ZetScript zs;
 
-	// Registers Number type exposed as "Number"
+	// Register Number type
 	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);//,Number_constructorZs,Number_destructorZs);
 
-	// Register Number constructor
+	// Register constructor
 	zs.registerConstructor<Number>(NumberZs_constructor);
 
-	// Register member function toInteger
-	zs.registerMemberFunction<Number>("toInteger",NumberZs_toInteger);
+	// Register member metamethod _tostring
+	zs.registerMemberFunction<Number>("_tostring",NumberZs_tostring);
 
-	// eval script that creates object of type "Number" and inits x and y as  10 and 20 respectibely
+
+	// Eval script that creates object of type "Number" and later is printed to console 
 	zs.eval(
-		"var number=new Number(10.5);"
-		"Console::outln(\"number.toInteger() : \",+number.toInteger())"
+		"var number=new Number(10.5);\n"
+		"Console::outln(number);\n"
 	);
 
 	return 0;

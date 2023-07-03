@@ -97,7 +97,7 @@ The only way to operate with a 'MyType' object non intanciable is by a reference
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_type_register_non_instanciable_type.cpp[]
+include::../examples/the_api/register_type/register_non_instanciable_type.cpp[]
 ----
   
 ==== Register instanciable type
@@ -142,7 +142,7 @@ Example,
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_type_register_instanciable_type.cpp[]
+include::../examples/the_api/register_type/register_instanciable_type.cpp[]
 ----
 
 ===== Register constructor
@@ -156,7 +156,7 @@ As parameters, the function must always include `zetscript::ZetScript *` as the 
 
 [source,c++]
 ----
-void RegisteredType_constructor(zetscript::ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+void RegisteredType_constructor(ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -189,7 +189,7 @@ void registerConstructor<RegisteredType>( Function _constructor_function);
 *Example*
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_type_register_instanciable_type_with_constructor.cpp[]
+include::../examples/the_api/register_type/register_instanciable_type_with_constructor.cpp[]
 ----
 
 
@@ -207,7 +207,7 @@ As a return, the function it can return nothing, or a <<ZetScript built-in type>
 
 [source,c++]
 ----
-ReturnType RegisteredType_memberFunction(zetscript::ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+ReturnType RegisteredType_memberFunction(ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -223,7 +223,7 @@ After the constructor function is defined it has to be registered with `ZetScrip
 
 
 *Syntax*
-[source,cpp]
+[source,c++]
 ----
 void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
 ----
@@ -240,9 +240,9 @@ void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _f
 - __function_: Member function C reference
 
 *Example*
-[source,cpp]
+[source,c++]
 ----
-include::../examples/the_api/register_type/register_type_register_member_function.cpp[]
+include::../examples/the_api/register_type/register_member_function.cpp[]
 ----
 
 
@@ -258,7 +258,7 @@ As a return, the function it can return nothing, or a <<ZetScript built-in type>
 
 [source,c++]
 ----
-ReturnType RegisteredType_staticMemberFunction(zetscript::ZetScript *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
+ReturnType RegisteredType_staticMemberFunction(ZetScript *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
 	....
 }
 ----
@@ -273,7 +273,7 @@ After the constructor function is defined it has to be registered with `ZetScrip
 
 
 *Syntax*
-[source,cpp]
+[source,c++]
 ----
 void registerStaticMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
 ----
@@ -292,15 +292,11 @@ void registerStaticMemberFunction<RegisteredType>(const zs_string & _name, Funct
 *Example*
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_type_register_static_member_function.cpp[]
+include::../examples/the_api/register_type/register_static_member_function.cpp[]
 ----
 
 
 ==== Register metamethods
-
-explaing that to register metamethods you have to use
-
-registerMemberFunction
 
 ===== Register member metamethods
 
@@ -310,14 +306,16 @@ Returns custom string when string operation operation is invoved
 
 *Syntax*
 
-[source,javascript]
+[source,cpp]
 ----
-_tostring()
+zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this)
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : intance registered object
+
 
 +++<u>Returns</u>+++
 
@@ -325,16 +323,16 @@ A string as a result when string operation operation is invoved
 
 *Example*
 
-[source,javascript]
+[source,c++]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_tostring.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_tostring.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_tostring_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_tostring_out.txt[]
 ----
 
 ===== _set()
@@ -343,14 +341,16 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 
 *Syntax*
 
-[source,javascript]
+[source,c++]
 ----
-_set(_value)
+void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __value_ :Value or variable as right operand
+- __zs_ : ZetScript context
+- __this_ : The pointer instance of registered type
+- __value_ : A value to be set from _ParamType_ pointer. _ParamType_ it can be one of defined in  <<ZetScript built-in types>> or other registered type.
 
 +++<u>Returns</u>+++
 
@@ -358,16 +358,16 @@ None.
 
 *Example*
 
-[source,javascript]
+[source,c++]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_set.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_set.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_set_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_set_out.txt[]
 ----
 
 ===== _addset()
@@ -376,14 +376,16 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 *Syntax*
 
-[source,javascript]
+[source,cpp]
 ----
-_addset(_value)
+void RegisteredType_addset(ZetScript *_zs, RegisteredType *_this,ParamType *_value)
 ----
 
 +++<u>Parameters</u>+++
 
-- __value_ : Value or variable as right operand
+- __zs_ : ZetScript context
+- __this_ : The pointer instance of registered type
+- __value_ : A value to be added from _ParamType_ pointer. _ParamType_ it can be one of defined in  <<ZetScript built-in types>> or other registered type.
 
 +++<u>Returns</u>+++
 
@@ -393,14 +395,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_addset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_addset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_addset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_addset_out.txt[]
 ----
 
 ===== _subset()
@@ -426,14 +428,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_subset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_subset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_subset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_subset_out.txt[]
 ----
 
 ===== _mulset()
@@ -459,14 +461,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mulset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mulset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mulset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_mulset_out.txt[]
 ----
 
 ===== _divset()
@@ -492,14 +494,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_divset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_divset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_divset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_divset_out.txt[]
 ----
 
 ===== _modset()
@@ -525,14 +527,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_modset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_modset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_modset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_modset_out.txt[]
 ----
 
 ===== _andset()
@@ -558,14 +560,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_andset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_andset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_andset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_andset_out.txt[]
 ----
 
 ===== _orset()
@@ -591,14 +593,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_orset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_orset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_orset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_orset_out.txt[]
 ----
 
 
@@ -625,14 +627,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_xorset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_xorset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_xorset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_xorset_out.txt[]
 ----
 
 ===== _shrset()
@@ -658,14 +660,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shrset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shrset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shrset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_shrset_out.txt[]
 ----
 
 ===== _shlset()
@@ -691,14 +693,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shlset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shlset.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shlset_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_shlset_out.txt[]
 ----
 
 ===== _not()
@@ -724,14 +726,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_not.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_not.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_not_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_not_out.txt[]
 ----
 
 ===== _neg()
@@ -757,14 +759,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_neg.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_neg.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_neg_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_neg_out.txt[]
 ----
 
 ===== _postinc()
@@ -791,14 +793,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_postinc.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_postinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_postinc_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_postinc_out.txt[]
 ----
 
 ===== _postdec()
@@ -824,14 +826,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_postdec.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_postdec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_postdec_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_postdec_out.txt[]
 ----
 
 ===== _preinc()
@@ -857,14 +859,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_preinc.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_preinc.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_preinc_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_preinc_out.txt[]
 ----
 
 ===== _predec()
@@ -890,14 +892,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_predec.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_predec.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_predec_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_predec_out.txt[]
 ----
 
 ===== _in()
@@ -923,14 +925,14 @@ Boolean telling whether the _value exist in or not
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_in.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_in.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_in_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_in_out.txt[]
 ---- 
 
 ===== Static functions
@@ -960,14 +962,14 @@ _equ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_equ.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_equ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_equ_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_equ_out.txt[]
 ----
 
 ===== _nequ()
@@ -995,14 +997,14 @@ _nequ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_nequ.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_nequ.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_nequ_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_nequ_out.txt[]
 ----
 
 ===== _lt()
@@ -1030,14 +1032,14 @@ _lt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_lt.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_lt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_lt_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_lt_out.txt[]
 ----
 
 ===== _lte()
@@ -1065,14 +1067,14 @@ _lte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_lte.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_lte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_lte_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_lte_out.txt[]
 ----
 
 ===== _gt()
@@ -1100,14 +1102,14 @@ _gt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_gt.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_gt.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_gt_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_gt_out.txt[]
 ----
 
 ===== _gte(_op1,_op2)
@@ -1135,14 +1137,14 @@ _gte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_gte.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_gte.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_gte_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_gte_out.txt[]
 ----
 
 ===== _add()
@@ -1169,14 +1171,14 @@ _add(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_add.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_add.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_add_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_add_out.txt[]
 ----
 
 ===== _div()
@@ -1203,14 +1205,14 @@ _div(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_div.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_div.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_div_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
 ----
 
 
@@ -1238,14 +1240,14 @@ _mul(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mul.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mul.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mul_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_mul_out.txt[]
 ----
 
 ===== _mod()
@@ -1272,14 +1274,14 @@ _mod(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mod.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mod.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_mod_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_mod_out.txt[]
 ----
 
 ===== _and()
@@ -1306,14 +1308,14 @@ _and(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_and.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_and.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_and_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_and_out.txt[]
 ----
 
 ===== _or()
@@ -1340,14 +1342,14 @@ _or(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_or.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_or.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_or_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_or_out.txt[]
 ----
 
 ===== _xor()
@@ -1374,14 +1376,14 @@ _xor(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_xor.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_xor.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_xor_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_xor_out.txt[]
 ----
 ===== _shl()
 
@@ -1407,14 +1409,14 @@ _shl(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shl.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shl.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shl_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_shl_out.txt[]
 ----
 
 ===== _shr()
@@ -1441,14 +1443,14 @@ _shr(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shr.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shr.zs[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_metamethod_shr_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_shr_out.txt[]
 ----
 
  

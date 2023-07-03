@@ -2,9 +2,16 @@
 
 using zetscript::ZetScript;
 
-typedef struct{
+class Number{
+	
+public:
+
 	double value;
-}Number;
+
+	Number(){
+		value = 0;
+	}
+};
 
 //-----
 // Function to be registered to create new instance of Number
