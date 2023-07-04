@@ -1,6 +1,5 @@
 #include "NumberZs.h"
 
-
 int main(){
 
 	ZetScript zs;
