@@ -4,7 +4,7 @@
  */
 
 #include "zetscript.h"
-#include "NumberZs.h"
+#include "Number.h"
 
 using zetscript::ZetScript;
 using zetscript::zs_float;
@@ -122,6 +122,97 @@ void NumberZs_num_shrset(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_f
 
 //--------------------------
 // METAMETHODS
+bool  NumberZs_equ(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num ==_n2->num;
+}
+
+bool  NumberZs_equ(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num == *_n2;
+}
+
+bool NumberZs_equ(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 == _n2->num;
+}
+
+bool  NumberZs_nequ(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num !=_n2->num;
+}
+
+bool  NumberZs_nequ(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num != *_n2;
+}
+
+bool NumberZs_nequ(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 != _n2->num;
+}
+
+bool  NumberZs_lt(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num <_n2->num;
+}
+
+bool  NumberZs_lt(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num < *_n2;
+}
+
+bool NumberZs_lt(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 < _n2->num;
+}
+
+bool  NumberZs_lte(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num <=_n2->num;
+}
+
+bool  NumberZs_lte(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num <= *_n2;
+}
+
+bool NumberZs_lte(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 <= _n2->num;
+}
+
+bool  NumberZs_gt(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num >_n2->num;
+}
+
+bool  NumberZs_gt(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num > *_n2;
+}
+
+bool NumberZs_gt(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 > _n2->num;
+}
+	
+	
+bool  NumberZs_gte(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num >=_n2->num;
+}
+
+bool  NumberZs_gte(zetscript::ZetScript *_zs,Number *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _n1->num >= *_n2;
+}
+
+bool NumberZs_gte(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 >= _n2->num;
+}
+
 Number * NumberZs_add(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
 	return new Number(_n1->num +_n2->num);
@@ -450,6 +541,30 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 	_zs->registerMemberPropertyMetamethod<Number>("num","_preinc",NumberZs_num_preinc);
 	_zs->registerMemberPropertyMetamethod<Number>("num","_predec",NumberZs_num_predec);
 
+	// logic
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_equ));
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_equ));
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_equ));
+
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_nequ));
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_nequ));
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_nequ));
+
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_lt));
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_lt));
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_lt));
+
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_lte));
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_lte));
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_lte));
+
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_gt));
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_gt));
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_gt));
+
+	_zs->registerStaticMemberFunction<Number>("_gte",static_cast<bool (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_gte));
+	_zs->registerStaticMemberFunction<Number>("_gte",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_gte));
+	_zs->registerStaticMemberFunction<Number>("_gte",static_cast<bool (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberZs_gte));
 
 	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberZs_add));
 	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberZs_add));
