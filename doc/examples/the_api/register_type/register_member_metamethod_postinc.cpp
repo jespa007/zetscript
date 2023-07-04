@@ -11,9 +11,9 @@ int main(){
 
 	// Evaluates a script that instances "Number" with 10.5 and later it adds 20
 	zs.eval(
-		var number=new Number(20);
-		Console::outln("number++ => "+(number++))
-		Console::outln("number => "+(number))
+		"var number=new Number(20);\n"
+		"Console::outln(\"number++ => \"+(number++))\n"
+		"Console::outln(\"number => \"+(number))\n"
 	);
 
 	return 0;

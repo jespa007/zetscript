@@ -41,11 +41,10 @@ int main(){
 
 	// Evaluates a script that instances "Number" with 10.5 and later it adds 20
 	zs.eval(
-		var data=new Data();
-
-		if(10 in data){
-			Console::outln("10 is content in data")
-		}
+		"var data=new Data();\n"
+		"if(10 in data){\n"
+		"	Console::outln(\"10 is content in data\")\n"
+		"}\n"
 	);
 
 	return 0;

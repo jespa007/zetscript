@@ -11,12 +11,12 @@ int main(){
 
 	// Evaluates a script that instances "Number" with 10.5 and later it adds 20
 	zs.eval(
-		var number=new Number(0x1);
-		Console::outln("number => "+number)
-		number|=0x2;
-		Console::outln("number|=0x2 => "+number)
-		number|=new Number(0x4);
-		Console::outln("number|=new Number(0x4) => "+number)
+		"var number=new Number(0x1);\n"
+		"Console::outln(\"number => \"+number)\n"
+		"number|=0x2;\n"
+		"Console::outln(\"number|=0x2 => \"+number)\n"
+		"number|=new Number(0x4);\n"
+		"Console::outln(\"number|=new Number(0x4) => \"+number)\n"
 	);
 
 	return 0;
