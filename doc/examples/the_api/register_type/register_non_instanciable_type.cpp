@@ -1,11 +1,6 @@
-#include "zetscript.h"
+#include "Number.h"
 
 using zetscript::ZetScript;
-
-// type 'Number'
-typedef struct{
-	double number;
-}Number;
 
 
 // Number reference

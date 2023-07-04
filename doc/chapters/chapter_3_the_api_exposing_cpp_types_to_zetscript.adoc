@@ -323,7 +323,7 @@ A string as a result when string operation operation is invoved
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_tostring.cpp[]
 ----
