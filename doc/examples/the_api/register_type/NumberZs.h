@@ -118,8 +118,6 @@ void NumberZs_num_shrset(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_f
 	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)>>(int)(*_value);
 }
-
-
 //--------------------------
 // METAMETHODS
 bool  NumberZs_equ(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
@@ -196,7 +194,6 @@ bool NumberZs_gt(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Number *_n2
 	ZS_UNUSUED_PARAM(_zs);
 	return *_n1 > _n2->num;
 }
-	
 	
 bool  NumberZs_gte(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
@@ -503,6 +500,12 @@ zetscript::zs_float NumberZs_toFloat(zetscript::ZetScript *_zs,Number *_this){
 	return _this->num;
 }
 
+zetscript::zs_float NumberZs_pow(zetscript::ZetScript *_zs,zs_float *_n1, zs_float * _n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return (*_n1) * (*_n2);
+}
+
+
 void NumberZs_delete(zetscript::ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
@@ -516,6 +519,9 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("toInt",&NumberZs_toInt);
 	_zs->registerMemberFunction<Number>("toFloat",&NumberZs_toFloat);
+
+	_zs->registerStaticMemberFunction<Number>("pow",&NumberZs_pow);
+
 
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *, zetscript::zs_float *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberZs_set));

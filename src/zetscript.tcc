@@ -1558,7 +1558,10 @@ namespace zetscript{
 				return NULL;
 			}
 
-			if(idx_script_type_return == IDX_TYPE_ZS_STRING_PTR_C){
+			if(
+					idx_script_type_return == IDX_TYPE_ZS_STRING_PTR_C
+					|| idx_script_type_return == IDX_TYPE_CONST_CHAR_PTR_C
+			){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
@@ -1568,7 +1571,11 @@ namespace zetscript{
 				zs_int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
+				if(
+						idx_script_type==IDX_TYPE_ZS_FLOAT_C
+						|| idx_script_type==IDX_TYPE_BOOL_C
+						|| idx_script_type == IDX_TYPE_ZS_STRING_C
+				){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,zs_rtti::demangle(str_param).c_str()

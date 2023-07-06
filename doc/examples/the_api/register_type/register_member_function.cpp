@@ -9,8 +9,7 @@ int main(){
 
 	// eval script that creates object of type "Number" and inits x and y as  10 and 20 respectibely
 	zs.eval(
-		"var number=new Number(10.5);"
-		"Console::outln(\"number.toInteger() : \",+number.toInteger())"
+		"Console::outln(\"Number::pow(2,10) : \",+Number::pow(2,10))"
 	);
 
 	return 0;

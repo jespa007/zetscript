@@ -16,7 +16,7 @@ int main()
 
     // Calls ZetScript function and prints return value by console.
     printf("result : %s\n",returnString());
-
+    
  	return 0;
 }
 

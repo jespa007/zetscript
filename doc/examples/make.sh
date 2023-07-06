@@ -31,19 +31,21 @@ fi
 
 the_api_example_dirs=(eval bind_script_function register_function builtin_type register_type)
 
+dir_zs="the_api/eval/*.zs"
+for j in $dir_zs
+do
+	base_file="$(basename $j .zs)"
+	cp "the_api/eval/"$base_file".zs" "the_api/build/"$base_file".zs"
+done
+
 for i in "${the_api_example_dirs[@]}"
 do
-	dir_zs="the_api/"$i"/*.zs"
-	for j in $dir_zs
-	do
-		base_file="$(basename $j .zs)"
-		cp "the_api/"$i"/"$base_file".zs" "the_api/build/"$base_file".zs"
-	done
 
 	dir_cpp="the_api/"$i"/*.cpp"
 	for j in $dir_cpp
 	do
 		base_file="$(basename $j .cpp)"
+		echo "processing "$base_file".cpp"
 		g++ -std=gnu++0x -Wall -pedantic -O2 "the_api/"$i"/"$base_file".cpp" ../../bin/gcc/Release/libzetscript-2-0-0-static.a -o "the_api/build/"$base_file$EXTENSION_EXE -I ../../src
 		if [ $? -eq 0 ] 
 		then
