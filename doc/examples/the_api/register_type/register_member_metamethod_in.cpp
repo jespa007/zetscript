@@ -1,20 +1,23 @@
 
-#include "NumberZs.h"
+#include "zetscript.h"
+
+using zetscript::zs_float;
+using zetscript::ZetScript;
 
 class Data{
 public:
 	std::vector<float> data;
 	Data(){
-		this.data={0,1,1,10,3,4,6}
+		this->data={0,1,1,10,3,4,6};
 	} 
 };
 
 Data *DataZs_new(zetscript::ZetScript *_zs){
-	return new Number();
+	return new Data();
 }
 
-bool DataZs_in(zetscript::ZetScript *_zs, zs_float *_value){
-	for(auto d in data){
+bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
+	for(auto d : _this->data){
 		if(d == *_value){
 			return true;;
 		}
@@ -25,8 +28,6 @@ bool DataZs_in(zetscript::ZetScript *_zs, zs_float *_value){
 void DataZs_delete(zetscript::ZetScript *_zs, Data *_this){
 	delete _this;
 }
-
-
 
 int main(){
 

@@ -1,3 +1,4 @@
+#include "zetscript.h"
 #include "Number.h"
 
 using zetscript::ZetScript;
