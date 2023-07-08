@@ -308,7 +308,7 @@ Returns custom string when string operation operation is invoved
 
 [source,cpp]
 ----
-zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this)
+zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -343,7 +343,7 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 
 [source,c++]
 ----
-void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _value)
+void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _value);
 ----
 
 +++<u>Parameters</u>+++
@@ -378,7 +378,7 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,cpp]
 ----
-void RegisteredType_addset(ZetScript *_zs, RegisteredType *_this,ParamType *_value)
+void RegisteredType_addset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
 +++<u>Parameters</u>+++
@@ -395,7 +395,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_addset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_addset.cpp[]
 ----
 
 Output:
@@ -428,7 +428,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_subset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_subset.cpp[]
 ----
 
 Output:
@@ -461,7 +461,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mulset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mulset.cpp[]
 ----
 
 Output:
@@ -494,7 +494,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_divset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_divset.cpp[]
 ----
 
 Output:
@@ -527,7 +527,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_modset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_modset.cpp[]
 ----
 
 Output:
@@ -560,7 +560,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_andset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_andset.cpp[]
 ----
 
 Output:
@@ -593,7 +593,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_orset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_orset.cpp[]
 ----
 
 Output:
@@ -627,7 +627,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xorset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_xorset.cpp[]
 ----
 
 Output:
@@ -660,7 +660,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shrset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shrset.cpp[]
 ----
 
 Output:
@@ -693,7 +693,7 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shlset.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shlset.cpp[]
 ----
 
 Output:
@@ -726,7 +726,7 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_not.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_not.cpp[]
 ----
 
 Output:
@@ -759,7 +759,7 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_neg.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_neg.cpp[]
 ----
 
 Output:
@@ -793,7 +793,7 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postinc.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_postinc.cpp[]
 ----
 
 Output:
@@ -826,7 +826,7 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postdec.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_postdec.cpp[]
 ----
 
 Output:
@@ -859,7 +859,7 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_preinc.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_preinc.cpp[]
 ----
 
 Output:
@@ -892,7 +892,7 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_predec.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_predec.cpp[]
 ----
 
 Output:
@@ -925,7 +925,7 @@ Boolean telling whether the _value exist in or not
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_in.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_in.cpp[]
 ----
 
 Output:
@@ -933,7 +933,7 @@ Output:
 [source,text]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_in_out.txt[]
----- 
+----
 
 ===== Static functions
 
@@ -962,7 +962,7 @@ _equ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_equ.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_equ.cpp[]
 ----
 
 Output:
@@ -981,7 +981,7 @@ Implements _not equal_ operator (aka != ) between first operand and second opera
 [source,javascript]
 ----
 _nequ(_op1,_op2)
----- 
+----
 
 +++<u>Parameters</u>+++
 
@@ -997,7 +997,7 @@ _nequ(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_nequ.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_nequ.cpp[]
 ----
 
 Output:
@@ -1016,7 +1016,7 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 [source,javascript]
 ----
 _lt(_op1,_op2)
----- 
+----
 
 +++<u>Parameters</u>+++
 
@@ -1032,7 +1032,7 @@ _lt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lt.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_lt.cpp[]
 ----
 
 Output:
@@ -1051,7 +1051,7 @@ Implements _less than or equal_ operator (aka \<= ) between first operand and se
 [source,javascript]
 ----
 _lte(_op1,_op2)
----- 
+----
 
 +++<u>Parameters</u>+++
 
@@ -1067,7 +1067,7 @@ _lte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lte.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_lte.cpp[]
 ----
 
 Output:
@@ -1086,7 +1086,7 @@ Implements _greather than_ operator (aka > ) between first operand and second op
 [source,javascript]
 ----
 _gt(_op1,_op2)
----- 
+----
 
 +++<u>Parameters</u>+++
 
@@ -1102,7 +1102,7 @@ _gt(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gt.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_gt.cpp[]
 ----
 
 Output:
@@ -1114,14 +1114,14 @@ include::../examples/the_api/register_type/register_member_metamethod_gt_out.txt
 
 ===== _gte(_op1,_op2)
 
-Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
+Implements _greather than or equal_ operator (aka &gt;= ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
 _gte(_op1,_op2)
----- 
+----
 
 +++<u>Parameters</u>+++
 
@@ -1137,7 +1137,7 @@ _gte(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gte.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_gte.cpp[]
 ----
 
 Output:
@@ -1156,7 +1156,7 @@ Implements _add_ operator (aka + ) between first operand and second operand
 [source,javascript]
 ----
 _add(_op1,_op2)
-----  
+----
 
 +++<u>Parameters</u>+++
 
@@ -1171,7 +1171,7 @@ _add(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_add.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_add.cpp[]
 ----
 
 Output:
@@ -1190,7 +1190,7 @@ Implements _division_ operator (aka / ) between first operand and second operand
 [source,javascript]
 ----
 _div(_op1,_op2)
-----  
+----
 
 +++<u>Parameters</u>+++
 
@@ -1205,7 +1205,7 @@ _div(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_div.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_div.cpp[]
 ----
 
 Output:
@@ -1225,7 +1225,7 @@ Implements _multiplication_ operator (aka * ) between first operand and second o
 [source,javascript]
 ----
 _mul(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1240,7 +1240,7 @@ _mul(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mul.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mul.cpp[]
 ----
 
 Output:
@@ -1259,7 +1259,7 @@ Implements _modulus_ operator (aka * ) between first operand and second operand
 [source,javascript]
 ----
 _mod(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1274,7 +1274,7 @@ _mod(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mod.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_mod.cpp[]
 ----
 
 Output:
@@ -1293,7 +1293,7 @@ Implements _bitwise and_ operator (aka & ) between first operand and second oper
 [source,javascript]
 ----
 _and(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1308,7 +1308,7 @@ _and(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_and.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_and.cpp[]
 ----
 
 Output:
@@ -1327,7 +1327,7 @@ Implements _bitwise or_ operator (aka | ) between first operand and second opera
 [source,javascript]
 ----
 _or(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1342,7 +1342,7 @@ _or(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_or.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_or.cpp[]
 ----
 
 Output:
@@ -1361,7 +1361,7 @@ Implements _bitwise xor_ operator (aka ^ ) between first operand and second oper
 [source,javascript]
 ----
 _xor(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1376,7 +1376,7 @@ _xor(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xor.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_xor.cpp[]
 ----
 
 Output:
@@ -1394,7 +1394,7 @@ Implements _bitwise shift left_ operator (aka << ) between first operand and sec
 [source,javascript]
 ----
 _shl(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1409,7 +1409,7 @@ _shl(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shl.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shl.cpp[]
 ----
 
 Output:
@@ -1428,7 +1428,7 @@ Implements _bitwise shift right_ operator (aka << ) between first operand and se
 [source,javascript]
 ----
 _shr(_op1,_op2)
-----   
+----
 
 +++<u>Parameters</u>+++
 
@@ -1443,7 +1443,7 @@ _shr(_op1,_op2)
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shr.zs[]
+include::../examples/the_api/register_type/register_member_metamethod_shr.cpp[]
 ----
 
 Output:
@@ -1499,14 +1499,14 @@ Returns the value of the property
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_get.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_get.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_get_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_get_out.txt[]
 ----
 
 ===== _set()
@@ -1532,14 +1532,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_set.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_set.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_set_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_set_out.txt[]
 ----
 
 ===== _addset()
@@ -1565,21 +1565,20 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_addset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_addset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_addset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_addset_out.txt[]
 ----
 
 
 ===== _subset()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
-
 
 *Syntax*
 
@@ -1598,16 +1597,46 @@ None.
 
 *Example*
 
+The following code declares and registers two functions that accepts ZetScript Float or Number,
+
+[source,cpp]
+----
+
+//...
+
+void NumberZs_value_subset(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value-=*_value;
+}
+
+void NumberZs_value_subset(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value-=_value->value;
+}
+
+//...
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_value_subset));
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_subset));
+	//...
+
+}
+----
+
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_subset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_subset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_subset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_subset_out.txt[]
 ----
 
 ===== _mulset()
@@ -1633,14 +1662,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_mulset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_mulset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_mulset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_mulset_out.txt[]
 ----
 
 ===== _divset()
@@ -1666,14 +1695,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_divset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_divset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_divset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_divset_out.txt[]
 ----
 
 ===== _modset()
@@ -1699,14 +1728,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_modset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_modset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_modset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_modset_out.txt[]
 ----
 
 ===== _andset()
@@ -1732,14 +1761,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_andset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_andset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_andset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_andset_out.txt[]
 ----
 
 ===== _orset()
@@ -1765,14 +1794,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_orset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_orset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_orset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_orset_out.txt[]
 ----
 
 
@@ -1799,14 +1828,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_xorset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_xorset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_xorset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_xorset_out.txt[]
 ----
 
 ===== _shrset()
@@ -1832,14 +1861,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_shrset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_shrset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_shrset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_shrset_out.txt[]
 ----
 
 ===== _shlset()
@@ -1865,14 +1894,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_shlset.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_shlset.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_shlset_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_shlset_out.txt[]
 ----
 
 ===== _neg()
@@ -1898,14 +1927,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_neg.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_neg.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_neg_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_neg_out.txt[]
 ----
 
 ===== _postinc()
@@ -1932,14 +1961,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_postinc.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_postinc.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_postinc_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_postinc_out.txt[]
 ----
 
 ===== _postdec()
@@ -1965,14 +1994,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_postdec.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_postdec.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_postdec_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_postdec_out.txt[]
 ----
 
 ===== _preinc()
@@ -1998,14 +2027,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_preinc.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_preinc.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_preinc_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_preinc_out.txt[]
 ----
 
 ===== _predec()
@@ -2031,14 +2060,14 @@ A the object itself
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_predec.zs[]
+include::../examples/the_api/register_type/register_member_property_metamethod_predec.cpp[]
 ----
 
 Output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_property_metamethod_predec_out.txt[]
+include::../examples/the_api/register_type/register_member_property_metamethod_predec_out.txt[]
 ----
 
 
