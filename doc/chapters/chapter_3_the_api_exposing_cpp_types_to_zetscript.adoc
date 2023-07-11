@@ -38,61 +38,55 @@ A `ScriptType` object
 
 *Example*
 
-The following code shows an example of a registering non instanciable type. 
-
-Let's define a C/C&plus;&plus; type 'MyType',
+Let's define a C/C&plus;&plus; type 'Number' type in a file 'Number.h',
 
 [source,cpp]
 ----
-typedef struct{
-	int x;
-	int y;
-}MyType;
+include::../examples/the_api/register_type/Number.h[]
 ----
 
-
-Then, register type 'MyType' and symbol name as 'MyType',
+Next, a function called 'NumberZs_register' is defined in the file 'NumberZs.h'. Inside this file everything related to the type 'Number' will be recorded. In this case, it starts by registering the 'Number' type to be exposed in ZetScript,
 
 [source,cpp]
 ----
-void main(argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-	
- 	//register MyType
- 	zs.registerType<MyType>("MyType");
- 	
- 	return 0;
- }
+void NumberZs_register(ZetScript *_zs);
+ 	//register Number type
+ 	_zs->registerType<Number>("Number");
+}
 ----
 
-Let's supose we want to instantiate a 'MyType' object in the following code,
+Finally, it defines the main file that it includes 'NumberZs.h', calls 'NumberZs_register',
 
 [source,cpp]
 ----
-void main(argc, char *argv[])
-{
-	zetscript::ZetScript zs;
-	
- 	//register MyType
- 	zs.registerType<MyClass>("MyType");
 
-	 	
-	// It throws an error that MyClass is not instanciable
+#include "NumberZs.h"
+
+
+int main(){
+
+	ZetScript zs;
+
+	NumberZs_register(&zs);
+}
+----
+
+Now, let's supose we want to instantiate a 'Number' evaluating the following script code,
+
+[source,cpp]
+----
+	// It throws an error that 'Number' is not instanciable
  	zs.eval(
- 		"var my_type= new MyType();"
+ 		"var number= new Number();"
  	);
- 	
- 	return 0;
- }
 ----
 
 The evaluation will fail with the following output,
 
- 'MyType' type is not object instanceable
+ 'Number' type is not object instanceable
 
 
-The only way to operate with a 'MyType' object non intanciable is by a reference returned by a registered function as it shows in the following example,
+The only way to operate with a 'Number' object non intanciable is by a reference returned by a registered function as it shows in the following example,
 
 
 [source,cpp]

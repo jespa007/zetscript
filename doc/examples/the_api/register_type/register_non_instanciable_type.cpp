@@ -1,8 +1,4 @@
-#include "zetscript.h"
-#include "Number.h"
-
-using zetscript::ZetScript;
-
+#include "NumberZs.h"
 
 // Number reference
 Number *number=NULL;
@@ -16,13 +12,12 @@ Number *getNumber(ZetScript *_zs){
 int main()
 {
 	zetscript::ZetScript zs;
+
+	registerNumberZs(&zs);
 	
 	// create new 'Number'
 	number=new Number();
-	
-	
- 	//register 'Number' as no instanciable
- 	zs.registerType<Number>("Number");
+
  	
  	 //register function 'getNumber' that return 'number' reference
  	zs.registerFunction("getNumber",getNumber);
@@ -33,7 +28,7 @@ int main()
  		"var number= getNumber();" 
  	);
  	
- 	// delete
+ 	// delete instance
  	delete number;
  	
  	return 0;

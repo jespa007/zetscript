@@ -1257,39 +1257,6 @@ Output:
 ----
 include::../examples/the_language/class/class_metamethod_xor_out.txt[]
 ----
-===== _shl()
-
-Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
-
-*Syntax*
-
-[source,javascript]
-----
-_shl(_op1,_op2)
-----   
-
-+++<u>Parameters</u>+++
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-+++<u>Returns</u>+++
-
-- A new object as a result of bitwise shift left operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_metamethod_shl.zs[]
-----
-
-Output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_metamethod_shl_out.txt[]
-----
 
 ===== _shr()
 
@@ -1323,6 +1290,40 @@ Output:
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_shr_out.txt[]
+----
+
+===== _shl()
+
+Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_shl(_op1,_op2)
+----   
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of bitwise shift left operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_metamethod_shl.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_metamethod_shl_out.txt[]
 ----
 
  
