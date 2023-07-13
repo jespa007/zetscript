@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	// eval script that creates object of type "Number" and inits x and y as  10 and 20 respectibely
+	// Evaluates a script that instantiates object type "Number" passing a number to its constructor
 	zs.eval("var number=new Number(10.5);");
 
 	return 0;

@@ -1,4 +1,7 @@
-#include "NumberZs.h"
+#include "Number.h"
+#include "zetscript.h"
+
+using zetscript::ZetScript;
 
 // Number reference
 Number *number=NULL;
@@ -13,7 +16,7 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-	registerNumberZs(&zs);
+	zs.registerType<Number>("Number");
 	
 	// create new 'Number'
 	number=new Number();

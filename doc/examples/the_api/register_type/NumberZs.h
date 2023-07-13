@@ -8,6 +8,7 @@
 
 using zetscript::ZetScript;
 using zetscript::zs_float;
+using zetscript::zs_int;
 using zetscript::zs_string;
 
 
