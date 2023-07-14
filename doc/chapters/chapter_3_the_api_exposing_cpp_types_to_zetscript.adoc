@@ -14,7 +14,7 @@ There's two ways to register a type,
 
 ==== Register a non instantiable type
 
-To register a non instantiable type it means that it CANNOT create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is usueful when it wants to have a control of instantiated objects in the native application.
+Register a non instantiable type it means that it CANNOT create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is usueful when it wants to have a control of instantiated objects in the native application.
 
 To register a non instantible type it's done by simple calling `ZetScript::registerType` with type as template and the class name that will be referenced in the script.
 
@@ -92,7 +92,7 @@ include::../examples/the_api/register_type/register_non_instantiable_type.cpp[]
 ==== Register an instantiable type
 
 
-To register an instantiable type it means that it CAN create new objects of that 'type' in ZetScript code using operator new.
+Register an instantiable type it means that it CAN create new objects of that 'type' in ZetScript code using operator new.
 
 To register instantiable type it's done also with registerType but, furthermore, it has to pass two additional parameters : A constructor function and destructor function.
 
@@ -129,9 +129,9 @@ A `ScriptType` object
 
 *Example*
 
-Following the example of registering the `Number` type and in order to compact the linees of code for the next examples of this section, it has been proposed to register and declare all functions in a file called `NumberZs.h`. So, inside `NumberZs.h` will be all the functions to be registered and the function `NumberZs_register` that will have the registering of those functions.
+Following the example of the `Number` type and in order to compact the lines of code for the next examples of this section, it has been proposed put all registering and declaration of the functions in a file called `NumberZs.h`. Inside `NumberZs.h` there's a function called  `NumberZs_register` that will register of those functions.
 
-Let's start by defining _new_ and _delete_ functions,
+Let's define NumberZs_new and NumberZs_delete function that creates and destroys a Number type instantiation respectively,
 
 [source,cpp]
 ----
@@ -146,7 +146,7 @@ void NumberZs_delete(ZetScript *_zs,Number *_this){
 }
 ----
 
-Then, in the `NumberZs_register` it registers `Number` type as instantiable passing  _new_ and _delete_ functions,
+Then, in the `NumberZs_register` function, it registers `Number` type as instantiable by passing  _NumberZs_new_ and _NumberZs_delete_ functions,
 
 
 [source,cpp]
@@ -157,7 +157,7 @@ void NumberZs_register(ZetScript *_zs){
 }
 ----
 
-Finally, it defines the main file that it includes 'NumberZs.h', calls 'NumberZs_register',
+Finally, the following code shows an example of instantiation of a `Number` type,
 
 
 [source,cpp]
@@ -208,7 +208,7 @@ void registerConstructor<RegisteredType>( Function _function);
 
 *Example*
 
-In this example it defines two functions that accepts a Float value or Number type respectively in ZetScript,
+The following code defines two functions that accepts a *xref:chapter_2_the_language_data_types.adoc#&lowbar;float[Float]* value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----
@@ -226,7 +226,7 @@ void NumberZs_constructor(zetscript::ZetScript *_zs,Number *_this,Number *_value
 }
 ----
 
-Next, each  ´NumberZs_constructor´ function is registered by `registerConstructor`,
+Next, they are registered with `registerConstructor` method,
 
 [source,cpp]
 ----
@@ -243,7 +243,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, it shows an example of a script that instantiates object type "Number" passing a number to its constructor
+Finally, the following code it shows an example of a script that creates an object _Number_ type with a float value
 
 
 [source,cpp]
@@ -300,33 +300,51 @@ void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _f
 
 *Example*
 
+
+The following code defines a function that returns a *xref:chapter_2_the_language_data_types.adoc#&lowbar;integer[Integer]* ,
+
 [source,cpp]
 ----
 
 //...
 
-void NumberZs_pow(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+zs_int NumberZs_toInteger(zetscript::ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _this->value;
 }
 
 //...
 
+----
+
+Next, it's registered as `toInteger` with `registerMemberFunction`,
+
+[source,cpp]
+----
+
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
 	//...
 
 }
 ----
 
+Finally, the following code it shows an example of a script that calls `toInteger()` after create object _Number_ type,
 
-[source,c++]
+
+[source,cpp]
 ----
 include::../examples/the_api/register_type/register_member_function.cpp[]
+----
+
+The ouput is the following,
+
+[source,txt]
+----
+include::../examples/the_api/register_type/register_member_function_out.txt[]
 ----
 
 
@@ -427,7 +445,7 @@ zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this);
 +++<u>Parameters</u>+++
 
 - __zs_ : ZetScript context
-- __this_ : intance registered object
+- __this_ : instance registered object
 
 
 +++<u>Returns</u>+++
