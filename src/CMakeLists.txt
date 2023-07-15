@@ -478,7 +478,6 @@ SET(
 	vm/vm_share_manager.h
 	
 	# main
-	ByteCode.h
 	common.h
 	config.h
 	Instruction.h
