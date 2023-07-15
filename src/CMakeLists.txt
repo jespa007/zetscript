@@ -395,6 +395,7 @@ SET(
 	util/zs_buffer.h
 	util/zs_system.h
 	util/zs_list.h
+	util/zs_exception.h
 	
 	#byte_code
 	byte_code/zs_byte_code.h
@@ -486,7 +487,6 @@ SET(
 	Type.h
 	zetscript.h
 	zetscript.tcc
-	zs_exception.h
 )
 	
 
