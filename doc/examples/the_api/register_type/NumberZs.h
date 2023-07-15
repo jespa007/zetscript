@@ -36,7 +36,7 @@ void NumberZs_constructor(ZetScript *_zs,Number *_this,Number *_ci2){
 // CONSTRUCTORS
 //-------------------------------------------------------------------------------------
 // MEMBER FUNCTIONS
-zs_int NumberZs_toInt(ZetScript *_zs,Number *_this){
+zs_int NumberZs_toInteger(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
@@ -46,30 +46,33 @@ zs_float NumberZs_toFloat(ZetScript *_zs,Number *_this){
 	return _this->value;
 }
 
-zs_string NumberZs_toString(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	return zetscript::zs_strutils::format("%f",_this->value);
-}
 // MEMBER FUNCTIONS
 //-------------------------------------------------------------------------------------
 // STATIC MEMBER FUNCTIONS
 
-zs_float NumberZs_pow(ZetScript *_zs,zs_float *_n1, zs_float * _n2){
+zs_float NumberZs_pow(ZetScript *_zs,zs_float *_base, zs_float * _power){
 	ZS_UNUSUED_PARAM(_zs);
-	return (*_n1) * (*_n2);
+	return (*_base) * (*_power);
 }
 // STATIC MEMBER FUNCTIONS
 //-------------------------------------------------------------------------------------
 // MEMBER PROPERTY METAMETHODS
+
+zs_string NumberZs_tostring(ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
+	char output[100];
+	sprintf(output,"%0.2f",_this->value);
+	return output;
+}
 
 void NumberZs_set(ZetScript *_zs,Number *_this, zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=*_n;
 }
 
-void NumberZs_set(ZetScript *_zs,Number *_this,Number *_ci2){
+void NumberZs_set(ZetScript *_zs,Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
-	 _this->value = _ci2->value;
+	 _this->value = _n->value;
 }
 
 
@@ -648,8 +651,8 @@ void NumberZs_register(ZetScript *_zs){
 
 	//-------------------------------------------------------------------------------------
 	// CONSTRUCTORS
-	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this,zs_float *_value)>(&NumberZs_set));
-	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this,Number *_value)>(&NumberZs_set));
+	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this,zs_float *_value)>(&NumberZs_constructor));
+	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this,Number *_value)>(&NumberZs_constructor));
 	// CONSTRUCTORS
 	//-------------------------------------------------------------------------------------
 	// STATIC FUNCTIONS
@@ -657,11 +660,14 @@ void NumberZs_register(ZetScript *_zs){
 	// STATIC FUNCTIONS
 	//-------------------------------------------------------------------------------------
 	// MEMBER FUNCTIONS
-	_zs->registerMemberFunction<Number>("toInt",&NumberZs_toInt);
+	_zs->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
 	_zs->registerMemberFunction<Number>("toFloat",&NumberZs_toFloat);
 	// MEMBER FUNCTIONS
 	//-------------------------------------------------------------------------------------
 	// MEMBER FUNCTION METAMETHODS
+
+	// tostring
+	_zs->registerMemberFunction<Number>("_tostring",&NumberZs_tostring);
 
 	// setter
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *, zs_float *)>(&NumberZs_set));

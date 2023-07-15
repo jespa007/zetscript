@@ -11,16 +11,14 @@ Number *getNumber(ZetScript *_zs){
 	return 	number;
 }
 
-
-int main()
-{
+int main(){
+	
 	zetscript::ZetScript zs;
 
 	zs.registerType<Number>("Number");
 	
 	// create new 'Number'
 	number=new Number();
-
  	
  	 //register function 'getNumber' that return 'number' reference
  	zs.registerFunction("getNumber",getNumber);

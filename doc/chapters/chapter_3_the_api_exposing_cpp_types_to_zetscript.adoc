@@ -57,7 +57,7 @@ using zetscript::ZetScript;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	ZetScript zs;
 
 	zs.registerType<Number>("Number");
 	 	
@@ -104,7 +104,7 @@ ScriptType * registerType<RegisteredType>(const zs_string & _class_name, Registe
 
 +++<u>Template</u>+++ 
 
-- __RegisteredType_: The registered type
+- _RegisteredType_: The registered type
 
 +++<u>Parameters</u>+++ 
 
@@ -116,7 +116,7 @@ ScriptType * registerType<RegisteredType>(const zs_string & _class_name, Registe
 RegsiteredType * RegisteredType_new(ZetScript *_zs);
 ----
 
-- __delete_native_instance_: A C function that deletes native instance. The function has the following signature,
+- __delete_native_instance_: A C function that deletes native instance. The SECOND parameter it must define the current instance,
 
 [source,cpp]
 ----
@@ -136,12 +136,10 @@ Let's define NumberZs_new and NumberZs_delete function that creates and destroys
 [source,cpp]
 ----
 Number *NumberZs_new(ZetScript *_zs){
-	ZS_UNUSUED_PARAM(_zs);
 	return new Number();
 }
 
 void NumberZs_delete(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
 ----
@@ -154,6 +152,7 @@ Then, in the `NumberZs_register` function, it registers `Number` type as instant
 void NumberZs_register(ZetScript *_zs){
 
 	_zs->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
+
 }
 ----
 
@@ -170,25 +169,30 @@ include::../examples/the_api/register_type/register_instantiable_type.cpp[]
 
 To register a constructor function it has to create and register a C&plus;&plus; function with a particular prototype. In ZetScript, that function it acts as it seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
 
-As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer of the registered type as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter,the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
 
 *Syntax*
 
 [source,c++]
 ----
-void RegisteredType_constructor(ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
 
 Where,
 
-- _RegisteredType_: The C&plus;&plus; registered type
-- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
++++<u>Types</u>+++ 
 
+- _RegisteredType_: The registered type
+
++++<u>Parameters</u>+++ 
+
+- __zs_ : ZetScript context.
+- __this_: The current instance.
+- __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or other registered type.
 
 After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. `registerConstructor` it has the following signature,
-
 
 *Syntax*
 [source,cpp]
@@ -196,7 +200,7 @@ After the constructor function is defined it has to be registered with `ZetScrip
 void registerConstructor<RegisteredType>( Function _function);
 ----
 
-+++<u>Template</u>+++ 
++++<u>Types</u>+++ 
 
 - _RegisteredType_: The registered type
 - _Function_ : Function signature
@@ -215,13 +219,11 @@ The following code defines two functions that accepts a *xref:chapter_2_the_lang
 
 //...
 
-void NumberZs_constructor(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
+void NumberZs_constructor(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 
-void NumberZs_constructor(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
+void NumberZs_constructor(ZetScript *_zs,Number *_this,Number *_value){
 	_this->value=_value->value;
 }
 ----
@@ -232,12 +234,14 @@ Next, they are registered with `registerConstructor` method,
 ----
 
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(ZetScript *_zs){
 
 	//...
-	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_constructor));
 
-	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_constructor));
+	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_constructor));
+
+	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_constructor));
+
 	//...
 
 }
@@ -258,9 +262,9 @@ include::../examples/the_api/register_type/register_instantiable_type_with_const
 
 To register a member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter,the pointer of the registered type as SECOND parameter and a maximum of 8 parameters as <<ZetScript built-in type>> or other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter, the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
 
-As a return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
+As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
 
 *Syntax*
 
@@ -273,9 +277,16 @@ ReturnType RegisteredType_memberFunction(ZetScript *_zs, _RegisteredType *_this,
 
 Where,
 
-- _RegisteredType_: The C&plus;&plus; registered type
-- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered 
-- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
++++<u>Type</u>+++ 
+
+- _RegisteredType_: The registered type
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
+
++++<u>Parameters</u>+++ 
+
+- __zs_ : ZetScript context
+- __this_: The current instance
+- __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
 
 
 After the member function is defined it has to be registered with `ZetScript::registerMemberFunction`. `registerMemberFunction` it has the following signature,
@@ -284,10 +295,10 @@ After the member function is defined it has to be registered with `ZetScript::re
 *Syntax*
 [source,c++]
 ----
-void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
+void registerMemberFunction<RegisteredType>(const zs_string & __member_function_name_, Function _function);
 ----
 
-+++<u>Template</u>+++ 
++++<u>Types</u>+++ 
 
 - _RegisteredType_: The registered C&plus;&plus;type
 - _Function_ : Function signature
@@ -295,7 +306,7 @@ void registerMemberFunction<RegisteredType>(const zs_string & _name, Function _f
 
 +++<u>Parameters</u>+++ 
 
-- __name_	: Member function name
+- __member_function_name_	: Member function name
 - __function_: C function reference to be registered
 
 *Example*
@@ -308,8 +319,7 @@ The following code defines a function that returns a *xref:chapter_2_the_languag
 
 //...
 
-zs_int NumberZs_toInteger(zetscript::ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
+zs_int NumberZs_toInteger(ZetScript *_zs,Number *_this){
 	return _this->value;
 }
 
@@ -317,14 +327,15 @@ zs_int NumberZs_toInteger(zetscript::ZetScript *_zs,Number *_this){
 
 ----
 
-Next, it's registered as `toInteger` with `registerMemberFunction`,
+Next, it's registered as member function named `toInteger` through with `registerMemberFunction`,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(ZetScript *_zs){
 
 	//...
+
 	_zs->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
 
 	//...
@@ -333,7 +344,6 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 ----
 
 Finally, the following code it shows an example of a script that calls `toInteger()` after create object _Number_ type,
-
 
 [source,cpp]
 ----
@@ -352,9 +362,9 @@ include::../examples/the_api/register_type/register_member_function_out.txt[]
 
 To register a static member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include `zetscript::ZetScript *` as the FIRST parameter and a maximum of 9 parameters as <<ZetScript built-in type>> or other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter and a maximum of 9 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
 
-As a return, the function it can return nothing, or a <<ZetScript built-in type>> or other registered type.
+As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in type>> or a pointer of other registered type.
 
 *Syntax*
 
@@ -367,8 +377,15 @@ ReturnType RegisteredType_staticMemberFunction(ZetScript *_zs, ParamType *_arg1,
 
 Where,
 
-- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered 
-- _ParamType_: It can be one of defined in  <<ZetScript built-in types>> or other registered type.
++++<u>Type</u>+++ 
+
+- _RegisteredType_: The registered type
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
+
++++<u>Parameters</u>+++ 
+
+- __zs_ : ZetScript context
+- __arg1_ .. __arg9_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
 
 
 After the constructor function is defined it has to be registered with `ZetScript::registerStaticMemberFunction`. `registerStaticMemberFunction` it has the following signature,
@@ -377,10 +394,10 @@ After the constructor function is defined it has to be registered with `ZetScrip
 *Syntax*
 [source,c++]
 ----
-void registerStaticMemberFunction<RegisteredType>(const zs_string & _name, Function _function);
+void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_member_name, Function _function);
 ----
 
-+++<u>Template</u>+++ 
++++<u>Types</u>+++ 
 
 - _RegisteredType_: The registered C&plus;&plus;type
 - _Function_ : Function signature
@@ -388,46 +405,58 @@ void registerStaticMemberFunction<RegisteredType>(const zs_string & _name, Funct
 
 +++<u>Parameters</u>+++ 
 
-- __name_	: Member function name
+- __static_member_name_ : Static member function name
 - __function_: Member function C reference
 
 *Example*
+
+The following code defines a function `NumberZs_pow` that takes two arguments and, returns the power raised to the base number,
 
 [source,cpp]
 ----
 
 //...
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+zs_float NumberZs_pow(ZetScript *_zs,zs_float *_base, zs_float * _power){
+	return (*_base) * (*_power);
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+----
 
-//...
+Next, it's registered as static member function named `pow` through with `registerStaticMemberFunction`,
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+[source,cpp]
+----
+
+void NumberZs_register(ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("pow",&NumberZs_pow);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that calls static member function `Number::pow()`,
 
 [source,cpp]
 ----
 include::../examples/the_api/register_type/register_static_member_function.cpp[]
 ----
 
+The ouput is the following,
+
+[source,txt]
+----
+include::../examples/the_api/register_type/register_static_member_function_out.txt[]
+----
+
 
 ==== Register metamethods
+
+ZetScript API can register static member function or member functions as metamethods in aim  to get the same results as we could see in *xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
 
 ===== Register member metamethods
 
@@ -437,6 +466,7 @@ Returns custom string when string operation operation is invoved
 
 *Syntax*
 
+
 [source,cpp]
 ----
 zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this);
@@ -445,49 +475,53 @@ zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this);
 +++<u>Parameters</u>+++
 
 - __zs_ : ZetScript context
-- __this_ : instance registered object
+- __this_ : The current instance
 
 
 +++<u>Returns</u>+++
 
-A string as a result when string operation operation is invoved
+A zs_string as a result when string operation operation is invoved
 
 *Example*
+
+The following code defines a function that converts and returns current value as string,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+zs_string NumberZs_tostring(ZetScript *_zs,Number *_this){
+	char output[100];
+	sprintf(output,"%0.2f",_this->value);
+	return output;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
 
-//...
+----
+
+Next, it's registered as member metamethod `_tostring` through `registerMemberFunction`,
+
+[source,cpp]
+----
+
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_tostring",&NumberZs_tostring));
+
 	//...
-
 }
 ----
+
+Finally, the following code it shows an example of a script that creates a type _Number_ and prints its content to the console through `Console::outln`. Because `Console::outln` prints string information it calls `_tostring` implicitly.
 
 [source,cpp]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_tostring.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -508,8 +542,8 @@ void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _val
 +++<u>Parameters</u>+++
 
 - __zs_ : ZetScript context
-- __this_ : The pointer instance of registered type
-- __value_ : A value to be set from _ParamType_ pointer. _ParamType_ it can be one of defined in  <<ZetScript built-in types>> or other registered type.
+- __this_ : The current instance
+- __value_ : A value to be set. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 +++<u>Returns</u>+++
 
@@ -517,40 +551,48 @@ None.
 
 *Example*
 
+The following code defines two functions performs an assignment from *xref:chapter_2_the_language_data_types.adoc#&lowbar;float[Float]* value or _Number_ object respectively,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+void NumberZs_set(ZetScript *_zs,Number *_this, zs_float *_n){
+	_this->value=*_n;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+void NumberZs_set(ZetScript *_zs,Number *_this,Number *_n){
+	 _this->value = _n->value;
 }
 
-//...
+----
+
+Next, each function is registered as member metamethod `_set` through `registerMemberFunction`,
+
+[source,cpp]
+----
+
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *, zs_float *)>(&NumberZs_set));
+
+	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that assigns  values from a _Float_ value and _Number_ object.
 
 [source,c++]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_set.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -571,8 +613,8 @@ void RegisteredType_addset(ZetScript *_zs, RegisteredType *_this,ParamType *_val
 +++<u>Parameters</u>+++
 
 - __zs_ : ZetScript context
-- __this_ : The pointer instance of registered type
-- __value_ : A value to be added from _ParamType_ pointer. _ParamType_ it can be one of defined in  <<ZetScript built-in types>> or other registered type.
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
 +++<u>Returns</u>+++
 
@@ -580,40 +622,43 @@ None.
 
 *Example*
 
+The following code defines two functions that performs an addition and assignment to the current instance from  a _Float_ value or _Number_ object respectively,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+void NumberZs_addset(ZetScript *_zs, Number *_this,zs_float *_n){
+	_this->value+=*_n;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+void NumberZs_addset(ZetScript *_zs, Number *_this,Number *_n){
+	_this->value+=_n->value;
 }
+----
 
-//...
+Next, each function is registered as member metamethod `_addset` through `registerMemberFunction`,
 
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_addset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_addset));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_addset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_addset));
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that add and assigns values from a _Float_ value and _Number_  object.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_addset.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -626,14 +671,16 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 *Syntax*
 
-[source,javascript]
+[source,cpp]
 ----
-_subset(_value)
+void RegisteredType_subset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
 +++<u>Parameters</u>+++
 
-- __value_ : Value or variable as right operand
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
 +++<u>Returns</u>+++
 
@@ -641,40 +688,43 @@ None.
 
 *Example*
 
+The following code defines two functions that performs a substraction and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+void NumberZs_subset(ZetScript *_zs, Number *_this,zs_float *_n){
+	_this->value-=*_n;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+void NumberZs_subset(ZetScript *_zs, Number *_this,Number *_n){
+	_this->value-=_n->value;
 }
+----
 
-//...
+Next, each function is registered as member metamethod `_addset` through `registerMemberFunction`,
 
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_subset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_subset));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_subset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_subset));
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that substracts and assigns values from a _Float_ value and _Number_ object.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_subset.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
