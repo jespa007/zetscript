@@ -6,7 +6,7 @@ To make a ZetScript function callable from C&plus;&plus; is done through `ZetScr
 
 [source,c++]
 ----
- ZetScript::bindScriptFunction<ReturnType(ParamType1, ParamType2, ..., ParamType9)>(_script_function);
+ ZetScript::bindScriptFunction<ReturnType(ParamType1, ParamType2, ..., ParamType9)>(const zs_string & _script_function);
 ----
 
 +++<u>Parameters</u>+++
