@@ -12,8 +12,10 @@ public:
 	} 
 };
 
-Data *DataZs_new(zetscript::ZetScript *_zs){
-	return new Data();
+Data *data=NULL;
+
+Data * getData(zetscript::ZetScript *_zs){
+	return data;
 }
 
 bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
@@ -25,28 +27,25 @@ bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
 	return false;
 }
 
-void DataZs_delete(zetscript::ZetScript *_zs, Data *_this){
-	delete _this;
-}
-
 int main(){
 
 	ZetScript zs;
 
-	// Register 'Data' type
-	zs.registerType<Data>("Data",DataZs_new,DataZs_delete);
+	data=new Data();
 
-	// Register '_in' metamethod
+	zs.registerType<Data>("Data");
+	zs.registerFunction("getData",getData);
 	zs.registerMemberFunction<Data>("_in",DataZs_in);
 
-
-	// Evaluates a script that instances "Number" with 10.5 and later it adds 20
 	zs.eval(
-		"var data=new Data();\n"
+		"var data=getData();\n"
 		"if(10 in data){\n"
 		"	Console::outln(\"10 is content in data\")\n"
 		"}\n"
 	);
+
+
+	delete data;
 
 	return 0;
 };

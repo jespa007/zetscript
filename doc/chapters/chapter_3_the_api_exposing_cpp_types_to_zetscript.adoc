@@ -1464,7 +1464,7 @@ Implements _post decrement_ operator (aka a++ )
 
 [source,javascript]
 ----
-RegisteredType *RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
+void RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1478,14 +1478,14 @@ None
 
 *Example*
 
-The following code defines a function as a _postdec_ operation by incrementing the value of current instance,
+The following code defines a function as a _postdec_ operation by decrementing the value of current instance,
 
 [source,cpp]
 ----
 
 void  NumberZs_postdec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value++;
+	_this->value--;
 }
 
 ----
@@ -1528,53 +1528,55 @@ Implements _pre increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-_preinc()
+void RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : The current instance
 
 +++<u>Returns</u>+++
 
-A the object itself
+None
 
 *Example*
+
+The following code defines a function as a _preinc_ operation by incrementing the value of current instance,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+void  NumberZs_preinc(ZetScript *_zs,Number *_this){
+	++_this->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+----
 
-//...
+Next, the function is registered as member metamethod `_preinc` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_preinc",NumberZs_preinc);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a pre increment operation of a _Number_ object.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_preinc.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1589,53 +1591,56 @@ Implements _pre decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-_predec()
+void RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : The current instance
 
 +++<u>Returns</u>+++
 
-A the object itself
+None
 
 *Example*
+
+The following code defines a function as a _predec_ operation by decrementing the value of current instance,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+void  NumberZs_predec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	--_this->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+----
 
-//...
+Next, the function is registered as member metamethod `_predec` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_predec",NumberZs_predec);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a pre decrement operation of a _Number_ object.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_predec.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1650,7 +1655,9 @@ Implements _in_ operator
 
 [source,javascript]
 ----
-_in(_value)
+
+bool RegisteredType_postinc(zetscript::ZetScript *_zs, Data *_this, zs_float *_value);
+
 ----
 
 +++<u>Parameters</u>+++
@@ -1663,40 +1670,46 @@ Boolean telling whether the _value exist in or not
 
 *Example*
 
+Let's define type Data as,
+
 [source,cpp]
 ----
 
-//...
+class Data{
+public:
+	std::vector<float> data;
+	Data(){
+		this->data={0,1,1,10,3,4,6};
+	} 
+};
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
-}
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
-
-//...
-
-void NumberZs_register(zetscript::ZetScript *_zs){
-
-	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
-
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
-	//...
-
-}
 ----
+
+
+The following code defines a function as a _in_ operation by searching in a number in the vector of current instance,
+
+[source,cpp]
+----
+
+bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
+	for(auto d : _this->data){
+		if(d == *_value){
+			return true;;
+		}
+	}
+	return false;
+}
+
+----
+
+The following code shows an example of registering functions and a script that performs a _in_ operation of a _Data_ object.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_in.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
