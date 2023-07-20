@@ -218,7 +218,6 @@ namespace zetscript{
 			,short _line
 	){
 
-#error "HERE IMPLEMENT CASES RETURN TYPE SHOULD BE BOOL, ZS_FLOAT, ZS_INT, ZS_STRING OR CLASSSCRIPTOBJECT"
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
 		MetamethodMemberSetterInfo mp_setter_info;
