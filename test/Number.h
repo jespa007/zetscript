@@ -8,14 +8,14 @@
 class Number{
 public:
 
-	float num;
+	float value;
 
 	Number(){
-		num=0;
+		value=0;
 	}
 
-	Number(float _num){
-		num=_num;
+	Number(float _value){
+		value=_value;
 	}
 
 };

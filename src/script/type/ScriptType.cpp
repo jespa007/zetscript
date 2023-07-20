@@ -406,17 +406,32 @@ namespace zetscript{
 
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
-						if(op == METAMETHOD_BYTE_CODE_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
-							ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
+
+						/*switch(_idx_return_type){
+						case IDX_TYPE_SCRIPT_OBJECT_CLASS:
+						case IDX_TYPE_ZS_STRING_C:
+						case IDX_TYPE_ZS_INT_C:
+						case IDX_TYPE_ZS_FLOAT_C:
+						case IDX_TYPE_BOOL_C:
+							break;
+
+						default:
+							ZS_THROW_RUNTIME_ERROR(
+								"Error on register Metamethod '%s::%s'. Invalid return type. Metamethods can only return on of these types:\n"
+								"- bool \n"
+								"-  \n"
+								"- zs_float \n"
+								"- zs_float \n"
 								,str_script_type.c_str()
 								,_function_name.c_str()
 							);
 							return NULL;
-						}
+						}*/
+
 
 						if(_function_properties & FUNCTION_PROPERTY_STATIC){
 
-							// check if they are gte,gt,equ, not_equ, lt, lte
+							// ensure logic metamethods returns bool type
 							switch(i){
 							case METAMETHOD_BYTE_CODE_EQU: //STRCMP(name_script_function, == ,"_equ")
 							case METAMETHOD_BYTE_CODE_NOT_EQU: //STRCMP(name_script_function, ==, "_nequ")
@@ -425,10 +440,11 @@ namespace zetscript{
 							case METAMETHOD_BYTE_CODE_GT://STRCMP(name_script_function, ==, "_gt")
 							case METAMETHOD_BYTE_CODE_GTE://STRCMP(name_script_function, ==, "_gte")
 							case METAMETHOD_BYTE_CODE_NOT://STRCMP(name_script_function, ==, "_gte")
+							case METAMETHOD_BYTE_CODE_IN:
 
 								// return type must be bool...
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
-									ZS_THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
+									ZS_THROW_RUNTIME_ERROR("Error registering static metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
 											this->str_script_type.c_str(),
 											_function_name.c_str(),
 											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
@@ -440,12 +456,22 @@ namespace zetscript{
 							case METAMETHOD_BYTE_CODE_SUB: // -
 							case METAMETHOD_BYTE_CODE_DIV: // /
 							case METAMETHOD_BYTE_CODE_MUL: // *
-							case METAMETHOD_BYTE_CODE_MOD:  // %
+							case METAMETHOD_BYTE_CODE_MOD: // %
 							case METAMETHOD_BYTE_CODE_AND: // & bitwise logic and
-							case METAMETHOD_BYTE_CODE_OR: // | bitwise logic or
+							case METAMETHOD_BYTE_CODE_OR:  // | bitwise logic or
 							case METAMETHOD_BYTE_CODE_XOR: // ^ logic xor
 							case METAMETHOD_BYTE_CODE_SHL: // << shift left
 							case METAMETHOD_BYTE_CODE_SHR: // >> shift right
+								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
+									ZS_THROW_RUNTIME_ERROR("Error registering static metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
+										this->str_script_type.c_str(),
+										_function_name.c_str(),
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+
+									return NULL;
+								}
+								break;
 
 								/*if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
 
@@ -457,13 +483,84 @@ namespace zetscript{
 									);
 									return NULL;
 								}*/
-								break;
+
 							default:
+
+								ZS_THROW_RUNTIME_ERROR("Internal error registering static metamethod '%s::%s'. Metamethod '%s' not supported or not implemented",
+									this->str_script_type.c_str(),
+									_function_name.c_str(),
+									_function_name.c_str()
+								);
+
+								return NULL;
+
 								break;
 							}
 
 
 
+						}else{
+							// member metamethod
+							switch(i){
+							case METAMETHOD_BYTE_CODE_TO_STRING:
+								if(_idx_return_type != IDX_TYPE_ZS_STRING_C){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'zs_string' but it was '%s'",
+											this->str_script_type.c_str(),
+											_function_name.c_str(),
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+									return NULL;
+								}
+								break;
+							case METAMETHOD_BYTE_CODE_NOT:
+
+								if(_idx_return_type != IDX_TYPE_BOOL_C){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
+											this->str_script_type.c_str(),
+											_function_name.c_str(),
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+									return NULL;
+								}
+								break;
+							case METAMETHOD_BYTE_CODE_SET:
+							case METAMETHOD_BYTE_CODE_ADD_SET:
+							case METAMETHOD_BYTE_CODE_SUB_SET:
+							case METAMETHOD_BYTE_CODE_MUL_SET:
+							case METAMETHOD_BYTE_CODE_DIV_SET:
+							case METAMETHOD_BYTE_CODE_MOD_SET:
+							case METAMETHOD_BYTE_CODE_AND_SET:
+							case METAMETHOD_BYTE_CODE_OR_SET:
+							case METAMETHOD_BYTE_CODE_XOR_SET:
+							case METAMETHOD_BYTE_CODE_SHL_SET:
+							case METAMETHOD_BYTE_CODE_SHR_SET:
+							case METAMETHOD_BYTE_CODE_NEG:
+							case METAMETHOD_BYTE_CODE_BWC:
+							case METAMETHOD_BYTE_CODE_POST_INC: // i++
+							case METAMETHOD_BYTE_CODE_POST_DEC: // i--
+							case METAMETHOD_BYTE_CODE_PRE_INC: // ++i
+							case METAMETHOD_BYTE_CODE_PRE_DEC: // --i
+								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
+										this->str_script_type.c_str(),
+										_function_name.c_str(),
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+
+									return NULL;
+								}
+								break;
+							default:
+								ZS_THROW_RUNTIME_ERROR("Internal error registering member metamethod '%s::%s'. Metamethod '%s' not supported or not implemented",
+									this->str_script_type.c_str(),
+									_function_name.c_str(),
+									_function_name.c_str()
+								);
+
+								return NULL;
+
+
+							}
 						}
 
 						if(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION){

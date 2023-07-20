@@ -45,7 +45,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 	}\
 	if(irfs==NULL) continue;
 
-#define ZS_VM_INNER_CALL(_so_object,_so_function,_n_args,_name)\
+#define ZS_VM_INNER_CALL(_so_object,_so_function,_n_args)\
 	if(vm_inner_call( \
 			_vm \
 			,_script_function \
@@ -56,6 +56,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 	)==false){\
 		goto lbl_exit_function;\
 	}\
+
 
 #define ZS_VM_PROPERTY_CALL_FROM_NATIVE	0x1
 
@@ -232,6 +233,7 @@ namespace zetscript{
 		,ScriptObject 			*	_script_object
 		,ScriptFunction 		*	_script_function_to_call
 		,int 						_n_args
+		,bool 						_reset_stack=true
 	);
 
 	bool vm_new_object_by_value(

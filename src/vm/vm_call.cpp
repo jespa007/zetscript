@@ -11,6 +11,7 @@ namespace zetscript{
 		,ScriptObject 	*	_script_object
 		,ScriptFunction *	_script_function_to_call
 		,int 				_n_args
+		,bool 				_reset_stack
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		StackElement 		*	stk_def_afun_start=data->vm_stk_current;
@@ -53,8 +54,10 @@ namespace zetscript{
 		/* we share pointer (true second arg) to not remove on pop in calling return */
 		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun);
 
-		/* reset stack */
-		data->vm_stk_current=stk_def_afun_start;
+		if(_reset_stack == true){
+			/* reset stack */
+			data->vm_stk_current=stk_def_afun_start;
+		}
 
 		return true;
 
@@ -386,7 +389,6 @@ execute_function:
 							NULL
 							,(ScriptFunction *)(((Symbol *)param->default_param_value.value)->ref_ptr)
 							, 0
-							,((Symbol *)param->default_param_value.value)->name.c_str()
 						)
 
 						// if script object it shares in order to be used as variable in the function to be called

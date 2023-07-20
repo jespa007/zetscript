@@ -204,7 +204,7 @@ namespace zetscript{
 		}
 
 		// setup all returned variables from function
-		for(int i=0; i < n_returned_arguments_from_function; i++){
+		/*for(int i=0; i < n_returned_arguments_from_function; i++){
 
 			StackElement *stk_ret = --data->vm_stk_current;
 
@@ -220,7 +220,7 @@ namespace zetscript{
 				}
 			}
 			// ... and push result if not function constructor...
-		}
+		}*/
 
 		ret_obj=stk_return[0];
 
@@ -397,7 +397,6 @@ namespace zetscript{
 			so_aux\
 			,ptr_function_found\
 			,1 \
-			,ptr_function_found->name_script_function.c_str()\
 		);\
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
@@ -406,7 +405,6 @@ namespace zetscript{
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
-					,ptr_metamethod_members_aux->getter->name.c_str()\
 			);\
 		}else{ /* store object */ \
 			if(_stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -489,7 +487,6 @@ namespace zetscript{
 					so_aux\
 					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr\
 					, 0 \
-					,symbol_metamethod_pre_operation->name\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
@@ -501,13 +498,23 @@ namespace zetscript{
 		}\
 		data->vm_stk_current++;\
 
-		/* call post operation metamethod */\
-		ZS_VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)symbol_metamethod_post->ref_ptr\
-				, 0 \
-				,symbol_metamethod_post->name\
-		);\
+		/**
+		 * call post operation metamethod and not reset stack due we want to use a clone of
+		 * returning object before post operation in case is returned
+		 **/
+
+		if(vm_inner_call(
+				_vm
+				,_script_function
+				,instruction
+				,so_aux
+				,(ScriptFunction *)symbol_metamethod_post->ref_ptr
+				,0
+				,false
+		)==false){\
+			goto lbl_exit_function;\
+		}\
+
 		return true;
 
 lbl_exit_function:
@@ -554,7 +561,6 @@ lbl_exit_function:
 				so_aux\
 				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr\
 				,0 \
-				,symbol_metamethod_pre->name\
 		);\
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
@@ -563,7 +569,6 @@ lbl_exit_function:
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
-					,ptr_metamethod_members_aux->getter->name\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\

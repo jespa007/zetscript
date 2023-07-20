@@ -652,7 +652,7 @@ namespace zetscript{
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_postinc");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_next");
 
 				// call
 				ei_post_operations.push_back(

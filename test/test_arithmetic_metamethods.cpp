@@ -4,7 +4,7 @@
  */
 
 #include "test_arithmetic_common.h"
-#include "NumberZs.cpp"
+#include "NumberZs.h"
 
 
 #define COMPLETE_TEST_ARITHMETIC_INTEGER_OP_WITH_CLASS_NUMBER_CC(_zs,val1,val2)  _complete_test_arithmetic_integer_op(_zs,val1,val2,"it1=("\

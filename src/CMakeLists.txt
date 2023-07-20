@@ -249,8 +249,8 @@ add_executable(zs${POST_NAME}
 )
 target_link_libraries(zs${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME} )
 
-if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
-	MESSAGE ("-- Suit samples: Yes")
+if ((SAMPLES) OR (NOT DEFINED SAMPLES))
+	MESSAGE ("-- Samples: Yes")
 
 	# helloworld
 	add_executable(helloworld${POST_NAME}
@@ -286,8 +286,8 @@ else()
 endif()
 
 
-if ((SUITTESTS) OR (NOT DEFINED SUITTESTS))
-	MESSAGE ("-- Suit test: Yes")
+if ((TESTS) OR (NOT DEFINED TESTS))
+	MESSAGE ("-- Tests: Yes")
 	
 	
 	#-----------------------------------------------

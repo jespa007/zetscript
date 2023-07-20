@@ -308,7 +308,7 @@ namespace zetscript{
 		registerMemberFunction<StringScriptObject>("_iter",StringScriptObjectZs_iter);
 
 		// IteratorString
-		registerMemberFunction<StringIteratorScriptObject>("_postinc",StringIteratorScriptObjectZs_next);
+		registerMemberFunction<StringIteratorScriptObject>("_next",StringIteratorScriptObjectZs_next);
 		registerMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObjectZs_end);
 		registerMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectZs_get);
 
@@ -334,7 +334,7 @@ namespace zetscript{
 		//registerStaticMemberFunction<ArrayScriptObject>("_add",&ArrayScriptObjectZs_equal_add);
 
 		// IteratorArray
-		registerMemberFunction<ArrayIteratorScriptObject>("_postinc",ArrayIteratorScriptObjectZs_next);
+		registerMemberFunction<ArrayIteratorScriptObject>("_next",ArrayIteratorScriptObjectZs_next);
 		registerMemberFunction<ArrayIteratorScriptObject>("_end",ArrayIteratorScriptObjectZs_end);
 		registerMemberFunction<ArrayIteratorScriptObject>("_get",ArrayIteratorScriptObjectZs_get);
 
@@ -350,7 +350,7 @@ namespace zetscript{
 		registerStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectZs_iter);
 
 		// IteratorObject
-		registerMemberFunction<ObjectIteratorScriptObject>("_postinc",ObjectIteratorScriptObjectZs_next);
+		registerMemberFunction<ObjectIteratorScriptObject>("_next",ObjectIteratorScriptObjectZs_next);
 		registerMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObjectZs_end);
 		registerMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObjectZs_get);
 

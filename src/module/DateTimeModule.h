@@ -6,6 +6,8 @@
 
 namespace zetscript{
 
+	class ClassScriptObject;
+
 	// member functions
 	zs_datetime * 		DateTimeModule_new(ZetScript *_zs);
 	void DateTimeModule_constructor(
@@ -19,7 +21,8 @@ namespace zetscript{
 			,zs_int _second
 	);
 	/*zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);*/
-	zs_timespan * 		DateTimeModule_sub(ZetScript *_zs,zs_datetime *dt1,zs_datetime *dt2);
+
+	ClassScriptObject * 		DateTimeModule_sub(ZetScript *_zs,zs_datetime *dt1,zs_datetime *dt2);
 
 	void 				DateTimeModule_setUtc(ZetScript *_zs,zs_datetime *_this);
 

@@ -195,7 +195,6 @@ namespace zetscript{
 						stk_mp_aux->so_object
 						,((ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
 						,0
-						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str()
 					);
 
 					if(
@@ -299,7 +298,6 @@ namespace zetscript{
 						stk_mp_aux->so_object
 						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr
 						,0 \
-						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str()
 				);
 				/* restore */
 				stk_result=data->vm_stk_current;

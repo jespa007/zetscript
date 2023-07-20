@@ -73,7 +73,7 @@ namespace zetscript{
 				so_object=NULL;
 			}
 
-			ZS_VM_INNER_CALL(so_object,so_function,n_args,"_iter");
+			ZS_VM_INNER_CALL(so_object,so_function,n_args);
 
 			// ok vm_stk_current holds the iter object
 			if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -100,8 +100,8 @@ namespace zetscript{
 				return false;
 			}
 
-			if(sc->getSymbolMemberFunction("_postinc")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement '_postinc' function",obj->getTypeName());
+			if(sc->getSymbolMemberFunction("_next")==NULL){
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getTypeName());
 				return false;
 			}
 
