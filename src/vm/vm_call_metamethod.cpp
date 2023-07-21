@@ -445,6 +445,7 @@ namespace zetscript{
 		StackElementMemberProperty	*	stk_mp_aux=NULL;
 		Instruction			*	instruction=_instruction;
 		StackElement 		*   start_stk=data->vm_stk_current;
+		StackElement 			ret_obj;
 
 		LOAD_PROPERTIES(_metamethod_byte_code);\
 
@@ -484,6 +485,23 @@ namespace zetscript{
 			break;
 		}
 
+		/*if(symbol_metamethod_pre_operation != NULL){
+			// call _neg
+			ZS_VM_INNER_CALL(
+					so_aux
+					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr
+					, 0
+			);
+		}else{ // store object
+			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				data->vm_stk_current->value=(zs_int)so_aux;
+				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			}else{
+				*data->vm_stk_current=__ZS_STK_VAR_COPY__;
+			}
+		}
+		data->vm_stk_current++;*/
+
 		/**
 		 * call post operation metamethod and not reset stack due we want to use a clone of
 		 * returning object before post operation in case is returned
@@ -501,12 +519,20 @@ namespace zetscript{
 			goto lbl_exit_function;\
 		}\
 
+		ret_obj=k_stk_undefined;
+
+		if((data->vm_stk_current - start_stk) != 0){
+			// get return object
+			ret_obj=*(data->vm_stk_current-1);
+			data->vm_stk_current--;
+		}
+
+
+
 		if(symbol_metamethod_pre_operation != NULL){
 			// if postinc implements a function that returns a value it will return negated, else
 			// it will complain that cannot do a negated of undefined value (TODO: improve by giving a hint to the user)
-			StackElement ret_obj;
-
-			if((data->vm_stk_current - start_stk) != 1){
+			if(ret_obj.properties == 0){
 
 				ZS_VM_MAIN_ERROR(\
 					VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION\
@@ -515,10 +541,6 @@ namespace zetscript{
 				);\
 			}
 
-			// get return object
-			ret_obj=*(data->vm_stk_current-1);
-
-			data->vm_stk_current--;
 			// dec stack
 
 			// call _neg
@@ -534,6 +556,18 @@ namespace zetscript{
 				goto lbl_exit_function;\
 			}\
 
+		}else{
+			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				/*if(ret_obj.properties==0){
+					data->vm_stk_current->value=(zs_int)so_aux;
+					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				}else{*/
+					*data->vm_stk_current=ret_obj;
+				//}
+			}else{
+				*data->vm_stk_current=__ZS_STK_VAR_COPY__;
+			}
+			data->vm_stk_current++;
 		}
 
 
