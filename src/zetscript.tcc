@@ -4,10 +4,10 @@
  */
 
 
-#include 	"script/type/ScriptTypeFactory.tcc"
-#include 	"script/object/ArrayScriptObject.tcc"
-#include 	"script/object/ObjectScriptObject.tcc"
-#include 	"script/object/ClassScriptObject.tcc"
+#include 	"script/script_type/ScriptTypeFactory.tcc"
+#include 	"script/script_object/ArrayScriptObject.tcc"
+#include 	"script/script_object/ObjectScriptObject.tcc"
+#include 	"script/script_object/ClassScriptObject.tcc"
 
 
 

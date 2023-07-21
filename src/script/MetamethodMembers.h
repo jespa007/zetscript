@@ -57,7 +57,7 @@ namespace zetscript{
 		zs_vector<StackElement *> xor_setters; // ^=
 		zs_vector<StackElement *> shl_setters; // <<=
 		zs_vector<StackElement *> shr_setters; // >>=
-		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg,*bwc; // getter
+		Symbol *getter,*postinc,*postdec,*preinc,*predec,*neg,*bwc; // getter
 
 		const static MetamethodByteCode 	metamethod_byte_code_member_setter_list[];
 		const static MetamethodByteCode 	metamethod_byte_code_member_list[];

@@ -308,7 +308,7 @@ namespace zetscript{
 		registerMemberFunction<StringScriptObject>("_iter",StringScriptObjectZs_iter);
 
 		// IteratorString
-		registerMemberFunction<StringIteratorScriptObject>("_next",StringIteratorScriptObjectZs_next);
+		registerMemberFunction<StringIteratorScriptObject>("_postinc",StringIteratorScriptObjectZs_next);
 		registerMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObjectZs_end);
 		registerMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectZs_get);
 
@@ -334,7 +334,7 @@ namespace zetscript{
 		//registerStaticMemberFunction<ArrayScriptObject>("_add",&ArrayScriptObjectZs_equal_add);
 
 		// IteratorArray
-		registerMemberFunction<ArrayIteratorScriptObject>("_next",ArrayIteratorScriptObjectZs_next);
+		registerMemberFunction<ArrayIteratorScriptObject>("_postinc",ArrayIteratorScriptObjectZs_next);
 		registerMemberFunction<ArrayIteratorScriptObject>("_end",ArrayIteratorScriptObjectZs_end);
 		registerMemberFunction<ArrayIteratorScriptObject>("_get",ArrayIteratorScriptObjectZs_get);
 
@@ -350,7 +350,7 @@ namespace zetscript{
 		registerStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectZs_iter);
 
 		// IteratorObject
-		registerMemberFunction<ObjectIteratorScriptObject>("_next",ObjectIteratorScriptObjectZs_next);
+		registerMemberFunction<ObjectIteratorScriptObject>("_postinc",ObjectIteratorScriptObjectZs_next);
 		registerMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObjectZs_end);
 		registerMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObjectZs_get);
 
@@ -505,10 +505,10 @@ namespace zetscript{
 						MemberProperty *mp_src=(MemberProperty *)symbol_src->ref_ptr;
 						MemberProperty *mp_dst=new MemberProperty(sc,mp_src->property_name);
 						mp_dst->metamethod_members.getter=mp_src->metamethod_members.getter;
-						mp_dst->metamethod_members.post_inc=mp_src->metamethod_members.post_inc;
-						mp_dst->metamethod_members.post_dec=mp_src->metamethod_members.post_dec;
-						mp_dst->metamethod_members.pre_inc=mp_src->metamethod_members.pre_inc;
-						mp_dst->metamethod_members.pre_dec=mp_src->metamethod_members.pre_dec;
+						mp_dst->metamethod_members.postinc=mp_src->metamethod_members.postinc;
+						mp_dst->metamethod_members.postdec=mp_src->metamethod_members.postdec;
+						mp_dst->metamethod_members.preinc=mp_src->metamethod_members.preinc;
+						mp_dst->metamethod_members.predec=mp_src->metamethod_members.predec;
 						mp_dst->metamethod_members.neg=mp_src->metamethod_members.neg;
 						mp_dst->metamethod_members.bwc=mp_src->metamethod_members.bwc;
 

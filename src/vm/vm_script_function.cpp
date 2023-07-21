@@ -119,7 +119,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(!=, METAMETHOD_BYTE_CODE_NOT_EQU,false);
+				VM_OPERATION_COMPARE(!=, METAMETHOD_BYTE_CODE_NEQU,false);
 				continue;
 			case BYTE_CODE_LT:  // <
 				VM_POP_STK_TWO;
@@ -717,7 +717,7 @@ namespace zetscript{
 		bool result=false;
 
 		switch(_metamethod_byte_code){
-		case METAMETHOD_BYTE_CODE_NOT_EQU:
+		case METAMETHOD_BYTE_CODE_NEQU:
 			result= ZS_STRCMP(str1.c_str(),!=,str2.c_str());
 			break;
 		case METAMETHOD_BYTE_CODE_EQU:
@@ -757,6 +757,7 @@ namespace zetscript{
 		Instruction			*	instruction=_instruction;
 
 		switch(_error){
+
 		case 	VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR:
 			vm_set_file_line_error(\
 				_vm \
@@ -834,6 +835,19 @@ namespace zetscript{
 				}
 
 			}
+			break;
+
+			case VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION:
+				vm_set_file_line_error(\
+					_vm \
+					,SFI_GET_FILE(_script_function,instruction)\
+					,SFI_GET_LINE(_script_function,instruction)\
+					,"Symbol '%s' as type '%s' the metamethod '%s' (aka '%s') doesn't returns value to perform negate operation" \
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
+					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
+					,metamethod_byte_code_to_symbol_str(_metamethod_byte_code)\
+					,metamethod_byte_code_to_operator_str(_metamethod_byte_code)\
+				);\
 			break;
 		}
 	}

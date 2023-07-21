@@ -9,7 +9,7 @@ namespace zetscript{
 	const char * metamethod_byte_code_to_operator_str(MetamethodByteCode op){
 		switch (op) {
 			case	METAMETHOD_BYTE_CODE_EQU:		return  "==";  		// ==
-			case	METAMETHOD_BYTE_CODE_NOT_EQU: 	return  "!=";  		// !=,
+			case	METAMETHOD_BYTE_CODE_NEQU: 	return  "!=";  		// !=,
 			case	METAMETHOD_BYTE_CODE_LT:		return  "<";  		// <
 			case	METAMETHOD_BYTE_CODE_LTE:		return  "<=";  		// <=
 			case	METAMETHOD_BYTE_CODE_NOT:		return  "!"; 		// !
@@ -57,7 +57,7 @@ namespace zetscript{
 		default:
 			break;
 			case	METAMETHOD_BYTE_CODE_EQU:		return  "_equ"; 	// ==
-			case	METAMETHOD_BYTE_CODE_NOT_EQU: 	return  "_nequ";  	// !=,
+			case	METAMETHOD_BYTE_CODE_NEQU: 	return  "_nequ";  	// !=,
 			case	METAMETHOD_BYTE_CODE_LT:		return  "_lt";  	// <
 			case	METAMETHOD_BYTE_CODE_LTE:		return  "_lte";  	// <=
 			case	METAMETHOD_BYTE_CODE_NOT:		return  "_not"; 	// !
@@ -135,7 +135,7 @@ namespace zetscript{
 
 		switch(op){
 		case METAMETHOD_BYTE_CODE_EQU:
-		case METAMETHOD_BYTE_CODE_NOT_EQU:
+		case METAMETHOD_BYTE_CODE_NEQU:
 		case METAMETHOD_BYTE_CODE_LT:
 		case METAMETHOD_BYTE_CODE_LTE:
 		case METAMETHOD_BYTE_CODE_GT:

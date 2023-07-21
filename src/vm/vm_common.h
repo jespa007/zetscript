@@ -155,6 +155,7 @@ namespace zetscript{
 		,VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED
 		,VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED
 		,VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
+		,VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION
 	}VM_MainError;
 
 	typedef struct{
@@ -233,7 +234,7 @@ namespace zetscript{
 		,ScriptObject 			*	_script_object
 		,ScriptFunction 		*	_script_function_to_call
 		,int 						_n_args
-		,bool 						_reset_stack=true
+		,bool 						_stack_return_value=false
 	);
 
 	bool vm_new_object_by_value(

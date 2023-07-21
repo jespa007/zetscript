@@ -375,84 +375,45 @@ namespace zetscript{
 						return NULL;
 					}
 
-					if(name_script_function == "_get"){
-						if(mp->metamethod_members.getter==NULL){
-							mp->metamethod_members.getter=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property '%s' has already a getter"
-								,property_name.c_str()
-							);
+					struct CheckSymbolInfo{
+						const char *name;
+						Symbol **symbol;
+
+					}check_symbol_info[]={
+							{"_get",&mp->metamethod_members.getter}
+							,{"_postinc",&mp->metamethod_members.postinc}
+							,{"_postdec",&mp->metamethod_members.postdec}
+							,{"_preinc",&mp->metamethod_members.preinc}
+							,{"_predec",&mp->metamethod_members.predec}
+							,{"_neg",&mp->metamethod_members.neg}
+							,{"_bwc",&mp->metamethod_members.bwc}
+							,{NULL,NULL}
+					};
+
+					CheckSymbolInfo *it=check_symbol_info;
+
+					while(it->name != NULL){
+						if(name_script_function == it->name){
+							if(*it->symbol==NULL){
+								*it->symbol=symbol;
+								break;
+							}else{
+								EVAL_ERROR_FILE_LINE(
+									eval_data->current_parsing_file
+									,line
+									,"Property '%s' has already a '%s' implemented"
+									,property_name.c_str()
+									,it->name
+								);
+							}
 						}
-					}else if(name_script_function == "_postinc"){
-						if(mp->metamethod_members.post_inc==NULL){
-							mp->metamethod_members.post_inc=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property '%s' has already a post increment (aka i++) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else if(name_script_function == "_postdec"){
-						if(mp->metamethod_members.post_dec==NULL){
-							mp->metamethod_members.post_dec=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property '%s' has already a post decrement (aka i--) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else if(name_script_function == "_preinc"){
-						if(mp->metamethod_members.pre_inc==NULL){
-							mp->metamethod_members.pre_inc=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property '%s' has already  a pre increment (aka ++i) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else if(name_script_function == "_predec"){
-						if(mp->metamethod_members.pre_dec==NULL){
-							mp->metamethod_members.pre_dec=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property '%s' has already a pre decrement (aka --i) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else if(name_script_function == "_neg"){
-						if(mp->metamethod_members.neg==NULL){
-							mp->metamethod_members.neg=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property \"%s\" has already a neg (aka -) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else if(name_script_function == "_bwc"){
-						if(mp->metamethod_members.bwc==NULL){
-							mp->metamethod_members.bwc=symbol;
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property \"%s\" has already a bitwise complement (aka ~) metamethod"
-								,property_name.c_str()
-							);
-						}
-					}else{ // find setter
+
+						it++;
+					}
+
+					if(it->name==NULL){
+						// find setter
+
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
 						if(_mp_info.metamethod_byte_code!=METAMETHOD_BYTE_CODE_INVALID){
@@ -467,10 +428,11 @@ namespace zetscript{
 									,_mp_info.metamethod_name
 								);
 							}
-						} else{
+						}else{
+
+							// metamethod not found !
 
 							zs_string list_valid_metamethods="";
-
 
 
 							list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)+"'\n";

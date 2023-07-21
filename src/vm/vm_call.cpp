@@ -11,15 +11,27 @@ namespace zetscript{
 		,ScriptObject 	*	_script_object
 		,ScriptFunction *	_script_function_to_call
 		,int 				_n_args
-		,bool 				_reset_stack
+		,bool 				_stack_return_value
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		StackElement 		*	stk_def_afun_start=data->vm_stk_current;
 		int 					n_returned_args_afun=0;
 		Instruction			*	instruction=_instruction;
+		StackElement		 	ret_obj;
+		StackElement		*	stk_return=NULL;
+		size_t					n_stk_local_symbols=0;
 
 
-		if((_script_function_to_call)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+		if(((_script_function_to_call)->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+			vm_execute_script_function(
+				_vm
+				,_script_object
+				,_script_function_to_call
+				,stk_def_afun_start
+			);
+
+			n_stk_local_symbols=_script_function_to_call->local_variables->size();
+		}else{
 			vm_execute_native_function(
 					_vm
 					,_script_function
@@ -29,13 +41,7 @@ namespace zetscript{
 					,stk_def_afun_start
 					,_n_args
 			);
-		}else{
-			vm_execute_script_function(
-				_vm
-				,_script_object
-				,_script_function_to_call
-				,stk_def_afun_start
-			);
+
 		}
 		if(data->vm_error == true){
 
@@ -50,13 +56,21 @@ namespace zetscript{
 				goto lbl_exit_function;
 			}*/
 		}
-		n_returned_args_afun=data->vm_stk_current-stk_def_afun_start;
-		/* we share pointer (true second arg) to not remove on pop in calling return */
-		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun);
 
-		if(_reset_stack == true){
-			/* reset stack */
-			data->vm_stk_current=stk_def_afun_start;
+		stk_return=(stk_def_afun_start+n_stk_local_symbols );
+		n_returned_args_afun=data->vm_stk_current-stk_return;
+
+		/* we share pointer (true second arg) to not remove on pop in calling return */
+		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_args_afun);
+
+		ret_obj=stk_return[0];
+
+		/* reset stack */
+		data->vm_stk_current=stk_def_afun_start;
+
+
+		if((n_returned_args_afun > 0) && (_stack_return_value == true)){
+			*data->vm_stk_current++ = ret_obj;
 		}
 
 		return true;

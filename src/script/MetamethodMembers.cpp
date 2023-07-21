@@ -43,10 +43,10 @@ namespace zetscript{
 
 	MetamethodMembers::MetamethodMembers(){
 		getter= NULL;
-		post_inc=NULL;
-		post_dec=NULL;
-		pre_inc=NULL;
-		pre_dec=NULL;
+		postinc=NULL;
+		postdec=NULL;
+		preinc=NULL;
+		predec=NULL;
 		neg=NULL;
 		bwc=NULL;
 	}
@@ -119,16 +119,16 @@ namespace zetscript{
 		info.metamethod_name=metamethod_byte_code_to_symbol_str(_metamethod_byte_code);
 		switch(_metamethod_byte_code){
 			case METAMETHOD_BYTE_CODE_POST_INC:
-				info.getter=&post_inc;
+				info.getter=&postinc;
 				break;
 			case METAMETHOD_BYTE_CODE_POST_DEC:
-				 info.getter=&post_dec;
+				 info.getter=&postdec;
 				break;
 			case METAMETHOD_BYTE_CODE_PRE_INC:
-				info.getter=&pre_inc;
+				info.getter=&preinc;
 				break;
 			case METAMETHOD_BYTE_CODE_PRE_DEC:
-				info.getter=&pre_dec;
+				info.getter=&predec;
 				break;
 			case METAMETHOD_BYTE_CODE_NEG:
 				info.getter=&neg;
@@ -284,10 +284,10 @@ namespace zetscript{
 
 
 		getter = NULL;
-		post_inc = NULL;
-		post_dec = NULL;
-		pre_inc = NULL;
-		pre_dec = NULL;
+		postinc = NULL;
+		postdec = NULL;
+		preinc = NULL;
+		predec = NULL;
 		neg = NULL;
 		bwc=NULL;
 	}

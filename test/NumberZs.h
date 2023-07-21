@@ -3,12 +3,14 @@
  *  See LICENSE file for details.
  */
 
+#include "zetscript.h"
 #include "Number.h"
 
 using zetscript::ZetScript;
 using zetscript::zs_float;
 using zetscript::zs_int;
 using zetscript::zs_string;
+using zetscript::ClassScriptObject;
 
 
 Number *NumberZs_new(ZetScript *_zs){
@@ -180,19 +182,23 @@ bool NumberZs_not(ZetScript *_zs,Number *_this){
 	return _this->value == 0;
 }
 
-Number * NumberZs_neg(ZetScript *_zs,Number *_this){
+ClassScriptObject * NumberZs_neg(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(-_this->value);
+	return _zs->newClassScriptObject(new Number(-_this->value));
 }
 
-void  NumberZs_postinc(ZetScript *_zs,Number *_this){
+ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
+	Number *number_before_increment=new Number(_this->value);
 	_this->value++;
+	return _zs->newClassScriptObject(number_before_increment);
 }
 
-void  NumberZs_postdec(ZetScript *_zs,Number *_this){
+ClassScriptObject *  NumberZs_postdec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
+	Number *number_before_increment=new Number(_this->value);
 	_this->value--;
+	return _zs->newClassScriptObject(number_before_increment);
 }
 
 void  NumberZs_preinc(ZetScript *_zs,Number *_this){
@@ -306,163 +312,163 @@ bool NumberZs_gte(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 
 // _add (a.k.a '+')
-Number * NumberZs_add(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_add(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value +_n2->value);
+	return _zs->newClassScriptObject(new Number(_n1->value +_n2->value));
 }
 
-Number * NumberZs_add(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_add(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value + *_n2);
+	return _zs->newClassScriptObject(new Number(_n1->value + *_n2));
 }
 
-Number * NumberZs_add(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_add(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(*_n1 + _n2->value);
+	return _zs->newClassScriptObject(new Number(*_n1 + _n2->value));
 }
 
 // _sub (a.k.a '-')
-Number * NumberZs_sub(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value - _n2->value);
+	return _zs->newClassScriptObject(new Number(_n1->value - _n2->value));
 }
 
-Number * NumberZs_sub(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value - *_n2);
+	return _zs->newClassScriptObject(new Number(_n1->value - *_n2));
 }
 
-Number * NumberZs_sub(ZetScript *_zs,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(*_n1 - _n2->value);
+	return _zs->newClassScriptObject(new Number(*_n1 - _n2->value));
 }
 
 // _mul (a.k.a '*')
-Number * NumberZs_mul(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value * _n2->value);
+	return _zs->newClassScriptObject(new Number(_n1->value * _n2->value));
 }
 
-Number * NumberZs_mul(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value * (*_n2));
+	return _zs->newClassScriptObject(new Number(_n1->value * (*_n2)));
 }
 
-Number * NumberZs_mul(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(*_n1 * _n2->value);
+	return _zs->newClassScriptObject(new Number(*_n1 * _n2->value));
 }
 
 // _div (a.k.a '/')
-Number * NumberZs_div(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_div(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value / _n2->value);
+	return _zs->newClassScriptObject(new Number(_n1->value / _n2->value));
 }
 
-Number * NumberZs_div(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_div(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(_n1->value / *_n2);
+	return _zs->newClassScriptObject(new Number(_n1->value / *_n2));
 }
 
-Number * NumberZs_div(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_div(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(*_n1 / _n2->value);
+	return _zs->newClassScriptObject(new Number(*_n1 / _n2->value));
 }
 
 // _mod (a.k.a '%')
-Number * NumberZs_mod(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(fmod(_n1->value,_n2->value));
+	return _zs->newClassScriptObject(new Number(fmod(_n1->value,_n2->value)));
 }
 
-Number * NumberZs_mod(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(fmod(_n1->value, *_n2));
+	return _zs->newClassScriptObject(new Number(fmod(_n1->value, *_n2)));
 }
 
-Number * NumberZs_mod(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number(fmod(*_n1, _n2->value));
+	return _zs->newClassScriptObject(new Number(fmod(*_n1, _n2->value)));
 }
 
 // _and (a.k.a '&')
-Number * NumberZs_and(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_and(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value & (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)_n2->value));
 }
 
-Number * NumberZs_and(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_and(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value & (zs_int)*_n2);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)*_n2));
 }
 
-Number * NumberZs_and(ZetScript *_zs,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_and(ZetScript *_zs,zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)*_n1 & (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 & (zs_int)_n2->value));
 }
 
 // _or (a.k.a '|')
-Number * NumberZs_or(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_or(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value | (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)_n2->value));
 }
 
-Number * NumberZs_or(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_or(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value | (zs_int)*_n2);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)*_n2));
 }
 
-Number * NumberZs_or(ZetScript *_zs,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_or(ZetScript *_zs,zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)*_n1 | (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 | (zs_int)_n2->value));
 }
 
 // _xor (a.k.a '^')
-Number * NumberZs_xor(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value ^ (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)_n2->value));
 }
 
-Number * NumberZs_xor(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value ^ (zs_int)*_n2);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)*_n2));
 }
 
-Number * NumberZs_xor(ZetScript *_zs,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)*_n1 ^ (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 ^ (zs_int)_n2->value));
 }
 
 // _shr (a.k.a '>>')
-Number * NumberZs_shr(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value >> (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)_n2->value));
 }
 
-Number * NumberZs_shr(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value >> (zs_int)*_n2);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)*_n2));
 }
 
-Number * NumberZs_shr(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)*_n1 >> (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 >> (zs_int)_n2->value));
 }
 
 // _shl (a.k.a '<<')
-Number * NumberZs_shl(ZetScript *_zs,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value << (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
 }
 
-Number * NumberZs_shl(ZetScript *_zs,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)_n1->value << (zs_int)*_n2);
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
 }
 
-Number * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	return new Number((zs_int)*_n1 << (zs_int)_n2->value);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
 }
 
 
@@ -606,15 +612,19 @@ zs_float NumberZs_value_bwc(ZetScript *_zs,Number *_this){
 }
 
 // _postinc (a.k.a 'a++')
-void  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
+	zs_float number_before=_this->value;
 	_this->value++;
+	return number_before;
 }
 
 // _postdec (a.k.a 'a--')
-void  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
+	zs_float number_before=_this->value;
 	_this->value--;
+	return number_before;
 }
 
 // _preinc (a.k.a '++a')
@@ -684,17 +694,14 @@ void NumberZs_register(ZetScript *_zs){
 	_zs->registerMemberFunction<Number>("_mulset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mulset));
 	_zs->registerMemberFunction<Number>("_mulset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mulset));
 
+	// _divset  (a.k.a '/=')
+	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_divset));
+	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_divset));
+
+
 	// _modset  (a.k.a '%=')
 	_zs->registerMemberFunction<Number>("_modset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_modset));
 	_zs->registerMemberFunction<Number>("_modset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_modset));
-
-	// _shrset  (a.k.a '>>=')
-	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shrset));
-	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shrset));
-
-	// _shlset  (a.k.a '<<=')
-	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shlset));
-	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shlset));
 
 	// _andset  (a.k.a '&=')
 	_zs->registerMemberFunction<Number>("_andset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_andset));
@@ -704,10 +711,17 @@ void NumberZs_register(ZetScript *_zs){
 	_zs->registerMemberFunction<Number>("_orset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_orset));
 	_zs->registerMemberFunction<Number>("_orset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_orset));
 
-
 	// _xorset  (a.k.a '^=')
 	_zs->registerMemberFunction<Number>("_xorset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xorset));
 	_zs->registerMemberFunction<Number>("_xorset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xorset));
+
+	// _shrset  (a.k.a '>>=')
+	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shrset));
+	_zs->registerMemberFunction<Number>("_shrset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shrset));
+
+	// _shlset  (a.k.a '<<=')
+	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shlset));
+	_zs->registerMemberFunction<Number>("_shlset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shlset));
 
 	// _neg (a.k.a '-a')
 	_zs->registerMemberFunction<Number>("_neg",&NumberZs_neg);
@@ -763,58 +777,54 @@ void NumberZs_register(ZetScript *_zs){
 	_zs->registerStaticMemberFunction<Number>("_gte",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_gte));
 
 	// _add  (a.k.a '+')
-	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_add));
-	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_add));
-	_zs->registerStaticMemberFunction<Number>("_add",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_add));
 
 	// _sub  (a.k.a '-')
-	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_sub));
-	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_sub));
-	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_sub));
 
 	// _mul  (a.k.a '*')
-	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mul));
-	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mul));
-	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mul));
 
 	// _div  (a.k.a '/')
-	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_div));
-	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_div));
-	_zs->registerStaticMemberFunction<Number>("_div",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_div));
 
 	// _mod  (a.k.a '%')
-	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mod));
-	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mod));
-	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mod));
 
 	// _shr  (a.k.a '>>')
-	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shr));
-	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float * )>(&NumberZs_shr));
-	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float * )>(&NumberZs_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shr));
 
 	// _shl  (a.k.a '<<')
-	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shl));
-	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shl));
-	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shl));
 
 	// _and  (a.k.a '&')
-	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_and));
-	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_and));
-	_zs->registerStaticMemberFunction<Number>("_and",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_and));
-
-	// _divset  (a.k.a '/=')
-	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_divset));
-	_zs->registerMemberFunction<Number>("_divset",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_divset));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_and));
 
 	// _or  (a.k.a '|')
-	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_or));
-	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_or));
-	_zs->registerStaticMemberFunction<Number>("_or",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_or));
 
 	// _xor  (a.k.a '^')
-	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_xor));
-	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xor));
-	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<Number * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xor));
 
 
 	// STATIC MEMBER FUNCTIONS METAMETHODS

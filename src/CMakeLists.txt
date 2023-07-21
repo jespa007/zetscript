@@ -424,41 +424,41 @@ SET(
 	script/StackElementMemberProperty.h
 		
 	# script/function	
-	script/function/ScriptFunction.h
-	script/function/ScriptFunctionFactory.h
-	script/function/ScriptFunctionParam.h
-	script/function/ScriptFunctionTraits.h
+	script/script_function/ScriptFunction.h
+	script/script_function/ScriptFunctionFactory.h
+	script/script_function/ScriptFunctionParam.h
+	script/script_function/ScriptFunctionTraits.h
 	
 	# script/type
-	script/type/ScriptType.h
-	script/type/ScriptType.tcc
-	script/type/ScriptTypeFactory.h
-	script/type/ScriptTypeFactory.tcc
+	script/script_type/ScriptType.h
+	script/script_type/ScriptType.tcc
+	script/script_type/ScriptTypeFactory.h
+	script/script_type/ScriptTypeFactory.tcc
 	
 	# script/object
-	script/object/RefObjectScriptObject.h
-	script/object/ScriptObject.h
-	script/object/ClassScriptObject.h
-	script/object/ClassScriptObject.tcc
-	script/object/MemberFunctionScriptObject.h
-	script/object/ContainerScriptObject.h
-	script/object/ContainerSlot.h
-	script/object/ContainerSlot.h
-	script/object/ObjectScriptObject.h
-	script/object/ObjectScriptObject.tcc
-	script/object/ObjectScriptObjectZs.h
-	script/object/ObjectIteratorScriptObject.h
-	script/object/ObjectIteratorScriptObjectZs.h
-	script/object/StringScriptObject.h
-	script/object/StringScriptObjectZs.h
-	script/object/StringIteratorScriptObject.h
-	script/object/StringIteratorScriptObjectZs.h
-	script/object/VarRefScriptObject.h
-	script/object/ArrayScriptObject.h
-	script/object/ArrayScriptObject.tcc
-	script/object/ArrayScriptObjectZs.h
-	script/object/ArrayIteratorScriptObject.h
-	script/object/ArrayIteratorScriptObjectZs.h
+	script/script_object/RefObjectScriptObject.h
+	script/script_object/ScriptObject.h
+	script/script_object/ClassScriptObject.h
+	script/script_object/ClassScriptObject.tcc
+	script/script_object/MemberFunctionScriptObject.h
+	script/script_object/ContainerScriptObject.h
+	script/script_object/ContainerSlot.h
+	script/script_object/ContainerSlot.h
+	script/script_object/ObjectScriptObject.h
+	script/script_object/ObjectScriptObject.tcc
+	script/script_object/ObjectScriptObjectZs.h
+	script/script_object/ObjectIteratorScriptObject.h
+	script/script_object/ObjectIteratorScriptObjectZs.h
+	script/script_object/StringScriptObject.h
+	script/script_object/StringScriptObjectZs.h
+	script/script_object/StringIteratorScriptObject.h
+	script/script_object/StringIteratorScriptObjectZs.h
+	script/script_object/VarRefScriptObject.h
+	script/script_object/ArrayScriptObject.h
+	script/script_object/ArrayScriptObject.tcc
+	script/script_object/ArrayScriptObjectZs.h
+	script/script_object/ArrayIteratorScriptObject.h
+	script/script_object/ArrayIteratorScriptObjectZs.h
 	
 			
 	# scope

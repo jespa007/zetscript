@@ -250,10 +250,10 @@ namespace zetscript{
 					Symbol *src_symbol_function;
 				}property_methods[]={
 					{&mp_dst->metamethod_members.getter,mp_src->metamethod_members.getter}
-					,{&mp_dst->metamethod_members.post_inc,mp_src->metamethod_members.post_inc}
-					,{&mp_dst->metamethod_members.post_dec,mp_src->metamethod_members.post_dec}
-					,{&mp_dst->metamethod_members.pre_inc,mp_src->metamethod_members.pre_inc}
-					,{&mp_dst->metamethod_members.pre_dec,mp_src->metamethod_members.pre_dec}
+					,{&mp_dst->metamethod_members.postinc,mp_src->metamethod_members.postinc}
+					,{&mp_dst->metamethod_members.postdec,mp_src->metamethod_members.postdec}
+					,{&mp_dst->metamethod_members.preinc,mp_src->metamethod_members.preinc}
+					,{&mp_dst->metamethod_members.predec,mp_src->metamethod_members.predec}
 					//,{&mp_dst->metamethod_members.neg,mp_src->metamethod_members.neg}
 					,{0,0}
 				};

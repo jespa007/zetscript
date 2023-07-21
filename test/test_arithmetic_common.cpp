@@ -259,7 +259,7 @@ void _complete_test_arithmetic_self_op(
 ){
 	//zetscript::zs_int result=0;
 	//zetscript::zs_int ref_val1=_start_value;
-	// post_inc
+	// postinc
 	struct _test_arithmetic_integer_op_data {
 		zetscript::zs_string str;
 		zetscript::zs_int val;
@@ -296,7 +296,7 @@ void _complete_test_arithmetic_self_property_op(
 ){
 	//zetscript::zs_int result=0;
 	zetscript::zs_int ref_val1=_start_value;
-	// post_inc
+	// postinc
 	struct _test_arithmetic_integer_op_data {
 		zetscript::zs_string str;
 		zetscript::zs_int val;

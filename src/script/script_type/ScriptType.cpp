@@ -434,13 +434,13 @@ namespace zetscript{
 
 							// ensure logic metamethods returns bool type
 							switch(i){
-							case METAMETHOD_BYTE_CODE_EQU: //STRCMP(name_script_function, == ,"_equ")
-							case METAMETHOD_BYTE_CODE_NOT_EQU: //STRCMP(name_script_function, ==, "_nequ")
-							case METAMETHOD_BYTE_CODE_LT://STRCMP(name_script_function, ==, "_lt")
-							case METAMETHOD_BYTE_CODE_LTE://STRCMP(name_script_function, ==, "_lte")
-							case METAMETHOD_BYTE_CODE_GT://STRCMP(name_script_function, ==, "_gt")
-							case METAMETHOD_BYTE_CODE_GTE://STRCMP(name_script_function, ==, "_gte")
-							case METAMETHOD_BYTE_CODE_NOT://STRCMP(name_script_function, ==, "_gte")
+							case METAMETHOD_BYTE_CODE_EQU:
+							case METAMETHOD_BYTE_CODE_NEQU:
+							case METAMETHOD_BYTE_CODE_LT:
+							case METAMETHOD_BYTE_CODE_LTE:
+							case METAMETHOD_BYTE_CODE_GT:
+							case METAMETHOD_BYTE_CODE_GTE:
+							case METAMETHOD_BYTE_CODE_NOT:
 							case METAMETHOD_BYTE_CODE_IN:
 
 								// return type must be bool...
@@ -487,7 +487,7 @@ namespace zetscript{
 
 							default:
 
-								ZS_THROW_RUNTIME_ERROR("Internal error registering static metamethod '%s::%s'. Metamethod '%s' not supported or not implemented",
+								ZS_THROW_RUNTIME_ERROR("Internal error registering static metamethod '%s::%s'. Metamethod '%s' not supported or not implemented (1)",
 									this->str_script_type.c_str(),
 									_function_name.c_str(),
 									_function_name.c_str()
@@ -524,6 +524,31 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
+							case METAMETHOD_BYTE_CODE_NEG:
+							case METAMETHOD_BYTE_CODE_BWC:
+
+								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
+										this->str_script_type.c_str(),
+										_function_name.c_str(),
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+
+									return NULL;
+								}
+								break;
+							case METAMETHOD_BYTE_CODE_POST_INC: // i++
+							case METAMETHOD_BYTE_CODE_POST_DEC: // i--
+								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS && _idx_return_type != IDX_TYPE_VOID_C){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' or 'void' but it was '%s'",
+										this->str_script_type.c_str(),
+										_function_name.c_str(),
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
+									);
+
+									return NULL;
+								}
+								break;
 							case METAMETHOD_BYTE_CODE_SET:
 							case METAMETHOD_BYTE_CODE_ADD_SET:
 							case METAMETHOD_BYTE_CODE_SUB_SET:
@@ -535,24 +560,12 @@ namespace zetscript{
 							case METAMETHOD_BYTE_CODE_XOR_SET:
 							case METAMETHOD_BYTE_CODE_SHL_SET:
 							case METAMETHOD_BYTE_CODE_SHR_SET:
-							case METAMETHOD_BYTE_CODE_NEG:
-							case METAMETHOD_BYTE_CODE_BWC:
-							case METAMETHOD_BYTE_CODE_POST_INC: // i++
-							case METAMETHOD_BYTE_CODE_POST_DEC: // i--
 							case METAMETHOD_BYTE_CODE_PRE_INC: // ++i
 							case METAMETHOD_BYTE_CODE_PRE_DEC: // --i
-								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
-									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
-										this->str_script_type.c_str(),
-										_function_name.c_str(),
-										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
-									);
-
-									return NULL;
-								}
+								// ok do not return nothing
 								break;
 							default:
-								ZS_THROW_RUNTIME_ERROR("Internal error registering member metamethod '%s::%s'. Metamethod '%s' not supported or not implemented",
+								ZS_THROW_RUNTIME_ERROR("Internal error registering member metamethod '%s::%s'. Metamethod '%s' not supported or not implemented (2)",
 									this->str_script_type.c_str(),
 									_function_name.c_str(),
 									_function_name.c_str()
@@ -582,8 +595,30 @@ namespace zetscript{
 
 					// in the type only setters are registered in member property variable (getter is ignored)
 					switch(op){
-					default:
+
+					case METAMETHOD_BYTE_CODE_EQU:
+					case METAMETHOD_BYTE_CODE_NEQU:
+					case METAMETHOD_BYTE_CODE_LT:
+					case METAMETHOD_BYTE_CODE_LTE:
+					case METAMETHOD_BYTE_CODE_GT:
+					case METAMETHOD_BYTE_CODE_GTE:
+					case METAMETHOD_BYTE_CODE_NOT:
+					case METAMETHOD_BYTE_CODE_IN:
+					case METAMETHOD_BYTE_CODE_ADD:
+					case METAMETHOD_BYTE_CODE_SUB:
+					case METAMETHOD_BYTE_CODE_DIV:
+					case METAMETHOD_BYTE_CODE_MUL:
+					case METAMETHOD_BYTE_CODE_MOD:
+					case METAMETHOD_BYTE_CODE_AND:
+					case METAMETHOD_BYTE_CODE_OR:
+					case METAMETHOD_BYTE_CODE_XOR:
+					case METAMETHOD_BYTE_CODE_SHL:
+					case METAMETHOD_BYTE_CODE_SHR:
+					case METAMETHOD_BYTE_CODE_TO_STRING:
+						// do nothing
 						break;
+
+
 					case METAMETHOD_BYTE_CODE_SET:
 					case METAMETHOD_BYTE_CODE_ADD_SET:
 					case METAMETHOD_BYTE_CODE_SUB_SET:
@@ -610,48 +645,56 @@ namespace zetscript{
 						}
 						metamethod_members.addSetter(op,symbol_function);
 						break;
-					case METAMETHOD_BYTE_CODE_POST_INC:
-						if(metamethod_members.post_inc != NULL){
+					default:
 
-							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
-								,str_script_type.c_str()
-							);
+						{
+							struct CheckSymbolInfo{
+								const char *name;
+								Symbol **symbol;
+
+							}check_symbol_info[]={
+									//{"_get",&metamethod_members.getter}
+									{"_postinc",&metamethod_members.postinc}
+									,{"_postdec",&metamethod_members.postdec}
+									,{"_preinc",&metamethod_members.preinc}
+									,{"_predec",&metamethod_members.predec}
+									,{"_neg",&metamethod_members.neg}
+									,{"_bwc",&metamethod_members.bwc}
+									,{NULL,NULL}
+							};
+
+							CheckSymbolInfo *it=check_symbol_info;
+
+							while(it->name != NULL){
+								if(_function_name == it->name){
+									if(*it->symbol==NULL){
+										*it->symbol=symbol_function;
+										break;
+									}else{
+										ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has alrady metamethod '%s' implemented"
+											,str_script_type.c_str()
+											,_function_name.c_str()
+										);
+									}
+								}
+
+								it++;
+							}
+
+
+							if(it->name==NULL){
+
+								ZS_THROW_RUNTIME_ERROR("Internal error registering member metamethod '%s::%s'. Metamethod '%s' not supported or not implemented (3)",
+									this->str_script_type.c_str(),
+									_function_name.c_str(),
+									_function_name.c_str()
+								);
+
+								return NULL;
+							}
 						}
-						metamethod_members.post_inc=symbol_function;
 						break;
-					case METAMETHOD_BYTE_CODE_POST_DEC:
-						if(metamethod_members.post_dec != NULL){
-
-							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
-								,str_script_type.c_str()
-							);
-						}
-						metamethod_members.post_dec=symbol_function;
-						break;
-					case METAMETHOD_BYTE_CODE_PRE_INC:
-						if(metamethod_members.pre_inc != NULL){
-
-							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
-								,str_script_type.c_str()
-							);
-						}
-						metamethod_members.pre_inc=symbol_function;
-						break;
-					case METAMETHOD_BYTE_CODE_PRE_DEC:
-						if(metamethod_members.pre_dec != NULL){
-
-							ZS_THROW_EXCEPTION_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
-								,str_script_type.c_str()
-							);
-						}
-						metamethod_members.pre_dec=symbol_function;
-						break;
-
 					}
-
-
-					// break the loop telling that we found the metamethod
-					break;
 				}
 			}
 		}

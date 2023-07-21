@@ -203,6 +203,8 @@ namespace zetscript{
 			goto apply_metamethod_error;
 		}
 
+		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function);
+
 		// setup all returned variables from function
 		/*for(int i=0; i < n_returned_arguments_from_function; i++){
 
@@ -442,15 +444,16 @@ namespace zetscript{
 		StackElement			stk_aux1;
 		StackElementMemberProperty	*	stk_mp_aux=NULL;
 		Instruction			*	instruction=_instruction;
+		StackElement 		*   start_stk=data->vm_stk_current;
 
 		LOAD_PROPERTIES(_metamethod_byte_code);\
 
 		switch(_metamethod_byte_code){
 		case METAMETHOD_BYTE_CODE_POST_INC:
-			symbol_metamethod_post=ptr_metamethod_members_aux->post_inc;
+			symbol_metamethod_post=ptr_metamethod_members_aux->postinc;
 			break;
 		case METAMETHOD_BYTE_CODE_POST_DEC:
-			symbol_metamethod_post=ptr_metamethod_members_aux->post_dec;
+			symbol_metamethod_post=ptr_metamethod_members_aux->postdec;
 			break;
 		default:
 			break;
@@ -481,23 +484,6 @@ namespace zetscript{
 			break;
 		}
 
-		if(symbol_metamethod_pre_operation != NULL){
-			/* call _neg */\
-			ZS_VM_INNER_CALL(\
-					so_aux\
-					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr\
-					, 0 \
-			);\
-		}else{ /* store object */ \
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->vm_stk_current->value=(zs_int)so_aux;\
-				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-			}else{\
-				*data->vm_stk_current=__ZS_STK_VAR_COPY__;\
-			}\
-		}\
-		data->vm_stk_current++;\
-
 		/**
 		 * call post operation metamethod and not reset stack due we want to use a clone of
 		 * returning object before post operation in case is returned
@@ -510,10 +496,46 @@ namespace zetscript{
 				,so_aux
 				,(ScriptFunction *)symbol_metamethod_post->ref_ptr
 				,0
-				,false
+				,true
 		)==false){\
 			goto lbl_exit_function;\
 		}\
+
+		if(symbol_metamethod_pre_operation != NULL){
+			// if postinc implements a function that returns a value it will return negated, else
+			// it will complain that cannot do a negated of undefined value (TODO: improve by giving a hint to the user)
+			StackElement ret_obj;
+
+			if((data->vm_stk_current - start_stk) != 1){
+
+				ZS_VM_MAIN_ERROR(\
+					VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION\
+					,stk_result_op1\
+					,METAMETHOD_BYTE_CODE_POST_INC\
+				);\
+			}
+
+			// get return object
+			ret_obj=*(data->vm_stk_current-1);
+
+			data->vm_stk_current--;
+			// dec stack
+
+			// call _neg
+			if(vm_inner_call(
+					_vm
+					,_script_function
+					,instruction
+					,(ScriptObject *)ret_obj.value
+					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr
+					,0
+					,true
+			)==false){\
+				goto lbl_exit_function;\
+			}\
+
+		}
+
 
 		return true;
 
@@ -544,10 +566,10 @@ lbl_exit_function:
 
 		switch(_metamethod_byte_code){
 		case METAMETHOD_BYTE_CODE_PRE_INC:
-			symbol_metamethod_pre=ptr_metamethod_members_aux->pre_inc;
+			symbol_metamethod_pre=ptr_metamethod_members_aux->preinc;
 			break;
 		case METAMETHOD_BYTE_CODE_PRE_DEC:
-			symbol_metamethod_pre=ptr_metamethod_members_aux->pre_dec;
+			symbol_metamethod_pre=ptr_metamethod_members_aux->predec;
 			break;
 		default:
 			break;

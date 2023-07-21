@@ -351,7 +351,7 @@ namespace zetscript{
 	}
 
 	const char *ZetScript::stackElementToStringTypeOf(char *_str_out, StackElement *_stk){
-		auto str=this->stackElementToString(_stk);
+		auto str=this->stackElementToStringTypeOf(_stk);
 
 		strcpy(_str_out,str.c_str());
 
