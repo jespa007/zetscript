@@ -479,9 +479,9 @@ namespace zetscript{
 			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->bwc;
 			break;
 		default:
-			if(ptr_metamethod_members_aux->getter!=NULL){\
+			/*if(ptr_metamethod_members_aux->getter!=NULL){\
 				symbol_metamethod_pre_operation=ptr_metamethod_members_aux->getter;
-			}
+			}*/
 			break;
 		}
 

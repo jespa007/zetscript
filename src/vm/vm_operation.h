@@ -5,6 +5,17 @@
 #define EXTRACT_STK_RESULT_OP1 \
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 
+#define EXTRACT_STK_RESULT_OP1_POST \
+	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){\
+		stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	}else if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){\
+		stk_result_op1->value=(zs_int)(((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef());\
+		stk_result_op1->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+	}else{\
+		ZS_VM_STOP_EXECUTEF("EXTRACT_STK_RESULT_OP1_POST : Unexpected stackelement type");\
+	}\
+
+
 #define METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD_BYTE_CODE__) \
 		if(member_property!=NULL){\
 			ZS_VM_MAIN_ERROR(\
@@ -279,7 +290,7 @@
 
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
-	EXTRACT_STK_RESULT_OP1\
+	EXTRACT_STK_RESULT_OP1_POST\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		VM_PUSH_STK_ZS_INT(-stk_result_op1->value);\
@@ -309,7 +320,7 @@
 
 #define VM_OPERATION_BWC_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
-	EXTRACT_STK_RESULT_OP1\
+	EXTRACT_STK_RESULT_OP1_POST\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		VM_PUSH_STK_ZS_INT(~stk_result_op1->value);\
@@ -334,7 +345,7 @@
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
-	EXTRACT_STK_RESULT_OP1\
+	EXTRACT_STK_RESULT_OP1_POST\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value);\

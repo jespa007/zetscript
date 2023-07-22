@@ -20,6 +20,7 @@ namespace zetscript{
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
+		bool 							instruction_store=false;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -32,6 +33,11 @@ namespace zetscript{
 	load_next_element_object:
 
 		instruction=(*_instruction_it)-1;
+
+		instruction_store = (instruction->properties & INSTRUCTION_PROPERTY_FOR_STORE)
+			||    instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
+			||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+
 
 		if(
 			(instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE
@@ -120,6 +126,8 @@ namespace zetscript{
 			if(data->vm_error == true){
 				goto lbl_exit_function;
 			}
+
+
 			//------------------------------------------------------------------
 			// pack object+member stk info for store information...
 			if(   instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
@@ -183,14 +191,15 @@ namespace zetscript{
 				);
 			}
 
-			// Is member property. ... if it has getter function defined, get the value itself and evaluate
+			// Is member property. If it has getter function define and next instruction, get the value itself and evaluate
 			if(
 			   (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0
+
 			 ){
 				stk_mp_aux=(StackElementMemberProperty *)stk_var->value;
 
 				// calls getter if defined
-				if(stk_mp_aux->member_property->metamethod_members.getter!=NULL){
+				if((stk_mp_aux->member_property->metamethod_members.getter!=NULL) && (instruction_store==false)){
 					ZS_VM_INNER_CALL(
 						stk_mp_aux->so_object
 						,((ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
@@ -214,19 +223,19 @@ namespace zetscript{
 						goto lbl_exit_function_ok;
 					}
 				}else{
-					// if use for store send the metamethod itself
-					if((instruction->properties & INSTRUCTION_PROPERTY_FOR_STORE)==0){
+					// if is not instruction store it was intended to get the getter to read the value. If getter doesn't exist
+					// throw error.
+					if(instruction_store!=true){
 					   // show error that getter is not defined so the property cannot be readed
-						ZS_VM_STOP_EXECUTE("Property '%s:%s' is not readable or '_get' metamethod is not implemented"
+						ZS_VM_STOP_EXECUTE("Property '%s::%s' is not readable or '_get' metamethod is not implemented"
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,(const char *)str_symbol_aux1
 						);
 					}
-
 				}
-
 			}
 		}
+
 
 
 		if((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
