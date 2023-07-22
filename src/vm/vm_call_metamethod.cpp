@@ -537,8 +537,13 @@ namespace zetscript{
 				ZS_VM_MAIN_ERROR(\
 					VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION\
 					,stk_result_op1\
-					,METAMETHOD_BYTE_CODE_POST_INC\
+					,_metamethod_byte_code\
 				);\
+			}
+
+			// Check if returning value is object. (property metamethods can return any type but not metamethods on types)
+			if(ret_obj.properties & STK_PROPERTY_SCRIPT_OBJECT){
+				so_aux=(ScriptObject *)ret_obj.value;
 			}
 
 			// dec stack
@@ -548,7 +553,7 @@ namespace zetscript{
 					_vm
 					,_script_function
 					,instruction
-					,(ScriptObject *)ret_obj.value
+					,so_aux
 					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr
 					,0
 					,true
@@ -557,7 +562,7 @@ namespace zetscript{
 			}\
 
 		}else{
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(ret_obj.properties != 0){//stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				/*if(ret_obj.properties==0){
 					data->vm_stk_current->value=(zs_int)so_aux;
 					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;

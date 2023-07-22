@@ -32,7 +32,7 @@ function test_arithmetic_set(_a,_b){
 				" ma"+op+"mb\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"test_arithmetic_set ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+					"ma==va, \\\"test_arithmetic_set ma("+a+op+_b+" => \\\"+ma.value+\\\")!=\\\"+va\n"+
 				 ");"					
 
 				,{
@@ -58,10 +58,10 @@ function test_arithmetic_set_property(_a,_b){
 			System::eval(
 				"var ma=new Number(a),mb=new Number(b);\n" +
 				"var va=a,vb=b;\n" +
-				" ma.num"+op+"mb.num\n;"+
+				" ma.value"+op+"mb.value\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"test_arithmetic_set_property ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+					"ma==va, \\\"test_arithmetic_set_property ma("+a+op+_b+" => \\\"+ma.value+\\\")!=\\\"+va\n"+
 				 ");"					
 				,{
 					a:a
@@ -86,7 +86,7 @@ function test_self_operation(_a){
 			String::format(op,"ma")+";\n"+
 			String::format(op,"va")+";\n"+
 			"System::assert(\n"+
-				"ma.num==va, \\\"test_self_operation "+String::format(op,"ma")+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+				"ma.value==va, \\\"test_self_operation "+String::format(op,"ma")+" => \\\"+ma.value+\\\")!=\\\"+va\n"+
 			 ");"					
 		);
 	}
@@ -99,8 +99,11 @@ function test_self_operation_property(_a){
 		System::eval(
 			"var ma=new Number("+_a+");\n" +
 			"var va="+_a+";\n" +
+			"var mb=new Number("+_a+");\n" +
+			"var vb="+_a+";\n" +			
+			"Console::outln(\"{0}=={1}\","+String::format(op,"mb.value")+","+String::format(op,"vb")+");\n"+
 			"System::assert(\n"+
-				String::format(op,"ma.num")+"=="+String::format(op,"va")+",\\\"test_self_operation_property "+String::format(op,"ma")+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+				String::format(op,"ma.value")+"=="+String::format(op,"va")+",\\\"test_self_operation_property "+String::format(op,"ma")+" => \\\"+ma.value+\\\"!=\\\"+va\n"+
 			 ");"					
 		);
 	}	

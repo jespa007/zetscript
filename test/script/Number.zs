@@ -12,7 +12,7 @@ class Number{
 		}
 	}
 	
-	num{
+	value{
 		// input values expects to be simple int or float
 		_get(){
 			return this.__value__;
@@ -24,10 +24,14 @@ class Number{
 			this.__value__=_val;
 		}
 		_postinc(){
+			var init_value=this.__value__;
 			this.__value__++;
+			return init_value;
 		}
 		_postdec(){
+			var init_value=this.__value__;
 			this.__value__--;
+			return init_value;
 		}
 		_preinc(){
 			++this.__value__;
@@ -277,18 +281,18 @@ class Number{
 	}
 	
 	_postinc(){
-		this.num++;
+		this.value++;
 	}
 	
 	_postdec(){
-		this.num--;
+		this.value--;
 	}
 	
 	_preinc(){
-		++this.num;
+		++this.value;
 	}
 	
 	_predec(){
-		--this.num;
+		--this.value;
 	}
 }
