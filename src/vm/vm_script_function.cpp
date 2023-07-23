@@ -215,13 +215,13 @@ namespace zetscript{
 					VM_PUSH_STK_ZS_FLOAT(-ZS_READ_INTPTR_FLOAT(stk_result_op1->value));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
-							_vm
-							,_script_function
-							,instruction
-							,METAMETHOD_BYTE_CODE_NEG
-							,stk_result_op1
-							,NULL
-							,false
+						_vm
+						,_script_function
+						,instruction
+						,METAMETHOD_BYTE_CODE_NEG
+						,stk_result_op1
+						,NULL
+						,false
 					)){
 						return;
 					}
@@ -384,28 +384,28 @@ namespace zetscript{
 				 vm_pop_scope(_vm);
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 VM_OPERATION_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
+				 VM_POST_OPERATION(++,METAMETHOD_BYTE_CODE_POST_INC);
 				 continue;
-			 case BYTE_CODE_NEG_POST_INC:
+			 /*case BYTE_CODE_NEG_POST_INC:
 				 VM_OPERATION_NEG_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
 				 continue;
 			 case BYTE_CODE_BWC_POST_INC:
 				 VM_OPERATION_BWC_POST(++,METAMETHOD_BYTE_CODE_POST_INC);
-				 continue;
+				 continue;*/
 			 case BYTE_CODE_POST_DEC:
-				 VM_OPERATION_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
+				 VM_POST_OPERATION(--,METAMETHOD_BYTE_CODE_POST_DEC);
 				 continue;
-			 case BYTE_CODE_NEG_POST_DEC:
+			 /*case BYTE_CODE_NEG_POST_DEC:
 				 VM_OPERATION_NEG_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
 				 continue;
 			 case BYTE_CODE_BWC_POST_DEC:
 				 VM_OPERATION_BWC_POST(--,METAMETHOD_BYTE_CODE_POST_DEC);
-				 continue;
+				 continue;*/
 			 case BYTE_CODE_PRE_INC:
-				 VM_OPERATION_PRE(++,METAMETHOD_BYTE_CODE_PRE_INC);
+				 VM_PRE_OPERATION(++,METAMETHOD_BYTE_CODE_PRE_INC);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 VM_OPERATION_PRE(--,METAMETHOD_BYTE_CODE_PRE_DEC);
+				 VM_PRE_OPERATION(--,METAMETHOD_BYTE_CODE_PRE_DEC);
 				 continue;
 			case BYTE_CODE_ADD_STORE:
 				LOAD_OPS_SET_OPERATION;

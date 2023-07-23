@@ -708,7 +708,11 @@ namespace zetscript{
 			|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
 		){
 			EvalInstruction *eval_instruction_post=NULL;
+			//EvalInstruction *eval_instruction_pre_op=NULL;
+
 			ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
+			//ByteCode byte_code_pre_operation= ByteCode::BYTE_CODE_INVALID;
+
 			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
@@ -744,22 +748,8 @@ namespace zetscript{
 
 		   if(post_operation == PostOperation::POST_OPERATION_INC){
 			   byte_code_post_operation=ByteCode::BYTE_CODE_POST_INC;
-			   if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
-				   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_INC;
-				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
-			   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
-				   byte_code_post_operation=ByteCode::BYTE_CODE_BWC_POST_INC;
-				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
-			   }
 		   }else {
 			   byte_code_post_operation=ByteCode::BYTE_CODE_POST_DEC;
-			   if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
-				   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_DEC;
-				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a--
-			   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
-				   byte_code_post_operation=ByteCode::BYTE_CODE_BWC_POST_DEC;
-				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a--
-			   }
 		   }
 
 			token_node_symbol->eval_instructions.push_back(
@@ -768,6 +758,7 @@ namespace zetscript{
 				)
 			);
 
+			// post op instruction
 			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1];
 
 			eval_instruction_post->instruction_source_info=eval_instruction_source_info(
@@ -776,6 +767,30 @@ namespace zetscript{
 				,line
 				,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
 			);
+
+			// pre op instruction
+		   /*if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
+			   byte_code_pre_operation=ByteCode::BYTE_CODE_NEG_POST_INC;
+			   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
+		   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
+			   byte_code_pre_operation=ByteCode::BYTE_CODE_BWC_POST_INC;
+			   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
+		   }
+
+		   if(byte_code_pre_operation != ByteCode::BYTE_CODE_INVALID){
+				token_node_symbol->eval_instructions.push_back(
+					eval_instruction_pre_op=new EvalInstruction(
+							byte_code_pre_operation
+					)
+				);
+			   // insert instruction pre
+				eval_instruction_pre_op->instruction_source_info=eval_instruction_source_info(
+					eval_data
+					,eval_data->current_parsing_file
+					,line
+					,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
+				);
+		   }*/
 
 
 			// if post inc/dec hange load by push because is mutable

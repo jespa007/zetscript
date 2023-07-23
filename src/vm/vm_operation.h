@@ -287,7 +287,7 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-
+/*
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1_POST\
@@ -301,7 +301,7 @@
 		VM_PUSH_STK_ZS_FLOAT(-(*zs_float_aux));\
 		(*zs_float_aux) __C_OP__;\
 		break;\
-	default:/*metamethod*/\
+	default:metamethod\
 		if(vm_call_metamethod_operation_post(\
 			_vm\
 			,_script_function\
@@ -326,7 +326,7 @@
 		VM_PUSH_STK_ZS_INT(~stk_result_op1->value);\
 		stk_result_op1->value __C_OP__;\
 		break;\
-	default:/*metamethod*/\
+	default:metamethod\
 		if(vm_call_metamethod_operation_post(\
 			_vm\
 			,_script_function\
@@ -341,9 +341,9 @@
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
 		data->vm_stk_current=stk_start;\
-	}
+	}*/
 
-#define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
+#define VM_POST_OPERATION(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1_POST\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
@@ -372,7 +372,7 @@
 		data->vm_stk_current=stk_start;\
 	}
 
-#define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__) \
+#define VM_PRE_OPERATION(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\

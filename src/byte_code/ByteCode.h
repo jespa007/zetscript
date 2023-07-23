@@ -66,11 +66,11 @@
 	(byte_code==BYTE_CODE_PRE_INC)\
 	|| (byte_code==	BYTE_CODE_PRE_DEC)\
 	|| (byte_code==BYTE_CODE_POST_INC)\
-	|| (byte_code==BYTE_CODE_NEG_POST_INC)\
-	|| (byte_code==BYTE_CODE_BWC_POST_INC)\
+	/*|| (byte_code==BYTE_CODE_NEG_POST_INC)\
+	|| (byte_code==BYTE_CODE_BWC_POST_INC)*/\
 	|| (byte_code==BYTE_CODE_POST_DEC)\
-	|| (byte_code==BYTE_CODE_NEG_POST_DEC)\
-	|| (byte_code==BYTE_CODE_BWC_POST_DEC)
+	/*|| (byte_code==BYTE_CODE_NEG_POST_DEC)\
+	|| (byte_code==BYTE_CODE_BWC_POST_DEC)*/
 
 #define IS_BYTE_CODE_LOAD(byte_code) \
 (\
@@ -221,11 +221,11 @@ namespace zetscript{
 		BYTE_CODE_PRE_INC,
 		BYTE_CODE_PRE_DEC,
 		BYTE_CODE_POST_INC,
-		BYTE_CODE_NEG_POST_INC,
-		BYTE_CODE_BWC_POST_INC,
+		//BYTE_CODE_NEG_POST_INC,
+		//BYTE_CODE_BWC_POST_INC,
 		BYTE_CODE_POST_DEC,
-		BYTE_CODE_NEG_POST_DEC,
-		BYTE_CODE_BWC_POST_DEC,
+		//BYTE_CODE_NEG_POST_DEC,
+		//BYTE_CODE_BWC_POST_DEC,
 		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left or after last assignment
 		//BYTE_CODE_CLEAR_ZERO_POINTERS,
 		BYTE_CODE_TYPEOF,

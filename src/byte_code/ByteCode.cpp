@@ -105,10 +105,10 @@ namespace zetscript{
 			case BYTE_CODE_PRE_INC:								return "PRE_INC"; // ++i
 			case BYTE_CODE_PRE_DEC:								return "PRE_DEC"; // --i
 			case BYTE_CODE_POST_INC:							return "POST_INC"; // i++
-			case BYTE_CODE_NEG_POST_INC:						return "NEG_POST_INC"; // -i++
-			case BYTE_CODE_BWC_POST_INC:						return "BWC_POST_INC"; // ~i++
+			//case BYTE_CODE_NEG_POST_INC:						return "NEG_POST_INC"; // -i++
+			//case BYTE_CODE_BWC_POST_INC:						return "BWC_POST_INC"; // ~i++
 			case BYTE_CODE_POST_DEC:							return "POST_DEC"; // i--
-			case BYTE_CODE_BWC_POST_DEC:						return "BWC_POST_DEC"; // ~i--
+			//case BYTE_CODE_BWC_POST_DEC:						return "BWC_POST_DEC"; // ~i--
 			case BYTE_CODE_RESET_STACK:							return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 			//case BYTE_CODE_CLEAR_ZERO_POINTERS:					return "CLEAR_ZERO_POINTERS";
 			case BYTE_CODE_TYPEOF:								return "TYPEOF"; // POP ONE AND IT MARKS END EXPRESSION
@@ -190,11 +190,11 @@ namespace zetscript{
 			case BYTE_CODE_PRE_INC:					return "PRE_INC"; // ++i
 			case BYTE_CODE_PRE_DEC:					return "PRE_DEC"; // --i
 			case BYTE_CODE_POST_INC:				return "POST_INC"; // i++
-			case BYTE_CODE_NEG_POST_INC:			return "NEG_POST_INC"; // -i++
-			case BYTE_CODE_BWC_POST_INC:			return "BWC_POST_INC"; // ~i++
+			//case BYTE_CODE_NEG_POST_INC:			return "NEG_POST_INC"; // -i++
+			//case BYTE_CODE_BWC_POST_INC:			return "BWC_POST_INC"; // ~i++
 			case BYTE_CODE_POST_DEC:				return "POST_DEC"; // i--
-			case BYTE_CODE_NEG_POST_DEC:			return "NEG_POST_DEC"; // -i--
-			case BYTE_CODE_BWC_POST_DEC:			return "BWC_POST_DEC"; // ~i--
+			//case BYTE_CODE_NEG_POST_DEC:			return "NEG_POST_DEC"; // -i--
+			//case BYTE_CODE_BWC_POST_DEC:			return "BWC_POST_DEC"; // ~i--
 			case BYTE_CODE_RESET_STACK:				return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 			//case BYTE_CODE_CLEAR_ZERO_POINTERS:		return "CLEAR_ZERO_POINTERS"; // POP ONE AND IT MARKS END EXPRESSION
 			case BYTE_CODE_TYPEOF:					return "typeof"; // POP ONE AND IT MARKS END EXPRESSION
