@@ -121,7 +121,7 @@ e.value++;
 System::assert(3==e.value,"e.value++ => 3!=e.value");
 
 a=e.value++;
-System::assert(undefined==e,"a=e++ => undefined!=e");
+System::assert(undefined==a,"a=e.value++ => undefined!=a");
 
 // test post in WITH return
 f=new F(2);

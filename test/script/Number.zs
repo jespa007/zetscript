@@ -34,10 +34,14 @@ class Number{
 			return init_value;
 		}
 		_preinc(){
+			var init_value=this.__value__;
 			++this.__value__;
+			return init_value;
 		}
 		_predec(){
+			var init_value=this.__value__;
 			--this.__value__;
+			return init_value;
 		}
 		_addset(_val){
 			this.__value__+=_val;

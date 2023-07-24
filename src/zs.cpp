@@ -121,7 +121,15 @@ int main(int argc, char * argv[]) {
 			try{
 				zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
 			}catch(zetscript::zs_exception & ex){
-				fprintf(stderr,"[%s:%i] %s\n",ex.getFilename(),ex.getLine(),ex.what());
+				zetscript::zs_string file=ex.getFilename();
+				int line=ex.getLine();
+				if(file!="" && line!=-1){
+					fprintf(stderr,"[%s:%i] %s\n",file.c_str(),line,ex.what());
+				}else if(line!=-1){
+					fprintf(stderr,"[%i] %s\n",line,ex.what());
+				}else{
+					fprintf(stderr,"%s\n",ex.what());
+				}
 			}
 
 			if(no_execution_time==false){

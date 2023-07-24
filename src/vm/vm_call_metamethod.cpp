@@ -387,7 +387,7 @@ namespace zetscript{
 							,str_set_metamethod\
 					);\
 				}else{\
-					ZS_VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
+					ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
 							,so_aux->getScriptType()->str_script_type.c_str() \
 							,str_set_metamethod\
 					);\
@@ -425,6 +425,7 @@ namespace zetscript{
 		return false;
 	}
 
+	/*
 	bool vm_call_metamethod_operation_post(
 		VirtualMachine 			*	_vm
 		,ScriptFunction 		*	_script_function
@@ -479,13 +480,10 @@ namespace zetscript{
 			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->bwc;
 			break;
 		default:
-			/*if(ptr_metamethod_members_aux->getter!=NULL){\
-				symbol_metamethod_pre_operation=ptr_metamethod_members_aux->getter;
-			}*/
 			break;
 		}
 
-		/*if(symbol_metamethod_pre_operation != NULL){
+		if(symbol_metamethod_pre_operation != NULL){
 			// call _neg
 			ZS_VM_INNER_CALL(
 					so_aux
@@ -500,12 +498,12 @@ namespace zetscript{
 				*data->vm_stk_current=__ZS_STK_VAR_COPY__;
 			}
 		}
-		data->vm_stk_current++;*/
+		data->vm_stk_current++;
 
-		/**
-		 * call post operation metamethod and not reset stack due we want to use a clone of
-		 * returning object before post operation in case is returned
-		 **/
+		//
+		 // call post operation metamethod and not reset stack due we want to use a clone of
+		 // returning object before post operation in case is returned
+		 //
 
 		if(vm_inner_call(
 				_vm
@@ -563,10 +561,6 @@ namespace zetscript{
 
 		}else{
 			if(ret_obj.properties != 0){//stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				/*if(ret_obj.properties==0){
-					data->vm_stk_current->value=(zs_int)so_aux;
-					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				}else{*/
 					*data->vm_stk_current=ret_obj;
 				//}
 			}else{
@@ -581,9 +575,9 @@ namespace zetscript{
 lbl_exit_function:
 		return false;
 
-	}
+	}*/
 
-	bool vm_call_metamethod_operation_pre(
+	bool vm_call_metamethod_operation_pre_post(
 		VirtualMachine 			*	_vm
 		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
@@ -610,36 +604,58 @@ lbl_exit_function:
 		case METAMETHOD_BYTE_CODE_PRE_DEC:
 			symbol_metamethod_pre=ptr_metamethod_members_aux->predec;
 			break;
+		case METAMETHOD_BYTE_CODE_POST_INC:
+			symbol_metamethod_pre=ptr_metamethod_members_aux->postinc;
+			break;
+		case METAMETHOD_BYTE_CODE_POST_DEC:
+			symbol_metamethod_pre=ptr_metamethod_members_aux->postdec;
+			break;
 		default:
 			break;
 		}
 
+		if(symbol_metamethod_pre == NULL){
+			METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code);
+			goto lbl_exit_function;
+		}
+
+
 		/* call pre operation metamethod */\
-		if(symbol_metamethod_pre==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code); \
+		if(vm_inner_call(
+				_vm
+				,_script_function
+				,instruction
+				,so_aux
+				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr
+				,0
+				,true
+		)==false){\
+			goto lbl_exit_function;\
 		}\
-		ZS_VM_INNER_CALL(\
+
+		/*ZS_VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr\
 				,0 \
-		);\
+				,true
+		);\*/
 		/*getter after*/\
-		if(ptr_metamethod_members_aux->getter!=NULL){\
-			/* call _neg */\
+		/*if(ptr_metamethod_members_aux->getter!=NULL){\
+			// call _neg \
 			ZS_VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
 			);\
-		}else{ /* store object */ \
+		}else{ // store object  \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 				data->vm_stk_current->value=(zs_int)so_aux;\
 				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
 				*data->vm_stk_current=__ZS_STK_VAR_COPY__;\
 			}\
-		}\
-		data->vm_stk_current++;\
+		}*/\
+		//data->vm_stk_current++;
 
 		return true;
 

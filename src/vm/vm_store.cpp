@@ -102,9 +102,30 @@ namespace zetscript{
 			}
 			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
+
+				Symbol * symbol_setter = NULL;
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
+					symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__);
+
+					if(symbol_setter == NULL){\
+						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
+								,so_aux->getScriptType()->str_script_type.c_str() \
+								,__STR_SETTER_METAMETHOD__\
+						);\
+					}\
+
 				}else{
+
+					if(stk_mp_aux->member_property->metamethod_members.setters.count==0){
+						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+								,so_aux->getScriptType()->str_script_type.c_str()\
+								,stk_mp_aux->member_property->property_name.c_str()\
+								,__STR_SETTER_METAMETHOD__\
+						);\
+					}
+
+
 					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
 						data->vm_str_metamethod_aux
 						,stk_mp_aux->member_property->property_name.c_str()
@@ -122,17 +143,21 @@ namespace zetscript{
 						,stk_arg \
 						,1))==NULL){ \
 					if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
-						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+							data->vm_error_description=zs_strutils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
 								,so_aux->getScriptType()->str_script_type.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\
-								,__STR_SETTER_METAMETHOD__\
-						);\
-					}else{\
-						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->str_script_type.c_str() \
-								,__STR_SETTER_METAMETHOD__\
-						);\
-					}\
+								,data->vm_error_description.c_str())
+							;\
+					}else{
+
+						data->vm_error_description=zs_strutils::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
+								,so_aux->getScriptType()->str_script_type.c_str()
+								,data->vm_error_description.c_str()
+							);\
+
+
+					}
+					goto lbl_exit_function;
 				}\
 			}else if(store_lst_setter_functions->size()>1){ // it has overrided metamethods
 				Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \

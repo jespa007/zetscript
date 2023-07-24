@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) {
 		,"test_constant_operations"					//29.
 		,"test_member_functions"					//30.
 		,"test_member_variables"					//31.
-		,"test_post_operation"						//32.
+		,"test_postinc"								//32.
 		,"test_cyclic_references"					//33.
 		,0
 	};

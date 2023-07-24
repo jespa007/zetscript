@@ -188,27 +188,27 @@ ClassScriptObject * NumberZs_neg(ZetScript *_zs,Number *_this){
 }
 
 ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	Number *number_before_increment=new Number(_this->value);
+	Number *number_init=new Number(_this->value);
 	_this->value++;
-	return _zs->newClassScriptObject(number_before_increment);
+	return _zs->newClassScriptObject(number_init);
 }
 
 ClassScriptObject *  NumberZs_postdec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	Number *number_before_increment=new Number(_this->value);
+	Number *number_init=new Number(_this->value);
 	_this->value--;
-	return _zs->newClassScriptObject(number_before_increment);
+	return _zs->newClassScriptObject(number_init);
 }
 
-void  NumberZs_preinc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
+ClassScriptObject *   NumberZs_preinc(ZetScript *_zs,Number *_this){
+	Number *number_init=new Number(_this->value);
 	++_this->value;
+	return _zs->newClassScriptObject(number_init);
 }
 
-void  NumberZs_predec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
+ClassScriptObject *   NumberZs_predec(ZetScript *_zs,Number *_this){
+	Number *number_init=new Number(_this->value);
 	--_this->value;
+	return _zs->newClassScriptObject(number_init);
 }
 
 // MEMBER PROPERTY METAMETHODS
@@ -628,15 +628,15 @@ zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
 }
 
 // _preinc (a.k.a '++a')
-void  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	++_this->value;
+	return ++_this->value;
 }
 
 // _predec (a.k.a '--a')
-void  NumberZs_value_predec(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	--_this->value;
+	return --_this->value;
 }
 
 
