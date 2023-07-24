@@ -1400,7 +1400,7 @@ Implements _post increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-RegisteredType *RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this);
+[void | ClassScriptObject *] RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1410,18 +1410,20 @@ RegisteredType *RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this);
 
 +++<u>Returns</u>+++
 
-None
+It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing post increment operation
+
 
 *Example*
 
-The following code defines a function as a _postinc_ operation by incrementing the value of current instance,
+The following code defines a function as a _postinc_ operation that increments the value of current instance and returns the object with the value before _postinc_ operation,
 
 [source,cpp]
 ----
 
-void  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
+ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
+	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
 	_this->value++;
+	return before_operation;
 }
 
 ----
@@ -1464,7 +1466,7 @@ Implements _post decrement_ operator (aka a++ )
 
 [source,javascript]
 ----
-void RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
+[void | ClassScriptObject *] RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1474,18 +1476,21 @@ void RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
 
 +++<u>Returns</u>+++
 
-None
+It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing post decrement operation
+
 
 *Example*
 
-The following code defines a function as a _postdec_ operation by decrementing the value of current instance,
+The following code defines a function as a _postdec_ operation that decrements the value of current instance and returns the object with the value before _postdec_ operation,
 
 [source,cpp]
 ----
 
-void  NumberZs_postdec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
+ClassScriptObject * NumberZs_postdec(ZetScript *_zs,Number *_this){
+	
+	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
 	_this->value--;
+	return before_operation;
 }
 
 ----
@@ -1538,17 +1543,18 @@ void RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 
 +++<u>Returns</u>+++
 
-None
+It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing pre increment operation
 
 *Example*
 
-The following code defines a function as a _preinc_ operation by incrementing the value of current instance,
+The following code defines a function as a _preinc_ operation that pre increments the value of current instance and returns the object with the value before _preinc_ operation,
 
 [source,cpp]
 ----
 
-void  NumberZs_preinc(ZetScript *_zs,Number *_this){
+ClassScriptObject * NumberZs_preinc(ZetScript *_zs,Number *_this){
 	++_this->value;
+	return _zs->newClassScriptObject(new Number(_this->value));
 }
 
 ----
@@ -1591,7 +1597,7 @@ Implements _pre decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-void RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
+[void | ClassScriptObject *] RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1601,18 +1607,18 @@ void RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
 
 +++<u>Returns</u>+++
 
-None
+It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing pre decrement operation
 
 *Example*
 
-The following code defines a function as a _predec_ operation by decrementing the value of current instance,
+The following code defines a function as a _predec_ operation that pre decrements the value of current instance and returns the object with the value before _predec_ operation,
+
 
 [source,cpp]
 ----
 
 void  NumberZs_predec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	--_this->value;
+	return _zs->newClassScriptObject(new Number(--_this->value));
 }
 
 ----
@@ -1656,7 +1662,7 @@ Implements _in_ operator
 [source,javascript]
 ----
 
-bool RegisteredType_postinc(zetscript::ZetScript *_zs, Data *_this, zs_float *_value);
+bool RegisteredType_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value);
 
 ----
 
@@ -1686,7 +1692,7 @@ public:
 ----
 
 
-The following code defines a function as a _in_ operation by searching in a number in the vector of current instance,
+The following code defines a function as a _in_ operation by searching a value in the vector of current instance of `Data` type,
 
 [source,cpp]
 ----
@@ -1726,7 +1732,7 @@ Implements _equal_ operator (aka == ) between first operand and second operand
 
 [source,javascript]
 ----
-_equ(_op1,_op2)
+bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -1741,40 +1747,50 @@ _equ(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+bool  NumberZs_equ(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _n1->value ==_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+bool  NumberZs_equ(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _n1->value == *_n2;
 }
 
-//...
+bool NumberZs_equ(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return *_n1 == _n2->value;
+}
+----
+
+Next, each function is registered as member metamethod `_equ` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_equ));
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_equ));
+	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_equ));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `equ` operation from a _Float_ and _Number_.
 
 [source,cpp]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_equ.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1789,7 +1805,7 @@ Implements _not equal_ operator (aka != ) between first operand and second opera
 
 [source,javascript]
 ----
-_nequ(_op1,_op2)
+bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -1804,40 +1820,50 @@ _nequ(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+bool  NumberZs_nequ(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _n1->value !=_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+bool  NumberZs_nequ(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _n1->value != *_n2;
 }
 
-//...
+bool NumberZs_nequ(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return *_n1 != _n2->value;
+}
+----
+
+Next, each function is registered as member metamethod `_nequ` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_nequ));
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_nequ));
+	_zs->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_nequ));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `nequ` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_nequ.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1852,7 +1878,7 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 
 [source,javascript]
 ----
-_lt(_op1,_op2)
+bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -1867,40 +1893,52 @@ _lt(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _lt_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
-
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+bool  NumberZs_lt(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _n1->value <_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+bool  NumberZs_lt(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+	return _n1->value < *_n2;
 }
 
-//...
+bool NumberZs_lt(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 < _n2->value;
+}
+----
+
+Next, each function is registered as member metamethod `_lt_` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_lt));
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_lt));
+	_zs->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_lt));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `lt` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_lt.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1930,40 +1968,52 @@ _lte(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _lte_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+bool  NumberZs_lte(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _n1->value <=_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+bool  NumberZs_lte(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+	return _n1->value <= *_n2;
 }
 
-//...
+bool NumberZs_lte(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return *_n1 <= _n2->value;
+}
+----
 
+Next, each function is registered as member metamethod `_lte` through `registerMemberFunction`,
+
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_lte));
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_lte));
+	_zs->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_lte));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `lte` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_lte.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -1978,7 +2028,7 @@ Implements _greather than_ operator (aka > ) between first operand and second op
 
 [source,javascript]
 ----
-_gt(_op1,_op2)
+bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -1993,40 +2043,48 @@ _gt(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _gt_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
-
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+bool  NumberZs_gt(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _n1->value >_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+bool  NumberZs_gt(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _n1->value > *_n2;
 }
 
-//...
+bool NumberZs_gt(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return *_n1 > _n2->value;
+}
+----
 
+Next, each function is registered as member metamethod `_gt_` through `registerMemberFunction`,
+
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_gt));
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_gt));
+	_zs->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_gt));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_gt_` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_gt.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2041,7 +2099,7 @@ Implements _greather than or equal_ operator (aka &gt;= ) between first operand 
 
 [source,javascript]
 ----
-_gte(_op1,_op2)
+bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2056,23 +2114,28 @@ _gte(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+bool  NumberZs_gte(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _n1->value >=_n2->value;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+bool  NumberZs_gte(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _n1->value >= *_n2;
 }
 
-//...
+bool NumberZs_gte(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return *_n1 >= _n2->value;
+}
+----
 
+Next, each function is registered as member metamethod `_gte` through `registerMemberFunction`,
+
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
@@ -2084,12 +2147,14 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
+Finally, the following code it shows an example of a script that performs `gte` operation from a _Float_ and _Number_.
+
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_gte.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2104,7 +2169,7 @@ Implements _add_ operator (aka + ) between first operand and second operand
 
 [source,javascript]
 ----
-_add(_op1,_op2)
+ClassScriptObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2118,55 +2183,66 @@ _add(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _add_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_add(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value +_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_add(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value + *_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_add(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(*_n1 + _n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_add` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_add));
+	_zs->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_add));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_add` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_add.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_add_out.txt[]
 ----
 
-===== _div()
+===== _sub()
 
-Implements _division_ operator (aka / ) between first operand and second operand
+Implements _subtraction_ operator (aka - ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_div(_op1,_op2)
+ClassScriptObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2176,50 +2252,60 @@ _div(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of division operation 
+- A new object as a result of add operation 
 
 *Example*
+
+The following code defines three functions that performs _sub_ operation from _Float_ value or _Number_ type,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value +_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value + *_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_sub(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(*_n1 + _n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_sub` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_sub));
+	_zs->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_sub));
+
 	//...
 
 }
 ----
 
+Finally, the following code it shows an example of a script that performs `_sub` operation from a _Float_ and _Number_.
+
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_div.cpp[]
+include::../examples/the_api/register_type/register_member_metamethod_sub.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
+include::../examples/the_api/register_type/register_member_metamethod_sub_out.txt[]
 ----
-
 
 ===== _mul()
 
@@ -2229,7 +2315,7 @@ Implements _multiplication_ operator (aka * ) between first operand and second o
 
 [source,javascript]
 ----
-_mul(_op1,_op2)
+ClassScriptObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2243,55 +2329,138 @@ _mul(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _mul_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _zs->newClassScriptObject(new Number(_n1->value * _n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+	return _zs->newClassScriptObject(new Number(_n1->value * (*_n2)));
 }
 
-//...
+ClassScriptObject * NumberZs_mul(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _zs->newClassScriptObject(new Number(*_n1 * _n2->value));
+}
 
+----
+
+Next, each function is registered as member metamethod `_mul` through `registerMemberFunction`,
+
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mul));
+	_zs->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mul));
+
 	//...
-
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_mul_` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mul.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mul_out.txt[]
 ----
 
-===== _mod()
+===== _div()
 
-Implements _modulus_ operator (aka * ) between first operand and second operand
+Implements _division_ operator (aka / ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_mod(_op1,_op2)
+ClassScriptObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
+----
+
++++<u>Parameters</u>+++
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
++++<u>Returns</u>+++
+
+- A new object as a result of division operation 
+
+*Example*
+
+The following code defines three functions that performs _div_ operation from _Float_ value or _Number_ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_div(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value / _n2->value));
+}
+
+ClassScriptObject * NumberZs_div(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number(_n1->value / *_n2));
+}
+
+ClassScriptObject * NumberZs_div(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number(*_n1 / _n2->value));
+}
+----
+
+Next, each function is registered as member metamethod `_div` through `registerMemberFunction`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_div));
+	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_div));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs `_div` operation from a _Float_ and _Number_.
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_metamethod_div.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
+----
+
+===== _mod()
+
+Implements _modulus_ operator (aka % ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2305,40 +2474,52 @@ _mod(_op1,_op2)
 
 *Example*
 
+The following code defines three functions that performs _mod_ operation from _Float_ value or _Number_ type,
+
 [source,cpp]
 ----
-
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _zs->newClassScriptObject(new Number(fmod(_n1->value,_n2->value)));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+	return _zs->newClassScriptObject(new Number(fmod(_n1->value, *_n2)));
 }
 
-//...
+ClassScriptObject * NumberZs_mod(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _zs->newClassScriptObject(new Number(fmod(*_n1, _n2->value)));
+}
+----
+
+Next, each function is registered as member metamethod `_mod` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mod));
+	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mod));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_mod` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mod.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2347,13 +2528,13 @@ include::../examples/the_api/register_type/register_member_metamethod_mod_out.tx
 
 ===== _and()
 
-Implements _bitwise and_ operator (aka & ) between first operand and second operand
+Implements _bitwise AND_ operator (aka & ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_and(_op1,_op2)
+ClassScriptObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2363,37 +2544,46 @@ _and(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of bitwise and operation 
+- A new object as a result of bitwise AND operation 
 
 *Example*
+
+The following code defines three functions that performs _AND_ operation from _Float_ value or _Number_ type,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_and(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_and(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)*_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_and(ZetScript *_zs,zs_float *_n1, Number * _n2){
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 & (zs_int)_n2->value));
+}
+----
 
+Next, each function is registered as member metamethod `_AND` through `registerMemberFunction`,
+
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_and));
+	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_and));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_AND` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2409,13 +2599,13 @@ include::../examples/the_api/register_type/register_member_metamethod_and_out.tx
 
 ===== _or()
 
-Implements _bitwise or_ operator (aka | ) between first operand and second operand
+Implements _bitwise OR_ operator (aka | ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_or(_op1,_op2)
+ClassScriptObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2425,44 +2615,55 @@ _or(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of bitwise or operation 
+- A new object as a result of bitwise OR operation 
 
 *Example*
+
+The following code defines three functions that performs _OR_ operation from _Float_ value or _Number_ type,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_or(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_or(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)*_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_or(ZetScript *_zs,zs_float *_n1, Number * _n2){
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 | (zs_int)_n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_OR` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_or));
+	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_or));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_OR` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_or.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2471,13 +2672,13 @@ include::../examples/the_api/register_type/register_member_metamethod_or_out.txt
 
 ===== _xor()
 
-Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand
+Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_xor(_op1,_op2)
+ClassScriptObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2487,44 +2688,55 @@ _xor(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of bitwise xor operation 
+- A new object as a result of bitwise XOR operation 
 
 *Example*
+
+The following code defines three functions that performs _XOR_ operation from _Float_ value or _Number_ type,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)*_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_xor(ZetScript *_zs,zs_float *_n1, Number * _n2){
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 ^ (zs_int)_n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_XOR` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xor));
+	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xor));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_XOR` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_xor.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2538,7 +2750,7 @@ Implements _bitwise shift left_ operator (aka << ) between first operand and sec
 
 [source,javascript]
 ----
-_shl(_op1,_op2)
+ClassScriptObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2548,7 +2760,7 @@ _shl(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of bitwise shift left operation 
+- A new object as a result of bitwise SHIFT LEFT operation 
 
 *Example*
 
@@ -2557,35 +2769,49 @@ _shl(_op1,_op2)
 
 //...
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, zs_float *_n2){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_shl` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shl));
+	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shl));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_shl` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_shl.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -2594,13 +2820,13 @@ include::../examples/the_api/register_type/register_member_metamethod_shl_out.tx
 
 ===== _shr()
 
-Implements _bitwise shift right_ operator (aka << ) between first operand and second operand
+Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_shr(_op1,_op2)
+ClassScriptObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 +++<u>Parameters</u>+++
@@ -2610,44 +2836,55 @@ _shr(_op1,_op2)
 
 +++<u>Returns</u>+++
 
-- A new object as a result of bitwise shift right operation 
+- A new object as a result of bitwise SHIFT RIGHT operation 
 
 *Example*
+
+The following code defines three functions that performs _shr_ operation from _Float_ value or _Number_ type,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,Number *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)_n2->value));
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,Number *_n1, zs_float *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)*_n2));
 }
 
-//...
+ClassScriptObject * NumberZs_shr(ZetScript *_zs,zs_float *_n1, Number *_n2){
+	return _zs->newClassScriptObject(new Number((zs_int)*_n1 >> (zs_int)_n2->value));
+}
+
+----
+
+Next, each function is registered as member metamethod `_shr` through `registerMemberFunction`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float * )>(&NumberZs_shr));
+	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shr));
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs `_shr` operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_shr.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----

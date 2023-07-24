@@ -188,27 +188,23 @@ ClassScriptObject * NumberZs_neg(ZetScript *_zs,Number *_this){
 }
 
 ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	Number *number_init=new Number(_this->value);
+	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
 	_this->value++;
-	return _zs->newClassScriptObject(number_init);
+	return before_operation;
 }
 
 ClassScriptObject *  NumberZs_postdec(ZetScript *_zs,Number *_this){
-	Number *number_init=new Number(_this->value);
+	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
 	_this->value--;
-	return _zs->newClassScriptObject(number_init);
+	return before_operation;
 }
 
 ClassScriptObject *   NumberZs_preinc(ZetScript *_zs,Number *_this){
-	Number *number_init=new Number(_this->value);
-	++_this->value;
-	return _zs->newClassScriptObject(number_init);
+	return _zs->newClassScriptObject(new Number(++_this->value));
 }
 
 ClassScriptObject *   NumberZs_predec(ZetScript *_zs,Number *_this){
-	Number *number_init=new Number(_this->value);
-	--_this->value;
-	return _zs->newClassScriptObject(number_init);
+	return _zs->newClassScriptObject(new Number(--_this->value));
 }
 
 // MEMBER PROPERTY METAMETHODS
