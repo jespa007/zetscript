@@ -385,8 +385,10 @@ namespace zetscript{
 							,{"_postdec",&mp->metamethod_members.postdec}
 							,{"_preinc",&mp->metamethod_members.preinc}
 							,{"_predec",&mp->metamethod_members.predec}
-							,{"_neg",&mp->metamethod_members.neg}
-							,{"_bwc",&mp->metamethod_members.bwc}
+							//  _neg and bwc are disabled because is already defined on the value or new object
+							// returned.
+							//,{"_neg",&mp->metamethod_members.neg}
+							//,{"_bwc",&mp->metamethod_members.bwc}
 							,{NULL,NULL}
 					};
 
