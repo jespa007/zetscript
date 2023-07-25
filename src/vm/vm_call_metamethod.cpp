@@ -205,27 +205,7 @@ namespace zetscript{
 
 		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function);
 
-		// setup all returned variables from function
-		/*for(int i=0; i < n_returned_arguments_from_function; i++){
-
-			StackElement *stk_ret = --data->vm_stk_current;
-
-			// if a scriptvar --> init shared
-			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ClassScriptObject *sv=(ClassScriptObject *)stk_ret->value;
-
-				// Auto destroy always C when ref == 0
-				sv->deleteNativeObjectOnDestroy(true);
-
-				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					vm_create_shared_script_object(_vm,sv);
-				}
-			}
-			// ... and push result if not function constructor...
-		}*/
-
 		ret_obj=stk_return[0];
-
 
 		// reset stack...
 		data->vm_stk_current=stk_vm_current_backup;
@@ -287,7 +267,7 @@ namespace zetscript{
 		Symbol 						*			symbol_setter=NULL;
 		ScriptObject 				*			so_aux=NULL;
 		//StackElement 				*			stk_var=NULL;
-		StackElement 					stk_aux1;
+		StackElement 							stk_aux1;
 		StackElement 				*			stk_result_op1=_stk_result_op1;
 		StackElement 				*			stk_result_op2=_stk_result_op2;
 		StackElementMemberProperty 	*			stk_mp_aux=NULL;
@@ -323,7 +303,6 @@ namespace zetscript{
 					,_metamethod_byte_code\
 			);\
 		}
-
 
 		LOAD_PROPERTIES(_metamethod_byte_code); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_metamethod_byte_code);
@@ -425,175 +404,22 @@ namespace zetscript{
 		return false;
 	}
 
-	/*
-	bool vm_call_metamethod_operation_post(
-		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_script_function
-		,Instruction 			*	_instruction
-		,StackElement 			*	_stk_result_op1
-		,MetamethodByteCode 		_metamethod_byte_code
-		,MetamethodByteCode			_pre_operation=METAMETHOD_BYTE_CODE_INVALID
-
-	){
-		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		ScriptObject 		*	so_aux=NULL;
-		StackElement		*	stk_result_op1=_stk_result_op1;
-		MetamethodMembers 	*	ptr_metamethod_members_aux=NULL;
-		Symbol 				*	symbol_metamethod_post=NULL;
-		Symbol 				*	symbol_metamethod_pre_operation=NULL;
-		MemberProperty		*	member_property=NULL;
-		StackElement			stk_aux1;
-		StackElementMemberProperty	*	stk_mp_aux=NULL;
-		Instruction			*	instruction=_instruction;
-		StackElement 		*   start_stk=data->vm_stk_current;
-		StackElement 			ret_obj;
-
-		LOAD_PROPERTIES(_metamethod_byte_code);\
-
-		switch(_metamethod_byte_code){
-		case METAMETHOD_BYTE_CODE_POST_INC:
-			symbol_metamethod_post=ptr_metamethod_members_aux->postinc;
-			break;
-		case METAMETHOD_BYTE_CODE_POST_DEC:
-			symbol_metamethod_post=ptr_metamethod_members_aux->postdec;
-			break;
-		default:
-			break;
-
-		}
-
-		if(symbol_metamethod_post==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code); \
-		}\
-
-		switch(_pre_operation){
-		case METAMETHOD_BYTE_CODE_NEG:
-			if(ptr_metamethod_members_aux->neg==NULL){\
-				METAMETHOD_OPERATION_NOT_FOUND(METAMETHOD_BYTE_CODE_NEG); \
-			}\
-			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->neg;
-			break;
-		case METAMETHOD_BYTE_CODE_BWC:
-			if(ptr_metamethod_members_aux->bwc==NULL){\
-				METAMETHOD_OPERATION_NOT_FOUND(METAMETHOD_BYTE_CODE_BWC); \
-			}\
-			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->bwc;
-			break;
-		default:
-			break;
-		}
-
-		if(symbol_metamethod_pre_operation != NULL){
-			// call _neg
-			ZS_VM_INNER_CALL(
-					so_aux
-					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr
-					, 0
-			);
-		}else{ // store object
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				data->vm_stk_current->value=(zs_int)so_aux;
-				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-			}else{
-				*data->vm_stk_current=__ZS_STK_VAR_COPY__;
-			}
-		}
-		data->vm_stk_current++;
-
-		//
-		 // call post operation metamethod and not reset stack due we want to use a clone of
-		 // returning object before post operation in case is returned
-		 //
-
-		if(vm_inner_call(
-				_vm
-				,_script_function
-				,instruction
-				,so_aux
-				,(ScriptFunction *)symbol_metamethod_post->ref_ptr
-				,0
-				,true
-		)==false){\
-			goto lbl_exit_function;\
-		}\
-
-		ret_obj=k_stk_undefined;
-
-		if((data->vm_stk_current - start_stk) != 0){
-			// get return object
-			ret_obj=*(data->vm_stk_current-1);
-			data->vm_stk_current--;
-		}
-
-
-
-		if(symbol_metamethod_pre_operation != NULL){
-			// if postinc implements a function that returns a value it will return negated, else
-			// it will complain that cannot do a negated of undefined value (TODO: improve by giving a hint to the user)
-			if(ret_obj.properties == 0){
-
-				ZS_VM_MAIN_ERROR(\
-					VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION\
-					,stk_result_op1\
-					,_metamethod_byte_code\
-				);\
-			}
-
-			// Check if returning value is object. (property metamethods can return any type but not metamethods on types)
-			if(ret_obj.properties & STK_PROPERTY_SCRIPT_OBJECT){
-				so_aux=(ScriptObject *)ret_obj.value;
-			}
-
-			// dec stack
-
-			// call _neg
-			if(vm_inner_call(
-					_vm
-					,_script_function
-					,instruction
-					,so_aux
-					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr
-					,0
-					,true
-			)==false){\
-				goto lbl_exit_function;\
-			}\
-
-		}else{
-			if(ret_obj.properties != 0){//stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					*data->vm_stk_current=ret_obj;
-				//}
-			}else{
-				*data->vm_stk_current=__ZS_STK_VAR_COPY__;
-			}
-			data->vm_stk_current++;
-		}
-
-
-		return true;
-
-lbl_exit_function:
-		return false;
-
-	}*/
-
 	bool vm_call_metamethod_operation_pre_post(
-		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_script_function
-		,Instruction 			*	_instruction
-		,StackElement 			*	_stk_result_op1
-		,MetamethodByteCode 		_metamethod_byte_code
+		VirtualMachine 				*	_vm
+		,ScriptFunction 			*	_script_function
+		,Instruction 				*	_instruction
+		,StackElement 				*	_stk_result_op1
+		,MetamethodByteCode 			_metamethod_byte_code
 	){
 
-		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		ScriptObject 		*	so_aux=NULL;
-		StackElement		*	stk_result_op1=_stk_result_op1;
-		MetamethodMembers 	*	ptr_metamethod_members_aux=NULL;
-		Symbol 				*	symbol_metamethod_pre=NULL;
-		MemberProperty		*	member_property=NULL;
-		StackElement			stk_aux1;
+		ScriptObject 				*	so_aux=NULL;
+		StackElement				*	stk_result_op1=_stk_result_op1;
+		MetamethodMembers 			*	ptr_metamethod_members_aux=NULL;
+		Symbol 						*	symbol_metamethod_pre=NULL;
+		MemberProperty				*	member_property=NULL;
+		StackElement					stk_aux1;
 		StackElementMemberProperty	*	stk_mp_aux=NULL;
-		Instruction			*	instruction=_instruction;
+		Instruction					*	instruction=_instruction;
 
 		LOAD_PROPERTIES(_metamethod_byte_code);\
 
@@ -619,7 +445,6 @@ lbl_exit_function:
 			goto lbl_exit_function;
 		}
 
-
 		/* call pre operation metamethod */\
 		if(vm_inner_call(
 				_vm
@@ -632,30 +457,6 @@ lbl_exit_function:
 		)==false){\
 			goto lbl_exit_function;\
 		}\
-
-		/*ZS_VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr\
-				,0 \
-				,true
-		);\*/
-		/*getter after*/\
-		/*if(ptr_metamethod_members_aux->getter!=NULL){\
-			// call _neg \
-			ZS_VM_INNER_CALL(\
-					so_aux\
-					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
-					,0 \
-			);\
-		}else{ // store object  \
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->vm_stk_current->value=(zs_int)so_aux;\
-				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-			}else{\
-				*data->vm_stk_current=__ZS_STK_VAR_COPY__;\
-			}\
-		}*/\
-		//data->vm_stk_current++;
 
 		return true;
 

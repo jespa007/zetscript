@@ -476,14 +476,14 @@ ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
 //-------------------------------------------------------------------------------------
 // MEMBER PROPERTY METAMETHODS
 
-// getter
-zs_float NumberZs_value_getter(ZetScript *_zs,Number *_this){
+// get
+zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
 
-// setter
-void NumberZs_value_setter(ZetScript *_zs,Number *_this,zs_float *_value){
+// set
+void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=*_value;
 }
@@ -644,8 +644,8 @@ void  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 //-------------------------------------------------------------------------------------
 // CONST MEMBER PROPERTY
 
-// getter
-zs_float NumberZs_MAX_VALUE_getter(ZetScript *_zs,Number *_this){
+// get
+zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
@@ -678,7 +678,7 @@ void NumberZs_register(ZetScript *_zs){
 	// tostring
 	_zs->registerMemberFunction<Number>("_tostring",&NumberZs_tostring);
 
-	// setter
+	// set
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *, zs_float *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 
@@ -831,11 +831,11 @@ void NumberZs_register(ZetScript *_zs){
 	//-------------------------------------------------------------------------------------
 	// MEMBER PROPERTY METAMETHODS
 
-	// _setter
-	_zs->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_setter);
+	// _set
+	_zs->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_set);
 	
-	// _getter
-	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_getter);
+	// _get
+	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
 	
 	// _neg (a.k.a '-a')
 	_zs->registerMemberPropertyMetamethod<Number>("value","_neg",NumberZs_value_neg);
@@ -898,7 +898,7 @@ void NumberZs_register(ZetScript *_zs){
 	// MEMBER PROPERTY METAMETHODS
 	//-------------------------------------------------------------------------------------
 	// CONST MEMBER PROPERTIES
-	_zs->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_getter);
+	_zs->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_get);
 
 	// CONST MEMBER PROPERTIES
 	//-------------------------------------------------------------------------------------

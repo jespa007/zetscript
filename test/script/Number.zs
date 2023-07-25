@@ -17,9 +17,6 @@ class Number{
 		_get(){
 			return this.__value__;
 		}
-		_neg(){
-			return -this.__value__;
-		}		
 		_set(_val){
 			this.__value__=_val;
 		}
@@ -284,19 +281,23 @@ class Number{
 		return n1==n2
 	}
 	
+	_neg(){
+		return new Number(-this.value);
+	}
+	
 	_postinc(){
-		this.value++;
+		return new Number(this.value++);
 	}
 	
 	_postdec(){
-		this.value--;
+		return new Number(this.value--);
 	}
 	
 	_preinc(){
-		++this.value;
+		return new Number(++this.value);
 	}
 	
 	_predec(){
-		--this.value;
+		return new Number(--this.value);
 	}
 }
