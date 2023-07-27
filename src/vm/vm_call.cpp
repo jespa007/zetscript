@@ -69,7 +69,7 @@ namespace zetscript{
 		data->vm_stk_current=stk_def_afun_start;
 
 
-		if((n_returned_args_afun > 0) && (_stack_return_value == true)){
+		if(_stack_return_value == true){
 			*data->vm_stk_current++ = ret_obj;
 		}
 

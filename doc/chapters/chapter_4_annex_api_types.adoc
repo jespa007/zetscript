@@ -3,9 +3,9 @@
 
 
 
-=== Types
+=== ZetScript API types
 
-ZetScript includes the following set of types,
+The ZetScript API types are the following,
 
 - zs_int
 - zs_float
@@ -13,16 +13,8 @@ ZetScript includes the following set of types,
 - StringStringObject
 - ArrayStringObject
 - ObjectStringObject
-- zs_datetime
-- zs_timespan
-- zs_buffer
-- zs_vector
-
-==== zetscript::ZetScript
-
-ZetScript instance usually used to give reference and perform operations in the current context.
-
-
+- ScriptFunction
+- ClassStringObject
 
 ==== zs_int
 
@@ -111,20 +103,26 @@ _FunctionObject_ it defines a function object that contains function information
 
 
 
-==== zetscript::zs_string
+==== zs_string
 
 ===== Member functions
 
-====== zs_string::zs_string()
-====== zs_string::operator=()
-====== zs_string::operator+=()
-====== zs_string::operator[]
+====== operators
+
+a table describing the operation 
+
+=
++=
+[]
++
+==
+!=
+
+====== Member functions
+
 ====== zs_string::at()
 ====== zs_string::clear()
 ====== zs_string::substr()
-====== zs_string::operator+()
-====== zs_string::operator==()
-====== zs_string::operator!=()
 ====== zs_string::find()
 ====== zs_string::find_last_of()
 ====== zs_string::replace()
@@ -134,13 +132,11 @@ _FunctionObject_ it defines a function object that contains function information
 ====== zs_string::empty()
 ====== zs_string::length()
 ====== zs_string::c_str()
-====== zs_string::~zs_string()
 
 
+// TODO: Give examples from some API from the user, or later in the C function interface
+==== zs_vector
 
-
-
-==== zetscript::zs_vector
 
 _zs_vector_ it defines a vector represented a sequence of elements for type template set
 
@@ -148,15 +144,21 @@ _zs_vector_ it defines a vector represented a sequence of elements for type temp
 
 [source,c++]
 ----
-zetscript::zs_vector<zetscript::zs_int> v;
+zs_vector<zs_int> v;
 
 for(int i=0;i<10;i++){
 	v.push_back(i);
 }
 ----
 
-===== zs_vector::zs_vector()
-===== zs_vector::operator=()
+===== operators
+
+a table describing the operation 
+
+=
+
+===== Member functions
+
 ===== zs_vector::set();
 ===== zs_vector::get();
 ===== zs_vector::erase();
@@ -168,26 +170,15 @@ for(int i=0;i<10;i++){
 ===== zs_vector::resize();
 ===== zs_vector::data()
 ===== zs_vector::size()
-===== zs_vector::~zs_vector()
+
 
  
-=== Helper functions
+// TODO: Give examples from some API from the user, or later in the C function interface
+==== zs_map
 
-ZetScript includes the following set of helper functions,
 
-- zs_file
-- zs_dir
-- zs_io
-- zs_path
-- zs_strutils
-- zs_rtti
-- zs_system
+// TODO: Give examples from some API from the user, or later in the C function interface
+==== zs_map_iterator
 
-==== zs_file
-==== zs_dir
-==== zs_io
-==== zs_path
-==== zs_strutils
-==== zs_rtti
-==== zs_system
+
 

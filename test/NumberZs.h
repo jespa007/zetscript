@@ -188,27 +188,19 @@ ClassScriptObject * NumberZs_neg(ZetScript *_zs,Number *_this){
 }
 
 ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	Number *number_before_increment=new Number(_this->value);
-	_this->value++;
-	return _zs->newClassScriptObject(number_before_increment);
+	return _zs->newClassScriptObject(new Number(_this->value++));
 }
 
 ClassScriptObject *  NumberZs_postdec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	Number *number_before_increment=new Number(_this->value);
-	_this->value--;
-	return _zs->newClassScriptObject(number_before_increment);
+	return  _zs->newClassScriptObject(new Number(_this->value--));
 }
 
-void  NumberZs_preinc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	++_this->value;
+ClassScriptObject *   NumberZs_preinc(ZetScript *_zs,Number *_this){
+	return _zs->newClassScriptObject(new Number(++_this->value));
 }
 
-void  NumberZs_predec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	--_this->value;
+ClassScriptObject *   NumberZs_predec(ZetScript *_zs,Number *_this){
+	return _zs->newClassScriptObject(new Number(--_this->value));
 }
 
 // MEMBER PROPERTY METAMETHODS
@@ -476,14 +468,14 @@ ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
 //-------------------------------------------------------------------------------------
 // MEMBER PROPERTY METAMETHODS
 
-// getter
-zs_float NumberZs_value_getter(ZetScript *_zs,Number *_this){
+// get
+zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
 
-// setter
-void NumberZs_value_setter(ZetScript *_zs,Number *_this,zs_float *_value){
+// set
+void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=*_value;
 }
@@ -494,20 +486,11 @@ void NumberZs_value_addset(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value+=*_value;
 }
 
-void NumberZs_value_addset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value+=_value->value;
-}
 
 // _subset (a.k.a '-=')
 void NumberZs_value_subset(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value-=*_value;
-}
-
-void NumberZs_value_subset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value-=_value->value;
 }
 
 // _mulset (a.k.a '*=')
@@ -516,21 +499,10 @@ void NumberZs_value_mulset(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value*=*_value;
 }
 
-void NumberZs_value_mulset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value*=_value->value;
-}
-
-
 // _divset (a.k.a '/=')
 void NumberZs_value_divset(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value/=*_value;
-}
-
-void NumberZs_value_divset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value/=_value->value;
 }
 
 // _modset (a.k.a '%=')
@@ -539,20 +511,10 @@ void NumberZs_value_modset(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value=fmod(_this->value,*_value);
 }
 
-void NumberZs_value_modset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=fmod(_this->value,_value->value);
-}
-
 // _andset (a.k.a '&=')
 void NumberZs_value_andset(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)&(int)(*_value);
-}
-
-void NumberZs_value_andset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=(int)(_this->value)&(int)(_value->value);
 }
 
 // _orset (a.k.a '|=')
@@ -561,20 +523,10 @@ void NumberZs_value_orset(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)|(int)(*_value);
 }
 
-void NumberZs_value_orset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=(int)(_this->value)|(int)(_value->value);
-}
-
 // _xorset (a.k.a '^=')
 void NumberZs_value_xorset(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)^(int)(*_value);
-}
-
-void NumberZs_value_xorset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=(int)(_this->value)^(int)(_value->value);
 }
 
 // _shrset (a.k.a '>>=')
@@ -583,60 +535,34 @@ void NumberZs_value_shrset(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)>>(int)(*_value);
 }
 
-void NumberZs_value_shrset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=(int)(_this->value)>>(int)(_value->value);
-}
-
 // _shlset (a.k.a '<<=')
 void NumberZs_value_shlset(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)<<(int)(*_value);
 }
 
-void NumberZs_value_shlset(ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=(int)(_this->value)<<(int)(_value->value);
-}
-
-// _neg (a.k.a '-a')
-zs_float NumberZs_value_neg(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	return -_this->value;
-}
-
-// _bwc (a.k.a '~a')
-zs_float NumberZs_value_bwc(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
-	return ~((zs_int)(_this->value));
-}
-
 // _postinc (a.k.a 'a++')
 zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	zs_float number_before=_this->value;
-	_this->value++;
-	return number_before;
+	return _this->value++;
 }
 
 // _postdec (a.k.a 'a--')
 zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	zs_float number_before=_this->value;
-	_this->value--;
-	return number_before;
+	return _this->value--;
 }
 
 // _preinc (a.k.a '++a')
-void  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	++_this->value;
+	return ++_this->value;
 }
 
 // _predec (a.k.a '--a')
-void  NumberZs_value_predec(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	--_this->value;
+	return --_this->value;
 }
 
 
@@ -644,8 +570,8 @@ void  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 //-------------------------------------------------------------------------------------
 // CONST MEMBER PROPERTY
 
-// getter
-zs_float NumberZs_MAX_VALUE_getter(ZetScript *_zs,Number *_this){
+// get
+zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
@@ -678,7 +604,7 @@ void NumberZs_register(ZetScript *_zs){
 	// tostring
 	_zs->registerMemberFunction<Number>("_tostring",&NumberZs_tostring);
 
-	// setter
+	// set
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *, zs_float *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 
@@ -831,57 +757,41 @@ void NumberZs_register(ZetScript *_zs){
 	//-------------------------------------------------------------------------------------
 	// MEMBER PROPERTY METAMETHODS
 
-	// _setter
-	_zs->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_setter);
+	// _set
+	_zs->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_set);
 	
-	// _getter
-	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_getter);
-	
-	// _neg (a.k.a '-a')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_neg",NumberZs_value_neg);
-	
-	// _bwc (a.k.a '~a')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_bwc",NumberZs_value_bwc);
+	// _get
+	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
 	
 	// _addset (a.k.a '+=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_addset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_addset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_addset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_addset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_addset",NumberZs_value_addset);
 	
 	// _subset (a.k.a '-=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_subset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_subset));
-	
+	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",NumberZs_value_subset);
+
 	// _mulset (a.k.a '*=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_mulset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_mulset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_mulset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_mulset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_mulset",NumberZs_value_mulset);
 	
 	// _divset (a.k.a '/=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_divset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_divset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_divset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_divset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_divset",NumberZs_value_divset);
 	
 	// _modset (a.k.a '%=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_modset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_modset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_modset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_modset));
-	
-	// _xorset (a.k.a '^=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_xorset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_xorset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_xorset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_xorset));
-	
-	// _orset  (a.k.a '|=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_orset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_orset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_orset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_orset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_modset",NumberZs_value_modset);
 	
 	// _andset  (a.k.a '&=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_andset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_andset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_andset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_andset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_andset",NumberZs_value_andset);
+
+	// _orset  (a.k.a '|=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_orset",NumberZs_value_orset);
+
+	// _xorset (a.k.a '^=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_xorset",NumberZs_value_xorset);
 
 	// _shrset  (a.k.a '>>=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shrset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_shrset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shrset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_shrset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shrset",NumberZs_value_shrset);
 
 	// _shlset  (a.k.a '<<=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shlset",static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_value_shlset));
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shlset",static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_value_shlset));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shlset",NumberZs_value_shlset);
 
 	// _postinc  (a.k.a 'a++')
 	_zs->registerMemberPropertyMetamethod<Number>("value","_postinc",NumberZs_value_postinc);
@@ -898,7 +808,7 @@ void NumberZs_register(ZetScript *_zs){
 	// MEMBER PROPERTY METAMETHODS
 	//-------------------------------------------------------------------------------------
 	// CONST MEMBER PROPERTIES
-	_zs->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_getter);
+	_zs->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_get);
 
 	// CONST MEMBER PROPERTIES
 	//-------------------------------------------------------------------------------------

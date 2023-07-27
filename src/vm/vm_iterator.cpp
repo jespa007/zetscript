@@ -100,7 +100,7 @@ namespace zetscript{
 				return false;
 			}
 
-			if(sc->getSymbolMemberFunction("_postinc")==NULL){
+			if(sc->getSymbolMemberFunction("_next")==NULL){
 				ZS_VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getTypeName());
 				return false;
 			}

@@ -2,7 +2,7 @@ var sum_k=0;
 var sum_v=0;
 var str="abcd"
 
-for(var it=str._iter();!it._end();it++){
+for(var it=str._iter();!it._end();it._next()){
 	var k,v;
 	k,v=it._get();
 	sum_k+=k;

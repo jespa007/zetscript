@@ -7,7 +7,7 @@
 
 #define LOAD_OPS_SET_OPERATION \
 stk_result_op1=--data->vm_stk_current;\
-EXTRACT_STK_RESULT_OP1 \
+EXTRACT_STK_RESULT_PRE_POST_OPERATION \
 if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op1)){ \
 	stk_result_op1=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op1)->value); \
 } \

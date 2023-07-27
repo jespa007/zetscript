@@ -539,8 +539,8 @@ namespace zetscript{
 								break;
 							case METAMETHOD_BYTE_CODE_POST_INC: // i++
 							case METAMETHOD_BYTE_CODE_POST_DEC: // i--
-								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS && _idx_return_type != IDX_TYPE_VOID_C){
-									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' or 'void' but it was '%s'",
+								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS /*&& _idx_return_type != IDX_TYPE_VOID_C*/){
+									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->str_script_type.c_str(),
 										_function_name.c_str(),
 										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
