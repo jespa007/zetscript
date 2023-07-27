@@ -1410,7 +1410,7 @@ ClassScriptObject * RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this
 
 +++<u>Returns</u>+++
 
-An object with the value before post increment operation
+Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post increment operation
 
 
 *Example*
@@ -1421,9 +1421,7 @@ The following code defines a function as a _postinc_ operation that increments t
 ----
 
 ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
-	_this->value++;
-	return before_operation;
+	return _zs->newClassScriptObject(new Number(_this->value++));
 }
 
 ----
@@ -1476,7 +1474,7 @@ ClassScriptObject * RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this
 
 +++<u>Returns</u>+++
 
-Object with the value before post decrement operation
+Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post decrement operation
 
 
 *Example*
@@ -1487,10 +1485,7 @@ The following code defines a function as a _postdec_ operation that decrements t
 ----
 
 ClassScriptObject * NumberZs_postdec(ZetScript *_zs,Number *_this){
-	
-	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
-	_this->value--;
-	return before_operation;
+	return _zs->newClassScriptObject(new Number(_this->value--));
 }
 
 ----
@@ -1533,7 +1528,7 @@ Implements _pre increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-void RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
+ClassScriptObject *RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1543,7 +1538,7 @@ void RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 
 +++<u>Returns</u>+++
 
-It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing pre increment operation
+Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
 *Example*
 
@@ -1553,8 +1548,7 @@ The following code defines a function as a _preinc_ operation that pre increment
 ----
 
 ClassScriptObject * NumberZs_preinc(ZetScript *_zs,Number *_this){
-	++_this->value;
-	return _zs->newClassScriptObject(new Number(_this->value));
+	return _zs->newClassScriptObject(new Number(++_this->value));
 }
 
 ----
@@ -1597,7 +1591,7 @@ Implements _pre decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-[void | ClassScriptObject *] RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
+ClassScriptObject * RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
@@ -1607,7 +1601,7 @@ Implements _pre decrement_ operator (aka --a )
 
 +++<u>Returns</u>+++
 
-It can return `void` or a `ClassScriptObject *` as a resulting of the result after performing pre decrement operation
+Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
 *Example*
 
@@ -1617,7 +1611,7 @@ The following code defines a function as a _predec_ operation that pre decrement
 [source,cpp]
 ----
 
-void  NumberZs_predec(ZetScript *_zs,Number *_this){
+ClassScriptObject  *NumberZs_predec(ZetScript *_zs,Number *_this){
 	return _zs->newClassScriptObject(new Number(--_this->value));
 }
 
@@ -3694,53 +3688,55 @@ Implements _post_increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_postinc(ZetScript *_zs,RegisteredType *_this);
+ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
 ----
+
++++<u>Parameters</u>+++
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 +++<u>Returns</u>+++
 
-A value the object itself
+Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
 *Example*
+
+The following code defines a function that performs a _postinc_ of current instance,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
+	return _this->value++;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+----
 
-//...
+Next, the function is registered as member metamethod `_postinc_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_postinc",NumberZs_postinc);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a _postinc_ operation to _Number::value_ property,
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_postinc.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -3755,53 +3751,55 @@ Implements _post_decrement_ operator (aka a-- )
 
 [source,javascript]
 ----
-_postdec()
+ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : The current instance
 
 +++<u>Returns</u>+++
 
-A the object itself
+Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
 *Example*
+
+The following code defines a function that performs a _postdec_ of current instance,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
+	return _this->value--;
 }
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+----
 
-//...
+Next, the function is registered as member metamethod `_postdec_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberFunction<Number>("_postdec",NumberZs_postdec);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a _postdec_ operation to _Number::value_ property,
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_postdec.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -3816,53 +3814,53 @@ Implements _pre_increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-_preinc()
+ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : The current instance
 
 +++<u>Returns</u>+++
 
-A the object itself
+Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
 *Example*
+
+The following code defines a function that performs a _preinc_ of current instance,
+
+[source,cpp]
+----
+zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
+	return ++_this->value;
+}
+----
+
+Next, the function is registered as member metamethod `_preinc_` through `registerMemberPropertyMetamethod`,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
-}
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
-
-//...
-
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_preinc",NumberZs_value_preinc);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a _preinc_ operation to _Number::value_ property,
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_preinc.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----
@@ -3871,59 +3869,57 @@ include::../examples/the_api/register_type/register_member_property_metamethod_p
 
 ===== _predec()
 
-Implements _pre_decrement_ operator (aka --a ) 
-
-*Syntax*
-
 [source,javascript]
 ----
-_predec()
+ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
 +++<u>Parameters</u>+++
 
-None
+- __zs_ : ZetScript context
+- __this_ : The current instance
 
 +++<u>Returns</u>+++
 
-A the object itself
+Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
 *Example*
+
+The following code defines a function that performs a _predec_ of current instance,
 
 [source,cpp]
 ----
 
-//...
-
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->value=*_value;
+	return --_this->value;
 }
+----
 
-void NumberZs_set(zetscript::ZetScript *_zs,Number *_this,Number *_value){
-	ZS_UNUSUED_PARAM(_zs);
-	_this->value=_value->value;
-}
+Next, the function is registered as member metamethod `_predec_` through `registerMemberPropertyMetamethod`,
 
-//...
 
+[source,cpp]
+----
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
 
-	_zs->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_set));
+	_zs->registerMemberPropertyMetamethod<Number>("value","_predec",NumberZs_value_predec);
+
 	//...
 
 }
 ----
+
+Finally, the following code it shows an example of a script that performs a _predec_ operation to _Number::value_ property,
 
 [source,javascript]
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_predec.cpp[]
 ----
 
-Output:
+The output is the following,
 
 [source,text]
 ----

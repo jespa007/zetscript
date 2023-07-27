@@ -188,15 +188,11 @@ ClassScriptObject * NumberZs_neg(ZetScript *_zs,Number *_this){
 }
 
 ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
-	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
-	_this->value++;
-	return before_operation;
+	return _zs->newClassScriptObject(new Number(_this->value++));
 }
 
 ClassScriptObject *  NumberZs_postdec(ZetScript *_zs,Number *_this){
-	ClassScriptObject *before_operation=_zs->newClassScriptObject(new Number(_this->value));
-	_this->value--;
-	return before_operation;
+	return  _zs->newClassScriptObject(new Number(_this->value--));
 }
 
 ClassScriptObject *   NumberZs_preinc(ZetScript *_zs,Number *_this){
@@ -548,17 +544,13 @@ void NumberZs_value_shlset(ZetScript *_zs,Number *_this,zs_float *_value){
 // _postinc (a.k.a 'a++')
 zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	zs_float number_before=_this->value;
-	_this->value++;
-	return number_before;
+	return _this->value++;
 }
 
 // _postdec (a.k.a 'a--')
 zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	zs_float number_before=_this->value;
-	_this->value--;
-	return number_before;
+	return _this->value--;
 }
 
 // _preinc (a.k.a '++a')
