@@ -135,8 +135,6 @@ To know more about the meaning of byte codes see section <<Byte codes>>
 
 
 
-include::chapter_3_the_api_calling_zetscript_function_from_cpp.adoc[]
-include::chapter_3_the_api_byte_codes.adoc[]
-include::chapter_3_the_api_register_class.adoc[]
-include::chapter_3_the_api_calling_cpp_function_from_zetscript.adoc[]
-include::chapter_3_the_api_types.adoc[]
+include::chapter_3_the_api_call_cpp_from_zetscript.adoc[]
+include::chapter_3_the_api_call_zetscript_from_cpp.adoc[]
+include::chapter_3_the_api_exposing_cpp_types_to_zetscript.adoc[]
