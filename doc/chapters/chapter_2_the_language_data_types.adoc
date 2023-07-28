@@ -115,11 +115,11 @@ Converts Float or String to Integer value
 parse(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : String or Float value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Integer parsed from the given value
 
@@ -213,11 +213,11 @@ Converts Integer or String to Float value
 Float::parse(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : String or Integer value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Float as parsed from given value
 
@@ -290,12 +290,12 @@ Inserts string or integer value into String variable at defined position
 String::insertAt(_position,_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __position_: Position where to insert. The position ranges within 0 to the length-1 of the String
 - __value_: Integer or String value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -317,11 +317,11 @@ include::../examples/the_language/string/string_insert_at_out.txt[]
 
 Removes the value at defined position
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the String
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -350,11 +350,11 @@ Returns the calling string value converted to uppercase
 String::toUpperCase()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 An string value converted to uppercase
 
@@ -383,11 +383,11 @@ Returns the calling string value converted to lowercase
 String::toLowerCase()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A string value converted to lowercase
 
@@ -416,11 +416,11 @@ Erases the contents of the string
 String::clear()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None 
 
@@ -449,12 +449,12 @@ Returns a string replaced by a replacement
 String::replace(_old_string, _new_string)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __old_string_: The old string to be replaced 
 - __new_string_: The new string to be replaced
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A string where the specified values has been replaced
 
@@ -483,11 +483,11 @@ Splits the string into a array of strings using a separator
 String::split(_separator)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __separator_ : separator value
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A array of strings 
 
@@ -516,11 +516,11 @@ Tells whether a value is contained in the string or not
 String::contains(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: a value to find
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A boolean value telling if the value exist or not in the string 
 
@@ -549,11 +549,11 @@ Returns the position of the first occurrence of a value in a string
 String::indexOf(_search_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __search_value_ : string to search for
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 - A value >= 0 indicating the position of the first occurrence found
 - -1 if the value is not present.
@@ -583,11 +583,11 @@ Checks whether a string starts with the specified string passed by value
 String::startsWidth(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ :  A string representing the value to check for
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A boolean value telling whether the string starts with the specified value or not
 
@@ -616,11 +616,11 @@ Checks whether a string ends with the specified string passed by value
 String::endsWidth(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ :  A string representing the value to check for
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A Boolean value telling whether the string ends with the specified string or not
 
@@ -649,12 +649,12 @@ Returns a substring of the string value from string within a the start and end i
 String::substring(_start_index, _end_index)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __start_index_: The index of the first character to include in the returned substring.
 - __end_index_ (optional): The index of the first character to exclude from the returned substring.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A string containing the specified part of the given string.
 
@@ -683,11 +683,11 @@ Extends the string by appending additional value at the end of its current strin
 String::append(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value__ : value to be appended
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -718,7 +718,7 @@ Formats a string from with a serie of args.
 String::format(_string,..._args)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __string_ : String representation with specified arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format. The argument format is described below,
 
@@ -735,7 +735,7 @@ String::format(_string,..._args)
 
 - __args_ : variable args to be replaced in the string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A formated string
 
@@ -817,11 +817,11 @@ Adds a new element at the end of the array
 Array::push(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value__ : value to be added
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -848,11 +848,11 @@ Removes the last element in the array
 Array::pop()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 Last value of the array before be removed
 
@@ -879,7 +879,7 @@ Inserts element in the array at defined position
 Array::insertAt(_pos,_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __position_: Position where to insert. The position ranges within 0 to the length-1 of the array
 - __value_: value to insert
@@ -907,11 +907,11 @@ Removes the value at defined position
 Array::eraseAt(_pos)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the array
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -938,11 +938,11 @@ Clears all elements in the array
 Array::clear()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None 
 
@@ -969,11 +969,11 @@ Concatenates all elements of the array into a string using a separator
 Array::join(_separator)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __separator_ : separator value
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A string of all concatenated array's elements 
 
@@ -1000,11 +1000,11 @@ Tells whether a value is contained in the array or not
 Array::contains(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: a value to find
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A boolean value telling if the value exist or not in the array 
 
@@ -1031,11 +1031,11 @@ Extends the calling array by appending all elements from a array
 Array::extend(_v)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __v_ : Array type which all elements will appended into the array
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -1066,12 +1066,12 @@ Creates a new array as a result of merge all elements from two arrays
 Array::concat(_v1, _v2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __v1_ : First array to concatenate into the new array
 - __v2_ : Second array to concatenate into the new array
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A new array as a result of merge all elements from the arrays
 
@@ -1140,11 +1140,11 @@ Clears all elements of an object
 Object::clear(_o)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __o_: The object to clear elements
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None 
 
@@ -1173,12 +1173,12 @@ Removes an attribute of an object
 Object::erase(_key_id)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __o_: The object to erase element
 - __key_id_:  The key id of the attribute to remove
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -1207,12 +1207,12 @@ Tells whether a key is contained in an object or not
 Object::contains(_key_id)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __o_: The object to check
 - __key_: a key to find
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A boolean value telling if the attribute with __key_id_ exist or not in the object 
 
@@ -1241,12 +1241,12 @@ Extends an object by the content of other object
 Object::extend(_o1,_o2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __o1_ : Object where to be extended
 - __o2_ : Object where to copy the extension
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 None
 
@@ -1275,12 +1275,12 @@ Creates a new object as a result of merge all elements from two objects
 Object::concat(_o1, _o2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __o1_ : First object to concatenate into the new object
 - __o2_ : Second object to concatenate into the new object
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A new object as a result of merge all elements from the two objects
 
@@ -1309,11 +1309,11 @@ Returns a array of string representing its key names
 Object::keys(_o)
 ----
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __o_ : Object from get the keys
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A array of strings of its key names
 

@@ -65,7 +65,7 @@ asciidoctor-pdf --version
 To build pdf documentation do,
 
 ```bash
-asciidoctor-pdf zetscript.adoc
+asciidoctor-pdf zetscript-reference-manual.adoc
 ```
 
 

@@ -11,12 +11,12 @@ Prints message to the console with a ending carry return
 [source,zetscript]
 Console::out(_value,..._args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
 - __args_:  variable args to be replaced if __value_ is string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -43,12 +43,12 @@ Prints message to the console with a ending carry return
 [source,zetscript]
 Console::outln(_value,..._args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
 - __args_:  variable args to be replaced if __value_ is string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -73,12 +73,12 @@ Prints error message to the console
 [source,zetscript]
 Console::out(_value,..._args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
 - __args_:  variable args to be replaced if __value_ is string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -105,12 +105,12 @@ Prints error message to the console with a ending carry return
 [source,zetscript]
 Console::outln(_value,..._args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable
 - __args_:  variable args to be replaced if __value_ is string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -137,11 +137,11 @@ it waits untill reads a character from console
 [source,zetscript]
 Console::readChar()
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The integer as the equivalent character readed from console
 
@@ -170,11 +170,11 @@ Syntax,
 [source,zetscript]
 System::clock()
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The amount of time in seconds as Float type
 
@@ -203,12 +203,12 @@ Syntax,
 [source,zetscript]
 System::eval(_expression_,_args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __expresion_: String as the expression to be evaluated
 - __args_ (optional): Arguments that will be used as variables within the evaluation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 
 Example,
@@ -235,12 +235,12 @@ Evals an assert and raise an error if the condition is false
 [source,zetscript]
 System::assert(_expression,_message)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __expression_: the expression to be evaluated
 - __message (options): the message about the error. If message is not provided, a default message is assigned
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 *Example*
 
@@ -267,12 +267,12 @@ Raises custom error by user
 [source,zetscript]
 System::error(_message,..._args)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __message_: the message to print as the error. The message representation can be specify arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format (see <<String::format()>>).
 - __args_ (optional): variable args to be replaced in the string representation
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 *Example*
 
@@ -333,11 +333,11 @@ Performs a sinus
 [source,zetscript]
 Math::sin(_radians)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __radians_:
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Sinus of _radians between 0..1
 
@@ -364,11 +364,11 @@ Performs a cosinus
 [source,zetscript]
 Math::cos(_radians)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __radians_:
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Cosinus of _radians between 0..1
 
@@ -395,11 +395,11 @@ Performs a absolute
 [source,zetscript]
 Math::abs(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - _value: Numeric input value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Absolute value
 
@@ -426,12 +426,12 @@ Performs a power
 [source,zetscript]
 Math::pow(_base,_exponent)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - _base: Base value
 - _exponent: Exponent value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The result of raising __base_ to the __power_ exponent.
 
@@ -458,11 +458,11 @@ Converts degres to radiants
 [source,zetscript]
 Math::degToRad(_degrees)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __degrees_: Degrees value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The result of degrees as radians   
 
@@ -489,11 +489,11 @@ Returns random float number between [0..1)
 [source,zetscript]
 Math::random()
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A float between [0..1)
 
@@ -520,12 +520,12 @@ Returns maximmum of two input values
 [source,zetscript]
 Math::max(_v1,_v2)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __v1_: First value
 - __v2_: Second value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns the maximum of __v1_ and __v2_
 
@@ -552,12 +552,12 @@ Returns minimmum of two input values
 [source,zetscript]
 Math::min(_v1,_v2)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __v1_: First value
 - __v2_: Second value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns the minimmum of __v1_ and __v2_
 
@@ -584,11 +584,11 @@ Computes the square root of input value
 [source,zetscript]
 Math::sqrt(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: Input value
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns the square root of __value_
 
@@ -615,11 +615,11 @@ Rounds a value downward
 [source,zetscript]
 Math::floor(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: Value to round down 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The value of __x_ rounded downward 
 
@@ -646,11 +646,11 @@ Rounds a value upward
 [source,zetscript]
 Math::ceil(_x)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __x_: Value to round up 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The largest integral value that is not greater than __x_
 
@@ -678,11 +678,11 @@ Rounds a value to the nearest integral
 [source,zetscript]
 Math::round(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __x_: Value to round
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The value of __x_ to the nearest integral
 
@@ -713,11 +713,11 @@ Serializes to json string
 [source,zetscript]
 Json::serialize(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: Literal or variable
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 The equivalent representation in json format
 
@@ -744,11 +744,11 @@ Deserializes json string
 [source,zetscript]
 Json::deserialize(_value)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_: value or variable as string in json format
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Converts the equivalent json string to literal or object
 
@@ -805,12 +805,12 @@ Perform sub (aka -)  operation between two objects type DateTime
 _sub(_op1,_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_: First operand type DateTime as the minuend
 - __op2_: Second operand type DateTime as subtrahend
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 TimeSpan object as a difference of __op1_ - __op2_
 
@@ -884,7 +884,7 @@ DateTime constructor
 constructor(_year,_month,_day,_hour,_minute,_second)
 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __year_: Integer of the year
 - __month_: Integer in [1..12] as month
@@ -894,7 +894,7 @@ constructor(_year,_month,_day,_hour,_minute,_second)
 - __second_: Integer in [0..59] as second
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A _DateTime_ object
 
@@ -965,11 +965,11 @@ Adds seconds to datetime object
 [source,zetscript]
 DateTime::addSeconds(_seconds)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __seconds_: Integer value or variable to add as seconds
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -996,11 +996,11 @@ Adds minutes to datetime object
 [source,zetscript]
 DateTime::addMinutes(_minutes)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __minutes_: Integer value or variable to add as minutes
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -1028,11 +1028,11 @@ Adds hours to datetime object
 [source,zetscript]
 DateTime::addHours(_hours)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __hours_: Integer value or variable to add as hours
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -1059,11 +1059,11 @@ Adds days to datetime object
 [source,zetscript]
 DateTime::addDays(_days)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __days_: Integer value or variable to add as days
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 
@@ -1090,11 +1090,11 @@ Adds months to datetime object
 [source,zetscript]
 DateTime::addMonths(_months)
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __months_: Integer value or variable to add as months
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None
 

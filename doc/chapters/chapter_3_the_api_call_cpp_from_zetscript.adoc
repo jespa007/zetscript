@@ -29,9 +29,8 @@ After the function is created it has be registered with ZetScript::registerFunct
 [source,c++]
 ----
 template <typename F>
-void registerFunction( const zs_string & _name_script_function,F _ptr_function)
+void registerFunction( const zs_string & _name_script_function,F _ptr_function);
 ----
-
 
 Example, 
 
@@ -244,14 +243,14 @@ In the following example it registers type `Point` and its properties `x` and `y
 
 [source,c++]
 ----
-include::../examples/the_api/register_function/register_function_return_native_type.cpp[]
+include::../examples/the_api/register_function/register_function_return_registered_type.cpp[]
 ----
 
 Out:
 
 [source,txt]
 ----
-include::../examples/the_api/register_function/register_function_return_native_type_out.txt[]
+include::../examples/the_api/register_function/register_function_return_registered_type_out.txt[]
 ----
 
 ===== Return registered class as ClassScriptObject

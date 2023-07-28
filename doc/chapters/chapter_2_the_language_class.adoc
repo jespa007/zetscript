@@ -189,11 +189,11 @@ Returns custom string when string operation operation is invoved
 _tostring()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A string as a result when string operation operation is invoved
 
@@ -222,11 +222,11 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 _set(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ :Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -255,11 +255,11 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 _addset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -288,11 +288,11 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 _subset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -321,11 +321,11 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 _mulset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -354,11 +354,11 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 _divset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -387,11 +387,11 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 _modset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -420,11 +420,11 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 _andset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -453,11 +453,11 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 _andset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -487,11 +487,11 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 _xorset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -520,11 +520,11 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 _shrset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -553,11 +553,11 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 _shrset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -586,11 +586,11 @@ Implements _not_ pre operator (aka !)
 _not()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - Boolean value as a result of not operation
 
@@ -619,11 +619,11 @@ Implements _negate_ pre operator (aka -a )
 _neg()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as result of negate operation
 
@@ -653,11 +653,11 @@ Implements _post increment_ operator (aka a++ )
 _postinc()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -686,11 +686,11 @@ Implements _post decrement_ operator (aka a-- )
 _postdec()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -719,11 +719,11 @@ Implements _pre increment_ operator (aka ++a )
 _preinc()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -752,11 +752,11 @@ Implements _pre decrement_ operator (aka --a )
 _predec()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -785,11 +785,11 @@ Implements _in_ operator
 _in(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as value to check whether exist or not in the containing class
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Boolean telling whether the _value exist in or not
 
@@ -820,12 +820,12 @@ Implements _equal_ operator (aka == ) between first operand and second operand
 _equ(_op1,_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 and op2 are EQUAL
 - False if op1 and op2 are NOT EQUAL
@@ -855,12 +855,12 @@ Implements _not equal_ operator (aka != ) between first operand and second opera
 _nequ(_op1,_op2)
 ---- 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 and op2 are NOT EQUAL
 - False if op1 and op2 are EQUAL
@@ -890,12 +890,12 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 _lt(_op1,_op2)
 ---- 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is LESS THAN op2
 - False if op1 is GRATHER EQUAL THAN op2
@@ -925,12 +925,12 @@ Implements _less than or equal_ operator (aka \<= ) between first operand and se
 _lte(_op1,_op2)
 ---- 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is LESS THAN OR EQUAL op2
 - False if op1 is GRATHER THAN op2
@@ -960,12 +960,12 @@ Implements _greather than_ operator (aka > ) between first operand and second op
 _gt(_op1,_op2)
 ---- 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is GREATHER THAN op2
 - False if op1 is LESS OR EQUAL THAN op2
@@ -995,12 +995,12 @@ Implements _greather than or equal_ operator (aka >= ) between first operand and
 _gte(_op1,_op2)
 ---- 
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is GREATHER THAN OR EQUAL op2
 - False if op1 is LESS THAN op2
@@ -1030,12 +1030,12 @@ Implements _add_ operator (aka + ) between first operand and second operand
 _add(_op1,_op2)
 ----  
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of add operation 
 
@@ -1064,12 +1064,12 @@ Implements _division_ operator (aka / ) between first operand and second operand
 _div(_op1,_op2)
 ----  
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of division operation 
 
@@ -1099,12 +1099,12 @@ Implements _multiplication_ operator (aka * ) between first operand and second o
 _mul(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of multiplication operation 
 
@@ -1133,12 +1133,12 @@ Implements _modulus_ operator (aka * ) between first operand and second operand
 _mod(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of modulus operation 
 
@@ -1167,12 +1167,12 @@ Implements _bitwise and_ operator (aka & ) between first operand and second oper
 _and(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise and operation 
 
@@ -1201,12 +1201,12 @@ Implements _bitwise or_ operator (aka | ) between first operand and second opera
 _or(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise or operation 
 
@@ -1235,12 +1235,12 @@ Implements _bitwise xor_ operator (aka ^ ) between first operand and second oper
 _xor(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise xor operation 
 
@@ -1269,12 +1269,12 @@ Implements _bitwise shift right_ operator (aka << ) between first operand and se
 _shr(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise shift right operation 
 
@@ -1303,12 +1303,12 @@ Implements _bitwise shift left_ operator (aka << ) between first operand and sec
 _shl(_op1,_op2)
 ----   
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise shift left operation 
 
@@ -1362,7 +1362,7 @@ _get()
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns the value of the property
 
@@ -1395,7 +1395,7 @@ _set(_value)
 
 - __value_ :Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1428,7 +1428,7 @@ _set(_value)
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1463,7 +1463,7 @@ _set(_value)
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1496,7 +1496,7 @@ _set(_value)
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1529,7 +1529,7 @@ _set(_value)
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1558,11 +1558,11 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 _modset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1591,11 +1591,11 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 _andset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1624,11 +1624,11 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 _andset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1658,11 +1658,11 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 _xorset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1691,11 +1691,11 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 _shrset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1724,11 +1724,11 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 _shrset(_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1757,11 +1757,11 @@ Implements _negate_ pre operator (aka -a )
 _neg()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A the value as result of negate operation
 
@@ -1791,11 +1791,11 @@ Implements _post_increment_ operator (aka a++ )
 _postinc()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -1824,11 +1824,11 @@ Implements _post_decrement_ operator (aka a-- )
 _postdec()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -1857,11 +1857,11 @@ Implements _pre_increment_ operator (aka ++a )
 _preinc()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 
@@ -1890,11 +1890,11 @@ Implements _pre_decrement_ operator (aka --a )
 _predec()
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 None
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A the object itself
 

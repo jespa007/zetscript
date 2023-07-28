@@ -24,15 +24,15 @@ To register a non instantible type it's done by simple calling `ZetScript::regis
 ScriptType * registerType<_Type>(const zs_string & _class_name);
 ----
 
-+++<u>Template</u>+++ 
+[.underline]#Template# 
 
 - _Type: C&plus;&plus; struct/class type
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - _class_name: Class name that will be referenced in ZetScript
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A `ScriptType` object
 
@@ -102,11 +102,11 @@ To register instantiable type it's done also with registerType but, furthermore,
 ScriptType * registerType<RegisteredType>(const zs_string & _class_name, RegisteredType * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs, RegisteredType * _this));
 ----
 
-+++<u>Template</u>+++ 
+[.underline]#Template# 
 
 - _RegisteredType_: The registered type
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __symbol_name_: Symbol name that will be referenced in ZetScript
 - __new_native_instance_: A C function that creates an returns a new instance. This function has the following signature,
@@ -123,7 +123,7 @@ RegsiteredType * RegisteredType_new(ZetScript *_zs);
 void RegisteredType_delete(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Returns</u>+++ 
+[.underline]#Returns# 
 
 A `ScriptType` object
 
@@ -182,11 +182,11 @@ void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType
 
 Where,
 
-+++<u>Types</u>+++ 
+[.underline]#Types# 
 
 - _RegisteredType_: The registered type
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __zs_ : ZetScript context.
 - __this_: The current instance.
@@ -200,12 +200,12 @@ After the constructor function is defined it has to be registered with `ZetScrip
 void registerConstructor<RegisteredType>( Function _function);
 ----
 
-+++<u>Types</u>+++ 
+[.underline]#Types# 
 
 - _RegisteredType_: The registered type
 - _Function_ : Function signature
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __function_: C function reference to be registered
 
@@ -277,12 +277,12 @@ ReturnType RegisteredType_memberFunction(ZetScript *_zs, _RegisteredType *_this,
 
 Where,
 
-+++<u>Type</u>+++ 
+[.underline]#Type# 
 
 - _RegisteredType_: The registered type
 - _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __zs_ : ZetScript context
 - __this_: The current instance
@@ -298,13 +298,13 @@ After the member function is defined it has to be registered with `ZetScript::re
 void registerMemberFunction<RegisteredType>(const zs_string & __member_function_name_, Function _function);
 ----
 
-+++<u>Types</u>+++ 
+[.underline]#Types# 
 
 - _RegisteredType_: The registered C&plus;&plus;type
 - _Function_ : Function signature
 
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __member_function_name_	: Member function name
 - __function_: C function reference to be registered
@@ -377,12 +377,12 @@ ReturnType RegisteredType_staticMemberFunction(ZetScript *_zs, ParamType *_arg1,
 
 Where,
 
-+++<u>Type</u>+++ 
+[.underline]#Type# 
 
 - _RegisteredType_: The registered type
 - _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __zs_ : ZetScript context
 - __arg1_ .. __arg9_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
@@ -397,13 +397,13 @@ After the constructor function is defined it has to be registered with `ZetScrip
 void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_member_name, Function _function);
 ----
 
-+++<u>Types</u>+++ 
+[.underline]#Types# 
 
 - _RegisteredType_: The registered C&plus;&plus;type
 - _Function_ : Function signature
 
 
-+++<u>Parameters</u>+++ 
+[.underline]#Parameters# 
 
 - __static_member_name_ : Static member function name
 - __function_: Member function C reference
@@ -472,13 +472,13 @@ Returns custom string when string operation operation is invoved
 zs_string RegisteredType_tostring(ZetScript * _zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A zs_string as a result when string operation operation is invoved
 
@@ -539,13 +539,13 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : A value to be set. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -610,13 +610,13 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 void RegisteredType_addset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -676,13 +676,13 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 void RegisteredType_subset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -742,13 +742,13 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 void RegisteredType_mulset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -808,13 +808,13 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 void RegisteredType_divset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -874,13 +874,13 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 void RegisteredType_modset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -941,13 +941,13 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 void RegisteredType_andset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1008,13 +1008,13 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 void RegisteredType_orset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1074,13 +1074,13 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 void RegisteredType_xorset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1141,13 +1141,13 @@ Implements _bitwise shift right assignment_ operator (aka &gt;&gt;= ) with a val
 void RegisteredType_shrset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1208,13 +1208,13 @@ Implements _bitwise shift left assignment_ operator (aka &lt;&lt;= ) with a valu
 void RegisteredType_shlset(ZetScript *_zs, RegisteredType *_this,ParamType *_value);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -1275,12 +1275,12 @@ Implements _not_ pre operator (aka !)
 bool RegisteredType_not(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 A boolean value as a result of not operation
 
@@ -1339,12 +1339,12 @@ Implements _negate_ pre operator (aka -a )
 ClassScriptObject *RegisteredType_neg(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 An object with its negated value
 
@@ -1403,12 +1403,12 @@ Implements _post increment_ operator (aka a++ )
 ClassScriptObject * RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post increment operation
 
@@ -1467,12 +1467,12 @@ Implements _post decrement_ operator (aka a++ )
 ClassScriptObject * RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post decrement operation
 
@@ -1531,12 +1531,12 @@ Implements _pre increment_ operator (aka ++a )
 ClassScriptObject *RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
@@ -1594,12 +1594,12 @@ Implements _pre decrement_ operator (aka --a )
 ClassScriptObject * RegisteredType_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
@@ -1660,11 +1660,11 @@ bool RegisteredType_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value)
 
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __value_ : Value or variable as value to check whether exist or not in the containing class
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Boolean telling whether the _value exist in or not
 
@@ -1729,12 +1729,12 @@ Implements _equal_ operator (aka == ) between first operand and second operand
 bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 and op2 are EQUAL
 - False if op1 and op2 are NOT EQUAL
@@ -1802,12 +1802,12 @@ Implements _not equal_ operator (aka != ) between first operand and second opera
 bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 and op2 are NOT EQUAL
 - False if op1 and op2 are EQUAL
@@ -1875,12 +1875,12 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is LESS THAN op2
 - False if op1 is GRATHER EQUAL THAN op2
@@ -1950,12 +1950,12 @@ Implements _less than or equal_ operator (aka \<= ) between first operand and se
 _lte(_op1,_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is LESS THAN OR EQUAL op2
 - False if op1 is GRATHER THAN op2
@@ -2025,12 +2025,12 @@ Implements _greather than_ operator (aka > ) between first operand and second op
 bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is GREATHER THAN op2
 - False if op1 is LESS OR EQUAL THAN op2
@@ -2096,12 +2096,12 @@ Implements _greather than or equal_ operator (aka &gt;= ) between first operand 
 bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - True if op1 is GREATHER THAN OR EQUAL op2
 - False if op1 is LESS THAN op2
@@ -2166,12 +2166,12 @@ Implements _add_ operator (aka + ) between first operand and second operand
 ClassScriptObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of add operation 
 
@@ -2239,12 +2239,12 @@ Implements _subtraction_ operator (aka - ) between first operand and second oper
 ClassScriptObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of add operation 
 
@@ -2312,12 +2312,12 @@ Implements _multiplication_ operator (aka * ) between first operand and second o
 ClassScriptObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of multiplication operation 
 
@@ -2386,12 +2386,12 @@ Implements _division_ operator (aka / ) between first operand and second operand
 ClassScriptObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of division operation 
 
@@ -2457,12 +2457,12 @@ Implements _modulus_ operator (aka % ) between first operand and second operand
 ClassScriptObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of modulus operation 
 
@@ -2531,12 +2531,12 @@ Implements _bitwise AND_ operator (aka & ) between first operand and second oper
 ClassScriptObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise AND operation 
 
@@ -2602,12 +2602,12 @@ Implements _bitwise OR_ operator (aka | ) between first operand and second opera
 ClassScriptObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise OR operation 
 
@@ -2675,12 +2675,12 @@ Implements _bitwise XOR_ operator (aka ^ ) between first operand and second oper
 ClassScriptObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise XOR operation 
 
@@ -2747,12 +2747,12 @@ Implements _bitwise shift left_ operator (aka << ) between first operand and sec
 ClassScriptObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise SHIFT LEFT operation 
 
@@ -2823,12 +2823,12 @@ Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and se
 ClassScriptObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 - A new object as a result of bitwise SHIFT RIGHT operation 
 
@@ -2919,12 +2919,12 @@ __get_ returns the value of the property
 ReturnType RegisteredTypeProperty_get(ZetScript *_zs, RegisteredType *_this)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns the value of the property
 
@@ -2983,13 +2983,13 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 void RegisteredTypeProperty_set(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3047,14 +3047,14 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 void RegisteredTypeProperty_addset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3111,14 +3111,14 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 void RegisteredTypeProperty_subset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3176,13 +3176,13 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 void RegisteredTypeProperty_mulset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3240,14 +3240,14 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 void RegisteredTypeProperty_divset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3305,14 +3305,14 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 void RegisteredTypeProperty_modset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3368,14 +3368,14 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 void RegisteredTypeProperty_andset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3432,14 +3432,14 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 void RegisteredTypeProperty_orset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3497,14 +3497,14 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 void RegisteredTypeProperty_xorset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3563,14 +3563,14 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 void RegisteredTypeProperty_shrset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3627,14 +3627,14 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 void RegisteredTypeProperty_shlset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 None.
 
@@ -3691,12 +3691,12 @@ Implements _post_increment_ operator (aka a++ )
 ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
@@ -3754,12 +3754,12 @@ Implements _post_decrement_ operator (aka a-- )
 ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
@@ -3817,12 +3817,12 @@ Implements _pre_increment_ operator (aka ++a )
 ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 
@@ -3874,12 +3874,12 @@ include::../examples/the_api/register_type/register_member_property_metamethod_p
 ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
 

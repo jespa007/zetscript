@@ -1,4 +1,3 @@
-
 #include "NumberZs.h"
 
 int main(){

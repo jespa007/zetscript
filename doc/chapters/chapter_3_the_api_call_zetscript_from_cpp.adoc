@@ -9,14 +9,14 @@ To make a ZetScript function callable from C&plus;&plus; is done through `ZetScr
  ZetScript::bindScriptFunction<ReturnType(ParamType1, ParamType2, ..., ParamType9)>(const zs_string & _script_function);
 ----
 
-+++<u>Parameters</u>+++
+[.underline]#Parameters#
 
  - _ReturnType_: It can be void or some type defined in <<ZetScript built-in types>> or other registered type.
  - _ParamTypeX_: It can be one defined in <<ZetScript built-in types>> or other registered type.
  - __script_function_: `ZetScript::zs_string` or `ScriptFunction *` as the name or the script function reference to be binded.
 
 
-+++<u>Returns</u>+++
+[.underline]#Returns#
 
 Returns a `std::function` with the signature provided
 
