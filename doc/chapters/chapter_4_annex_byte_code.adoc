@@ -6,7 +6,7 @@ The following table shows the byte codes and its meaning,
 
 [cols="1m,2d,3d,6a"]
 |====
-|Instruction |Name |Description |Example
+|Instruction |Name |Description
 
 		EQU";  // ==
 			INSTANCEOF";  // ==
