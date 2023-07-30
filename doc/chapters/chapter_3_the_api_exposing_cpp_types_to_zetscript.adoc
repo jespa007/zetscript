@@ -1,6 +1,6 @@
 === Exposing C++ types to ZetScript
 
-In this chapter will see how to to register C&plus;&plus; types, function members, metamethods and properties in order to be exposed in ZetScript.
+In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
 
 
 ==== Register a type
@@ -26,7 +26,7 @@ ScriptType * registerType<_Type>(const zs_string & _class_name);
 
 [.underline]#Template# 
 
-- _Type: C&plus;&plus; struct/class type
+- _Type: C&#43;&#43; struct/class type
 
 [.underline]#Parameters# 
 
@@ -167,7 +167,7 @@ include::../examples/the_api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&plus;&plus; function with a particular prototype. In ZetScript, that function it acts as it seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
+To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as it seen in *xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]*.
 
 As parameters, the function must always include `ZetScript *` as the FIRST parameter,the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
 
@@ -300,7 +300,7 @@ void registerMemberFunction<RegisteredType>(const zs_string & __member_function_
 
 [.underline]#Types# 
 
-- _RegisteredType_: The registered C&plus;&plus;type
+- _RegisteredType_: The registered C&#43;&#43;type
 - _Function_ : Function signature
 
 
@@ -399,7 +399,7 @@ void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_memb
 
 [.underline]#Types# 
 
-- _RegisteredType_: The registered C&plus;&plus;type
+- _RegisteredType_: The registered C&#43;&#43;type
 - _Function_ : Function signature
 
 
