@@ -1,4 +1,3 @@
-:source-highlighter: highlight.js
 :highlightjs-languages: cpp, javascript
 :sectnums:
 

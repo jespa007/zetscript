@@ -3,11 +3,12 @@ Jordi Espada
 v2.0, January 30,2023
 :doctype: book
 :toc:
+:toclevels: 4
 :icons:
 :lang: en
 :language: zetscript
 :sectnums: 
-:stylesheet: zetscript-manual-reference.css
+:stylesheet: css/zetscript-reference-manual.css
 
 [preface]
 include::prefaces/preface_2_acknowledgment.adoc[]
@@ -16,7 +17,7 @@ include::prefaces/preface_2_acknowledgment.adoc[]
 include::chapters/chapter_1_introduction.adoc[]
 include::chapters/chapter_2_the_language.adoc[]
 include::chapters/chapter_3_the_api.adoc[]
-include::chapters/chapter_4_modules.adoc[]
+//include::chapters/chapter_4_modules.adoc[]
 
 [appendix]
 include::appendixes/appendix_1_eval.adoc[]

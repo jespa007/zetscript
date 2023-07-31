@@ -453,6 +453,61 @@ The ouput is the following,
 include::../examples/the_api/register_type/register_static_member_function_out.txt[]
 ----
 
+==== Inheritance
+
+Inherited classes needs to know its base classes in order to register its parent variables and symbols already registered with the functions already seen in the section X.X.X and X.X.X respectively. To tell the which base class has an inherited class is done through extends with two parameters: The first parameter as the base type and the second parameter as inherited type.
+
+*Syntax*
+
+[source,cpp]
+----
+
+ZetScript::extends<base_registered_type, registered_type>();
+----
+
+If for example we want to register MyClassExtend and tell that is base of MyClass Is done with the following snipped,
+
+[source,cpp]
+----
+
+class MyClassExtend:public MyClass{
+public:
+ float data2;
+ void function2(float * arg){
+ this->data2 = *arg;
+ printf("Float argument is %.02f\n",this->data2);
+ }
+}; 
+
+zs.registerType<MyClassExtend>("MyClassExtend"); // register MyClassExtend
+zs.extends<MyClass,MyClassExtend>();
+
+----
+
+An important feature of ZetScript is that it supports c++ class inheritance for any in script class and the this (section X.X) and super (seccion X.X.X.X) keywords works as a normal behavior. For example, we could inherit MyClassExtend from X.X that is shown in the following code,
+
+[source,javascript]
+----
+class ScriptMyClassExtended: MyClassExtend{
+ function function1(arg1){
+ print("script argument is "+arg1)
+ super(this.data1+arg1); // calls function1 c++
+ }
+}
+var myclass=new ScriptMyClassExtend(10);
+Myclass.function1(5);
+----
+
+It prints,
+
+[source,text]
+----
+data1 is initialized as 10
+script argument is 5
+c++ argument is 15
+----
+
+
 
 ==== Register metamethods
 
