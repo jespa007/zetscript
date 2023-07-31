@@ -508,7 +508,6 @@ c++ argument is 15
 ----
 
 
-
 ==== Register metamethods
 
 ZetScript API can register static member function or member functions as metamethods in aim  to get the same results as we could see in *xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
