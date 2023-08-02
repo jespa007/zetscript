@@ -46,4 +46,3 @@ Console::outln("Hello world!");
 You should see the "Hello world" message at the command line. 
 
 
-=== Compile

@@ -9,6 +9,7 @@ v2.0, January 30,2023
 :language: zetscript
 :sectnums: 
 :stylesheet: css/zetscript-reference-manual.css
+:source-highlighter: rouge
 
 [preface]
 include::prefaces/preface_2_acknowledgment.adoc[]
