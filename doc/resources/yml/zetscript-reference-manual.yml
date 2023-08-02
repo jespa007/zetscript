@@ -95,6 +95,7 @@ heading:
   margin_top: $vertical_rhythm * 0.4
   margin_bottom: $vertical_rhythm * 0.9
   min_height_after: $base_line_height_length * 1.5
+  #min-height-after: auto # prevent all sections and discrete headings from being orphaned globally 
 title_page:
   text_align: right
   logo:
@@ -163,7 +164,7 @@ verse:
 code:
   font_color: $base_font_color
   font_family: $codespan_font_family
-  font_size: ceil($base_font_size)
+  font_size: floor($base_font_size * 0.95)
   padding: $code_font_size
   line_height: 1.25
   # line_gap is an experimental property to control how a background color is applied to an inline block element
@@ -189,11 +190,12 @@ image:
 prose:
   margin_bottom: $block_margin_bottom
 sidebar:
+  font_size: floor($base_font_size * 0.95)
   background_color: EEEEEE
   border_color: E1E1E1
   border_radius: $base_border_radius
   border_width: $base_border_width
-  padding: [$vertical_rhythm, $vertical_rhythm * 1.25, $vertical_rhythm, $vertical_rhythm * 1.25]
+  padding: $code_font_size #[$vertical_rhythm, $vertical_rhythm * 1, $vertical_rhythm, $vertical_rhythm * 1]
   title:
     text_align: center
     font_color: $heading_font_color
