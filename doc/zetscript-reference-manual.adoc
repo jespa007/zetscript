@@ -20,8 +20,8 @@ include::chapters/chapter_2_the_language.adoc[]
 include::chapters/chapter_3_the_api.adoc[]
 //include::chapters/chapter_4_modules.adoc[]
 
-[appendix]
-include::appendixes/appendix_1_eval.adoc[]
+//[appendix]
+//include::appendixes/appendix_1_eval.adoc[]
 
 
 ifdef::backend-docbook[]

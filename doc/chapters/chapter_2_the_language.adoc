@@ -50,15 +50,16 @@ this is a block comment
 ----
 
 
-include::chapter_2_the_language_class.adoc[]
-include::chapter_2_the_language_conditionals.adoc[]
-include::chapter_2_the_language_data_types.adoc[]
-include::chapter_2_the_language_function.adoc[]
+
 include::chapter_2_the_language_literals.adoc[]
-include::chapter_2_the_language_loops.adoc[]
-include::chapter_2_the_language_modules.adoc[]
-include::chapter_2_the_language_operators.adoc[]
 include::chapter_2_the_language_variables_and_scopes.adoc[]
+include::chapter_2_the_language_data_types.adoc[]
+include::chapter_2_the_language_operators.adoc[]
+include::chapter_2_the_language_conditionals.adoc[]
+include::chapter_2_the_language_loops.adoc[]
+include::chapter_2_the_language_function.adoc[]
+include::chapter_2_the_language_class.adoc[]
+include::chapter_2_the_language_modules.adoc[]
 
 
 

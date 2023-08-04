@@ -349,9 +349,9 @@ false \|\| false;// = false
 |====
 
 
-=== Data Type operators
+==== Data Type operators
 
-==== The instanceof operator
+===== The instanceof operator
 
 The _instanceof_ operator returns true if the operand's match or derives from type object.
 
@@ -369,7 +369,7 @@ Output:
 include::../examples/the_language/type/type_instanceof_out.txt[]
 ----
 
-==== Type operators
+===== Type operators
 
 The _typeof_ operator returns the type of operand's value.
 
