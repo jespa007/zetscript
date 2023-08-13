@@ -1,12 +1,10 @@
-== 1. Introduction
+== Introduction
 
 ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but
 also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual
 machine so the execution is quite fast.
 Because ZetScript syntax is almost less or more equal to Javascript you can edit the
 code with any editor that supports Javascript syntax notation. 
-
-A comment is text that the compiler ignores but that is useful for programmers. Comments are normally used to embed annotations in the code. The compiler treats them as white space.
 
 
 === Compile
