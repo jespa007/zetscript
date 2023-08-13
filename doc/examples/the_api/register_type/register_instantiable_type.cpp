@@ -9,6 +9,6 @@ int main(){
 	zs.eval("var number=new Number();");
 
 	return 0;
-};
+}
 
 

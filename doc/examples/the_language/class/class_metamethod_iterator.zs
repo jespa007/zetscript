@@ -7,7 +7,7 @@ class ContainerIterator{
 		// returns 2 values: index as key and this.container.data[this.index] as value
 		return this.index,this.container.data[this.index];
 	}
-	_postinc(){
+	_next(){
 		if(this._end()){
 			return;
 		}

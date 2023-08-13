@@ -7,9 +7,11 @@ References
 Build
 =====
 
-## Requirements
+### Requirements
 
-### Install Ruby Version Manager (rvm)
+#### Requirements Linux
+
+##### Install Ruby Version Manager (rvm)
 
 
 From its source page [https://rvm.io/](rvm.io) do the following steps,
@@ -26,7 +28,7 @@ gpg2 --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D69
 
 ```
 
-### Install Ruby 3.1
+##### Install Ruby 3.1
 
 To install Ruby 3.1 do the follow,
 
@@ -36,7 +38,24 @@ To install Ruby 3.1 do the follow,
 rvm get head
 rvm install 3.1
 ```
+
 Check version ruby is 3.X
+
+```bash
+ruby --version
+```
+
+#### Requirements Windows
+
+##### Install Ruby 3.X
+
+Install Ruby 3.X from downloads page,
+
+```
+https://rubyinstaller.org/downloads/
+```
+
+Open terminal and check version ruby is 3.X
 
 ```bash
 ruby --version

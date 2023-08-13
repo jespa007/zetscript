@@ -7,15 +7,12 @@ int main(){
 	NumberZs_register(&zs);
 
 	zs.eval(
-		"var number=new Number(20);\n"
-		"Console::outln(\"number => \"+number)\n"
-		"number*=20;\n"
-		"Console::outln(\"number*=20 => \"+number)\n"
-		"number*=new Number(30);\n"
-		"Console::outln(\"number*=new Number(30) => \"+number)\n"
+		"var number=new Number(2);\n"
+		"Console::outln(\"number*=2 => {0}\",number*=2)\n"
+		"Console::outln(\"number*=new Number(2) => {0}\",number*=new Number(2))\n"
 	);
 
 	return 0;
-};
+}
 
 

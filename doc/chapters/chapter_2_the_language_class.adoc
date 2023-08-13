@@ -8,7 +8,7 @@ A class is a template for create objects with its own variables and functions. A
 class Test{
 	
 
-};
+}
 ----
 
 ==== Class instantiantion
@@ -20,7 +20,7 @@ Para instanciar un objeto de un tipo de clase definido, se  hace mediante el ope
 class Test{
 	
 
-};
+}
 
 
 var t= new Test(); // t instanced as class Test

@@ -360,15 +360,17 @@ namespace zetscript{
 				,1))==NULL\
 			){ \
 				if(member_property!=NULL){ \
-					ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+					ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s' or doesn't match its parameter argument types. \nDetail : %s\n"\
 							,so_aux->getScriptType()->str_script_type.c_str()\
 							,member_property->property_name.c_str()\
 							,str_set_metamethod\
+							,data->vm_error_description.c_str()\
 					);\
 				}else{\
-					ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
+					ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod  or doesn't match its parameter argument types. \nDetail : %s" \
 							,so_aux->getScriptType()->str_script_type.c_str() \
 							,str_set_metamethod\
+							,data->vm_error_description.c_str()\
 					);\
 				}\
 			}\

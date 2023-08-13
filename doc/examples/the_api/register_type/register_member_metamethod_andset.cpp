@@ -8,12 +8,9 @@ int main(){
 
 	zs.eval(
 		"var number=new Number(0x7);\n"
-		"Console::outln(\"number => \"+number);\n"
-		"number&=0x3;;\n"
-		"Console::outln(\"number&=0x3 => \"+number);\n"
-		"number&=new Number(0x1);\n"
-		"Console::outln(\"number&=new Number(0x1) => \"+number);\n"
+		"Console::outln(\"number&=0x3 => {0}\",number&=0x3);\n"
+		"Console::outln(\"number&=new Number(0x1) => {0}\",number&=new Number(0x1));\n"
 	);
 
 	return 0;
-};
+}

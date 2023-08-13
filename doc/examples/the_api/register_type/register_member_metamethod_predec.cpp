@@ -9,11 +9,10 @@ int main(){
 
 	zs.eval(
 		"var number=new Number(20);\n"
-		"Console::outln(\"--number => \"+(--number))\n"
-		"Console::outln(\"number => \"+(number))\n"
+		"Console::outln(\"--number => {0}\",--number)\n"
 	);
 
 	return 0;
-};
+}
 
 

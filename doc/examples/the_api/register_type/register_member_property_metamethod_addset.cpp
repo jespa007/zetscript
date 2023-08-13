@@ -8,14 +8,10 @@ int main(){
 	
 	zs.eval(
 		"var number=new Number(20);\n"
-		"Console::outln(\"number.value => \"+number.value)\n"
-		"number.value+=20;\n"
-		"Console::outln(\"number.value+=20 => \"+number.value)\n"
-		"number.value+=new Number(30);\n"
-		"Console::outln(\"number.value+=new Number(30) => \"+number.value)\n"
+		"Console::outln(\"number.value+=10 => {0}\",number.value+=10)\n"
 	);
 
 	return 0;
-};
+}
 
 
