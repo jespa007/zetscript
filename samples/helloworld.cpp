@@ -6,7 +6,7 @@
 
 // A function wrapper to bind C function into ZetScript
 // All ZetScript wrappers needs to have zetscript::ZetScript *_zs as FIRST parameter
-void say_helloworld(zetscript::ZetScript *_zs){
+void sayHelloworld(zetscript::ZetScript *_zs){
 	printf("Hello World from C!\n");
 }
 
@@ -16,13 +16,13 @@ int main(){
 	zetscript::ZetScript zs;
 
 	// Binds 'say_helloworld' function to be accessible from script
-	zs.registerFunction("say_helloworld",say_helloworld);
+	zs.registerFunction("sayHelloworld",sayHelloworld);
 
 	 // Prints 'Hello World from script!'
 	zs.eval("Console::outln(\"Hello World from script!\")");
 
 	// Call C function and prints 'Hello World from C!'
-	zs.eval("say_helloworld();");
+	zs.eval("sayHelloworld();");
 
 	return 0;
 }
