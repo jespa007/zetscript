@@ -338,7 +338,7 @@ Here there's a meaning of each byte code
 |Jump if not true
 
 |JT
-Jump if true
+|Jump if true
 			
 |JE_CASE
 |Jump if equal Switch-Case
