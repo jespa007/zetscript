@@ -130,10 +130,288 @@ Apart there's a description per instruction with the following columns,
 - *AS*: Acumulated Stack in the current instruction
 - *INSTRUCTION*: Byte code and operands if it needs
 
-To know more about the meaning of byte codes see section <<Byte codes>>
+Here there's a meaning of each byte code
+
+[cols="3m,6a"]
+|====
+|Instruction |Description
+
+|EQU
+| 
+
+|INSTANCEOF
+|
+			
+|NOT_EQU
+|			
+
+|LT
+|
+
+|LTE
+|
+
+|NOT
+|
+
+|GT
+|			
+
+|GTE
+|
+
+|NEG
+|
+
+|BWC
+|
+
+|ADD
+|
+
+|SUB
+|
+
+|LOGIC_AND
+|			
+
+|LOGIC_OR
+|			
+
+|DIV
+|			
+
+|MUL
+|			
+
+|MOD
+|
+
+|AND
+|Bitwise AND
+
+|OR
+|Bitwise OR
+
+|XOR
+|Bitwise XOR
+
+|SHL
+|Bitwise shift left
+
+|SHR
+|Bitwise shift right
+
+|STORE
+|
+
+|STORE_ADD
+|			
+
+|STORE_SUB
+|
+
+|STORE_MUL
+|
+
+|STORE_DIV
+|
+
+|STORE_MOD
+|
+
+|STORE_AND
+|
+
+|STORE_OR
+|
+
+|STORE_XOR
+|
+
+|STORE_SHL
+|
+
+|STORE_SHR
+|
+
+|PUSH_STK_GLOBAL_IRGO
+|Load type var
+
+|PUSH_STK_GLOBAL
+|Push stk global
+
+| PUSH_STK_LOCAL
+| Push stk local
+			
+|PUSH_STK_REF
+| push stk global
+
+|PUSH_STK_THIS
+|Push stk global
+
+|PUSH_STK_VEC@ITEM
+|Load element vector
+
+|PUSH_STK_OBJ@ITEM 
+|Load element object
+
+|PUSH_STK_THIS@VAR
+|Load element this
+
+|LOAD_GLOBAL
+|Load global variable to stack
+
+|LOAD_LOCAL
+|Load local variable to stack
+
+|LOAD_REF
+|Load reference to stack
+
+|LOAD_THIS
+|Load this
+
+|LOAD_CONSTRUCTOR_FUNCT
+|Load constructor function
+
+|LOAD_???
+|Unresolved load symbol. It tries to load at runtime
+
+|CALL
+|Direct call
+
+|CALL???
+|Unresolved direct call. It tries to load at runtime
+
+|STK_CALL
+|Stack call
+
+|MEMBER_CALL
+|Indirect call through dynamic symbol
+
+|LOAD_THIS@VAR
+|Load this element object
+
+|LOAD_THIS@FUN
+|Load element object
+
+|LOAD_VEC@ITEM
+|Load element vector
+
+|LOAD_OBJ@ITEM
+|Load element object
+
+|LOAD_FUN
+|Load function
+
+|LOAD_UNDEFINED
+|Load undfined value
+
+|LOAD_NULL
+|Load Null value
+
+|LOAD_STK
+|Load stack element
+
+|LOAD_STR
+|Load string value
+
+|LOAD_FLT
+|Load float value
+
+|LOAD_BOOL
+|Load bool value
+
+|LOAD_INT
+|Load integer value
+
+|LOAD_TYPE
+|Load type value
+
+|JMP
+|Unconditional jump.
+
+|JMP_CASE 
+|Jump Switch-Case 
+			
+|JNT
+|Jump if not true
+
+|JT
+Jump if true
+			
+|JE_CASE
+|Jump if equal Switch-Case
+
+|CALL_CONSTRUCTOR
+|Constructor call
+
+|NEW_VEC
+|Array object (CREATE)
+			
+|PUSH_VITEM
+|Push vector item
+			
+|RET
+|Return function
+
+|NEW_OBJECT_BY_TYPE
+|New object by type
+
+|NEW_OBJECT_BY_VALUE
+|New object by value
+			
+|DELETE
+|Delete object
+
+|POP_SCOPE
+|Pop scope
+
+|PUSH_SCOPE
+|Push scope
+
+|PUSH_OITEM
+|Push object item
+
+|NEW_OBJECT
+|New object (CREATE)
+
+|NEW_STR
+|New string
+	
+|IT_INIT
+|Iterator init
+
+|STORE_CONST
+|Constant assignment
+			
+|PRE_INC
+|Preincrement
+
+|PRE_DEC
+|Predecrement
+
+|POST_INC
+|Postincrement
+
+|POST_DEC"
+|Postdecrement
+
+|RESET_STACK
+|Resets stack
+			
+|CLEAR_ZERO_POINTERS
+|Clear zero pointers
+
+|TYPEOF
+|Typeof
+
+|IN
+|In operator
+|====
 
 
 
 include::chapter_3_the_api_call_cpp_from_zetscript.adoc[]
 include::chapter_3_the_api_call_zetscript_from_cpp.adoc[]
-include::chapter_3_the_api_exposing_cpp_types_to_zetscript.adoc[]
+include::chapter_3_the_api_expose_cpp_types.adoc[]

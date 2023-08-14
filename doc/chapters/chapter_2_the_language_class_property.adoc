@@ -1,0 +1,586 @@
+
+==== Properties
+
+A property is a kind of variable that are acceded through a metamethods.
+
+*Syntax*
+
+[source,javascript]
+----
+class Test{
+
+	// property
+	property{
+			...
+	}
+
+}
+----
+
+===== Member functions
+
+====== _get()
+
+__get_ returns the value of the property
+
+*Syntax*
+
+[source,javascript]
+----
+_get()
+----
+
+*Parameters
+
+None
+
+[.underline]#Returns#
+
+Returns the value of the property
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_get.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_get_out.txt[]
+----
+
+====== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ :Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_set.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+----
+
+====== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_addset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_addset_out.txt[]
+----
+
+
+====== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_subset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_subset_out.txt[]
+----
+
+====== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_mulset_out.txt[]
+----
+
+====== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+*Parameters
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_divset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_divset_out.txt[]
+----
+
+====== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modset(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_modset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_modset_out.txt[]
+----
+
+====== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_andset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_andset_out.txt[]
+----
+
+====== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andset(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_orset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_orset_out.txt[]
+----
+
+
+====== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorset(_value)
+----
+
+[.underline]#Parameters#
+
+- __op1_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_xorset_out.txt[]
+----
+
+====== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
+[.underline]#Parameters#
+
+- __op1_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shrset_out.txt[]
+----
+
+====== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrset(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
+----
+
+====== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+- A the value as result of negate operation
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_neg.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_neg_out.txt[]
+----
+
+====== _postinc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_postinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_postinc_out.txt[]
+----
+
+====== _postdec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_postdec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_postdec_out.txt[]
+----
+
+====== _preinc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_preinc.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_preinc_out.txt[]
+----
+
+====== _predec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A the object itself
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/class/class_property_metamethod_predec.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/class/class_property_metamethod_predec_out.txt[]
+----
+

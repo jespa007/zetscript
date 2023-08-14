@@ -7,7 +7,7 @@ then
 	EXTENSION_EXE=".exe"
 fi
 
-the_language_example_dirs=(integer float string function array object class type loop math json system datetime)
+the_language_example_dirs=(console integer float string function array object class type loop math json system datetime)
 
 # build output for language examples
 for i in "${the_language_example_dirs[@]}"
@@ -16,7 +16,7 @@ do
 	for j in $dir
 	do
 		base_file="$(basename $j .zs)"
-		../../bin/gcc/Release/zs --no-execution-time "the_language/"$i"/"$base_file".zs" > "the_language/"$i"/"$base_file"_out.txt"
+		../../bin/gcc/Release/zs --no-execution-time "the_language/"$i"/"$base_file".zs" > "the_language/"$i"/"$base_file"_out.txt" 
 		
 	done
 done

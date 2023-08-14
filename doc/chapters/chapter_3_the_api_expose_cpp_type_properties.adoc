@@ -1,0 +1,1040 @@
+
+==== Properties
+
+explaing that to register properties you have to use
+
+registerMemberProperty
+
+*Syntax*
+
+[source,javascript]
+----
+class Test{
+
+	// property
+	property{
+			...
+	}
+
+}
+----
+
+==== Register property functions
+
+===== _get()
+
+__get_ returns the value of the property
+
+*Syntax*
+
+[source,javascript]
+----
+ReturnType RegisteredTypeProperty_get(ZetScript *_zs, RegisteredType *_this)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+
+[.underline]#Returns#
+
+Returns the value of the property
+
+*Example*
+
+The following code defines a function as a _get_ property operation that returns the _value_ contents of current instance,
+
+[source,cpp]
+----
+
+zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
+	return _this->value;
+}
+
+----
+
+Next, the function is registered as member metamethod `_get_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _get_ operation from _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_get.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_get_out.txt[]
+----
+
+===== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_set(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs a _set_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=*_value;
+}
+----
+
+Next, the function is registered as member metamethod `_set_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_set);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _set_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_set.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_set_out.txt[]
+----
+
+===== _addset()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_addset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _addset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+void NumberZs_value_addset(ZetScript *_zs,Number *_this,zs_float *_value){
+	_this->value+=*_value;
+}
+----
+
+Next, the function is registered as member metamethod `_addset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_addset",NumberZs_value_addset));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _addset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_addset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_addset_out.txt[]
+----
+
+
+===== _subset()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_subset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs a _subset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_subset(ZetScript *_zs,Number *_this,zs_float *_value){
+	_this->value-=*_value;
+}
+
+----
+
+Next, the function is registered as member metamethod `_subset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_subset",NumberZs_value_subset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _subset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_subset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_subset_out.txt[]
+----
+
+===== _mulset()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_mulset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _mulset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_mulset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value*=*_value;
+}
+
+----
+
+Next, the function is registered as member metamethod `_mulset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_mulset",NumberZs_value_mulset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _mulset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_mulset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_mulset_out.txt[]
+----
+
+===== _divset()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_divset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _divset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_divset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value/=*_value;
+}
+----
+
+Next, the function is registered as member metamethod `_divset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_divset",NumberZs_value_divset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _divset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_divset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_divset_out.txt[]
+----
+
+===== _modset()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_modset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _modset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+void NumberZs_value_modset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=fmod(_this->value,*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_addset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_modset",NumberZs_value_modset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _modset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_modset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_modset_out.txt[]
+----
+
+===== _andset()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_andset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _andset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_andset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=(int)(_this->value)&(int)(*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_andset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_andset",NumberZs_value_andset);
+	
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _andset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_andset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_andset_out.txt[]
+----
+
+===== _orset()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_orset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _orset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_orset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=(int)(_this->value)|(int)(*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_orset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_orset",NumberZs_value_orset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _orset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_orset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_orset_out.txt[]
+----
+
+
+===== _xorset()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_xorset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _xorset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_xorset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=(int)(_this->value)^(int)(*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_xorset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_xorset",NumberZs_value_xorset);
+
+	//...
+
+}
+
+----
+
+Finally, the following code it shows an example of a script that performs a _xorset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_xorset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_xorset_out.txt[]
+----
+
+===== _shrset()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_shrset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _shrset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_shrset(ZetScript *_zs,Number *_this,zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
+	_this->value=(int)(_this->value)>>(int)(*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_shrset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shrset",NumberZs_value_shrset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _shrset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_shrset.cpp[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_shrset_out.txt[]
+----
+
+===== _shlset()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+void RegisteredTypeProperty_shlset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines a function that performs and _shlset_ to _value_ variable of current instance,
+
+[source,cpp]
+----
+
+void NumberZs_value_shlset(ZetScript *_zs,Number *_this,zs_float *_value){
+	_this->value=(int)(_this->value)<<(int)(*_value);
+}
+----
+
+Next, the function is registered as member metamethod `_shlset_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shlset",NumberZs_value_shlset);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _shlset_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_shlset.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_shlset_out.txt[]
+----
+
+===== _postinc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+
+[.underline]#Returns#
+
+Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+
+*Example*
+
+The following code defines a function that performs a _postinc_ of current instance,
+
+[source,cpp]
+----
+
+zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
+	return _this->value++;
+}
+
+----
+
+Next, the function is registered as member metamethod `_postinc_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberFunction<Number>("_postinc",NumberZs_postinc);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _postinc_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_postinc.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_postinc_out.txt[]
+----
+
+===== _postdec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+
+[.underline]#Returns#
+
+Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+
+*Example*
+
+The following code defines a function that performs a _postdec_ of current instance,
+
+[source,cpp]
+----
+
+zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
+	return _this->value--;
+}
+
+----
+
+Next, the function is registered as member metamethod `_postdec_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberFunction<Number>("_postdec",NumberZs_postdec);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _postdec_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_postdec.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_postdec_out.txt[]
+----
+
+===== _preinc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+
+[.underline]#Returns#
+
+Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+
+*Example*
+
+The following code defines a function that performs a _preinc_ of current instance,
+
+[source,cpp]
+----
+zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
+	return ++_this->value;
+}
+----
+
+Next, the function is registered as member metamethod `_preinc_` through `registerMemberPropertyMetamethod`,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_preinc",NumberZs_value_preinc);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _preinc_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_preinc.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_preinc_out.txt[]
+----
+
+===== _predec()
+
+[source,javascript]
+----
+ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context
+- __this_ : The current instance
+
+[.underline]#Returns#
+
+Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+
+*Example*
+
+The following code defines a function that performs a _predec_ of current instance,
+
+[source,cpp]
+----
+
+zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
+	return --_this->value;
+}
+----
+
+Next, the function is registered as member metamethod `_predec_` through `registerMemberPropertyMetamethod`,
+
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerMemberPropertyMetamethod<Number>("value","_predec",NumberZs_value_predec);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a _predec_ operation to _Number::value_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_predec.cpp[]
+----
+
+The output is the following,
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_member_property_metamethod_predec_out.txt[]
+----

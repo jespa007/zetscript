@@ -1,1 +1,3 @@
-Console::error("Print error ")
+Console::error("An")
+Console::error(" ")
+Console::error(" error happened!")

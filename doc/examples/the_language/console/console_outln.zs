@@ -1,1 +1,3 @@
-Console::outln("Hello world")
+Console::outln("Hello")
+Console::outln()
+Console::outln("World")

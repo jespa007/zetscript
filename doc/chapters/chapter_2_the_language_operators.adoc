@@ -13,7 +13,7 @@ ZetScript has the following type of operators
 
 Arithmetic operators performs arithmetic operations between two values. The arithmetic operators are the following,
 
-[cols="1m,2d,3d,6a"]
+[cols="2m,2d,3d,6a"]
 |====
 |Operator |Name |Description |Example
 
@@ -70,7 +70,7 @@ concatenates strings, arrays or objects
 
 Bitwise operators combines operations between two integer values. The bitwise operators are the following,
 
-[cols="1m,2d,3d,6a"]
+[cols="2m,2d,3d,6a"]
 |====
 |Operator |Name |Description |Example
 
@@ -125,7 +125,7 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 Assignment operators assign values to ZetScript variables. The assigment operators are the following,
 
-[cols="1m,2d,3d,6a"]
+[cols="2m,2d,3d,6a"]
 |====
 |Operator |Name |Description |Example
 
@@ -241,7 +241,7 @@ i>>=1; // i == 0x7f
 
 Relational operators evaluates relations through two values. The relational operators are the following,
 
-[cols="1m,2d,3d,6a"]
+[cols="2m,2d,3d,6a"]
 |====
 |Operator |Name |Description |Example
 
@@ -317,7 +317,7 @@ Performs the following operations:
 
 Logical operators combines operations between two boolean values. The logic operators are the following,
 
-[cols="1m,2d,3d,6a"]
+[cols="2m,2d,3d,6a"]
 |====
 |Operator |Name |Description |Example
 
