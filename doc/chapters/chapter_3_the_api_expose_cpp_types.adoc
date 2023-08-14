@@ -9,7 +9,7 @@ There's two ways to register a type,
 - Register a non instantiable type 
 - Register an instantiable type
 
-==== Register a non instantiable type
+===== Register a non instantiable type
 
 Register a non instantiable type it means that it CANNOT create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is usueful when it wants to have a control of instantiated objects in the native application.
 
@@ -86,7 +86,7 @@ The only way to operate with a 'Number' object non intanciable is by a reference
 include::../examples/the_api/register_type/register_non_instantiable_type.cpp[]
 ----
   
-==== Register an instantiable type
+===== Register an instantiable type
 
 
 Register an instantiable type it means that it CAN create new objects of that 'type' in ZetScript code using operator new.
@@ -462,46 +462,90 @@ Inherited classes needs to know its base classes in order to register its parent
 ZetScript::extends<base_registered_type, registered_type>();
 ----
 
-If for example we want to register MyClassExtend and tell that is base of MyClass Is done with the following snipped,
+If for example we want to register MyCppTypeExtend and tell that is base of MyCppType Is done with the following snipped,
 
 [source,cpp]
 ----
 
-class MyClassExtend:public MyClass{
-public:
- float data2;
- void function2(float * arg){
- this->data2 = *arg;
- printf("Float argument is %.02f\n",this->data2);
- }
-}; 
+class MyCppType{
+	public:
+	int data1;
+	int function1(int arg){
+		printf("c++ argument is %i\n",this->data1+arg);
+		return this->data1 + arg;
+	}
+};
 
-zs.registerType<MyClassExtend>("MyClassExtend"); // register MyClassExtend
-zs.extends<MyClass,MyClassExtend>();
+
+class MyCppTypeExtend:public MyCppType{
+public:
+	float data2;
+	int function2(float arg){
+		printf("Float argument is %.02f\n",this->data2 + arg);
+		return this->data2 + arg;
+	}
+};
+
+//---- BINDINGS
+MyCppType * MyCppType_new(zetscript::ZetScript *_zs){
+	return new MyCppType();
+}
+
+void MyCppType_constructor(zetscript::ZetScript *_zs, MyCppType *_this, zetscript::zs_int _data1){
+	_this->data1=_data1;
+}
+
+zetscript::zs_int MyCppType_function1(zetscript::ZetScript *_zs, MyCppType *_this, zetscript::zs_int _arg){
+	return _this->function1(_arg);
+}
+
+void MyCppType_delete(zetscript::ZetScript *_zs, MyCppType *_this){
+	delete _this;
+}
+
+
+//---- BINDINGS
+
+int main(){
+	zetscript::ZetScript zs;
+
+	// Register MyCppType
+	zs.registerType<MyCppType>("MyCppType",MyCppType_new,MyCppType_delete);
+
+	// Register MyCppTypeExtend
+	zs.registerType<MyCppTypeExtend>("MyCppTypeExtend");
+
+	// MyCppTypeExtends extends from MyCppType
+	zs.extends<MyCppTypeExtend,MyCppType>();
+
+	// Register MyCppType constructor
+	zs.registerConstructor<MyCppType>(MyCppType_constructor);
+
+	// Register MyCppType::function1
+ 	zs.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
+}
 
 ----
 
-An important feature of ZetScript is that it supports c++ class inheritance for any in script class and the this (section X.X) and super (seccion X.X.X.X) keywords works as a normal behavior. For example, we could inherit MyClassExtend from X.X that is shown in the following code,
+An important feature of ZetScript is that it supports c++ class inheritance for any in script class and the _this_ and _super_ keywords works as a normal behavior. For example, we could inherit MyCppTypeExtend as it shows in the following code,
 
 [source,javascript]
 ----
-class ScriptMyClassExtended: MyClassExtend{
- function function1(arg1){
- print("script argument is "+arg1)
- super(this.data1+arg1); // calls function1 c++
- }
-}
-var myclass=new ScriptMyClassExtend(10);
-Myclass.function1(5);
+class ScriptMyCppTypeExtend extends MyCppTypeExtend{
+	function1(_arg1){
+		Console::outln("script argument is "+_arg1);
+		super(this.data1+arg1); // calls function1
+	}
+};
+var MyCppType=new ScriptMyCppTypeExtend(10);
+MyCppType.function1(5);
 ----
 
 It prints,
 
 [source,text]
 ----
-data1 is initialized as 10
-script argument is 5
-c++ argument is 15
+include::../examples/the_api/register_type/register_[]
 ----
 
 include::chapter_3_the_api_expose_cpp_type_metamethods.adoc[]

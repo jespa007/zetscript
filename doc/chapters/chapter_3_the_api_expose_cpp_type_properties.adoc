@@ -19,9 +19,9 @@ class Test{
 }
 ----
 
-==== Register property functions
+===== Register property functions
 
-===== _get()
+====== _get()
 
 __get_ returns the value of the property
 
@@ -85,7 +85,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_get_out.txt[]
 ----
 
-===== _set()
+====== _set()
 
 Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
 
@@ -149,7 +149,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_set_out.txt[]
 ----
 
-===== _addset()
+====== _addset()
 
 Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
 
@@ -213,7 +213,7 @@ include::../examples/the_api/register_type/register_member_property_metamethod_a
 ----
 
 
-===== _subset()
+====== _subset()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
 
@@ -278,7 +278,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_subset_out.txt[]
 ----
 
-===== _mulset()
+====== _mulset()
 
 Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
 
@@ -342,7 +342,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_mulset_out.txt[]
 ----
 
-===== _divset()
+====== _divset()
 
 Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
 
@@ -407,7 +407,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_divset_out.txt[]
 ----
 
-===== _modset()
+====== _modset()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
 
@@ -470,7 +470,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_modset_out.txt[]
 ----
 
-===== _andset()
+====== _andset()
 
 Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
 
@@ -534,7 +534,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_andset_out.txt[]
 ----
 
-===== _orset()
+====== _orset()
 
 Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
 
@@ -599,7 +599,7 @@ include::../examples/the_api/register_type/register_member_property_metamethod_o
 ----
 
 
-===== _xorset()
+====== _xorset()
 
 Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
 
@@ -665,7 +665,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_xorset_out.txt[]
 ----
 
-===== _shrset()
+====== _shrset()
 
 Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
 
@@ -729,7 +729,7 @@ Output:
 include::../examples/the_api/register_type/register_member_property_metamethod_shrset_out.txt[]
 ----
 
-===== _shlset()
+====== _shlset()
 
 Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
 
@@ -792,7 +792,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_shlset_out.txt[]
 ----
 
-===== _postinc()
+====== _postinc()
 
 
 Implements _post_increment_ operator (aka a++ ) 
@@ -856,7 +856,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_postinc_out.txt[]
 ----
 
-===== _postdec()
+====== _postdec()
 
 Implements _post_decrement_ operator (aka a-- ) 
 
@@ -919,7 +919,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_postdec_out.txt[]
 ----
 
-===== _preinc()
+====== _preinc()
 
 Implements _pre_increment_ operator (aka ++a ) 
 
@@ -980,7 +980,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_property_metamethod_preinc_out.txt[]
 ----
 
-===== _predec()
+====== _predec()
 
 [source,javascript]
 ----
