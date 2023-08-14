@@ -241,11 +241,11 @@ Here there's a meaning of each byte code
 |PUSH_STK_GLOBAL
 |Push stk global
 
-| PUSH_STK_LOCAL
-| Push stk local
+|PUSH_STK_LOCAL
+|Push stk local
 			
 |PUSH_STK_REF
-| push stk global
+|push stk global
 
 |PUSH_STK_THIS
 |Push stk global

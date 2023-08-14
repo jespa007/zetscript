@@ -4,7 +4,7 @@ ZetScript API can register static member function or member functions as metamet
 
 ===== Register member metamethods
 
-====== _tostring()
+======= _tostring()
 
 Returns custom string when string operation operation is invoved
 
@@ -72,7 +72,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_tostring_out.txt[]
 ----
 
-===== _set()
+====== _set()
 
 Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
 
@@ -143,7 +143,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_set_out.txt[]
 ----
 
-===== _addset()
+====== _addset()
 
 Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
 
@@ -209,7 +209,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_addset_out.txt[]
 ----
 
-===== _subset()
+====== _subset()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
 
@@ -275,7 +275,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_subset_out.txt[]
 ----
 
-===== _mulset()
+====== _mulset()
 
 Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
 
@@ -341,7 +341,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_mulset_out.txt[]
 ----
 
-===== _divset()
+====== _divset()
 
 Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
 
@@ -407,7 +407,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_divset_out.txt[]
 ----
 
-===== _modset()
+====== _modset()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
 
@@ -474,7 +474,7 @@ include::../examples/the_api/register_type/register_member_metamethod_modset_out
 ----
 
 
-===== _andset()
+====== _andset()
 
 Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
 
@@ -541,7 +541,7 @@ include::../examples/the_api/register_type/register_member_metamethod_andset_out
 ----
 
 
-===== _orset()
+====== _orset()
 
 Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
 
@@ -607,7 +607,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_orset_out.txt[]
 ----
 
-===== _xorset()
+====== _xorset()
 
 Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
 
@@ -674,7 +674,7 @@ include::../examples/the_api/register_type/register_member_metamethod_xorset_out
 ----
 
 
-===== _shrset()
+====== _shrset()
 
 Implements _bitwise shift right assignment_ operator (aka &gt;&gt;= ) with a value entered by parameter as right operand.
 
@@ -741,7 +741,7 @@ include::../examples/the_api/register_type/register_member_metamethod_shrset_out
 ----
 
 
-===== _shlset()
+====== _shlset()
 
 Implements _bitwise shift left assignment_ operator (aka &lt;&lt;= ) with a value entered by parameter as right operand.
 
@@ -808,7 +808,7 @@ include::../examples/the_api/register_type/register_member_metamethod_shlset_out
 ----
 
 
-===== _not()
+====== _not()
 
 Implements _not_ pre operator (aka !)  
 
@@ -872,7 +872,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_not_out.txt[]
 ----
 
-===== _neg()
+====== _neg()
 
 Implements _negate_ pre operator (aka -a ) 
 
@@ -936,7 +936,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_neg_out.txt[]
 ----
 
-===== _postinc()
+====== _postinc()
 
 Implements _post increment_ operator (aka a++ ) 
 
@@ -1000,7 +1000,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_postinc_out.txt[]
 ----
 
-===== _postdec()
+====== _postdec()
 
 Implements _post decrement_ operator (aka a++ ) 
 
@@ -1064,7 +1064,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_postdec_out.txt[]
 ----
 
-===== _preinc()
+====== _preinc()
 
 Implements _pre increment_ operator (aka ++a ) 
 
@@ -1127,7 +1127,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_preinc_out.txt[]
 ----
 
-===== _predec()
+====== _predec()
 
 Implements _pre decrement_ operator (aka --a ) 
 
@@ -1191,7 +1191,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_predec_out.txt[]
 ----
 
-===== _in()
+====== _in()
 
 Implements _in_ operator 
 
@@ -1262,7 +1262,7 @@ include::../examples/the_api/register_type/register_member_metamethod_in_out.txt
 
 ===== Static functions
 
-====== _equ()
+======= _equ()
 
 Implements _equal_ operator (aka == ) between first operand and second operand
 
@@ -1335,7 +1335,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_equ_out.txt[]
 ----
 
-===== _nequ()
+====== _nequ()
 
 Implements _not equal_ operator (aka != ) between first operand and second operand
 
@@ -1408,7 +1408,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_nequ_out.txt[]
 ----
 
-===== _lt()
+====== _lt()
 
 Implements _less than_ operator (aka < ) between first operand and second operand
 
@@ -1483,7 +1483,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_lt_out.txt[]
 ----
 
-===== _lte()
+====== _lte()
 
 Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
 
@@ -1558,7 +1558,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_lte_out.txt[]
 ----
 
-===== _gt()
+====== _gt()
 
 Implements _greather than_ operator (aka > ) between first operand and second operand
 
@@ -1629,7 +1629,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_gt_out.txt[]
 ----
 
-===== _gte(_op1,_op2)
+====== _gte(_op1,_op2)
 
 Implements _greather than or equal_ operator (aka &gt;= ) between first operand and second operand
 
@@ -1699,7 +1699,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_gte_out.txt[]
 ----
 
-===== _add()
+====== _add()
 
 Implements _add_ operator (aka + ) between first operand and second operand
 
@@ -1772,7 +1772,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_add_out.txt[]
 ----
 
-===== _sub()
+====== _sub()
 
 Implements _subtraction_ operator (aka - ) between first operand and second operand
 
@@ -1845,7 +1845,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_sub_out.txt[]
 ----
 
-===== _mul()
+====== _mul()
 
 Implements _multiplication_ operator (aka * ) between first operand and second operand
 
@@ -1919,7 +1919,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_mul_out.txt[]
 ----
 
-===== _div()
+====== _div()
 
 Implements _division_ operator (aka / ) between first operand and second operand
 
@@ -1990,7 +1990,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
 ----
 
-===== _mod()
+====== _mod()
 
 Implements _modulus_ operator (aka % ) between first operand and second operand
 
@@ -2064,7 +2064,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_mod_out.txt[]
 ----
 
-===== _and()
+====== _and()
 
 Implements _bitwise AND_ operator (aka & ) between first operand and second operand
 
@@ -2135,7 +2135,7 @@ Output:
 include::../examples/the_api/register_type/register_member_metamethod_and_out.txt[]
 ----
 
-===== _or()
+====== _or()
 
 Implements _bitwise OR_ operator (aka | ) between first operand and second operand
 
@@ -2208,7 +2208,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_or_out.txt[]
 ----
 
-===== _xor()
+====== _xor()
 
 Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
 
@@ -2280,7 +2280,7 @@ The output is the following,
 ----
 include::../examples/the_api/register_type/register_member_metamethod_xor_out.txt[]
 ----
-===== _shl()
+====== _shl()
 
 Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
 
@@ -2356,7 +2356,7 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_shl_out.txt[]
 ----
 
-===== _shr()
+====== _shr()
 
 Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and second operand
 
