@@ -385,7 +385,15 @@ namespace zetscript{
 					symbol_constructor_function_name=sc->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
 					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->idx_script_type)){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
+						EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Cannot create object type '%s' because it has been defined as not instantiable. "
+								"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
+								,sc->getTypeName()
+								,sc->getTypeName()
+								,sc->getTypeName()
+								);
 					}
 
 					eval_instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));

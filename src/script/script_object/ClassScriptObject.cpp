@@ -88,6 +88,17 @@ namespace zetscript{
 
 		// create object if type is native or it derives from a native type
 		if(c_object == NULL && script_class_native != NULL){
+			// check that native type is instantiable
+			if(script_class_native->new_native_instance == NULL){
+				ZS_THROW_RUNTIME_ERROR(
+						"Cannot instantiate object '%s' because it extends from native type '%s' as not instantiable. "
+						"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
+						,script_type->str_script_type.c_str()
+						,script_class_native->str_script_type.c_str()
+						,script_class_native->str_script_type.c_str()
+						,script_class_native->str_script_type.c_str()
+				);
+			}
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
 			created_object = CALL_CONSTRUCTOR_CLASS(zs,script_class_native); // (*script_type->new_native_instance)();
 			was_created_by_constructor=true;
@@ -209,7 +220,8 @@ namespace zetscript{
 
 			if(script_class_native->delete_native_instance==NULL){
 				ZS_THROW_RUNTIME_ERROR(
-						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newClassScriptObject'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
+						"Cannot delete variable as type '%s' because it was defined as not instantiable but created through 'newClassScriptObject'. "
+						"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
 						,script_class_native->str_script_type.c_str()
 						,script_class_native->str_script_type.c_str()
 						,script_class_native->str_script_type.c_str()
