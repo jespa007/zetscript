@@ -545,7 +545,7 @@ It prints,
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
+include::../examples/the_api/register_type/register_type_inheritance_out.txt[]
 ----
 
 include::chapter_3_the_api_expose_cpp_type_metamethods.adoc[]

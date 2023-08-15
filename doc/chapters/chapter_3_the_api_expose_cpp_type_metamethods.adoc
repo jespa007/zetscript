@@ -1,10 +1,10 @@
 ==== Register metamethods
 
-ZetScript API can register static member function or member functions as metamethods in aim  to get the same results as we could see in *xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
+ZetScript API can register static or member metamethods in aim to define operators as we could see in *xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
 
-===== Register member metamethods
+===== Member metamethods
 
-======= _tostring()
+====== _tostring()
 
 Returns custom string when string operation operation is invoved
 
@@ -1260,9 +1260,9 @@ The output is the following,
 include::../examples/the_api/register_type/register_member_metamethod_in_out.txt[]
 ----
 
-===== Static functions
+===== Static metamethods
 
-======= _equ()
+====== _equ()
 
 Implements _equal_ operator (aka == ) between first operand and second operand
 
