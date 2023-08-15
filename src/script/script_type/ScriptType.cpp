@@ -440,18 +440,6 @@ namespace zetscript{
 							case METAMETHOD_BYTE_CODE_LTE:
 							case METAMETHOD_BYTE_CODE_GT:
 							case METAMETHOD_BYTE_CODE_GTE:
-							case METAMETHOD_BYTE_CODE_NOT:
-							case METAMETHOD_BYTE_CODE_IN:
-
-								// return type must be bool...
-								if(_idx_return_type != IDX_TYPE_BOOL_C){
-									ZS_THROW_RUNTIME_ERROR("Error registering static metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
-											this->str_script_type.c_str(),
-											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
-									);
-									return NULL;
-								}
 								break;
 							case METAMETHOD_BYTE_CODE_ADD: // +
 							case METAMETHOD_BYTE_CODE_SUB: // -
@@ -514,6 +502,7 @@ namespace zetscript{
 								}
 								break;
 							case METAMETHOD_BYTE_CODE_NOT:
+							case METAMETHOD_BYTE_CODE_IN:
 
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
