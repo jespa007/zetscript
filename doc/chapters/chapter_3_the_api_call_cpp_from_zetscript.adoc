@@ -88,7 +88,7 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 
 ===== Return Integer
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* return type on its function prototype.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#_boolean[Integer]* it must specify *zs_int* return type on its function prototype.
 
 *Example*
 
@@ -106,7 +106,7 @@ include::../examples/the_api/register_function/register_function_return_zs_int_o
 
 ===== Return Float
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* return type on its function prototype.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#_boolean[Float]* it must specify *zs_float* return type on its function prototype.
 
 *Example*
 
@@ -124,7 +124,7 @@ include::../examples/the_api/register_function/register_function_return_zs_float
 
 ===== Return a String
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#&lowbar;string[String]* it can be done by specifying the following return types in its prototype,
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#&lowbar;string[String]* it can be done by specifying the following return types in its prototype,
 
 - _zs_string_
 - _StringScriptObject *_
@@ -132,7 +132,7 @@ To register a C function that returns a *xref:chapter_2_the_language_data_types.
 
 ====== Return String as zs_string
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *zs_string* return type on its function prototype.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *zs_string* return type on its function prototype.
 
 *Example*
 
@@ -150,7 +150,7 @@ include::../examples/the_api/register_function/register_function_return_zs_strin
 
 ====== Return String as StringScriptObject &#42;
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *StringScriptObject &#42;* return type on its function prototype. The instantiation of *StringScriptObject &#42;* it&#39;s done throught _ZetScript::newStringScriptObject_ using ZetScript context.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *StringScriptObject &#42;* return type on its function prototype. The instantiation of *StringScriptObject &#42;* it&#39;s done throught _ZetScript::newStringScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -168,7 +168,7 @@ include::../examples/the_api/register_function/register_function_return_string_s
 
 ===== Return Array
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]* it must specify *ArrayScriptObject &#42;* return type on its function prototype. The instantiation of *ArrayScriptObject &#42;* it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;array[Array]* it must specify *ArrayScriptObject &#42;* return type on its function prototype. The instantiation of *ArrayScriptObject &#42;* it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -186,7 +186,7 @@ include::../examples/the_api/register_function/register_function_return_array_sc
 
 ===== Return Object
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]* it must specify *ObjectScriptObject &#42;* return type on its function prototype. The instantiation of *ObjectScriptObject &#42;* it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;object[Object]* it must specify *ObjectScriptObject &#42;* return type on its function prototype. The instantiation of *ObjectScriptObject &#42;* it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -275,7 +275,7 @@ This section will explain how to register C functions that accepts the following
 
 ===== Parameter Boolean
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* as parameter type on its function prototype.
 
 *Example*
 
@@ -293,7 +293,7 @@ include::../examples/the_api/register_function/register_function_param_bool_out.
 
 ===== Parameter Integer
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;integer[Integer]* it must specify *zs_int* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;integer[Integer]* it must specify *zs_int* as parameter type on its function prototype.
 
 *Example*
 
@@ -311,7 +311,7 @@ include::../examples/the_api/register_function/register_function_param_zs_int_ou
 
 ===== Parameter Float
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;float[Float]* it must specify *zs_float* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;float[Float]* it must specify *zs_float* as parameter type on its function prototype.
 
 *Example*
 
@@ -329,7 +329,7 @@ include::../examples/the_api/register_function/register_function_param_zs_float_
 
 ===== Parameter String
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify the following types as a parameter on its function prototype,
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#_boolean[String]* it can specify the following types as a parameter on its function prototype,
 
 - const char *
 - zs_string *
@@ -337,7 +337,7 @@ To register a C function that accepts a *xref:chapter_2_the_language_data_types.
 
 ===== Parameter String as const char *
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *const char &#42;* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *const char &#42;* as parameter type on its function prototype.
 
 *Example*
 
@@ -355,7 +355,7 @@ include::../examples/the_api/register_function/register_function_param_const_cha
 
 ===== Parameter String as zs_string *
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *zs_string &#42;* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *zs_string &#42;* as parameter type on its function prototype.
 
 *Example*
 
@@ -373,7 +373,7 @@ include::../examples/the_api/register_function/register_function_param_zs_string
 
 ===== Parameter String as StringScriptObject *
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *StringScriptObject &#42;* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;string[String]* it can specify *StringScriptObject &#42;* as parameter type on its function prototype.
 
 *Example*
 
@@ -391,7 +391,7 @@ include::../examples/the_api/register_function/register_function_param_string_sc
 
 ===== Parameter Array
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]* it must specify *ArrayScriptObject &#42;* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;array[Array]* it must specify *ArrayScriptObject &#42;* as parameter type on its function prototype.
 
 *Example*
 
@@ -409,7 +409,7 @@ include::../examples/the_api/register_function/register_function_param_array_scr
 
 ===== Parameter Object
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]* it must specify *ObjectScriptObject &#42;* as parameter type on its function prototype.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;object[Object]* it must specify *ObjectScriptObject &#42;* as parameter type on its function prototype.
 
 *Example*
 
@@ -427,7 +427,7 @@ include::../examples/the_api/register_function/register_function_param_object_sc
 
 ===== Parameter Function
 
-To register a C function that accepts a *xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]* it must specify *ScriptFunction &#42;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
+To register a C function that accepts a *xref:chapters/chapter_2_the_language_data_types.adoc#lowbar;function[Function]* it must specify *ScriptFunction &#42;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
 
 *Example*
 

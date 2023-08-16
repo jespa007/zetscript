@@ -1,6 +1,6 @@
 ==== Register metamethods
 
-ZetScript API can register static or member metamethods in aim to define operators as we could see in *xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
+ZetScript API can register static or member metamethods in aim to define operators as we could see in *xref:chapters/chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
 
 ===== Member metamethods
 
@@ -95,7 +95,7 @@ None.
 
 *Example*
 
-The following code defines two functions performs an assignment from *xref:chapter_2_the_language_data_types.adoc#&lowbar;float[Float]* value or _Number_ object respectively,
+The following code defines two functions performs an assignment from *xref:chapters/chapter_2_the_language_data_types.adoc#&lowbar;float[Float]* value or _Number_ object respectively,
 
 [source,cpp]
 ----
@@ -954,7 +954,7 @@ ClassScriptObject * RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post increment operation
+Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post increment operation
 
 
 *Example*
@@ -1018,7 +1018,7 @@ ClassScriptObject * RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post decrement operation
+Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post decrement operation
 
 
 *Example*
@@ -1082,7 +1082,7 @@ ClassScriptObject *RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
+Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
 *Example*
 
@@ -1145,7 +1145,7 @@ ClassScriptObject * RegisteredType_predec(ZetScript *_zs, RegisteredType *_this)
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
+Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
 
 *Example*
 
