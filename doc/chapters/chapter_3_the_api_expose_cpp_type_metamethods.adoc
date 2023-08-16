@@ -42,7 +42,7 @@ zs_string NumberZs_tostring(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, it's registered as member metamethod `_tostring` through `registerMemberFunction`,
+Next, it's registered as member metamethod __tostring_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -58,7 +58,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that creates a type _Number_ and prints its content to the console through `Console::outln`. Because `Console::outln` prints string information it calls `_tostring` implicitly.
+Finally, the following code it shows an example of a script that creates a type _Number_ and prints its content to the console through `Console::outln`. Because `Console::outln` prints string information it calls __tostring_ implicitly.
 
 [source,cpp]
 ----
@@ -110,7 +110,7 @@ void NumberZs_set(ZetScript *_zs,Number *_this,Number *_n){
 
 ----
 
-Next, each function is registered as member metamethod `_set` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __set_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -180,7 +180,7 @@ void NumberZs_addset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_addset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __addset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -246,7 +246,7 @@ void NumberZs_subset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_subset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __subset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -312,7 +312,7 @@ void NumberZs_mulset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_mulset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __mulset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -378,7 +378,7 @@ void NumberZs_divset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_divset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __divset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -444,7 +444,7 @@ void NumberZs_modset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_modset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __modset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -511,7 +511,7 @@ void NumberZs_andset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_andset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __andset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -578,7 +578,7 @@ void NumberZs_orset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_orset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __orset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -644,7 +644,7 @@ void NumberZs_xorset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_xorset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __xorset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -711,7 +711,7 @@ void NumberZs_shrset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_shrset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __shrset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -778,7 +778,7 @@ void NumberZs_shlset(ZetScript *_zs, Number *_this,Number *_n){
 }
 ----
 
-Next, each function is registered as member metamethod `_shlset` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __shlset_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -842,7 +842,7 @@ bool NumberZs_not(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_not` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __not_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -906,7 +906,7 @@ Number * NumberZs_neg(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_neg` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __neg_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -970,7 +970,7 @@ ClassScriptObject *  NumberZs_postinc(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_postinc` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __postinc_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1034,7 +1034,7 @@ ClassScriptObject * NumberZs_postdec(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_postdec` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __postdec_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1097,7 +1097,7 @@ ClassScriptObject * NumberZs_preinc(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_preinc` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __preinc_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1161,7 +1161,7 @@ ClassScriptObject  *NumberZs_predec(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod `_predec` through `registerMemberFunction`,
+Next, the function is registered as member metamethod __predec_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1230,7 +1230,7 @@ public:
 ----
 
 
-The following code defines a function as a _in_ operation by searching a value in the vector of current instance of `Data` type,
+The following code defines a function as a _in_ operation by searching a value in the vector of current instance of _Data_ type,
 
 [source,cpp]
 ----
@@ -1303,7 +1303,7 @@ bool NumberZs_equ(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_equ` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __equ_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1321,7 +1321,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `equ` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _equ_ operation from a _Float_ and _Number_.
 
 [source,cpp]
 ----
@@ -1376,7 +1376,7 @@ bool NumberZs_nequ(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_nequ` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __nequ_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1394,7 +1394,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `nequ` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _nequ_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1451,7 +1451,7 @@ bool NumberZs_lt(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_lt_` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __lt__ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1469,7 +1469,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `lt` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _lt_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1527,7 +1527,7 @@ bool NumberZs_lte(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_lte` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __lte_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1544,7 +1544,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `lte` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _lte_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1598,7 +1598,7 @@ bool NumberZs_gt(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_gt_` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __gt__ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1615,7 +1615,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_gt_` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __gt__ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1670,7 +1670,7 @@ bool NumberZs_gte(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_gte` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __gte_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1685,7 +1685,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `gte` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _gte_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1740,7 +1740,7 @@ ClassScriptObject * NumberZs_add(ZetScript *_zs,zs_float *_n1, Number *_n2){
 
 ----
 
-Next, each function is registered as member metamethod `_add` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __add_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1758,7 +1758,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_add` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __add_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1813,7 +1813,7 @@ ClassScriptObject * NumberZs_sub(ZetScript *_zs,zs_float *_n1, Number *_n2){
 
 ----
 
-Next, each function is registered as member metamethod `_sub` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __sub_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1831,7 +1831,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_sub` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __sub_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1889,7 +1889,7 @@ ClassScriptObject * NumberZs_mul(ZetScript *_zs,zs_float *_n1, Number *_n2){
 
 ----
 
-Next, each function is registered as member metamethod `_mul` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __mul_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1905,7 +1905,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_mul_` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __mul__ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -1959,7 +1959,7 @@ ClassScriptObject * NumberZs_div(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_div` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __div_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -1976,7 +1976,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_div` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __div_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2032,7 +2032,7 @@ ClassScriptObject * NumberZs_mod(ZetScript *_zs,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_mod` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __mod_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2050,7 +2050,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_mod` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __mod_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2104,7 +2104,7 @@ ClassScriptObject * NumberZs_and(ZetScript *_zs,zs_float *_n1, Number * _n2){
 }
 ----
 
-Next, each function is registered as member metamethod `_AND` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __AND_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2121,7 +2121,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_AND` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __AND_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2176,7 +2176,7 @@ ClassScriptObject * NumberZs_or(ZetScript *_zs,zs_float *_n1, Number * _n2){
 
 ----
 
-Next, each function is registered as member metamethod `_OR` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __OR_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2194,7 +2194,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_OR` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __OR_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2249,7 +2249,7 @@ ClassScriptObject * NumberZs_xor(ZetScript *_zs,zs_float *_n1, Number * _n2){
 
 ----
 
-Next, each function is registered as member metamethod `_XOR` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __XOR_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2267,7 +2267,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_XOR` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __XOR_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2324,7 +2324,7 @@ ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
 
 ----
 
-Next, each function is registered as member metamethod `_shl` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __shl_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2342,7 +2342,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_shl` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __shl_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----
@@ -2397,7 +2397,7 @@ ClassScriptObject * NumberZs_shr(ZetScript *_zs,zs_float *_n1, Number *_n2){
 
 ----
 
-Next, each function is registered as member metamethod `_shr` through `registerMemberFunction`,
+Next, each function is registered as member metamethod __shr_ through _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -2415,7 +2415,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs `_shr` operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __shr_ operation from a _Float_ and _Number_.
 
 [source,javascript]
 ----

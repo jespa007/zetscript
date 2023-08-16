@@ -3,7 +3,7 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 
-// A native type `Point` to register
+// A native type 'Point' to register
 class Point{
 public:
 	int x,y;

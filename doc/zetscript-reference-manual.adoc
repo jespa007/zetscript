@@ -11,17 +11,11 @@ v2.0, January 30,2023
 :stylesheet: css/zetscript-reference-manual.css
 :source-highlighter: rouge
 
-[preface]
-include::prefaces/preface_2_acknowledgment.adoc[]
-
 
 include::chapters/chapter_1_introduction.adoc[]
 include::chapters/chapter_2_the_language.adoc[]
 include::chapters/chapter_3_the_api.adoc[]
-//include::chapters/chapter_4_modules.adoc[]
 
-//[appendix]
-//include::appendixes/appendix_1_eval.adoc[]
 
 
 ifdef::backend-docbook[]

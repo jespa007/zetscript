@@ -2,7 +2,7 @@
 
 ==== Console
 
-`Console` module implements a set of functions for console
+_Console_ module implements a set of functions for console
 
 ===== Console::out()
 
@@ -159,7 +159,7 @@ The integer as the equivalent character readed from console
 
 ==== System
 
-`System` module implements a set of functions for system
+_System_ module implements a set of functions for system
 
 ===== System::clock()
 
@@ -294,7 +294,7 @@ Error !(m < 20). 'm' is 30
 
 ==== Math
 
-`Math` module implements a set of functions and properties related with maths
+_Math_ module implements a set of functions and properties related with maths
 
 ===== Static member properties
 
@@ -702,7 +702,7 @@ include::../examples/the_language/math/math_round_out.txt[]
 
 ==== Json
 
-`Json` module implements a set of functions to serialize and deserialize json format from/to zetscript types
+_Json_ module implements a set of functions to serialize and deserialize json format from/to zetscript types
 
 ===== Json::serialize()
 

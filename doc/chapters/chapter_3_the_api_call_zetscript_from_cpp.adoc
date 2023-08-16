@@ -22,7 +22,7 @@ Returns a `std::function` with the signature provided
 
 *Example*
 
-The following example it binds a `sayHelloWorld`` function
+The following example it binds a _sayHelloWorld_ function
 
 [source,c++]
 ----
@@ -240,7 +240,7 @@ After using the object returned by the function it has to decrease its reference
 
 *Example*
 
-In this example, it registers `Point` type, its constructor and its properties `x` and `y`. After evaluate ZetScript code that defines a function that return a new object type `Point`, it is binded to be callable in C++.  When it calls `returnPoint` in C&#43;&#43;, it returns a variable as type *ClassScriptObject &#42;* object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
+In this example, it registers _Point_ type, its constructor and its properties _x_ and _y_. After evaluate ZetScript code that defines a function that return a new object type _Point_, it is binded to be callable in C++.  When it calls _returnPoint_ in C&#43;&#43;, it returns a variable as type *ClassScriptObject &#42;* object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
 
 [source,c++]
 ----

@@ -91,7 +91,7 @@ include::../examples/the_api/eval/eval_file_out.txt[]
 
 ===== EVAL_OPTION_NO_EXECUTE
 
-In order to eval script but no execute add `EVAL_OPTION_NO_EXECUTE` option
+In order to eval script but no execute add _EVAL_OPTION_NO_EXECUTE_ option
 
 [source,c++]
 ----
@@ -101,7 +101,7 @@ include::../examples/the_api/eval/eval_file_option_no_execute.cpp[]
 
 ===== EVAL_OPTION_PRINT_BYTE_CODE
 
-In order to show byte code for a script add `EVAL_OPTION_PRINT_BYTE_CODE` option
+In order to show byte code for a script add _EVAL_OPTION_PRINT_BYTE_CODE_ option
 
 [source,c++]
 ----
@@ -115,7 +115,7 @@ Out:
 include::../examples/the_api/eval/eval_file_option_print_byte_code_out.txt[]
 ----
 
-As we can see in the output `EVAL_OPTION_PRINT_BYTE_CODE` option prints the byte code per each function. At the begin it prints summary,
+As we can see in the output _EVAL_OPTION_PRINT_BYTE_CODE_ option prints the byte code per each function. At the begin it prints summary,
 
  - *Function*: Function name
  - *Stack code*: Stack required for code

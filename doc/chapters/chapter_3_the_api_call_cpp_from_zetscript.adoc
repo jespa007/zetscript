@@ -18,7 +18,7 @@ ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType _arg1, ParamType _arg
 
 Where,
 
-- _ReturnType_: It can be `void` or some type defined in <<ZetScript built-in types>> or other registered type.
+- _ReturnType_: It can be _void_ or some type defined in <<ZetScript built-in types>> or other registered type.
 - _ParamType_: It can be one defined in  <<ZetScript built-in types>> or other registered type.
 
 
@@ -69,7 +69,7 @@ This section will explain how to register C functions that return the following 
 
 ===== Return Boolean
 
-To register a C function that returns a *xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]* it must specify *bool* return type on its function prototype.
+To register a C function that returns a *xref:chapters/chapter_2_the_language_data_types#_boolean[Boolean]* it must specify *bool* return type on its function prototype.
 
 *Example*
 
@@ -220,7 +220,7 @@ ZetScript *never* destroy native pointers returned from C function. This is why 
 
 *Example*
 
-In the following example it registers type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that returns a `Point` a type pointer. In the main program it creates a `Point` type and that is acceded globally, so the registered native function can access and return this instanced `Point` type.
+In the following example it registers type _Point_ and its properties _x_ and _y_ and it registers native function _returnPoint_ that returns a _Point_ a type pointer. In the main program it creates a _Point_ type and that is acceded globally, so the registered native function can access and return this instanced _Point_ type.
 
 
 [source,c++]
@@ -245,7 +245,7 @@ To be have the class wrappable inside *ClassScriptObject &#42;*, it must be regi
 
 *Example*
 
-In the following example it registers a native type `Point` and its properties `x` and `y` and it registers native function `returnPoint` that instances and returns a `ClassScriptObject` as `Point` type. 
+In the following example it registers a native type _Point_ and its properties _x_ and _y_ and it registers native function _returnPoint_ that instances and returns a _ClassScriptObject_ as _Point_ type. 
 
 [source,c++]
 ----
@@ -449,7 +449,7 @@ To register a C function that accepts a <<Registered type>> as a parameter, it m
 
 *Example*
 
-In the following example it registers the Point type and its properties `x` and `y`  (see <<Register type>> section to know about how to register class and properties) and it registers function `mul10Point` that accepts a Point type pointer as parameter. In the script execution it instances a Point type and is passed as argument to `mul10Point` that multiply its properties by 10.
+In the following example it registers the Point type and its properties _x_ and _y_  (see <<Register type>> section to know about how to register class and properties) and it registers function _mul10Point_ that accepts a Point type pointer as parameter. In the script execution it instances a Point type and is passed as argument to _mul10Point_ that multiply its properties by 10.
 
 [source,c++]
 ----

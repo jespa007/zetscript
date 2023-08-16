@@ -31,7 +31,7 @@ ScriptType * registerType<_Type>(const zs_string & _class_name);
 
 [.underline]#Returns# 
 
-A `ScriptType` object
+A _ScriptType_ object
 
 *Example*
 
@@ -42,7 +42,7 @@ Let's define a 'Number' type in the file 'Number.h',
 include::../examples/the_api/register_type/Number.h[]
 ----
 
-Next, it register `Number` type as non instantiable,
+Next, it register _Number_ type as non instantiable,
 
 [source,cpp]
 ----
@@ -63,7 +63,7 @@ int main()
 }
 ----
 
-Now, let's suppose we want to instantiate a `Number` type by evaluating the following script code,
+Now, let's suppose we want to instantiate a _Number_ type by evaluating the following script code,
 
 [source,cpp]
 ----
@@ -122,11 +122,11 @@ void RegisteredType_delete(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns# 
 
-A `ScriptType` object
+A _ScriptType_ object
 
 *Example*
 
-Following the example of the `Number` type and in order to compact the lines of code for the next examples of this section, it has been proposed put all registering and declaration of the functions in a file called `NumberZs.h`. Inside `NumberZs.h` there's a function called  `NumberZs_register` that will register of those functions.
+Following the example of the _Number_ type and in order to compact the lines of code for the next examples of this section, it has been proposed put all registering and declaration of the functions in a file called `NumberZs.h`. Inside `NumberZs.h` there's a function called  _NumberZs_register_ that will register of those functions.
 
 Let's define NumberZs_new and NumberZs_delete function that creates and destroys a Number type instantiation respectively,
 
@@ -141,7 +141,7 @@ void NumberZs_delete(ZetScript *_zs,Number *_this){
 }
 ----
 
-Then, in the `NumberZs_register` function, it registers `Number` type as instantiable by passing  _NumberZs_new_ and _NumberZs_delete_ functions,
+Then, in the _NumberZs_register_ function, it registers _Number_ type as instantiable by passing  _NumberZs_new_ and _NumberZs_delete_ functions,
 
 
 [source,cpp]
@@ -153,7 +153,7 @@ void NumberZs_register(ZetScript *_zs){
 }
 ----
 
-Finally, the following code shows an example of instantiation of a `Number` type,
+Finally, the following code shows an example of instantiation of a _Number_ type,
 
 
 [source,cpp]
@@ -189,7 +189,7 @@ Where,
 - __this_: The current instance.
 - __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or other registered type.
 
-After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. `registerConstructor` it has the following signature,
+After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. _registerConstructor_ it has the following signature,
 
 *Syntax*
 [source,cpp]
@@ -225,7 +225,7 @@ void NumberZs_constructor(ZetScript *_zs,Number *_this,Number *_value){
 }
 ----
 
-Next, they are registered with `registerConstructor` method,
+Next, they are registered with _registerConstructor_ method,
 
 [source,cpp]
 ----
@@ -286,7 +286,7 @@ Where,
 - __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
 
 
-After the member function is defined it has to be registered with `ZetScript::registerMemberFunction`. `registerMemberFunction` it has the following signature,
+After the member function is defined it has to be registered with `ZetScript::registerMemberFunction`. _registerMemberFunction_ it has the following signature,
 
 
 *Syntax*
@@ -324,7 +324,7 @@ zs_int NumberZs_toInteger(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, it's registered as member function named `toInteger` through with `registerMemberFunction`,
+Next, it's registered as member function named _toInteger_ through with _registerMemberFunction_,
 
 [source,cpp]
 ----
@@ -385,7 +385,7 @@ Where,
 - __arg1_ .. __arg9_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
 
 
-After the constructor function is defined it has to be registered with `ZetScript::registerStaticMemberFunction`. `registerStaticMemberFunction` it has the following signature,
+After the constructor function is defined it has to be registered with `ZetScript::registerStaticMemberFunction`. _registerStaticMemberFunction_ it has the following signature,
 
 
 *Syntax*
@@ -407,7 +407,7 @@ void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_memb
 
 *Example*
 
-The following code defines a function `NumberZs_pow` that takes two arguments and, returns the power raised to the base number,
+The following code defines a function _NumberZs_pow_ that takes two arguments and, returns the power raised to the base number,
 
 [source,cpp]
 ----
@@ -420,7 +420,7 @@ zs_float NumberZs_pow(ZetScript *_zs,zs_float *_base, zs_float * _power){
 
 ----
 
-Next, it's registered as static member function named `pow` through with `registerStaticMemberFunction`,
+Next, it's registered as static member function named _pow_ through with _registerStaticMemberFunction_,
 
 [source,cpp]
 ----
