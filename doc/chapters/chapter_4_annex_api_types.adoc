@@ -3,7 +3,7 @@
 
 
 
-=== ZetScript API types
+=== Types
 
 The ZetScript API types are the following,
 
@@ -18,7 +18,7 @@ The ZetScript API types are the following,
 
 ==== zs_int
 
-Integer data type it defines a integer variable with range from `-(2^b-1^)` to `2^b-1^-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from _-(2^b-1^)_ to _2^b-1^-1_ where _b=32_ or _b=64_ it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 

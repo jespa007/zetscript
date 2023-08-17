@@ -411,7 +411,7 @@ Here there's a meaning of each byte code
 |====
 
 
-
+include::chapter_3_the_api_types.adoc[]
 include::chapter_3_the_api_call_cpp_from_zetscript.adoc[]
 include::chapter_3_the_api_call_zetscript_from_cpp.adoc[]
 include::chapter_3_the_api_expose_cpp_types.adoc[]
