@@ -5,13 +5,7 @@ ZetScript is a script language with a syntax inspired in ECMAScript or Javascrip
 
 === Compile
 
-ZetScript has to be configured through (cmake,http://cmake.org) with the following compile toolchains,
-
-
-sing gnu toolchain, mingw, clang and Visual Studio through cmake
-
-To install ZetScript ,first download last source code from https://zetscript.org
-Then it has to compile the project with the following steps,
+To install ZetScript ,first download last source code from https://zetscript.org and compile the project with the following steps,
 
  . First we have to configure the project using cmake application.
 +

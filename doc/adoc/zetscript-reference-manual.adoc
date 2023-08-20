@@ -12,9 +12,9 @@ v2.0, January 30,2023
 :source-highlighter: rouge
 
 
-include::chapters/chapter_1_introduction.adoc[]
-include::chapters/chapter_2_the_language.adoc[]
-include::chapters/chapter_3_the_api.adoc[]
+include::chapter_1_introduction.adoc[]
+include::chapter_2_the_language.adoc[]
+include::chapter_3_the_api.adoc[]
 
 
 

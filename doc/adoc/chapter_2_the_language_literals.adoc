@@ -9,7 +9,7 @@ ZetScript supports the following literals,
 
 ==== Boolean
 
-Boolean literals is represented as true or false.
+_Boolean_ literals is represented as _true_ or _false_.
 
 Example,
 
@@ -21,19 +21,19 @@ false // false value
 
 ==== Integer
 
-Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
+_Integer_ literals are represented as integer with range from _-(2^b-1^)_ to _2^b-1^-1_ where _b=32_ or _b=64_ it depending whether ZetScript is compiled for 32bits or 64bits. _Integer_ values can be represented as _decimal_ value, _hexadecimal_, _binary_ or _character_ format.
 
 Example,
 
 [source,javascript]
 ----
-10; // decimal value
-0x1a; // hexadecimal value
-11010b; // 0x1a as binary value
-'b'; // char value
+10; // decimal
+0x1a; // hexadecimal
+11010b; // binary
+'b'; // character
 ----
 
-Integer literlas supports the following pre operators,
+Zetscript supports the following pre operators for _Integer_ literals,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -56,7 +56,7 @@ Integer literlas supports the following pre operators,
 
 ==== Float
 
-Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
+_Float_ literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. _Float_ values can be represented in decimal form or scientific notation form.
 
 Example,
 
@@ -66,7 +66,7 @@ Example,
 2.0e-2 // cientific notation form
 ----
 
-Float literals supports the following pre operators,
+Zetscript supports the following pre operators for _Float_ literals,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -82,7 +82,7 @@ Float literals supports the following pre operators,
 
 ==== String
 
-String literal is represented as string within quotes (").
+_String_ literal is represented as string within quotes (").
 
 Example,
 

@@ -15,7 +15,7 @@ ZetScript supports the following builtin data types,
 
 ==== Undefined
 
-Undefined data type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings *undefined* value,
+_Undefined_ data type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings _undefined_ value,
 
 [source,javascript]
 ----
@@ -25,30 +25,32 @@ var b=undefined; // assigns undefined value
 
 ==== Null
 
-Null data type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings *null* value,
+_Null_ data type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings _null_ value,
 
 [source,javascript]
 ----
 var i=null;
 ----
 
+<<<
+
 ==== Integer
 
-Integer data type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
+_Integer_ data type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns _decimal_, _hexadecimal_, _binary_ or _character_ value.
 
 Example,
 
 [source,javascript]
 ----
-var a=10; // decimal value
-var b=0x1a; // hexadecimal value
-var c=01001b; // binary value
-var d='b'; //  char value
+var a=10; // decimal
+var b=0x1a; // hexadecimal
+var c=01001b; // binary
+var d='b'; //  character
 ----
 
 ===== Operators
 
-Integer data operators are applied on integer variables before or after its read. Integer operators are the following,
+ZetScript supports the following operators for _Integer_ variables,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -105,8 +107,7 @@ var j=i--;//j=0;i=-1;
 
 ====== Integer::parse()
 
-Converts Float or String to Integer value
-
+Converts a given value to _Integer_
 
 *Syntax*
 
@@ -117,11 +118,11 @@ parse(_value)
 
 [.underline]#Parameters#
 
-- __value_ : String or Float value
+- __value_ : value to be converted as _Integer_
 
 [.underline]#Returns#
 
-Integer parsed from the given value
+_Integer_ as a result of converted value
 
 *Example*
 
@@ -130,7 +131,7 @@ Integer parsed from the given value
 include::../examples/the_language/integer/integer_parse.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -139,7 +140,7 @@ include::../examples/the_language/integer/integer_parse_out.txt[]
 
 ==== Float
 
-Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _float_ once it assigns a decimal or scientific value notation forms.
+_Float_ type it defines a variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
 
 Example,
 
@@ -152,7 +153,7 @@ var b=2.0e-2 // cientific notation form value
 
 ===== Operators
 
-Float operators are applied on float variables before or after its read. Float operators are the following,
+ZetScript supports the following operators for _Float_ variables,
 
 
 [cols="1d,1m,2d,2a"]
@@ -204,7 +205,7 @@ var j=i--;//j=0.5;i=-0.5;
 
 ====== Float::parse()
 
-Converts Integer or String to Float value
+Converts a given value to _Float_.
 
 *Syntax*
 
@@ -215,11 +216,11 @@ Float::parse(_value)
 
 [.underline]#Parameters#
 
-- __value_ : String or Integer value
+- __value_ : value to be converted as _Float_.
 
 [.underline]#Returns#
 
-Float as parsed from given value
+_Float_ as a result of converted value.
 
 *Example*
 
@@ -228,7 +229,7 @@ Float as parsed from given value
 include::../examples/the_language/float/float_parse.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -237,7 +238,7 @@ include::../examples/the_language/float/float_parse_out.txt[]
 
 ==== Boolean
 
-Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is initialized as _Boolean_ once it assigns a boolean value.
+_Boolean_ type it defines a variable represented as _true_ or _false_ value. A variable is initialized as _Boolean_ once it assigns a boolean value.
 
 Example,
 
@@ -248,7 +249,7 @@ var b=false;
 
 ==== String
 
-String type it defines a string type represented as a sequence of chars. A variable is initialized as _String_ once it assigns a string value.
+_String_ type it defines a variable represented as a string value. A variable is initialized as _String_ once it assigns a string or a sequence of chars between double quotes.
 
 *Example*
 
@@ -261,7 +262,7 @@ var s="this is a string";
  
 ====== String::length
 
-Returns the length of the string
+Returns the length of the string.
 
 *Example*
 
@@ -270,7 +271,7 @@ Returns the length of the string
 include::../examples/the_language/string/string_length.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -281,7 +282,7 @@ include::../examples/the_language/string/string_length_out.txt[]
 
 ====== String::insertAt()
 
-Inserts string or integer value into String variable at defined position
+Inserts string or character value into the string at defined position.
 
 *Syntax*
 
@@ -292,8 +293,8 @@ String::insertAt(_position,_value)
 
 [.underline]#Parameters#
 
-- __position_: Position where to insert. The position ranges within 0 to the length-1 of the String
-- __value_: Integer or String value
+- __position_: Position where to insert. The position ranges within 0 to the length-1 of the string.
+- __value_: String or character value.
 
 [.underline]#Returns#
 
@@ -306,7 +307,7 @@ None
 include::../examples/the_language/string/string_insert_at.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -315,11 +316,11 @@ include::../examples/the_language/string/string_insert_at_out.txt[]
 
 ====== String::eraseAt(_position)
 
-Removes the value at defined position
+Removes the value at defined position of the string.
 
 [.underline]#Parameters#
 
-- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the String
+- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the string.
 
 [.underline]#Returns# 
 
@@ -332,7 +333,7 @@ None
 include::../examples/the_language/string/string_erase_at.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -341,7 +342,7 @@ include::../examples/the_language/string/string_erase_at_out.txt[]
 
 ====== String::toUpperCase()
 
-Returns the calling string value converted to uppercase
+Returns a copy of the string converted to uppercase.
 
 *Syntax*
 
@@ -356,7 +357,7 @@ None
 
 [.underline]#Returns#
 
-An string value converted to uppercase
+A copy of the string converted to uppercase.
 
 *Example*
 
@@ -365,7 +366,7 @@ An string value converted to uppercase
 include::../examples/the_language/string/string_to_upper_case.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -374,7 +375,7 @@ include::../examples/the_language/string/string_to_upper_case_out.txt[]
 
 ====== String::toLowerCase()
 
-Returns the calling string value converted to lowercase
+Returns a copy of string converted to lowercase.
 
 *Syntax*
 
@@ -389,7 +390,7 @@ None
 
 [.underline]#Returns# 
 
-A string value converted to lowercase
+ A copy of string converted to lowercase.
 
 *Example*
 
@@ -398,7 +399,7 @@ A string value converted to lowercase
 include::../examples/the_language/string/string_to_lower_case.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -407,7 +408,7 @@ include::../examples/the_language/string/string_to_lower_case_out.txt[]
 
 ====== String::clear()
 
-Erases the contents of the string
+Erases the contents of the string.
 
 *Syntax*
 
@@ -431,7 +432,7 @@ None
 include::../examples/the_language/string/string_clear.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -440,23 +441,23 @@ include::../examples/the_language/string/string_clear_out.txt[]
 
 ====== String::replace()
 
-Returns a string replaced by a replacement 
+Returns the copy of the string modified with substrings replaced by a matching string and a remplacement string.
 
 *Syntax*
 
 [source,javascript]
 ----
-String::replace(_old_string, _new_string)
+String::replace(_matching_string, _replacement_string)
 ----
 
 [.underline]#Parameters#
 
-- __old_string_: The old string to be replaced 
-- __new_string_: The new string to be replaced
+- __matching_string_: String value as a matching value to be replaced.
+- __replacement_string_: The string to be replaced.
 
 [.underline]#Returns# 
 
-A string where the specified values has been replaced
+Returns the copy of the string replacing __matching_string_ by __remplacement_string_.
 
 *Example*
 
@@ -465,7 +466,7 @@ A string where the specified values has been replaced
 include::../examples/the_language/string/string_replace.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -474,7 +475,7 @@ include::../examples/the_language/string/string_replace_out.txt[]
 
 ====== String::split()
 
-Splits the string into a array of strings using a separator
+Breaks the string into and _xref:chapter_2_the_language_data_types#_array[Array]_ of strings by a separator.
 
 *Syntax*
 
@@ -485,11 +486,11 @@ String::split(_separator)
 
 [.underline]#Parameters#
 
-- __separator_ : separator value
+- __separator_ : String or character as separator.
 
 [.underline]#Returns# 
 
-A array of strings 
+An _xref:chapter_2_the_language_data_types#_array[Array]_ of strings.
 
 *Example*
 
@@ -498,7 +499,7 @@ A array of strings
 include::../examples/the_language/string/string_split.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -507,7 +508,7 @@ include::../examples/the_language/string/string_split_out.txt[]
 
 ====== String::contains()
 
-Tells whether a value is contained in the string or not
+Find out if a string contains a sequence of characters.
 
 *Syntax*
 
@@ -518,11 +519,11 @@ String::contains(_value)
 
 [.underline]#Parameters#
 
-- __value_: a value to find
+- __value_:  A sequence of characters to find.
 
 [.underline]#Returns#
 
-A boolean value telling if the value exist or not in the string 
+Returns true if the characters exist and false if not.
 
 *Example*
 
@@ -531,7 +532,7 @@ A boolean value telling if the value exist or not in the string
 include::../examples/the_language/string/string_contains.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -540,7 +541,7 @@ include::../examples/the_language/string/string_contains_out.txt[]
 
 ====== String::indexOf()
 
-Returns the position of the first occurrence of a value in a string
+Returns the position of the first occurrence of a sequence of characters in the string.
 
 *Syntax*
 
@@ -551,12 +552,11 @@ String::indexOf(_search_value)
 
 [.underline]#Parameters#
 
-- __search_value_ : string to search for
+- __search_value_ :  A sequence of characters to search for.
 
 [.underline]#Returns# 
 
-- A value >= 0 indicating the position of the first occurrence found
-- -1 if the value is not present.
+An _Integer_ value, representing the index position of first occurrence found, or -1 if not found
 
 *Example*
 
@@ -565,7 +565,7 @@ String::indexOf(_search_value)
 include::../examples/the_language/string/string_index_of.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -574,7 +574,7 @@ include::../examples/the_language/string/string_index_of_out.txt[]
 
 ====== String::startsWith()
 
-Checks whether a string starts with the specified string passed by value
+Find out if the string starts with the specified characters.
 
 *Syntax*
 
@@ -585,11 +585,11 @@ String::startsWidth(_value)
 
 [.underline]#Parameters#
 
-- __value_ :  A string representing the value to check for
+- __value_ :  A _String_, representing the characters to check for.
 
 [.underline]#Returns# 
 
-A boolean value telling whether the string starts with the specified value or not
+A _Boolean_ value as _true_ if __value_ matches starting string, otherwise it returns _false_.
 
 *Example*
 
@@ -598,7 +598,7 @@ A boolean value telling whether the string starts with the specified value or no
 include::../examples/the_language/string/string_starts_with.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -607,7 +607,7 @@ include::../examples/the_language/string/string_starts_with_out.txt[]
 
 ====== String::endsWith()
 
-Checks whether a string ends with the specified string passed by value
+Find out if the string ends with the specified characters
 
 *Syntax*
 
@@ -618,11 +618,11 @@ String::endsWidth(_value)
 
 [.underline]#Parameters#
 
-- __value_ :  A string representing the value to check for
+- __value_ :  A _String_, representing the characters to check for.
 
 [.underline]#Returns# 
 
-A Boolean value telling whether the string ends with the specified string or not
+A _Boolean_ value as _true_ if __value_ matches ending string, otherwise it returns _false_.
 
 *Example*
 
@@ -631,7 +631,7 @@ A Boolean value telling whether the string ends with the specified string or not
 include::../examples/the_language/string/string_ends_with.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -640,7 +640,7 @@ include::../examples/the_language/string/string_ends_with_out.txt[]
 
 ====== String::substring()
 
-Returns a substring of the string value from string within a the start and end indexes
+Returns string defined between a start index and end index.
 
 *Syntax*
 
@@ -656,7 +656,7 @@ String::substring(_start_index, _end_index)
 
 [.underline]#Returns#
 
-A string containing the specified part of the given string.
+A string specified by start and end index.
 
 *Example*
 
@@ -665,7 +665,7 @@ A string containing the specified part of the given string.
 include::../examples/the_language/string/string_substring.zs[]
 ----
 
-Ouput:
+Console output:
 
 [source,txt]
 ----
@@ -674,7 +674,7 @@ include::../examples/the_language/string/string_substring_out.txt[]
 
 ====== String::append()
 
-Extends the string by appending additional value at the end of its current string.
+Extends the string by appending string at the end.
 
 *Syntax*
 
@@ -698,7 +698,7 @@ None
 include::../examples/the_language/string/string_append.zs[]
 ----
 
-Output
+Console output:
 
 [source,text]
 ----
@@ -709,7 +709,7 @@ include::../examples/the_language/string/string_append_out.txt[]
  
 ====== String::format()
 
-Formats a string from with a serie of args. 
+Returns a formatted string.
 
 *Syntax*
 
@@ -720,7 +720,7 @@ String::format(_string,..._args)
 
 [.underline]#Parameters#
 
-- __string_ : String representation with specified arguments and/or its format. Argument format is defined in the string within curly brackets (i.e {} ) where it specifies argument number and its format. The argument format is described below,
+- __string_ : _String_ representation with specified arguments and/or its format. Argument format is defined in the __string_ value within curly brackets (i.e between '{' and '}' ) where it specifies argument number and its format. The argument format is described below,
 
 [cols="1m,3d"]
 |====
@@ -746,7 +746,7 @@ A formated string
 include::../examples/the_language/string/string_format.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -756,27 +756,21 @@ include::../examples/the_language/string/string_format_out.txt[]
 
 ==== Array
 
-Array type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Array_ once it assings a open/closed square brackets (i.e '[]' ), 
-
-Example,
+_Array_ is a container type that stores variables or values in a unidimensional array. A variable is initialized as _Array_ once it assings a open/closed square brackets, 
 
 [source,javascript]
 ----
-[]; // a array
+[]; // an array instanced
 ----
 
-Variable instanced as _Array_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,
-
-Example,
+Variable instanced as _Array_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets  (i.e between '[' and ']' ),
 
 [source,javascript]
 ----
-[1,"string",true,2.0]; // A array with elements
+[1,"string",true,2.0]; // A array instanced with elements
 ----
 
-To access element array is done through integer as a index.
-
-Example,
+To access element array is done through _Integer_ value as a index.
 
 [source,javascript]
 ----
@@ -797,7 +791,7 @@ Returns the number of elements in the array
 include::../examples/the_language/array/array_length.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -819,7 +813,7 @@ Array::push(_value)
 
 [.underline]#Parameters#
 
-- __value__ : value to be added
+- __value_ : value to be added
 
 [.underline]#Returns# 
 
@@ -832,7 +826,7 @@ None
 include::../examples/the_language/array/array_push.zs[]
 ----
 
-Output
+Console output:
 
 [source,text]
 ----
@@ -891,7 +885,7 @@ Array::insertAt(_pos,_value)
 include::../examples/the_language/array/array_insert_at.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -922,7 +916,7 @@ None
 include::../examples/the_language/array/array_erase_at.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -953,7 +947,7 @@ None
 include::../examples/the_language/array/array_clear.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -984,7 +978,7 @@ A string of all concatenated array's elements
 include::../examples/the_language/array/array_join.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1015,7 +1009,7 @@ A boolean value telling if the value exist or not in the array
 include::../examples/the_language/array/array_contains.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1046,7 +1040,7 @@ None
 include::../examples/the_language/array/array_extend.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1082,7 +1076,7 @@ A new array as a result of merge all elements from the arrays
 include::../examples/the_language/array/array_concat.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1155,7 +1149,7 @@ None
 include::../examples/the_language/object/object_clear.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1189,7 +1183,7 @@ None
 include::../examples/the_language/object/object_erase.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1223,7 +1217,7 @@ A boolean value telling if the attribute with __key_id_ exist or not in the obje
 include::../examples/the_language/object/object_contains.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1257,7 +1251,7 @@ None
 include::../examples/the_language/object/object_extend.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1291,7 +1285,7 @@ A new object as a result of merge all elements from the two objects
 include::../examples/the_language/object/object_concat.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1324,7 +1318,7 @@ A array of strings of its key names
 include::../examples/the_language/object/object_keys.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----

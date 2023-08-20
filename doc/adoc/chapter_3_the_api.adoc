@@ -54,7 +54,7 @@ ZetScript can evaluate scripts from string or from file
 include::../examples/the_api/eval/eval_string.cpp[]
 ----
 
-Out:
+Console output:
 
 [source,txt]
 ----
@@ -70,7 +70,7 @@ Having the following script file called `file.zs` with the following content,
 include::../examples/the_api/eval/file.zs[]
 ----
 
-Out:
+Console output:
 
 At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as it shows as it follows,
 
@@ -79,7 +79,7 @@ At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as
 include::../examples/the_api/eval/eval_file.cpp[]
 ----
 
-Out:
+Console output:
 
 [source,txt]
 ----
@@ -108,7 +108,7 @@ In order to show byte code for a script add _EVAL_OPTION_PRINT_BYTE_CODE_ option
 include::../examples/the_api/eval/eval_file_option_print_byte_code.cpp[]
 ----
 
-Out:
+Console output:
 
 [source,txt]
 ----

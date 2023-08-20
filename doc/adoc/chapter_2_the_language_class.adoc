@@ -224,7 +224,7 @@ class Container{
 include::../examples/the_language/class/class_metamethod_iterator.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----

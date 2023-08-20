@@ -45,7 +45,7 @@ Returns the value of the property
 include::../examples/the_language/class/class_property_metamethod_get.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -78,7 +78,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_set.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -111,7 +111,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_addset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -146,7 +146,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_subset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -179,7 +179,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -212,7 +212,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_divset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -245,7 +245,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_modset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -278,7 +278,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_andset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -311,7 +311,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_orset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -345,7 +345,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_xorset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -378,7 +378,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -411,7 +411,7 @@ None.
 include::../examples/the_language/class/class_property_metamethod_shlset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -444,7 +444,7 @@ None
 include::../examples/the_language/class/class_property_metamethod_neg.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -478,7 +478,7 @@ A the object itself
 include::../examples/the_language/class/class_property_metamethod_postinc.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -511,7 +511,7 @@ A the object itself
 include::../examples/the_language/class/class_property_metamethod_postdec.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -544,7 +544,7 @@ A the object itself
 include::../examples/the_language/class/class_property_metamethod_preinc.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -577,7 +577,7 @@ A the object itself
 include::../examples/the_language/class/class_property_metamethod_predec.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----

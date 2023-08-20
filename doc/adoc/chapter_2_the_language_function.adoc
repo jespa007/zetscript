@@ -145,7 +145,7 @@ function var_args(a,b,...args) {
 include::../examples/the_language/function/function_variable_parameters.zs[]
 ----
 
-Ouput:
+Console output:
 
 [source,text]
 ----
@@ -172,7 +172,7 @@ function(ref arg1, arg2, ..., ref arg_n){
 include::../examples/the_language/function/function_parameter_by_reference.zs[]
 ----
 
-Ouput:
+Console output:
 
 [source,text]
 ----

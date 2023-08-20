@@ -20,7 +20,7 @@ while(condition){
 include::../examples/the_language/loop/loop_while.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -47,7 +47,7 @@ do{
 include::../examples/the_language/loop/loop_do_while.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -78,7 +78,7 @@ for(stament1;statment2;statment3){
 include::../examples/the_language/loop/loop_for.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -112,7 +112,7 @@ for(var k,v in array){
 include::../examples/the_language/loop/loop_for_in.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -132,7 +132,7 @@ The _break_ statement is used to jump out of body loop.
 include::../examples/the_language/loop/loop_break.zs[]
 ----
 
-Out:
+Console output:
 
 [source,txt]
 ----
@@ -151,7 +151,7 @@ The _continue_ statement breaks one iteration and continues with the next iterat
 include::../examples/the_language/loop/loop_continue.zs[]
 ----
 
-Out:
+Console output:
 
 [source,txt]
 ----

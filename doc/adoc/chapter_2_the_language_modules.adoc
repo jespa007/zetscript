@@ -27,7 +27,7 @@ None
 include::../examples/the_language/console/console_out.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -59,7 +59,7 @@ None
 include::../examples/the_language/console/console_outln.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -89,7 +89,7 @@ None
 include::../examples/the_language/console/console_error.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -121,7 +121,7 @@ None
 include::../examples/the_language/console/console_errorln.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -187,7 +187,7 @@ include::../examples/the_language/system/system_clock.zs[]
 
 
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -219,7 +219,7 @@ Example,
 include::../examples/the_language/system/system_eval.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -251,7 +251,7 @@ var m=30
 System::assert(m < 20,"n > m")
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -285,7 +285,7 @@ if(!(m < 20)){
 }
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -442,7 +442,7 @@ The result of raising __base_ to the __power_ exponent.
 include::../examples/the_language/math/math_pow.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -473,7 +473,7 @@ The result of degrees as radians
 include::../examples/the_language/math/math_deg_to_rad.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -504,7 +504,7 @@ A float between [0..1)
 include::../examples/the_language/math/math_random.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -536,7 +536,7 @@ Returns the maximum of __v1_ and __v2_
 include::../examples/the_language/math/math_max.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -568,7 +568,7 @@ Returns the minimmum of __v1_ and __v2_
 include::../examples/the_language/math/math_min.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -599,7 +599,7 @@ Returns the square root of __value_
 include::../examples/the_language/math/math_sqrt.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -630,7 +630,7 @@ The value of __x_ rounded downward
 include::../examples/the_language/math/math_floor.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -662,7 +662,7 @@ The largest integral value that is not greater than __x_
 include::../examples/the_language/math/math_ceil.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -693,7 +693,7 @@ The value of __x_ to the nearest integral
 include::../examples/the_language/math/math_round.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -728,7 +728,7 @@ The equivalent representation in json format
 include::../examples/the_language/json/json_serialize.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -759,7 +759,7 @@ Converts the equivalent json string to literal or object
 include::../examples/the_language/json/json_deserialize.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -821,7 +821,7 @@ TimeSpan object as a difference of __op1_ - __op2_
 include::../examples/the_language/datetime/datetime_metamethod_sub.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -844,7 +844,7 @@ DateTime::now()
 include::../examples/the_language/datetime/datetime_now.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -866,7 +866,7 @@ DateTime::nowUtc()
 include::../examples/the_language/datetime/datetime_now_utc.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -905,7 +905,7 @@ A _DateTime_ object
 include::../examples/the_language/datetime/datetime_constructor.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -947,7 +947,7 @@ Datetime has the following memeber properties,
 include::../examples/the_language/datetime/datetime_member_properties.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -980,7 +980,7 @@ None
 include::../examples/the_language/datetime/datetime_add_seconds.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1011,7 +1011,7 @@ None
 include::../examples/the_language/datetime/datetime_add_minutes.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1043,7 +1043,7 @@ None
 include::../examples/the_language/datetime/datetime_add_hours.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1074,7 +1074,7 @@ None
 include::../examples/the_language/datetime/datetime_add_days.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1105,7 +1105,7 @@ None
 include::../examples/the_language/datetime/datetime_add_months.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----
@@ -1128,7 +1128,7 @@ DateTime::addYears(_years)
 include::../examples/the_language/datetime/datetime_add_years.zs[]
 ----
 
-Output:
+Console output:
 
 [source,txt]
 ----

@@ -1,6 +1,6 @@
 ==== Register metamethods
 
-ZetScript API can register static or member metamethods in aim to define operators as we could see in *xref:chapters/chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]*
+ZetScript API can register static or member metamethods in aim to define operators as we could see in _xref:chapter_2_the_language_class.adoc#&lowbar;metamethods[ZetScript class metamethods]_
 
 ===== Member metamethods
 
@@ -65,7 +65,7 @@ Finally, the following code it shows an example of a script that creates a type 
 include::../examples/the_api/register_type/register_member_metamethod_tostring.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -95,7 +95,7 @@ None.
 
 *Example*
 
-The following code defines two functions performs an assignment from *xref:chapters/chapter_2_the_language_data_types.adoc#&lowbar;float[Float]* value or _Number_ object respectively,
+The following code defines two functions performs an assignment from _xref:chapter_2_the_language_data_types.adoc#&lowbar;float[Float]_ value or _Number_ object respectively,
 
 [source,cpp]
 ----
@@ -136,7 +136,7 @@ Finally, the following code it shows an example of a script that assigns  values
 include::../examples/the_api/register_type/register_member_metamethod_set.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -202,7 +202,7 @@ Finally, the following code it shows an example of a script that add and assigns
 include::../examples/the_api/register_type/register_member_metamethod_addset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -268,7 +268,7 @@ Finally, the following code it shows an example of a script that substracts and 
 include::../examples/the_api/register_type/register_member_metamethod_subset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -334,7 +334,7 @@ Finally, the following code it shows an example of a script that multiples and a
 include::../examples/the_api/register_type/register_member_metamethod_mulset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -400,7 +400,7 @@ Finally, the following code it shows an example of a script that divides and ass
 include::../examples/the_api/register_type/register_member_metamethod_divset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -466,7 +466,7 @@ Finally, the following code it shows an example of a script that produces the re
 include::../examples/the_api/register_type/register_member_metamethod_modset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -533,7 +533,7 @@ Finally, the following code it shows an example of a script that performs a bitw
 include::../examples/the_api/register_type/register_member_metamethod_andset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -600,7 +600,7 @@ Finally, the following code it shows an example of a script that performs a bitw
 include::../examples/the_api/register_type/register_member_metamethod_orset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -666,7 +666,7 @@ Finally, the following code it shows an example of a script that perform bitwise
 include::../examples/the_api/register_type/register_member_metamethod_xorset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -733,7 +733,7 @@ Finally, the following code it shows an example of a script that perform bitwise
 include::../examples/the_api/register_type/register_member_metamethod_shrset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -800,7 +800,7 @@ Finally, the following code it shows an example of a script that perform bitwise
 include::../examples/the_api/register_type/register_member_metamethod_shlset.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -865,7 +865,7 @@ Finally, the following code it shows an example of a script that evaluates not c
 include::../examples/the_api/register_type/register_member_metamethod_not.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -929,7 +929,7 @@ Finally, the following code it shows an example of a script that returns the neg
 include::../examples/the_api/register_type/register_member_metamethod_neg.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -954,7 +954,7 @@ ClassScriptObject * RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post increment operation
+Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value before perform post increment operation
 
 
 *Example*
@@ -993,7 +993,7 @@ Finally, the following code it shows an example of a script that performs a post
 include::../examples/the_api/register_type/register_member_metamethod_postinc.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1018,7 +1018,7 @@ ClassScriptObject * RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value before perform post decrement operation
+Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value before perform post decrement operation
 
 
 *Example*
@@ -1057,7 +1057,7 @@ Finally, the following code it shows an example of a script that performs a post
 include::../examples/the_api/register_type/register_member_metamethod_postdec.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1082,7 +1082,7 @@ ClassScriptObject *RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
+Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value after perform post increment operation
 
 *Example*
 
@@ -1120,7 +1120,7 @@ Finally, the following code it shows an example of a script that performs a pre 
 include::../examples/the_api/register_type/register_member_metamethod_preinc.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1145,7 +1145,7 @@ ClassScriptObject * RegisteredType_predec(ZetScript *_zs, RegisteredType *_this)
 
 [.underline]#Returns#
 
-Return new type wrapped in *xref:chapters/chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]* with the value after perform post increment operation
+Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value after perform post increment operation
 
 *Example*
 
@@ -1184,7 +1184,7 @@ Finally, the following code it shows an example of a script that performs a pre 
 include::../examples/the_api/register_type/register_member_metamethod_predec.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1253,7 +1253,7 @@ The following code shows an example of registering functions and a script that p
 include::../examples/the_api/register_type/register_member_metamethod_in.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1328,7 +1328,7 @@ Finally, the following code it shows an example of a script that performs _equ_ 
 include::../examples/the_api/register_type/register_member_metamethod_equ.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1401,7 +1401,7 @@ Finally, the following code it shows an example of a script that performs _nequ_
 include::../examples/the_api/register_type/register_member_metamethod_nequ.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1476,7 +1476,7 @@ Finally, the following code it shows an example of a script that performs _lt_ o
 include::../examples/the_api/register_type/register_member_metamethod_lt.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1551,7 +1551,7 @@ Finally, the following code it shows an example of a script that performs _lte_ 
 include::../examples/the_api/register_type/register_member_metamethod_lte.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1622,7 +1622,7 @@ Finally, the following code it shows an example of a script that performs __gt__
 include::../examples/the_api/register_type/register_member_metamethod_gt.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1692,7 +1692,7 @@ Finally, the following code it shows an example of a script that performs _gte_ 
 include::../examples/the_api/register_type/register_member_metamethod_gte.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1765,7 +1765,7 @@ Finally, the following code it shows an example of a script that performs __add_
 include::../examples/the_api/register_type/register_member_metamethod_add.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1838,7 +1838,7 @@ Finally, the following code it shows an example of a script that performs __sub_
 include::../examples/the_api/register_type/register_member_metamethod_sub.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1912,7 +1912,7 @@ Finally, the following code it shows an example of a script that performs __mul_
 include::../examples/the_api/register_type/register_member_metamethod_mul.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -1983,7 +1983,7 @@ Finally, the following code it shows an example of a script that performs __div_
 include::../examples/the_api/register_type/register_member_metamethod_div.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -2057,7 +2057,7 @@ Finally, the following code it shows an example of a script that performs __mod_
 include::../examples/the_api/register_type/register_member_metamethod_mod.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -2128,7 +2128,7 @@ Finally, the following code it shows an example of a script that performs __AND_
 include::../examples/the_api/register_type/register_member_metamethod_and.cpp[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -2201,7 +2201,7 @@ Finally, the following code it shows an example of a script that performs __OR_ 
 include::../examples/the_api/register_type/register_member_metamethod_or.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -2274,7 +2274,7 @@ Finally, the following code it shows an example of a script that performs __XOR_
 include::../examples/the_api/register_type/register_member_metamethod_xor.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -2349,7 +2349,7 @@ Finally, the following code it shows an example of a script that performs __shl_
 include::../examples/the_api/register_type/register_member_metamethod_shl.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----
@@ -2422,7 +2422,7 @@ Finally, the following code it shows an example of a script that performs __shr_
 include::../examples/the_api/register_type/register_member_metamethod_shr.cpp[]
 ----
 
-The output is the following,
+Console output:
 
 [source,text]
 ----

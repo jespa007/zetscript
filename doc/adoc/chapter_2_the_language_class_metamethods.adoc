@@ -30,7 +30,7 @@ A string as a result when string operation operation is invoved
 include::../examples/the_language/class/class_metamethod_tostring.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -63,7 +63,7 @@ None.
 include::../examples/the_language/class/class_metamethod_set.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -96,7 +96,7 @@ None.
 include::../examples/the_language/class/class_metamethod_addset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -129,7 +129,7 @@ None.
 include::../examples/the_language/class/class_metamethod_subset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -162,7 +162,7 @@ None.
 include::../examples/the_language/class/class_metamethod_mulset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -195,7 +195,7 @@ None.
 include::../examples/the_language/class/class_metamethod_divset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -228,7 +228,7 @@ None.
 include::../examples/the_language/class/class_metamethod_modset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -261,7 +261,7 @@ None.
 include::../examples/the_language/class/class_metamethod_andset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -294,7 +294,7 @@ None.
 include::../examples/the_language/class/class_metamethod_orset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -328,7 +328,7 @@ None.
 include::../examples/the_language/class/class_metamethod_xorset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -361,7 +361,7 @@ None.
 include::../examples/the_language/class/class_metamethod_shrset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -394,7 +394,7 @@ None.
 include::../examples/the_language/class/class_metamethod_shlset.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -427,7 +427,7 @@ None
 include::../examples/the_language/class/class_metamethod_not.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -460,7 +460,7 @@ None
 include::../examples/the_language/class/class_metamethod_neg.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -494,7 +494,7 @@ A the object itself
 include::../examples/the_language/class/class_metamethod_postinc.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -527,7 +527,7 @@ A the object itself
 include::../examples/the_language/class/class_metamethod_postdec.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -560,7 +560,7 @@ A the object itself
 include::../examples/the_language/class/class_metamethod_preinc.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -593,7 +593,7 @@ A the object itself
 include::../examples/the_language/class/class_metamethod_predec.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -626,7 +626,7 @@ Boolean telling whether the _value exist in or not
 include::../examples/the_language/class/class_metamethod_in.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -663,7 +663,7 @@ _equ(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_equ.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -698,7 +698,7 @@ _nequ(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_nequ.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -733,7 +733,7 @@ _lt(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_lt.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -768,7 +768,7 @@ _lte(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_lte.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -803,7 +803,7 @@ _gt(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_gt.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -838,7 +838,7 @@ _gte(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_gte.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -872,7 +872,7 @@ _add(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_add.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -906,7 +906,7 @@ _div(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_div.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -941,7 +941,7 @@ _mul(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_mul.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -975,7 +975,7 @@ _mod(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_mod.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1009,7 +1009,7 @@ _and(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_and.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1043,7 +1043,7 @@ _or(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_or.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1077,7 +1077,7 @@ _xor(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_xor.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1111,7 +1111,7 @@ _shr(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_shr.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -1145,7 +1145,7 @@ _shl(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_shl.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----

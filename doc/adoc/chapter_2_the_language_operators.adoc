@@ -133,12 +133,19 @@ Assignment operators assign values to ZetScript variables. The assigment operato
 |Assigment
 a|
 
-It performs an assigment
+It performs an assigment or multiple assigment
 
 |
 [source,javascript]
 ----
- i=5;
+var i,j;
+// single assigment
+ i=10;
+ j=5;
+
+ // multiple assigment
+ i,j=j,i; // it does a swap ( i=5, j=10 )
+
 ----
 
 |+=
@@ -362,7 +369,7 @@ The _instanceof_ operator returns true if the operand's match or derives from ty
 include::../examples/the_language/type/type_instanceof.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
@@ -380,7 +387,7 @@ The _typeof_ operator returns the type of operand's value.
 include::../examples/the_language/type/type_typeof.zs[]
 ----
 
-Output:
+Console output:
 
 [source,text]
 ----
