@@ -210,9 +210,7 @@ System::eval(_expression_,_args)
 
 [.underline]#Returns#
 
-
-Example,
-
+*Example*
 
 [source,zetscript]
 ----

@@ -30,8 +30,6 @@ It can also declare multiple variables with or without initialization separated 
 var i=10, j=5, k; // Multiple declaration with and without initialization
 ----
 
-<<<
-
 ==== Constant
 
 A constant is a kind of element where its value is immutable on its in lifetime. A constant is declared as *const* and is mandatory to be initialized.
@@ -41,6 +39,8 @@ A constant is a kind of element where its value is immutable on its in lifetime.
 const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
 ----
 
+<<<
+
 ==== Scope
 
 In ZetScript we have two types of basic scopes.
@@ -49,8 +49,6 @@ In ZetScript we have two types of basic scopes.
 * Local
 
 Variables declared on the main script are global and the others declared within a block (i.e a an statement that starts with '{' and ends with '}'), are local.
-
-Example,
 
 [source,javascript]
 ----

@@ -1,6 +1,6 @@
 === Operators
 
-ZetScript has the following type of operators
+ZetScript supports the following operator types,
 
 * Arithmetic operators
 * Bitwise operators
@@ -21,7 +21,7 @@ Arithmetic operators performs arithmetic operations between two values. The arit
 |Add 
 a|
 
-It performs add operation between two integer or float values or  
+It performs _addition_ operation between two integer or float values or  
 concatenates strings, arrays or objects
 
 |
@@ -35,7 +35,7 @@ concatenates strings, arrays or objects
 
 |-
 |Subtract
-|Performs a substract operation between two integer/float values
+|Performs a _substraction_ operation between two integer/float values
 |
 [source,javascript]
 10-5; // = 5
@@ -43,7 +43,7 @@ concatenates strings, arrays or objects
 
 |* 
 |Multiply 
-|Performs a multiplication between two integer/float values
+|Performs a _multiplication_ between two integer/float values
 |
 [source,javascript]
 10*5; //= 50
@@ -51,7 +51,7 @@ concatenates strings, arrays or objects
 
 |/ 
 |Divide 
-|Performs a division between two integer/float values
+|Performs a _division_ between two integer/float values
 |
 [source,javascript]
 10/2; // = 5
@@ -59,7 +59,7 @@ concatenates strings, arrays or objects
 
 |% 
 |Modulus 
-|Performs a division between two integer/float values
+|Performs a _modulus_ between two integer/float values
 |
 [source,javascript]
 3%2; //it results 1.0
@@ -76,7 +76,7 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 |& 
 |Bitwise And 
-|Performs Bitwise AND operation between two integers
+|Performs _bitwise AND_ operation between two integers
 |
 [source,javascript]
 0xa & 0x2; // = 0x2
@@ -84,7 +84,7 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 |\|
 |Bitwise Or
-|Performs Bitwise OR operation between two integers
+|Performs _bitwise OR_ operation between two integers
 |
 [source,javascript]
 0xa \| 0x5; // = 0xf
@@ -92,7 +92,7 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 |^ 
 |Bitwise Xor 
-|Performs bitwise XOR between two integers
+|Performs _bitwise XOR_ between two integers
 |
 [source,javascript]
 0xa ^ 0xa; // = 0x0
@@ -100,26 +100,28 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 |<< 
 |Bitwise shift left
-|Performs bitwise shift left between two integers
+|Performs _bitwise SHIFT LEFT_ between two integers
 |
 [source,javascript]
 0x1 << 2; // = 0x4
 
 |>> 
 |Bitwise shift right
-|Performs bitwise shift right between two integers
+|Performs _bitwise SHIFT RIGHT_ between two integers
 |
 [source,javascript]
 0xff >> 1; // = 0x7f
 
 |~
 |Bitwise complement
-|Performs bitwise complement operation from integer value
+|Performs _bitwise complement_ operation from integer value
 |
 [source,javascript]
 ~0xa; // = 0x7f
 
 |====
+
+<<<
 
 ==== Assigment operators
 
@@ -150,10 +152,7 @@ var i,j;
 
 |+=
 |Add assigment
-a|
-
-Add and assigment from left integer, float, string, array or object
-
+|Performs an _addition_ to a variable by the value of the right operand and assigns the result to the variable. In case of string, array or object it performs a concatenation
 |
 [source,javascript]
 ----
@@ -171,8 +170,8 @@ Add and assigment from left integer, float, string, array or object
 ----
 
 |-=
-|Subtract assigment
-|Performs a substract operation between two integer/float values
+|Substract assigment
+|Performs a _subtraction_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=10;
@@ -180,7 +179,7 @@ i-=5; // i == 5
 
 |*=
 |Multiply assigment
-|Performs a multiplication between two integer/float values
+|Performs a _multiplication_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=10
@@ -188,7 +187,7 @@ i*=5; // i == 50
 
 |/=
 |Divide assigment
-|Performs a division between two integer/float values
+|Performs a _division_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=10;
@@ -196,47 +195,47 @@ i/=2; // i == 5.0
 
 |%=
 |Modulus assigment
-|Performs a division between two integer/float values
+|Performs _modulus_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=50
 i%=100; // i == 50.0
 
 |&=
-|Bitwise And assigment
-|Performs Bitwise AND operation between two integers
+|Bitwise AND assigment
+|Performs _bitwise AND_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=0xff;
 i&=0xf0; // i == 0xf0
 
-|\|
-|Bitwise Or assigment
-|Performs Bitwise OR operation between two integers
+|\|=
+|Bitwise OR assigment
+|Performs _bitwise OR_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=0xa
 i\|=0x5; // i == 0xf
 
-|^ 
-|Bitwise Xor assigment
-|Performs bitwise XOR between two integers
+|^=
+|Bitwise XOR assigment
+|Performs _bitwise XOR_ to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=0xa
 i^=0xa; // i == 0x0
 
-|<< 
-|Bitwise shift left assigment
-|Performs bitwise shift left between two integers
+|<<=
+|Bitwise SHIFT LEFT assigment
+|Performs _bitwise SHIFT LEFT to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=0x1;
 i<<=2; // i == 0x4
 
-|>> 
-|Bitwise shift right assigment
-|Performs bitwise shift right between two integers
+|>>=
+|Bitwise SHIFT RIGHT assigment
+|Performs bitwise SHIFT RIGHT to a variable by the value of the right operand and assigns the result to the variable
 |
 [source,javascript]
 var i=0xff;
@@ -334,7 +333,7 @@ Logical operators combines operations between two boolean values. The logic oper
 |
 [source,javascript]
 true && true;// = true
-true&& false;// = false
+true && false;// = false
 
 | \|\|
 |Logic Or 
@@ -355,12 +354,13 @@ false \|\| false;// = false
 !(true && false) // = true
 |====
 
+<<<
 
 ==== Data Type operators
 
 ===== The instanceof operator
 
-The _instanceof_ operator returns true if the operand's match or derives from type object.
+The _instanceof_ operator returns _true_ whether the object is an instance of the specified type (or class or subclass).
 
 *Example*
 
@@ -376,7 +376,7 @@ Console output:
 include::../examples/the_language/type/type_instanceof_out.txt[]
 ----
 
-===== Type operators
+===== Typeof operator
 
 The _typeof_ operator returns the type of operand's value.
 
@@ -394,8 +394,10 @@ Console output:
 include::../examples/the_language/type/type_typeof_out.txt[]
 ----
 
+<<<
+
 ==== Operator priority
-Each operator it has priority in a evaluation. The priority of each operator in ZetScript is the following,
+Each operator it has priority in a evaluation. The priority of each operator is the following,
 
 `in,instanceof,<<,>>,&,|,^,*,/,%,+,-,==,!=,>=,\<=,>,<,&&,||`
 

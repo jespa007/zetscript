@@ -1,12 +1,12 @@
 ==== Metamethods
 
-Metamethods are special member functions that links with operators seen on section section X.XX. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+Metamethods are special member functions that able to define operators seen on xref:chapter_2_the_language_operators.adoc:#_operators[section 2.6]. Metamethods can be static or member function depending whether the operation affects or not the object itself. 
 
 ===== Member functions
 
-======= _tostring()
+====== _tostring()
 
-Returns custom string when string operation operation is invoved
+Returns custom string when string operation operation is invoved.
 
 *Syntax*
 
@@ -21,7 +21,7 @@ None
 
 [.underline]#Returns#
 
-A string as a result when string operation operation is invoved
+A string as a result when string operation operation is invoved.
 
 *Example*
 
@@ -50,7 +50,7 @@ _set(_value)
 
 [.underline]#Parameters#
 
-- __value_ :Value or variable as right operand
+- __value_ :Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -116,11 +116,13 @@ _subset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
 None.
+
+<<<
 
 *Example*
 
@@ -149,7 +151,7 @@ _mulset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -161,6 +163,8 @@ None.
 ----
 include::../examples/the_language/class/class_metamethod_mulset.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -182,7 +186,7 @@ _divset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -215,11 +219,13 @@ _modset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
 None.
+
+<<<
 
 *Example*
 
@@ -248,7 +254,7 @@ _andset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -260,6 +266,8 @@ None.
 ----
 include::../examples/the_language/class/class_metamethod_andset.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -281,7 +289,7 @@ _andset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -315,11 +323,13 @@ _xorset(_value)
 
 [.underline]#Parameters#
 
-- __op1_ : Value or variable as right operand
+- __op1_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
 None.
+
+<<<
 
 *Example*
 
@@ -348,7 +358,7 @@ _shrset(_value)
 
 [.underline]#Parameters#
 
-- __op1_ : Value or variable as right operand
+- __op1_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -360,6 +370,8 @@ None.
 ----
 include::../examples/the_language/class/class_metamethod_shrset.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -381,7 +393,7 @@ _shrset(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- __value_ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -403,7 +415,7 @@ include::../examples/the_language/class/class_metamethod_shlset_out.txt[]
 
 ====== _not()
 
-Implements _not_ pre operator (aka !)  
+Implements _not_ pre operator (aka !a).  
 
 *Syntax*
 
@@ -418,7 +430,9 @@ None
 
 [.underline]#Returns#
 
-- Boolean value as a result of not operation
+- Boolean value as a result of not operation.
+
+<<<
 
 *Example*
 
@@ -436,7 +450,7 @@ include::../examples/the_language/class/class_metamethod_not_out.txt[]
 
 ====== _neg()
 
-Implements _negate_ pre operator (aka -a ) 
+Implements _negate_ pre operator (aka -a ). 
 
 *Syntax*
 
@@ -451,7 +465,7 @@ None
 
 [.underline]#Returns#
 
-- A new object as result of negate operation
+- A new object as result of negate operation.
 
 *Example*
 
@@ -470,7 +484,7 @@ include::../examples/the_language/class/class_metamethod_neg_out.txt[]
 ====== _postinc()
 
 
-Implements _post increment_ operator (aka a++ ) 
+Implements _post increment_ operator (aka a++ ). 
 
 *Syntax*
 
@@ -485,7 +499,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+A new object with a value before perform post increment operation.
 
 *Example*
 
@@ -503,7 +517,7 @@ include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
 
 ====== _postdec()
 
-Implements _post decrement_ operator (aka a-- ) 
+Implements _post decrement_ operator (aka a-- ).
 
 *Syntax*
 
@@ -518,7 +532,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+A new object with a value before perform post decrement operation.
 
 *Example*
 
@@ -536,7 +550,7 @@ include::../examples/the_language/class/class_metamethod_postdec_out.txt[]
 
 ====== _preinc()
 
-Implements _pre increment_ operator (aka ++a ) 
+Implements _pre increment_ operator (aka ++a ). 
 
 *Syntax*
 
@@ -551,7 +565,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+A new object with a value before perform pre increment operation.
 
 *Example*
 
@@ -569,7 +583,7 @@ include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
 
 ====== _predec()
 
-Implements _pre decrement_ operator (aka --a ) 
+Implements _pre decrement_ operator (aka --a ).
 
 *Syntax*
 
@@ -584,7 +598,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+A new object with a value before perform pre decrement operation.
 
 *Example*
 
@@ -613,11 +627,11 @@ _in(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as value to check whether exist or not in the containing class
+- __value_ : Value or variable as value to check whether exist or not in the containing class.
 
 [.underline]#Returns#
 
-Boolean telling whether the _value exist in or not
+Boolean telling whether the _value exist in or not.
 
 *Example*
 
@@ -635,7 +649,7 @@ include::../examples/the_language/class/class_metamethod_in_out.txt[]
 
 ===== Static functions
 
-======= _equ()
+====== _equ()
 
 Implements _equal_ operator (aka == ) between first operand and second operand
 
@@ -655,6 +669,8 @@ _equ(_op1,_op2)
 
 - True if op1 and op2 are EQUAL
 - False if op1 and op2 are NOT EQUAL
+
+<<<
 
 *Example*
 
@@ -715,6 +731,8 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 ----
 _lt(_op1,_op2)
 ---- 
+
+<<<
 
 [.underline]#Parameters#
 
@@ -879,6 +897,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_add_out.txt[]
 ----
 
+<<<
+
 ====== _div()
 
 Implements _division_ operator (aka / ) between first operand and second operand
@@ -929,6 +949,8 @@ _mul(_op1,_op2)
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
+
+<<<
 
 [.underline]#Returns#
 
@@ -1042,6 +1064,8 @@ _or(_op1,_op2)
 ----
 include::../examples/the_language/class/class_metamethod_or.zs[]
 ----
+
+<<<
 
 Console output:
 

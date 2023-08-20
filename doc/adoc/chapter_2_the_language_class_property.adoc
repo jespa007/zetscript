@@ -418,39 +418,6 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
 ----
 
-====== _neg()
-
-Implements _negate_ pre operator (aka -a ) 
-
-*Syntax*
-
-[source,javascript]
-----
-_neg()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-- A the value as result of negate operation
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/class/class_property_metamethod_neg.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/the_language/class/class_property_metamethod_neg_out.txt[]
-----
-
 ====== _postinc()
 
 
@@ -469,7 +436,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+The value before perform post increment operation.
 
 *Example*
 
@@ -502,7 +469,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+The value before perform post decrement operation.
 
 *Example*
 
@@ -535,7 +502,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+The value before perform pre increment operation.
 
 *Example*
 
@@ -568,7 +535,7 @@ None
 
 [.underline]#Returns#
 
-A the object itself
+The value before perform pre decrement operation.
 
 *Example*
 

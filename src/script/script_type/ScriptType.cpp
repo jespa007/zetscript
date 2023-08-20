@@ -326,7 +326,7 @@ namespace zetscript{
 
 					ScriptFunction *existing_sf=(ScriptFunction *)existing_symbol->ref_ptr;
 
-					// check wether the function was declared at the same class
+					// check whether the function was declared at the same class
 					if(existing_sf->scope_script_function->script_type_owner == this){
 						ZS_THROW_EXCEPTION("Member function '%s' is already defined at [%s:%i]"
 							,_function_name.c_str()

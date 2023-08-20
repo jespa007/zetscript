@@ -1,15 +1,10 @@
 class Number{
 	constructor(_value=0){
-		// ensure that n is literal integer or literal float
-		if(_value instanceof Integer || _value instanceof Float){
-			this.__value__=_value;
-		}else{
-			System::error("Number::constructor : input value not supported");
-		}
+		this.__value__=_value;
 	} 
 	
 	_preinc(){
-		this.__value__+=1;
+		return new Number(++this.__value__);
 	}
 	
  	_tostring(){

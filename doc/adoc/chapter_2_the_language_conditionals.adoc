@@ -19,9 +19,8 @@ if(condition){
 
 [source,javascript]
 ----
-var i=5
-if(i<10){
-	Console::outln("i is less than 10")
+if(value<10){
+	Console::outln("value is less than 10")
 }
 ----
 
@@ -44,17 +43,20 @@ if(condition) {
 
 [source,javascript]
 ----
-var i=5
-if(i<10){
-	Console::outln("i is less than 10")
+if(value<10){
+	Console::outln("value is less than 10")
 }else{
-	Console::outln("i is greather equal than 10")
+	Console::outln("value is greather equal than 10")
 }
 ----
+
+<<<
 
 ===== The else if statement
 
 The _else if_ statement is used to execute a block of code if first condition is _false_.
+
+*Syntax*
 
 [source,javascript]
 ----
@@ -71,26 +73,24 @@ if(condition1) {
 
 [source,javascript]
 ----
-var i=5
-if(i>7){
-	Console::outln("i greather than 7")
+if(value>7){
+	Console::outln("value greather than 7")
 }else if(i>5){
-	Console::outln("i greather than 5 and less equal than 7")
+	Console::outln("value greather than 5 and less equal than 7")
 }else{
-	Console::outln("i less equal than 5")
+	Console::outln("value less equal than 5")
 }
 ----
 
-
 ==== The ternary statement
 
-The ternary statement to have a short _if-else_ statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
+The ternary statement to have a short _if-else_ statement into single statement. It performs expression if the condition is _true_ or the second expression if the condition is _false_.
 
 *Syntax*
 
 [source,javascript]
 ----
-result = (condition)?first expression:2nd expression;
+(condition)?expression_if_true:expression_if_false;
 ----
 
 *Example*
@@ -123,40 +123,23 @@ switch(expression) {
 }
 ----
 
-*Example*
+<<<
 
+*Example*
 
 [source,javascript]
 ----
 
-var i=0
-
-switch(i) {
-	case 0:
-		Console::outln("i == 0")
-		break;
-	case 1:
-		Console::outln("i == 1")
-		break;
-	case 2:
-		Console::outln("i == 2")
-		break;
-	default:
-		Console::outln("i is not in [0,1,2]")
-		break;
-}
-
-// Switch can have common code blocks in different conditions
-switch(i) {
+switch(expr) {
 	case 0:
 	case 1:
-		Console::outln("i in [0,1]")
+		Console::outln("expr in [0,1]")
 		break;
 	case 2:
-		Console::outln("i is 2")
+		Console::outln("expr is 2")
 		break;
 	default:
-		Console::outln("i is not in [0,1,2]")
+		Console::outln("expr is not in [0,1,2]")
 		break;
 }
 ----

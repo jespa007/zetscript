@@ -11,8 +11,6 @@ ZetScript supports the following literals,
 
 _Boolean_ literals is represented as _true_ or _false_.
 
-Example,
-
 [source,javascript]
 ----
 true // true value
@@ -23,8 +21,6 @@ false // false value
 
 _Integer_ literals are represented as integer with range from _-(2^b-1^)_ to _2^b-1^-1_ where _b=32_ or _b=64_ it depending whether ZetScript is compiled for 32bits or 64bits. _Integer_ values can be represented as _decimal_ value, _hexadecimal_, _binary_ or _character_ format.
 
-Example,
-
 [source,javascript]
 ----
 10; // decimal
@@ -33,7 +29,9 @@ Example,
 'b'; // character
 ----
 
-Zetscript supports the following pre operators for _Integer_ literals,
+<<<
+
+Zetscript supports the following operators for _Integer_ literals,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -58,15 +56,13 @@ Zetscript supports the following pre operators for _Integer_ literals,
 
 _Float_ literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. _Float_ values can be represented in decimal form or scientific notation form.
 
-Example,
-
 [source,javascript]
 ----
 1.2 // decimal form
 2.0e-2 // cientific notation form
 ----
 
-Zetscript supports the following pre operators for _Float_ literals,
+Zetscript supports the following operators for _Float_ literals,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -82,9 +78,7 @@ Zetscript supports the following pre operators for _Float_ literals,
 
 ==== String
 
-_String_ literal is represented as string within quotes (").
-
-Example,
+_String_ literal is represented as string within double quotes (").
 
 [source,javascript]
 ----

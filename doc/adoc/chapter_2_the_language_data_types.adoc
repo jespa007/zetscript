@@ -1,6 +1,6 @@
 === Data types
 
-ZetScript supports the following builtin data types,
+ZetScript supports the following data types,
 
 * Undefined
 * Null
@@ -15,7 +15,7 @@ ZetScript supports the following builtin data types,
 
 ==== Undefined
 
-_Undefined_ data type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings _undefined_ value,
+The type _Undefined_ is defined as non initialized value. A variable is instanced as _Undefined_ once a its assings _undefined_ value or is not initialized.
 
 [source,javascript]
 ----
@@ -25,20 +25,16 @@ var b=undefined; // assigns undefined value
 
 ==== Null
 
-_Null_ data type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings _null_ value,
+The type _Null_ is defined as empty or invalid value. A variable is instanced as _Null_ once a its assings _null_ value.
 
 [source,javascript]
 ----
 var i=null;
 ----
 
-<<<
-
 ==== Integer
 
-_Integer_ data type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns _decimal_, _hexadecimal_, _binary_ or _character_ value.
-
-Example,
+The type _Integer_ represents an integer value from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns _decimal_, _hexadecimal_, _binary_ or _character_ value.
 
 [source,javascript]
 ----
@@ -47,6 +43,8 @@ var b=0x1a; // hexadecimal
 var c=01001b; // binary
 var d='b'; //  character
 ----
+
+<<<
 
 ===== Operators
 
@@ -107,7 +105,7 @@ var j=i--;//j=0;i=-1;
 
 ====== Integer::parse()
 
-Converts a given value to _Integer_
+Converts a given value to _Integer_.
 
 *Syntax*
 
@@ -140,9 +138,7 @@ include::../examples/the_language/integer/integer_parse_out.txt[]
 
 ==== Float
 
-_Float_ type it defines a variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
-
-Example,
+The type _Float_ is represented as IEEE-754 floating point numbers in 32-bit or 64 bit depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
 
 [source,javascript]
 ----
@@ -150,6 +146,7 @@ var a=1.2 // decimal form value
 var b=2.0e-2 // cientific notation form value
 ----
 
+<<<
 
 ===== Operators
 
@@ -238,9 +235,7 @@ include::../examples/the_language/float/float_parse_out.txt[]
 
 ==== Boolean
 
-_Boolean_ type it defines a variable represented as _true_ or _false_ value. A variable is initialized as _Boolean_ once it assigns a boolean value.
-
-Example,
+The type _Boolean_ it defines a variable represented as _true_ or _false_ value. A variable is initialized as _Boolean_ once it assigns a boolean value.
 
 [source,javascript]
 ----
@@ -249,9 +244,7 @@ var b=false;
 
 ==== String
 
-_String_ type it defines a variable represented as a string value. A variable is initialized as _String_ once it assigns a string or a sequence of chars between double quotes.
-
-*Example*
+The type _String_ it defines a variable represented as a string value. A variable is initialized as _String_ once it assigns a string or a sequence of chars between double quotes.
 
 [source,javascript]
 ----
@@ -375,7 +368,7 @@ include::../examples/the_language/string/string_to_upper_case_out.txt[]
 
 ====== String::toLowerCase()
 
-Returns a copy of string converted to lowercase.
+Returns a copy of the string converted to lowercase.
 
 *Syntax*
 
@@ -390,7 +383,7 @@ None
 
 [.underline]#Returns# 
 
- A copy of string converted to lowercase.
+ A copy of the string converted to lowercase.
 
 *Example*
 
@@ -441,7 +434,7 @@ include::../examples/the_language/string/string_clear_out.txt[]
 
 ====== String::replace()
 
-Returns the copy of the string modified with substrings replaced by a matching string and a remplacement string.
+Creates a new string as a result of the copy of this which all occurrences of a string are replaced with another string.
 
 *Syntax*
 
@@ -452,12 +445,12 @@ String::replace(_matching_string, _replacement_string)
 
 [.underline]#Parameters#
 
-- __matching_string_: String value as a matching value to be replaced.
-- __replacement_string_: The string to be replaced.
+- __matching_string_: String ocurrence to be replaced.
+- __replacement_string_: Replacement string.
 
 [.underline]#Returns# 
 
-Returns the copy of the string replacing __matching_string_ by __remplacement_string_.
+A new _String_ as a copy of this with __matching_string_ replaced by __remplacement_string_.
 
 *Example*
 
@@ -475,7 +468,7 @@ include::../examples/the_language/string/string_replace_out.txt[]
 
 ====== String::split()
 
-Breaks the string into and _xref:chapter_2_the_language_data_types#_array[Array]_ of strings by a separator.
+Splits string into array by a separator.
 
 *Syntax*
 
@@ -490,7 +483,9 @@ String::split(_separator)
 
 [.underline]#Returns# 
 
-An _xref:chapter_2_the_language_data_types#_array[Array]_ of strings.
+An _Array_ of strings as a result of splitting the string by the __separator_.
+
+<<<
 
 *Example*
 
@@ -508,7 +503,7 @@ include::../examples/the_language/string/string_split_out.txt[]
 
 ====== String::contains()
 
-Find out if a string contains a sequence of characters.
+Finds out whether a string contains a substring or not.
 
 *Syntax*
 
@@ -519,11 +514,11 @@ String::contains(_value)
 
 [.underline]#Parameters#
 
-- __value_:  A sequence of characters to find.
+- __value_:  A substring to find.
 
 [.underline]#Returns#
 
-Returns true if the characters exist and false if not.
+A _Boolean_ as _true_ if substring exist or _false_ if not.
 
 *Example*
 
@@ -556,7 +551,7 @@ String::indexOf(_search_value)
 
 [.underline]#Returns# 
 
-An _Integer_ value, representing the index position of first occurrence found, or -1 if not found
+An _Integer_ value >=0 representing the index position of first occurrence found, or -1 if not found
 
 *Example*
 
@@ -564,6 +559,8 @@ An _Integer_ value, representing the index position of first occurrence found, o
 ----
 include::../examples/the_language/string/string_index_of.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -574,7 +571,7 @@ include::../examples/the_language/string/string_index_of_out.txt[]
 
 ====== String::startsWith()
 
-Find out if the string starts with the specified characters.
+Finds out if the string starts with the specified characters.
 
 *Syntax*
 
@@ -589,7 +586,7 @@ String::startsWidth(_value)
 
 [.underline]#Returns# 
 
-A _Boolean_ value as _true_ if __value_ matches starting string, otherwise it returns _false_.
+A _Boolean_ as _true_ if __value_ matches starting string, otherwise it returns _false_.
 
 *Example*
 
@@ -607,7 +604,7 @@ include::../examples/the_language/string/string_starts_with_out.txt[]
 
 ====== String::endsWith()
 
-Find out if the string ends with the specified characters
+Finds out if the string ends with the specified characters.
 
 *Syntax*
 
@@ -622,7 +619,7 @@ String::endsWidth(_value)
 
 [.underline]#Returns# 
 
-A _Boolean_ value as _true_ if __value_ matches ending string, otherwise it returns _false_.
+A _Boolean_ as _true_ if __value_ matches ending string, otherwise it returns _false_.
 
 *Example*
 
@@ -638,9 +635,11 @@ Console output:
 include::../examples/the_language/string/string_ends_with_out.txt[]
 ----
 
+<<<
+
 ====== String::substring()
 
-Returns string defined between a start index and end index.
+Returns new string as a copy of this between a starting and ending index.
 
 *Syntax*
 
@@ -651,12 +650,12 @@ String::substring(_start_index, _end_index)
 
 [.underline]#Parameters#
 
-- __start_index_: The index of the first character to include in the returned substring.
-- __end_index_ (optional): The index of the first character to exclude from the returned substring.
+- __start_index_: An _Integer_ value as the first position to include in the returned substring.
+- __end_index_ (optional): An _Integer_ value as the end position to exclude. If the value is omitted it copies the rest of the string.
 
 [.underline]#Returns#
 
-A string specified by start and end index.
+A copy of the string between __start_index_ and __end_index_.
 
 *Example*
 
@@ -674,18 +673,18 @@ include::../examples/the_language/string/string_substring_out.txt[]
 
 ====== String::append()
 
-Extends the string by appending string at the end.
+Extends the string by appending another string at the end.
 
 *Syntax*
 
 [source,javascript]
 ----
-String::append(_value)
+String::append(_string)
 ----
 
 [.underline]#Parameters#
 
-- __value__ : value to be appended
+- __string_ : A string.
 
 [.underline]#Returns# 
 
@@ -705,6 +704,8 @@ Console output:
 include::../examples/the_language/string/string_append_out.txt[]
 ----
 
+<<<
+
 ===== Static functions
  
 ====== String::format()
@@ -720,7 +721,7 @@ String::format(_string,..._args)
 
 [.underline]#Parameters#
 
-- __string_ : _String_ representation with specified arguments and/or its format. Argument format is defined in the __string_ value within curly brackets (i.e between '{' and '}' ) where it specifies argument number and its format. The argument format is described below,
+- _&#x5f;string_ : A _String_ representation with specified arguments and/or its format. Argument format is defined in the __string_ value within curly brackets (i.e between '{' and '}' ) where it specifies argument number and its format. The argument format is described below,
 
 [cols="1m,3d"]
 |====
@@ -737,7 +738,7 @@ String::format(_string,..._args)
 
 [.underline]#Returns#
 
-A formated string
+A new _String_ as a result of formatting __string_ with __args_.
 
 *Example*
 
@@ -753,21 +754,20 @@ Console output:
 include::../examples/the_language/string/string_format_out.txt[]
 ----
 
-
 ==== Array
 
-_Array_ is a container type that stores variables or values in a unidimensional array. A variable is initialized as _Array_ once it assings a open/closed square brackets, 
+The type _Array_ is a container that stores elements in a unidimensional array. A variable is instanced as _Array_ once it assings a open/closed square brackets.
 
 [source,javascript]
 ----
-[]; // an array instanced
+[]; // An instanced array
 ----
 
-Variable instanced as _Array_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets  (i.e between '[' and ']' ),
+Variable instanced as _Array_ can be initialized with a sequence of elements separated with coma.
 
 [source,javascript]
 ----
-[1,"string",true,2.0]; // A array instanced with elements
+[1,"string",true,2.0]; // An instanced array with elements
 ----
 
 To access element array is done through _Integer_ value as a index.
@@ -778,11 +778,13 @@ var v=[1,"string",true,2.0]; // variable 'v' has 4 elements where its access exi
 v[1]; // It access array's second element (i.e "string")
 ----
 
+<<<
+
 ===== Properties
 
 ====== Array::length
 
-Returns the number of elements in the array
+Returns the number of elements in the array.
 
 *Example*
 
@@ -802,18 +804,18 @@ include::../examples/the_language/array/array_length_out.txt[]
 
 ====== Array::push()
 
-Adds a new element at the end of the array
+Adds a new element at the end of the array.
 
 *Syntax*
 
 [source,javascript]
 ----
-Array::push(_value)
+Array::push(_element)
 ----
 
 [.underline]#Parameters#
 
-- __value_ : value to be added
+- __value_ : Element to be added.
 
 [.underline]#Returns# 
 
@@ -835,7 +837,7 @@ include::../examples/the_language/array/array_push_out.txt[]
 
 ====== Array::pop()
 
-Removes the last element in the array
+Removes the last element in the array.
 
 [source,javascript]
 ----
@@ -848,7 +850,7 @@ None
 
 [.underline]#Returns# 
 
-Last value of the array before be removed
+Last element of the array before be removed.
 
 *Example*
 
@@ -857,26 +859,28 @@ Last value of the array before be removed
 include::../examples/the_language/array/array_pop.zs[]
 ----
 
-Output
+<<<
+
+Console output:
 
 [source,text]
 ----
 include::../examples/the_language/array/array_pop_out.txt[]
 ----
 
-====== Array::insertAt(_pos,_value)
+====== Array::insertAt()
 
-Inserts element in the array at defined position
+Inserts an element in the array at defined position.
 
 [source,javascript]
 ----
-Array::insertAt(_pos,_value)
+Array::insertAt(_position,_element)
 ----
 
 [.underline]#Parameters#
 
-- __position_: Position where to insert. The position ranges within 0 to the length-1 of the array
-- __value_: value to insert
+- __position_: An _Integer_ value as the position where to insert. The position ranges within 0 to the length-1 of the array.
+- __element_: Element to insert.
 
 *Example*
 
@@ -894,16 +898,16 @@ include::../examples/the_language/string/string_insert_at_out.txt[]
 
 ====== Array::eraseAt()
 
-Removes the value at defined position
+Removes an element at defined position.
 
 [source,javascript]
 ----
-Array::eraseAt(_pos)
+Array::eraseAt(_position)
 ----
 
 [.underline]#Parameters#
 
-- __position_:  The position where there's the value to remove. The position ranges within 0 to the length-1 of the array
+- __position_:  An _Integer_ as the position where there's the element to remove. The position ranges within 0 to the length-1 of the array.
 
 [.underline]#Returns# 
 
@@ -925,7 +929,7 @@ include::../examples/the_language/array/array_erase_at_out.txt[]
 
 ====== Array::clear()
 
-Clears all elements in the array
+Clears all elements in the array.
 
 [source,javascript]
 ----
@@ -935,6 +939,8 @@ Array::clear()
 [.underline]#Parameters#
 
 None
+
+<<<
 
 [.underline]#Returns#
 
@@ -954,9 +960,9 @@ Console output:
 include::../examples/the_language/array/array_clear_out.txt[]
 ----
 
-====== Array::join(_separator)
+====== Array::join()
 
-Concatenates all elements of the array into a string using a separator
+Returns a new string as the concatenation of all array elements with a separator.
 
 [source,javascript]
 ----
@@ -965,11 +971,11 @@ Array::join(_separator)
 
 [.underline]#Parameters#
 
-- __separator_ : separator value
+- __separator_ : A _String_ or character as separator.
 
 [.underline]#Returns# 
 
-A string of all concatenated array's elements 
+A string as a concatenation of all array elements with __separator_.
 
 *Example*
 
@@ -985,22 +991,22 @@ Console output:
 include::../examples/the_language/array/array_join_out.txt[]
 ----
 
-====== Array::contains(_value)
+====== Array::contains()
 
-Tells whether a value is contained in the array or not
+Finds out if the array contains a element or not.
 
 [source,javascript]
 ----
-Array::contains(_value)
+Array::contains(_element)
 ----
 
 [.underline]#Parameters#
 
-- __value_: a value to find
+- __element_: An element to find.
 
 [.underline]#Returns#
 
-A boolean value telling if the value exist or not in the array 
+A _Boolean_ as _true_ if the element exist or _false_ if not.
 
 *Example*
 
@@ -1009,6 +1015,8 @@ A boolean value telling if the value exist or not in the array
 include::../examples/the_language/array/array_contains.zs[]
 ----
 
+<<<
+
 Console output:
 
 [source,txt]
@@ -1016,18 +1024,18 @@ Console output:
 include::../examples/the_language/array/array_contains_out.txt[]
 ----
 
-====== Array::extend(_v)
+====== Array::extend()
 
-Extends the calling array by appending all elements from a array
+Appends at the end of the array all elements from other array.
 
 [source,javascript]
 ----
-Array::extend(_v)
+Array::extend(_array)
 ----
 
 [.underline]#Parameters#
 
-- __v_ : Array type which all elements will appended into the array
+- __array_ : An array.
 
 [.underline]#Returns# 
 
@@ -1051,23 +1059,23 @@ include::../examples/the_language/array/array_extend_out.txt[]
 
 ====== Array::concat()
 
-Creates a new array as a result of merge all elements from two arrays
+Creates a new array as a result of merging all elements of two arrays.
 
 *Syntax*
 
 [source,javascript]
 ----
-Array::concat(_v1, _v2)
+Array::concat(_array1, _array2)
 ----
 
 [.underline]#Parameters#
 
-- __v1_ : First array to concatenate into the new array
-- __v2_ : Second array to concatenate into the new array
+- __array1_ : First array to merge.
+- __array2_ : Second array to merge.
 
 [.underline]#Returns# 
 
-A new array as a result of merge all elements from the arrays
+A new array as a result of merging all elements from __array1_ and __array2_.
 
 *Example*
 
@@ -1083,20 +1091,22 @@ Console output:
 include::../examples/the_language/array/array_concat_out.txt[]
 ----
 
+<<<
 
 ==== Object
 
-Array type it defines a container type that stores a serie of key-value data. _Object_ is declared as open/closed of curly brackets (i.e '{}'),
+The type _Object_ is a container that stores a serie of key-value data. A variable is instanced as _Object_ once it assings a open/closed of curly brackets.
 
 [source,javascript]
 ----
-{}; // Object
+{}; // An instanced object
 ----
 
-Optionally it be init with series of pair key-value separated by comma.
+Optionally it can be initialized with a series of pair key-value separated by comma.
 
 [source,javascript]
 ----
+// An instanced object with elements
 {
   i:1
  ,s:"string"
@@ -1125,18 +1135,18 @@ o["i"]; // access field 'i' by '[]'
 
 ====== Object::clear()
 
-Clears all elements of an object
+Clears all elements of an object.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::clear(_o)
+Object::clear(_object)
 ----
 
 [.underline]#Parameters#
 
-- __o_: The object to clear elements
+- _object: The object to clear.
 
 [.underline]#Returns#
 
@@ -1156,21 +1166,21 @@ Console output:
 include::../examples/the_language/object/object_clear_out.txt[]
 ----
 
-====== Object::erase(_key_id)
+====== Object::erase()
 
-Removes an attribute of an object
+Removes one element of an object.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::erase(_key_id)
+Object::erase(_object,_key_id)
 ----
 
 [.underline]#Parameters#
 
-- __o_: The object to erase element
-- __key_id_:  The key id of the attribute to remove
+- __object_: An object to erase the element.
+- __key_id_:  A _String_ value as the key id of the element to remove.
 
 [.underline]#Returns# 
 
@@ -1192,23 +1202,23 @@ include::../examples/the_language/object/object_erase_out.txt[]
 
 ====== Object::contains()
 
-Tells whether a key is contained in an object or not
+Finds out if the object contains a key or not.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::contains(_key_id)
+Object::contains(_object,_key_id)
 ----
 
 [.underline]#Parameters#
 
-- __o_: The object to check
-- __key_: a key to find
+- __object_: The object to check.
+- __key_: A _String_ value as the key to find.
 
 [.underline]#Returns#
 
-A boolean value telling if the attribute with __key_id_ exist or not in the object 
+A _Boolean_ as _true_ if the key exist or _false_ if not.
 
 *Example*
 
@@ -1226,19 +1236,19 @@ include::../examples/the_language/object/object_contains_out.txt[]
 
 ====== Object::extend()
 
-Extends an object by the content of other object
+Appends at the end of an object all fields from other object.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::extend(_o1,_o2)
+Object::extend(_dst,_src)
 ----
 
 [.underline]#Parameters#
 
-- __o1_ : Object where to be extended
-- __o2_ : Object where to copy the extension
+- __dst_ : Destination object to extend.
+- __src_ : Source object to copy all fields from.
 
 [.underline]#Returns# 
 
@@ -1260,23 +1270,23 @@ include::../examples/the_language/object/object_extend_out.txt[]
 
 ====== Object::concat()
 
-Creates a new object as a result of merge all elements from two objects
+Creates a new object as a result of merging all fields of two objects.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::concat(_o1, _o2)
+Object::concat(_object1, _object2)
 ----
 
 [.underline]#Parameters#
 
-- __o1_ : First object to concatenate into the new object
-- __o2_ : Second object to concatenate into the new object
+- __object1_ : First object to merge.
+- __object2_ : Second object to merge.
 
 [.underline]#Returns# 
 
-A new object as a result of merge all elements from the two objects
+A new object as a result of merging all fields from __object1_ and __object2_.
 
 *Example*
 
@@ -1292,24 +1302,26 @@ Console output:
 include::../examples/the_language/object/object_concat_out.txt[]
 ----
 
-====== Object::keys(_o)
+====== Object::keys()
 
-Returns a array of string representing its key names
+Returns an array of strings representing the key names of the field's object.
 
 *Syntax*
 
 [source,javascript]
 ----
-Object::keys(_o)
+Object::keys(_object)
 ----
 
 [.underline]#Parameters# 
 
-- __o_ : Object from get the keys
+- __object_ : The object to get the keys.
 
 [.underline]#Returns# 
 
-A array of strings of its key names
+An array of strings as key names of __object_.
+
+<<<
 
 *Example*
 
@@ -1325,52 +1337,58 @@ Console output:
 include::../examples/the_language/object/object_keys_out.txt[]
 ----
 
-
 ==== Function
 
-Function type is a type that contains function information to be invoqued at some place through paranthesis (). A variable is initialized as _Function_ once it assings an a function or anonymous function
+The type _Function_ contains function information to be invoqued at some place through paranthesis. A variable is instanced as _Function_ once it assings a function.
 
-*Example*
-
-Assing normal function to variable
+Assing normal function to variable:
 
 [source,javascript]
 ----
-
-// function add
 function add(_a,_b){
 	return _a+_b
 }
 
-// function add assigned to fun
+// function 'add' assigned to fun
 var fun=add;
 
-...
-
-Console::outln(fun(5,5)); // it prints "10"
+Console::outln(fun(5,5)); // Prints "10"
 
 ----
 
-Also it assing anonymous function to variable
+Also it can assing anonymous function to variable:
 
 [source,javascript]
 ----
-
 // anonymous function assigned to fun
 var fun=function(_a,_b){
 	return _a+_b
 };
 
-...
-
 Console::outln(fun(5,5)); // it prints "10"
 ----
 
-For more information about Functions go to section X.XX
+For more information about _Function_ go to xref:chapter_2_the_language_function.adoc#_the_function[section 2.9]. 
 
 ==== Class
 
-Class type is a custom type that operates with its variables and functions. A class is defined by keyword _class_ followed by name. 
+The type _Class_ is a custom defined object that operates with its variables and functions. A _Class_ is defined by keyword _class_ followed by name. 
+
+[source,javascript]
+----
+// Definition class A
+class A{
+}
+----
+
+A variable is instanced as the class type through operator _new_ followed by the class name defined with parethesis.
+
+[source,javascript]
+----
+var a=new A(); // Instances object class type A
+----
+
+Also a class type can extend from another class with _extends_ keyword.
 
 [source,javascript]
 ----
@@ -1378,32 +1396,12 @@ Class type is a custom type that operates with its variables and functions. A cl
 class A{
 
 }
-----
-
-To instance a object of type class is done through operator _new_ followed by the class name defined with parethesis
-
-[source,javascript]
-----
-// Instances object class type A
-var a=new A();
-----
-
-Also a class type can extend from another class with _extends_ keyword
-
-
-[source,javascript]
-----
-// Definition class A
-class A{
-
-}
-
 
 // Definition class B that extends from B
 class B extends A{
-
+  
 }
 ----
 
-For more information about class type go to section X.XX
+For more information about _Class_ go to xref:chapter_2_the_language_class.adoc#_the_class[section 2.10]. 
 

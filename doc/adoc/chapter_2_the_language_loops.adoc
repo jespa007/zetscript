@@ -2,7 +2,7 @@
 
 ==== The while loop
 
-The _while_ loop loops through a block of code as long as a specified condition is true.
+The _while_ loop loops through a block of code as long as a specified condition is _true_.
 
 *Syntax*
 
@@ -29,14 +29,14 @@ include::../examples/the_language/loop/loop_while_out.txt[]
 
 ==== do-while loop
 
-The _do-while_ loop is always be executed at least once, even if the condition is _false_, because the code block is executed before the condition is tested:
+The _do-while_ execute the code block once and then it will repeat the loop as long as the condition is _true_.
 
 *Syntax*
 
 [source,javascript]
 ----
 do{
-	// do-while body
+	// code block to be executed
 } while (condition);
 ----
 
@@ -47,6 +47,8 @@ do{
 include::../examples/the_language/loop/loop_do_while.zs[]
 ----
 
+<<<
+
 Console output:
 
 [source,text]
@@ -56,13 +58,13 @@ include::../examples/the_language/loop/loop_do_while_out.txt[]
 
 ==== The for loop
 
-The _for_ loop performs an iteration with 3 optional statements:
+The _for_ loop executes a block of code with 3 optional statements.
 
 *Syntax*
 
 [source,javascript]
 ----
-for(stament1;statment2;statment3){
+for(statement1;statement2;statement3){
 	// code block to be executed
 }
 ----
@@ -121,7 +123,7 @@ include::../examples/the_language/loop/loop_for_in_out.txt[]
 
 ==== The break and continue
 
-===== break statement
+===== Break statement
 
 The _break_ statement is used to jump out of body loop.
 
@@ -140,7 +142,7 @@ include::../examples/the_language/loop/loop_break_out.txt[]
 ----
 
 
-===== continue statement
+===== Continue statement
 
 The _continue_ statement breaks one iteration and continues with the next iteration in the loop.
 

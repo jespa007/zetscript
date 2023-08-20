@@ -1,11 +1,6 @@
 class Number{
 	constructor(_value=0){
-		// ensure that n is literal integer or literal float
-		if(_value instanceof Integer || _value instanceof Float){
-			this.__value__=_value;
-		}else{
-			System::error("Number::constructor : input value not supported");
-		}
+		this.__value__=_value;
 	} 
 	
  	_shrset(_op1){
@@ -23,9 +18,6 @@ class Number{
 };
 
 var number=new Number(0x10);
-Console::outln("number => "+number)
-number>>=1;
-Console::outln("number>>=1 => "+number)
-number>>=new Number(1);
-Console::outln("number>>=new Number(1) => "+number)
+Console::outln("number>>=1 => {0}",number>>=1)
+Console::outln("number>>=new Number(1) => {0}",number>>=new Number(1))
 

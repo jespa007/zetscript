@@ -32,12 +32,6 @@ template <typename F>
 void registerFunction( const zs_string & _name_script_function,F _ptr_function);
 ----
 
-Example, 
-
- ZetScript zs;
- zs.registerFunction("zetscriptCppInterface",zetscriptCppInterface)
-
-
 *Example*
 
 The following example registers a C function and calls it within an evaluated script.

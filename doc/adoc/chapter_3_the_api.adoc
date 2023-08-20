@@ -2,45 +2,6 @@
 :sectnums:
 
 
-//  Summary: 
-// 1. eval
-// eval expression
-// eval file
-// eval options
-// Explain builtin types and its functions
-// 1. Calling script functions from c++
-//  1.1 bind script function 
-//  1.2 bind member function from instanced global object
-//  1.3 Life time objects returned
-//      zs_int,zs_float,bool
-//      other times should bee freed. Show error if not freed
-// 2. Calling c++ function from script
-// 2.1 Explain function passing these type IN parameters
-//    Boolean --> bool *
-//    Integer --> zs_int or zs_int *
-//	  Float  --> zs_float * 
-//	  String  --> StringScriptObject * (and how acces/modify its elements)
-//	  Array  --> ArrayScriptObject *  (and how acces/modify its elements)
-//	  Object  --> ObjectScriptObject *  (and how acces/modify its elements)
-//    class --> class (see seccion 4 for more information)
-//    Calling script functions (callbacks). Process registerFunction and call-it
-// 2.2 Returning variables
-//    Boolean --> bool
-//    Integer --> zs_int
-//	  Float  --> zs_float
-//	  String  --> zs->newStringScriptObject  (and how add elements)
-//	  Array  --> zs->newArrayScriptObject  (and how add elements)
-//	  Object  --> zs->newObjectScriptObject  (and how add elements)
-//    class --> zs->newClass<class> (see seccion 4 for more information)
-// 3. BindTypes
-//    Show all examples with type "Number"!!!!
-//	  no-instantiable types
-//	  instantiable types
-//    bindFunctionsMember
-//    bindPropertyMember through its metamethods
-
-
-
 == The API
 
 === Eval

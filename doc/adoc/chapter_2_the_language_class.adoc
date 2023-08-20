@@ -1,3 +1,4 @@
+[id=_the_class]
 === Class
 
 A class is a template for create objects with its own variables and functions. A class is defined using keyword _class_ followed by the name. 
@@ -110,6 +111,7 @@ t.a=10; 		  // t.a==10
 
 In the code it can see that when _t_ is instanced field 'a' is undefined. In the next section it'll shown some ways to initialize data when class is instantatiated.
 
+<<<
 
 ===== Variable inicialization
 
@@ -148,8 +150,6 @@ var t=new Test(); // t.a==10
 ==== Inheritance
 
 A class can inherit another class through _extends_ keyword. The new extended class will copy all functions and variable initialization from base class. The extended class can call parent functions through _super_ keyword.
-
-Example,
 
 [source,javascript]
 ----

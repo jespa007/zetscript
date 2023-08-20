@@ -1,11 +1,6 @@
 class Number{
 	constructor(_value=0){
-		// ensure that n is literal integer or literal float
-		if(_value instanceof Integer || _value instanceof Float){
-			this.__value__=_value;
-		}else{
-			System::error("Number::constructor : input value not supported");
-		}
+		this.__value__=_value;
 	} 
 	
  	_modset(_op1){
@@ -23,9 +18,6 @@ class Number{
 };
 
 var number=new Number(250);
-Console::outln("number => "+number)
-number%=30;
-Console::outln("number%=30 => "+number)
-number%=new Number(100);
-Console::outln("number%=new Number(100) => "+number)
+Console::outln("number%=30 => {0}",number%=30)
+Console::outln("number%=new Number(100) => {0}",number%=new Number(100))
 
