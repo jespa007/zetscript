@@ -175,20 +175,23 @@ var b=new B(); // b.a==10, b.b=20
 include::chapter_2_the_language_class_metamethods.adoc[]
 include::chapter_2_the_language_class_property.adoc[]
 
-==== Iterator class
+==== Iterator
 
-An iterator class is a class with a set of metamethods defined that allow iteration from an instance from custom container class given. To declare a class as iterator it has to define the following metamethods,
-
+An iterator is a type with a set of metamethods defined that allow iteration from a custom container type. The metamethods are the following,
 
 - __get()_: it returns a value according current index
 - __end()_: it returns a boolean value telling whether the iterator has finished or not
-- __postinc()_: it increments the iterator
+- __next()_: it increments index iterator
 
-So a iterator class could be defined as below,
+Furthermore, it has to pass as a parameter the instance of the custom container type to reference its data. So, an iterator type should be defined as below,
 
 [source,javascript]
 ----
 class IteratorContainer{
+	constructor(_container){
+  		this.container=_container;
+  		// ...
+  	}
 	_get(){
 		//...
 		return value;
@@ -197,25 +200,26 @@ class IteratorContainer{
     	//...
     	return [true or false]
     }
-    _postinc(){
-    	//...
-    	// increment index
+    _next(){
+    	// increments iterator
     }
 }
 
 ----   
 
-After iterator class is defined, the class container for iterate has to implement __iter_ metamethod that returns an instance of the new object iterator
+Finally, in order to have a custom container type as iterable it has to implement __iter_ metamethod that returns the defined iterator passing the instance of current object (i.e this).
 
 [source,javascript]
 ----
 class Container{
 	_iter(){
-		return new IteratorContainer();
+		return new IteratorContainer(this);
 	}
 }
 
 ----
+
+<<<
 
 *Example*
 

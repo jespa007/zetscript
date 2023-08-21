@@ -100,7 +100,7 @@ void RegisteredTypeProperty_set(ZetScript *_zs, RegisteredType *_this, ParamType
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 [.underline]#Returns#
 
@@ -164,7 +164,7 @@ void RegisteredTypeProperty_addset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -228,7 +228,7 @@ void RegisteredTypeProperty_subset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -293,7 +293,7 @@ void RegisteredTypeProperty_mulset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 [.underline]#Returns#
 
@@ -357,7 +357,7 @@ void RegisteredTypeProperty_divset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -422,7 +422,7 @@ void RegisteredTypeProperty_modset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -485,7 +485,7 @@ void RegisteredTypeProperty_andset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -549,7 +549,7 @@ void RegisteredTypeProperty_orset(ZetScript *_zs, RegisteredType *_this, ParamTy
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -614,7 +614,7 @@ void RegisteredTypeProperty_xorset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -680,7 +680,7 @@ void RegisteredTypeProperty_shrset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#
@@ -744,7 +744,7 @@ void RegisteredTypeProperty_shlset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  <<ZetScript built-in types>> or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
 
 
 [.underline]#Returns#

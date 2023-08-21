@@ -1006,7 +1006,7 @@ include::../examples/the_language/class/class_metamethod_mod_out.txt[]
 
 ====== _and()
 
-Implements _bitwise and_ operator (aka & ) between first operand and second operand
+Implements _bitwise AND_ operator (aka & ) between first operand and second operand
 
 *Syntax*
 
@@ -1040,7 +1040,7 @@ include::../examples/the_language/class/class_metamethod_and_out.txt[]
 
 ====== _or()
 
-Implements _bitwise or_ operator (aka | ) between first operand and second operand
+Implements _bitwise OR_ operator (aka | ) between first operand and second operand
 
 *Syntax*
 
@@ -1076,7 +1076,7 @@ include::../examples/the_language/class/class_metamethod_or_out.txt[]
 
 ====== _xor()
 
-Implements _bitwise xor_ operator (aka ^ ) between first operand and second operand
+Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
 
 *Syntax*
 
@@ -1110,7 +1110,7 @@ include::../examples/the_language/class/class_metamethod_xor_out.txt[]
 
 ====== _shr()
 
-Implements _bitwise shift right_ operator (aka << ) between first operand and second operand
+Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and second operand
 
 *Syntax*
 
@@ -1144,7 +1144,7 @@ include::../examples/the_language/class/class_metamethod_shr_out.txt[]
 
 ====== _shl()
 
-Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+Implements _bitwise SHIFT LEFT_ operator (aka << ) between first operand and second operand
 
 *Syntax*
 
@@ -1161,6 +1161,8 @@ _shl(_op1,_op2)
 [.underline]#Returns#
 
 - A new object as a result of bitwise shift left operation 
+
+<<<
 
 *Example*
 

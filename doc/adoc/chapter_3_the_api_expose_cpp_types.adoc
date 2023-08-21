@@ -166,7 +166,7 @@ include::../examples/the_api/register_type/register_instantiable_type.cpp[]
 
 To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as it seen in _xref:chapter_2_the_language_class.adoc#_constructor[ZetScript class constructor]_.
 
-As parameters, the function must always include `ZetScript *` as the FIRST parameter,the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter,the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in type] or a pointer of other registered type. 
 
 *Syntax*
 
@@ -187,7 +187,7 @@ Where,
 
 - __zs_ : ZetScript context.
 - __this_: The current instance.
-- __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or other registered type.
+- __arg1_ .. __arg8_: Arguments which types are pointers of xref:chapter_3_the_api_types#_built_in_types[built-in types] or other registered type.
 
 After the constructor function is defined it has to be registered with `ZetScript::registerConstructor`. _registerConstructor_ it has the following signature,
 
@@ -259,9 +259,9 @@ include::../examples/the_api/register_type/register_instantiable_type_with_const
 
 To register a member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include `ZetScript *` as the FIRST parameter, the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter, the current instance as the SECOND parameter and a maximum of 8 parameters as a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in type] or a pointer of other registered type. 
 
-As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
+As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of a registered type.
 
 *Syntax*
 
@@ -277,13 +277,13 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of a registered type.
 
 [.underline]#Parameters# 
 
 - __zs_ : ZetScript context
 - __this_: The current instance
-- __arg1_ .. __arg8_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
+- __arg1_ .. __arg8_: Arguments which types are pointers of xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of a registered type.
 
 
 After the member function is defined it has to be registered with `ZetScript::registerMemberFunction`. _registerMemberFunction_ it has the following signature,
@@ -359,9 +359,9 @@ include::../examples/the_api/register_type/register_member_function_out.txt[]
 
 To register a static member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include `ZetScript *` as the FIRST parameter and a maximum of 9 parameters as a pointer of <<ZetScript built-in type>> or a pointer of other registered type. 
+As parameters, the function must always include `ZetScript *` as the FIRST parameter and a maximum of 9 parameters as a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in type] or a pointer of other registered type. 
 
-As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in type>> or a pointer of other registered type.
+As a return, the function it can return void, bool, zs_int,zs_float, zs_string, a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in type] or a pointer of other registered type.
 
 *Syntax*
 
@@ -377,12 +377,12 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of <<ZetScript built-in types>> or a pointer of a registered type.
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string, a pointer of xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of a registered type.
 
 [.underline]#Parameters# 
 
 - __zs_ : ZetScript context
-- __arg1_ .. __arg9_: Arguments which types are pointers of <<ZetScript built-in types>> or a pointer of a registered type.
+- __arg1_ .. __arg9_: Arguments which types are pointers of xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of a registered type.
 
 
 After the constructor function is defined it has to be registered with `ZetScript::registerStaticMemberFunction`. _registerStaticMemberFunction_ it has the following signature,

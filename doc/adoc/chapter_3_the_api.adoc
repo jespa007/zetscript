@@ -8,7 +8,7 @@
 
 ZetScript can evaluate scripts from string or from file
 
-*Eval from string*
+==== Eval from string
 
 [source,c++]
 ----
@@ -23,7 +23,7 @@ include::../examples/the_api/eval/eval_string_out.txt[]
 ----
 
 
-*Eval from file*
+==== Eval from file
 
 Having the following script file called `file.zs` with the following content,
 [source,javascript]
@@ -91,6 +91,7 @@ Apart there's a description per instruction with the following columns,
 - *AS*: Acumulated Stack in the current instruction
 - *INSTRUCTION*: Byte code and operands if it needs
 
+<<<
 Here there's a meaning of each byte code
 
 [cols="3m,6a"]
@@ -98,55 +99,52 @@ Here there's a meaning of each byte code
 |Instruction |Description
 
 |EQU
-| 
+|Logical equal
 
-|INSTANCEOF
-|
-			
 |NOT_EQU
-|			
+|Logical not equal
 
 |LT
-|
+|Less than
 
 |LTE
-|
-
-|NOT
-|
+|Less than equal
 
 |GT
-|			
+|Greather than		
 
 |GTE
-|
-
-|NEG
-|
-
-|BWC
-|
-
-|ADD
-|
-
-|SUB
-|
+|Greather than equal
 
 |LOGIC_AND
-|			
+|Login AND
 
 |LOGIC_OR
-|			
+|Logic OR
+
+|INSTANCEOF
+|Instanceof
+
+|NOT
+|Not
+
+|NEG
+|Negate
+
+|ADD
+|Addition
+
+|SUB
+|Substraction
 
 |DIV
-|			
+|Division	
 
 |MUL
-|			
+|Multiplication	
 
 |MOD
-|
+|Modulus
 
 |AND
 |Bitwise AND
@@ -158,67 +156,70 @@ Here there's a meaning of each byte code
 |Bitwise XOR
 
 |SHL
-|Bitwise shift left
+|Bitwise SHIFT LEFT
 
 |SHR
-|Bitwise shift right
+|Bitwise SHIFT RIGHT
+
+|BWC
+|Bitwise complement
 
 |STORE
-|
+|Store
 
 |STORE_ADD
-|			
+|Addition and assignment
 
 |STORE_SUB
-|
+|Substraction and assignment
 
 |STORE_MUL
-|
+|Multiplication and assignment
 
 |STORE_DIV
-|
+|Division and assignment
 
 |STORE_MOD
-|
+|Modulus and assignment
 
 |STORE_AND
-|
+|Bitwise AND and assignment
 
 |STORE_OR
-|
+|Bitwise OR and assignment
 
 |STORE_XOR
-|
+|Bitwise XOR and assignment
 
 |STORE_SHL
-|
+|Bitwise SHIFT LEFT and assignment
 
 |STORE_SHR
-|
+|Bitwise SHIFT RIGHT and assignment
 
 |PUSH_STK_GLOBAL_IRGO
-|Load type var
+|Push global variable from return function to stack
 
 |PUSH_STK_GLOBAL
-|Push stk global
+|Push global variable to stack
 
 |PUSH_STK_LOCAL
-|Push stk local
+|Push local variable to stack
 			
 |PUSH_STK_REF
-|push stk global
+|Push argument reference to stack
 
 |PUSH_STK_THIS
-|Push stk global
+|Push current object instance to stack
 
-|PUSH_STK_VEC@ITEM
-|Load element vector
+|PUSH_STK_ARRAY@ITEM
+|Push array item to stack
 
 |PUSH_STK_OBJ@ITEM 
-|Load element object
+|Push object item to stack
 
 |PUSH_STK_THIS@VAR
-|Load element this
+|Push member variable to stack
 
 |LOAD_GLOBAL
 |Load global variable to stack
@@ -227,103 +228,103 @@ Here there's a meaning of each byte code
 |Load local variable to stack
 
 |LOAD_REF
-|Load reference to stack
+|Load argument reference to stack
 
 |LOAD_THIS
-|Load this
+|Load current instance to stack
 
 |LOAD_CONSTRUCTOR_FUNCT
-|Load constructor function
+|Load constructor function to stack
 
 |LOAD_???
-|Unresolved load symbol. It tries to load at runtime
+|Unresolved load symbol. It tries to resolve and load at runtime
 
 |CALL
-|Direct call
+|Performs a direct call
 
 |CALL???
 |Unresolved direct call. It tries to load at runtime
 
 |STK_CALL
-|Stack call
+|Performs a call from current stack
 
 |MEMBER_CALL
-|Indirect call through dynamic symbol
+|Performs member call
 
 |LOAD_THIS@VAR
-|Load this element object
+|Load member variable to stack
 
 |LOAD_THIS@FUN
-|Load element object
+|Load member function to stack
 
-|LOAD_VEC@ITEM
-|Load element vector
+|LOAD_ARRAY@ITEM
+|Load array item to stack
 
 |LOAD_OBJ@ITEM
-|Load element object
+|Load object item to stack
 
 |LOAD_FUN
-|Load function
+|Load function to stack
 
 |LOAD_UNDEFINED
-|Load undfined value
+|Load undefined value to stack
 
 |LOAD_NULL
-|Load Null value
+|Load Null value to stack
 
 |LOAD_STK
-|Load stack element
+|Load stack element to stack
 
 |LOAD_STR
-|Load string value
+|Load _String_ value to stack
 
 |LOAD_FLT
-|Load float value
+|Load _Float_ value to stack
 
 |LOAD_BOOL
-|Load bool value
+|Load _Boolean_ value to stack
 
 |LOAD_INT
-|Load integer value
+|Load _Integer_ value to stack
 
 |LOAD_TYPE
-|Load type value
+|Load _Type_ value to stack
 
 |JMP
-|Unconditional jump.
+|Performs an unconditional jump.
 
 |JMP_CASE 
-|Jump Switch-Case 
+|Performs a jump Switch-Case.
 			
 |JNT
-|Jump if not true
+|Performs a jump if not true
 
 |JT
-|Jump if true
+|Performs jump if true.
 			
 |JE_CASE
-|Jump if equal Switch-Case
+|Performs a jump if equal Switch-Case
 
 |CALL_CONSTRUCTOR
-|Constructor call
+|Performs a constructor call
 
-|NEW_VEC
-|Array object (CREATE)
+|NEW_ARRAY
+|Creates an array object
 			
-|PUSH_VITEM
-|Push vector item
+|PUSH_AITEM
+|Push array item to stack
 			
 |RET
-|Return function
+|Return
 
 |NEW_OBJECT_BY_TYPE
-|New object by type
+|Creates new object by type
 
 |NEW_OBJECT_BY_VALUE
-|New object by value
+|Creates new object by value
 			
 |DELETE
-|Delete object
+|Deletes object
 
 |POP_SCOPE
 |Pop scope
@@ -335,35 +336,32 @@ Here there's a meaning of each byte code
 |Push object item
 
 |NEW_OBJECT
-|New object (CREATE)
+|Creates new object
 
 |NEW_STR
-|New string
+|Creates new string
 	
 |IT_INIT
-|Iterator init
+|Performs iterator init
 
 |STORE_CONST
-|Constant assignment
+|Performs a constant assignment
 			
 |PRE_INC
-|Preincrement
+|Performs a preincrement
 
 |PRE_DEC
-|Predecrement
+|Performs a predecrement
 
 |POST_INC
-|Postincrement
+|Performs a postincrement
 
-|POST_DEC"
-|Postdecrement
+|POST_DEC
+|Performs a postdecrement
 
 |RESET_STACK
 |Resets stack
 			
-|CLEAR_ZERO_POINTERS
-|Clear zero pointers
-
 |TYPEOF
 |Typeof
 
@@ -372,7 +370,7 @@ Here there's a meaning of each byte code
 |====
 
 
-include::chapter_3_the_api_types.adoc[]
+include::chapter_3_the_api_built_in_types.adoc[]
 include::chapter_3_the_api_call_cpp_from_zetscript.adoc[]
 include::chapter_3_the_api_call_zetscript_from_cpp.adoc[]
 include::chapter_3_the_api_expose_cpp_types.adoc[]

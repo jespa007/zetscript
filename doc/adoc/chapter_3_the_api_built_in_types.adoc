@@ -1,11 +1,7 @@
- 
 
+=== Built-in types
 
-
-
-=== Types
-
-The types that interfaces from ZetScript to C++ and viceversa are the following,
+The built-in types that interfaces from ZetScript to C++ and viceversa are the following,
 
 - zs_int
 - zs_float
@@ -18,7 +14,7 @@ The types that interfaces from ZetScript to C++ and viceversa are the following,
 
 ==== zs_int
 
-Integer data type it defines a integer variable with range from _-(2^b-1^)_ to _2^b-1^-1_ where _b=32_ or _b=64_ it depending whether ZetScript is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from `-(2^b-1^)` to `2^b-1^-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -40,7 +36,7 @@ zetscript::zs_float f=20.5;
 
 ==== zs_string
 
-_zs_string_ it defines a string represented a sequence of chars.
+_zs_string_ it defines a string represented a sequence of chars
 
 *Example*
 
@@ -51,7 +47,7 @@ zetscript::zs_string s="Hello World";
 
 ===== Operators
 
-_zs_string_ supports the following operators,
+_zs_string_ has the following operators,
 
 [cols="3m,6a"]
 |====
@@ -75,7 +71,10 @@ _zs_string_ supports the following operators,
 |Performs not equal operation between two zs_strings
 |====
 
+
 ===== Member functions
+
+_zs_string_ has the following member functions,
 
 - *zs_string::at()*:
 - *zs_string::clear()*:
@@ -107,7 +106,7 @@ See <<zetscript::StringScriptObject>> for more information
 
 ==== ArrayScriptObject
 
-_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced
+_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
 
 *Example*
 
@@ -116,12 +115,15 @@ _ArrayScriptObject_ it defines a array script object that acts as a array contai
 zetscript::ArrayScriptObject array=zs.newArrayScriptObject();
 
 // push as integer 10 value
-object->push<zetscript::zs_int>(10)
+object->push<zs_int>(10)
 ----
+
 
 ===== Member functions
 
-- push<_T>(_value): 
+_ArrayScriptObject_ member functions available for user operations are the following,
+
+- *ArrayScriptObject::push()*:
 
 
 ==== ObjectScriptObject
@@ -139,10 +141,12 @@ object->set<zetscript::zs_int>("a",10)
 
 ----
 
-See <<zetscript::ObjectScriptObject>> for more information
+===== Member functions
+
+_ObjectScriptObject_ member functions available for user operations are the following,
+
+- *ObjectScriptObject::set()*:
 
 ==== zetscript::FunctionObject
 
 _FunctionObject_ it defines a function object that contains function information.
-
-

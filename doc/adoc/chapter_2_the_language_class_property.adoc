@@ -30,9 +30,11 @@ __get_ returns the value of the property
 _get()
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 None
+
+<<<
 
 [.underline]#Returns#
 
@@ -63,7 +65,7 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 _set(_value)
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 - __value_ :Value or variable as right operand
 
@@ -77,6 +79,8 @@ None.
 ----
 include::../examples/the_language/class/class_property_metamethod_set.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -93,10 +97,10 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-_set(_value)
+_addset(_value)
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
@@ -128,16 +132,18 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 [source,javascript]
 ----
-_set(_value)
+_subset(_value)
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
 [.underline]#Returns#
 
 None.
+
+<<<
 
 *Example*
 
@@ -161,10 +167,10 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 
 [source,javascript]
 ----
-_set(_value)
+_mulset(_value)
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
@@ -178,6 +184,8 @@ None.
 ----
 include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -194,10 +202,10 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 
 [source,javascript]
 ----
-_set(_value)
+_divset(_value)
 ----
 
-*Parameters
+[.underline]#Parameters#
 
 - __value_ : Value or variable as right operand
 
@@ -237,6 +245,8 @@ _modset(_value)
 [.underline]#Returns#
 
 None.
+
+<<<
 
 *Example*
 
@@ -278,6 +288,8 @@ None.
 include::../examples/the_language/class/class_property_metamethod_andset.zs[]
 ----
 
+<<<
+
 Console output:
 
 [source,text]
@@ -293,7 +305,7 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 
 [source,javascript]
 ----
-_andset(_value)
+_orset(_value)
 ----
 
 [.underline]#Parameters#
@@ -338,6 +350,8 @@ _xorset(_value)
 
 None.
 
+<<<
+
 *Example*
 
 [source,javascript]
@@ -378,6 +392,8 @@ None.
 include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
 ----
 
+<<<
+
 Console output:
 
 [source,text]
@@ -393,7 +409,7 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 
 [source,javascript]
 ----
-_shrset(_value)
+_shlset(_value)
 ----
 
 [.underline]#Parameters#
@@ -437,6 +453,8 @@ None
 [.underline]#Returns#
 
 The value before perform post increment operation.
+
+<<<
 
 *Example*
 
@@ -536,6 +554,8 @@ None
 [.underline]#Returns#
 
 The value before perform pre decrement operation.
+
+<<<
 
 *Example*
 

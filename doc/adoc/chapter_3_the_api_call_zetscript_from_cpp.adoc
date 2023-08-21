@@ -11,8 +11,8 @@ To make a ZetScript function callable from C&#43;&#43; is done through `ZetScrip
 
 [.underline]#Parameters#
 
- - _ReturnType_: It can be void or some type defined in <<ZetScript built-in types>> or other registered type.
- - _ParamTypeX_: It can be one defined in <<ZetScript built-in types>> or other registered type.
+ - _ReturnType_: It can be void or some type defined in xref:chapter_3_the_api_types#_built_in_types[built-in types] or other registered type.
+ - _ParamTypeX_: It can be one defined in xref:chapter_3_the_api_types#_built_in_types[built-in types] or other registered type.
  - __script_function_: `ZetScript::zs_string` or `ScriptFunction *` as the name or the script function reference to be binded.
 
 
@@ -51,7 +51,7 @@ This section will explain how to bind script functions that return the following
 
 ===== Return Boolean
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]_ it must specify *bool* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]_ it must specify _bool_ return type on its function signature.
 
 *Example*
 
@@ -69,7 +69,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_bo
 
 ===== Return Integer
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_integer[Integer]_ it must specify *zs_int* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_integer[Integer]_ it must specify _zs_int_ return type on its function signature.
 
 *Example*
 
@@ -87,7 +87,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_zs
 
 ===== Return Float
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_float[Float]_ it must specify *zs_float* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_float[Float]_ it must specify _zs_float_ return type on its function signature.
 
 
 *Example*
@@ -133,7 +133,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_co
 
 ====== Return String as zs_string
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify *zs_string* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify _zs_string_ return type on its function signature.
 
 *Example*
 
@@ -152,7 +152,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_zs
 
 ====== Return String as StringScriptObject *
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify *StringScriptObject &#42;* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify _StringScriptObject &#42;_ return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -172,7 +172,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_st
 
 ===== Return Array
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_array[Array]_ it must specify *ArrayScriptObject &#42;* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_array[Array]_ it must specify _ArrayScriptObject &#42;_ return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -194,7 +194,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_ar
 
 ===== Return Object
 
-To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_object[Object]_ it must specify *ObjectScriptObject &#42;* return type on its function signature.
+To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_object[Object]_ it must specify _ObjectScriptObject &#42;_ return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -214,7 +214,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_ob
 
 ===== Return instance of class type object
 
-To bind a ZetScript function that returns an _xref:chapter_2_the_language_data_types.adoc#_script_class[instance of class type object]_ it can specify *ObjectScriptObject &#42;* or *ClassScriptObject &#42;* return type on its function signature.
+To bind a ZetScript function that returns an _xref:chapter_2_the_language_data_types.adoc#_script_class[instance of class type object]_ it can specify _ObjectScriptObject &#42;_ or _ClassScriptObject &#42;_ return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
@@ -234,13 +234,13 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_cl
 
 ===== Return instance of registered type object
 
-To bind a ZetScript function that returns an instance of _xref:chapter_3_the_api.adoc#_registerer_type[registered type]_ object it must specify *ClassScriptObject &#42;* return type on its function signature. After returning  *ClassScriptObject &#42;*, it can fetch its C++ registered type by calling `ClassScriptObject::to<_T *>`, where _T is the C&#43;&#43; type.
+To bind a ZetScript function that returns an instance of _xref:chapter_3_the_api.adoc#_registerer_type[registered type]_ object it must specify _ClassScriptObject &#42;_ return type on its function signature. After returning  _ClassScriptObject &#42;_, it can fetch its C++ registered type by calling `ClassScriptObject::to<_T *>`, where _T is the C&#43;&#43; type.
 
 After using the object returned by the function it has to decrease its reference count by calling `ZetScript::unrefLifeTimeObject`.
 
 *Example*
 
-In this example, it registers _Point_ type, its constructor and its properties _x_ and _y_. After evaluate ZetScript code that defines a function that return a new object type _Point_, it is binded to be callable in C++.  When it calls _returnPoint_ in C&#43;&#43;, it returns a variable as type *ClassScriptObject &#42;* object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
+In this example, it registers _Point_ type, its constructor and its properties _x_ and _y_. After evaluate ZetScript code that defines a function that return a new object type _Point_, it is binded to be callable in C++.  When it calls _returnPoint_ in C&#43;&#43;, it returns a variable as type _ClassScriptObject &#42;_ object that it prints its contents. Later it gets the registered class reference and also it prints its contents.
 
 [source,c++]
 ----
@@ -288,7 +288,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_param_boo
 
 ===== Parameter Integer
 
-To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]_ it must specify *zs_int* or *zs_int &#42;* as parameter type on its function signature.
+To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]_ it must specify _zs_int_ or *zs_int &#42;* as parameter type on its function signature.
 
 *Example*
 
@@ -369,7 +369,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_param_zs_
 
 ===== Parameter String as StringScriptObject *
 
-To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[String]_ it can specify *StringScriptObject &#42;* as parameter type on its function signature.
+To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[String]_ it can specify _StringScriptObject &#42;_ as parameter type on its function signature.
 
 *Example*
 
@@ -387,7 +387,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_param_str
 
 ===== Parameter Array
 
-To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Array]_ it must specify or *ArrayScriptObject &#42;* as parameter type on its function signature.
+To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Array]_ it must specify or _ArrayScriptObject &#42;_ as parameter type on its function signature.
 
 *Example*
 
@@ -405,7 +405,7 @@ include::../examples/the_api/bind_script_function/bind_script_function_param_arr
 
 ===== Parameter Object
 
-To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Object]_ it must specify *ObjectScriptObject &#42;* as parameter type on its function signature.
+To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Object]_ it must specify _ObjectScriptObject &#42;_ as parameter type on its function signature.
 
 *Example*
 
