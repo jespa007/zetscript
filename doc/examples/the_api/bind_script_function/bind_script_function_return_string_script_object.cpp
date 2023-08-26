@@ -23,7 +23,7 @@ int main()
   // Prints its value by console.
   printf("result : %s\n",script_object->get().c_str());
 
-  // 'unrefLifetimeObject' it decreases the reference count of thr script object to tell is not used anymore
+  // 'unrefLifetimeObject' it decreases the reference count of the script object to tell is not used anymore
   zs.unrefLifetimeObject(script_object);
 
  	return 0;

@@ -20,7 +20,7 @@ namespace zetscript{
 		 if(STK_VALUE_IS_TYPE(stk_result_op1)){
 			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
 			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
-				ZS_VM_STOP_EXECUTE("'%s' type is not object instanceable",sc_aux1->getTypeName());
+				ZS_VM_STOP_EXECUTE("'%s' type is not instantiable",sc_aux1->getTypeName());
 			}
 
 			 symbol_aux=NULL;

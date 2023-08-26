@@ -1,27 +1,12 @@
 
 ==== Properties
 
-explaing that to register properties you have to use
+the ZetScript API allows to register class properties as we could see in _xref:chapter_2_the_language_class.adoc#_properties[chapter 2 class properties]_.
 
-registerMemberProperty
 
-*Syntax*
+===== Register constant property
 
-[source,javascript]
-----
-class Test{
-
-	// property
-	property{
-			...
-	}
-
-}
-----
-
-===== Register const property functions
-
-Returns the value of the property as constant.
+Returns a constant property.
 
 *Syntax*
 
@@ -52,7 +37,7 @@ zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered through _registerConstMemberProperty_,
+Next, the function _NumberZs_MAX_VALUE_get_ is registered through _ZetScript::registerConstMemberProperty_,
 
 [source,cpp]
 ----
@@ -83,7 +68,7 @@ include::../examples/the_api/register_type/register_constant_member_property_out
 ----
 
 
-===== Register property functions
+===== Register property metamethods
 
 ====== _get()
 
@@ -119,7 +104,7 @@ zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod __get__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_get_ is registered as member metamethod __get__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -183,7 +168,7 @@ void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod _set_ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_set_ is registered as member metamethod _set_ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -246,7 +231,7 @@ void NumberZs_value_addset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __addset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_addset_ is registered as member metamethod __addset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -312,7 +297,7 @@ void NumberZs_value_subset(ZetScript *_zs,Number *_this,zs_float *_value){
 
 ----
 
-Next, the function is registered as member metamethod __subset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_subset_ is registered as member metamethod __subset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -377,7 +362,7 @@ void NumberZs_value_mulset(ZetScript *_zs,Number *_this,zs_float *_value){
 
 ----
 
-Next, the function is registered as member metamethod __mulset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_mulset_ is registered as member metamethod __mulset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -441,7 +426,7 @@ void NumberZs_value_divset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __divset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_divset_ is registered as member metamethod __divset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -505,7 +490,7 @@ void NumberZs_value_modset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __addset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_modset_ is registered as member metamethod __addset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -569,7 +554,7 @@ void NumberZs_value_andset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __andset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_andset_ is registered as member metamethod __andset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -633,7 +618,7 @@ void NumberZs_value_orset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __orset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_orset_ is registered as member metamethod __orset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -698,7 +683,7 @@ void NumberZs_value_xorset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __xorset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_xorset_ is registered as member metamethod __xorset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -764,7 +749,7 @@ void NumberZs_value_shrset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __shrset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_shrset_ is registered as member metamethod __shrset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -827,7 +812,7 @@ void NumberZs_value_shlset(ZetScript *_zs,Number *_this,zs_float *_value){
 }
 ----
 
-Next, the function is registered as member metamethod __shlset__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_shlset_ is registered as member metamethod __shlset__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -890,7 +875,7 @@ zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod __postinc__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_postinc_ is registered as member metamethod __postinc__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -953,7 +938,7 @@ zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
 
 ----
 
-Next, the function is registered as member metamethod __postdec__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_postdec_ is registered as member metamethod __postdec__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -1014,7 +999,7 @@ zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
 }
 ----
 
-Next, the function is registered as member metamethod __preinc__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_preinc_ is registered as member metamethod __preinc__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
@@ -1073,7 +1058,7 @@ zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 }
 ----
 
-Next, the function is registered as member metamethod __predec__ through _registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_predec_ is registered as member metamethod __predec__ through _ZetScript::registerMemberPropertyMetamethod_,
 
 
 [source,cpp]

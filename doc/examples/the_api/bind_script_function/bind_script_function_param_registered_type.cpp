@@ -1,68 +1,59 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_int;
+using zetscript::zs_float;
 
-// Class Point to register
-struct Point{
-	int x,y;
+// C++ class to be registered
+class Number{
+public:
+	float value;
 
-	Point(){
-		x=0;
-		y=0;
+	Number(){
+		value=0;
 	}
 
-   Point(int _x, int _y){
-		x=_x;
-		y=_y;
+	Number(float _value){
+		value=_value;
 	}
 };
 
 //------------------------------
-// Point class functions to register
+// REGISTER FUNCTIONS
 
-// defines getter property Point::x ClassScriptObject
-zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
-	return _this->x;
+// defines getter property for Number::value
+zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+	return _this->value;
 }
 
-// defines getter property Point::y ClassScriptObject
-zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
-	return _this->y;
-}
-
-
-// 
+// REGISTER FUNCTIONS
 //------------------------------
 
 int main()
 {
 	ZetScript zs;
 
-   // Register class Point
-	zs.registerType<Point>("Point");
+   // Register class Number
+	zs.registerType<Number>("Number");
 
-	// register property getter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
+	// register property getter Number::x
+	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// register property getter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
 
-    // Evaluates ZetScript function 'paramPoint' that prints the contents of '_point'
+    // Evaluates ZetScript function 'paramNumber' that prints the contents of '_number'
     zs.eval(
- 		"function paramPoint(_point){\n"
-        "    Console::outln(\"result : \"+_point);\n"
+ 		"function paramNumber(_number){\n"
+        "    Console::outln(\"result : \"+_number);\n"
         "}\n"
  	);
 
     // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto paramPoint=zs.bindScriptFunction<void(Point * _point)>("paramPoint");
+    auto paramNumber=zs.bindScriptFunction<void(Number * _number)>("paramNumber");
 
     // Prepare parameters
-    auto point=Point(10,20);
+    auto number=Number(10);
 
     // Calls binded ZetScript function with parameters
-    paramPoint(&point);
+    paramNumber(&number);
 
 
  	return 0;

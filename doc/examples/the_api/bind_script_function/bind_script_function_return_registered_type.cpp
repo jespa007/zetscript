@@ -4,46 +4,34 @@ using zetscript::ZetScript;
 using zetscript::ClassScriptObject;
 using zetscript::zs_int;
 
-// Class Point to register
-struct Point{
-	int x,y;
-
-	Point(){
-		x=0;
-		y=0;
-	}
-
-   Point(int _x, int _y){
-		x=_x;
-		y=_y;
+// Class Number to register
+class Number{
+public:
+	float value;
+	Number(){
+		value=0;
 	}
 };
 
 //------------------------------
-// Point class functions to register
+// Number class functions to register
 
-// defines new function Point ClassScriptObject
-Point *PointZs_new(ZetScript *_zs){
-	return new  Point();
+// defines new function Number ClassScriptObject
+Number *NumberZs_new(ZetScript *_zs){
+	return new  Number();
 }
 
-void PointZs_constructor(ZetScript *_zs, Point *_this, zs_int _x, zs_int _y){
-	_this->x=_x;
-	_this->y=_y;
+void NumberZs_constructor(ZetScript *_zs, Number *_this, zs_int _value){
+	_this->value=_value;
 }
 
-// defines getter property Point::x ClassScriptObject
-zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
-	return _this->x;
+// defines getter property Number::x ClassScriptObject
+zs_int NumberZs_get_value(ZetScript *_zs, Number *_this){
+	return _this->value;
 }
 
-// defines getter property Point::y ClassScriptObject
-zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
-	return _this->y;
-}
-
-// defines delete function Point ClassScriptObject
-void PointZs_delete(ZetScript *_zs, Point *_this){
+// defines delete function Number ClassScriptObject
+void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
@@ -55,43 +43,40 @@ int main()
 {
 	ZetScript zs;
 
-   // Register class 'Point' as instantiable
-	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
+   // Register class 'Number' as instantiable
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register constructor
-	zs.registerConstructor<Point>(PointZs_constructor);
+	zs.registerConstructor<Number>(NumberZs_constructor);
 
-	// register property getter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
+	// register property getter Number::value
+	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// register property getter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
-
-	// Evaluates function 'returnPoint' that returns an instance of registered type 'Point'
+	// Evaluates function 'newNumber' that returns an instance of registered type 'Number'
 	zs.eval(
-		"// 'returnPoint' instances 'Point' type\n"
-		"function returnPoint(){\n"
-		"   return new Point(10,20);\n"
+		"// 'newNumber' instances a new 'Number' type\n"
+		"function newNumber(){\n"
+		"   return new Number(10);\n"
 		"}\n"
 	);
 
-	// It binds 'returnPoint' as '(ClassScriptObject *)(void)'
-	auto returnPoint=zs.bindScriptFunction<ClassScriptObject *()>("returnPoint");
+	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
+	auto newNumber=zs.bindScriptFunction<ClassScriptObject *()>("newNumber");
 
 	// Calls ZetScript function which it returns 'ClassScriptObject *' reference
-	auto class_script_object_point=returnPoint();
+	auto class_script_object_number=newNumber();
 
 	// Prints the contents by console.
-	printf("From zetscript object : %s\n",class_script_object_point->toString().c_str());
+	printf("From zetscript object : %s\n",class_script_object_number->toString().c_str());
 
-	// Cast C++ 'Point' type pointer
-	auto point=class_script_object_point->to<Point *>();
+	// Cast C++ 'Number' type pointer
+	auto number=class_script_object_number->to<Number *>();
 
-	// Prints Point's properties by console.
-	printf("From C++ pointer type : point->x=%i point->y=%i\n",point->x,point->y);
+	// Prints Number's properties by console.
+	printf("From C++ pointer type : number->value=%f\n",number->value);
 
 	// 'unrefLifetimeObject' it decreases the reference count of script object to tell is not used anymore
-	zs.unrefLifetimeObject(class_script_object_point);
+	zs.unrefLifetimeObject(class_script_object_number);
 
  	return 0;
 }

@@ -4,11 +4,11 @@
 
 == The API
 
-=== Eval
+=== Evaluation
 
 ZetScript can evaluate scripts from string or from file
 
-==== Eval from string
+==== Evaluation from string
 
 [source,c++]
 ----
@@ -23,7 +23,7 @@ include::../examples/the_api/eval/eval_string_out.txt[]
 ----
 
 
-==== Eval from file
+==== Evaluation from file
 
 Having the following script file called `file.zs` with the following content,
 [source,javascript]
@@ -48,7 +48,7 @@ include::../examples/the_api/eval/eval_file_out.txt[]
 ----
 
 
-==== Eval options
+==== Evaluation options
 
 ===== EVAL_OPTION_NO_EXECUTE
 
