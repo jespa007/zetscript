@@ -1,11 +1,9 @@
 
 === Call C++ from ZetScript
 
-To call &#43;&#43; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and &#43;&#43;. 
+To call C&#43;&#43; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and C&#43;&#43;code. 
 
-As parameters, the function must always include `zetscript::ZetScript *` as the first parameter and a maximum of 9 parameters as xref:chapter_3_the_api_types#_built_in_types[built-in type] or other registered type. 
-
-As a return, the function it can return nothing, or a xref:chapter_3_the_api_types#_built_in_types[built-in type] or other registered type.
+The function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Syntax*
 
@@ -18,23 +16,27 @@ ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType _arg1, ParamType _arg
 
 Where,
 
-- _ReturnType_: It can be _void_ or some type defined in xref:chapter_3_the_api_types#_built_in_types[built-in types] or other registered type.
-- _ParamType_: It can be one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or other registered type.
+- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+- _ParamType_: It can be a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
-After the function is created it has be registered with ZetScript::registerFunction in order to be exposed in ZetScript. As a parameters, it passes a string value that will be the symbol name to be refered later in ZetScript and the C function reference.
+After the C function is created is registered with _ZetScript::registerFunction_. 
 
 *Syntax*
 
 [source,c++]
 ----
-template <typename F>
-void registerFunction( const zs_string & _name_script_function,F _ptr_function);
+void registerFunction( const zs_string & _function_name,F _c_function);
 ----
+
+[.underline]#Parameters#
+
+- __function_name_ : The function name to be refered in ZetScript.
+- __c_function_ : The C function to register.
 
 *Example*
 
-The following example registers a C function and calls it within an evaluated script.
+The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
 
 [source,c++]
 ----
@@ -51,7 +53,7 @@ include::../examples/the_api/register_function/register_function_out.txt[]
 
 ==== Return types
 
-This section will explain how to register C functions that return the following types,
+This section will explain how to register C functions that return the following ZetScript types,
 
 - Boolean
 - Integer
@@ -63,7 +65,7 @@ This section will explain how to register C functions that return the following 
 
 ===== Return Boolean
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types#_boolean[Boolean]_ it must specify _bool_ return type on its function prototype.
+To register a C function that returns a _xref:chapter_2_the_language_data_types#_boolean[Boolean]_ it must specify _bool_ return type.
 
 *Example*
 
@@ -82,7 +84,7 @@ include::../examples/the_api/register_function/register_function_return_bool_out
 
 ===== Return Integer
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#_boolean[Integer]_ it must specify _zs_int_ return type on its function prototype.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#_integer[Integer]_ it must specify _zs_int_ return type.
 
 *Example*
 
@@ -100,7 +102,7 @@ include::../examples/the_api/register_function/register_function_return_zs_int_o
 
 ===== Return Float
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#_boolean[Float]_ it must specify _zs_float_ return type on its function prototype.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#_float[Float]_ it must specify _zs_float_ return type.
 
 *Example*
 
@@ -118,7 +120,7 @@ include::../examples/the_api/register_function/register_function_return_zs_float
 
 ===== Return a String
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#&lowbar;string[String]_ it can be done by specifying the following return types in its prototype,
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#&lowbar;string[String]_ it can be done by specifying the following return types,
 
 - _zs_string_
 - _StringScriptObject *_
@@ -126,7 +128,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 ====== Return String as zs_string
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify _zs_string_ return type on its function prototype.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify _zs_string_ return type.
 
 *Example*
 
@@ -144,7 +146,7 @@ include::../examples/the_api/register_function/register_function_return_zs_strin
 
 ====== Return String as StringScriptObject &#42;
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify _StringScriptObject &#42;_ return type on its function prototype. The instantiation of _StringScriptObject &#42;_ it&#39;s done throught _ZetScript::newStringScriptObject_ using ZetScript context.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify _StringScriptObject &#42;_ return type. The instantiation of _StringScriptObject &#42;_ it&#39;s done throught _ZetScript::newStringScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -162,7 +164,7 @@ include::../examples/the_api/register_function/register_function_return_string_s
 
 ===== Return Array
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ return type on its function prototype. The instantiation of _ArrayScriptObject &#42;_ it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -180,7 +182,7 @@ include::../examples/the_api/register_function/register_function_return_array_sc
 
 ===== Return Object
 
-To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]_ it must specify _ObjectScriptObject &#42;_ return type on its function prototype. The instantiation of _ObjectScriptObject &#42;_ it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
+To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]_ it must specify _ObjectScriptObject &#42;_ return type. The instantiation of _ObjectScriptObject &#42;_ it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -200,21 +202,25 @@ include::../examples/the_api/register_function/register_function_return_object_s
 ===== Return registered type
 
 
-To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it can be done by specifying the following return types in its prototype,
+To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it can be done by specifying the following return types,
 
-- Its native pointer type
-- ClassScriptObject
+- Return registered type by its reference
+- Return registered type by ClassScriptObject 
 
  
-===== Return registered class as its native pointer type
+===== Return registered type by its reference
 
-To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it can specify its native pointer type as return in the function prototype.
+To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it must specify its native pointer type as return.
 
-ZetScript *never* destroy native pointers returned from C function. This is why it cannot allocate and return a type from the function itself because this would become a memory leak . Instead, the pointer should be take from a location that is active during the execution of the script that involves the operation of the returned pointer.
+====
+ZetScript *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of ZetScript and accessible from a location where its lifetime is active during the execution of the script.
+====
+
+Because the function it returns a native reference the type can be registered as instantiable or not instantiable (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_as_instantiable[section 3.5.1])
 
 *Example*
 
-In the following example it registers type _Point_ and its properties _x_ and _y_ and it registers native function _returnPoint_ that returns a _Point_ a type pointer. In the main program it creates a _Point_ type and that is acceded globally, so the registered native function can access and return this instanced _Point_ type.
+In the following example it registers a type _Number_ as non instantiable (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_as_non_instantiable[section 3.5.1] to know how to register a type as NON INSTANTIABLE) and its property _value_ (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;properties[section 3.5.5] to know how to register a property). Finally, it registers C function _returnNumber_ that returns a _Number *_. In the main program instantiates _Number_ object and is acceded globally, so is active during the execution of the script.
 
 
 [source,c++]
@@ -229,17 +235,19 @@ Console output:
 include::../examples/the_api/register_function/register_function_return_registered_type_out.txt[]
 ----
 
-===== Return registered class as ClassScriptObject
+===== Return registered type by ClassScriptObject &#42;
 
-To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it can specify _ClassScriptObject &#42;_ return type on its function prototype. To instantiate _ClassScriptObject &#42;_  is done through _<<ZetScript::newClassScriptObject>>_ using ZetScript context and the registered class instantiated.
+To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types#_register_type[registered type]_ it must specify _ClassScriptObject &#42;_ return type. To instantiate _ClassScriptObject &#42;_  is done through _ZetScript::newClassScriptObject_ using ZetScript context and the registered class instantiated.
 
-A difference from returning a pointer type of a registered class, when the C function returns a _ClassScriptObject &#42;_ object ZetScript is in charge to deallocate automatically when there's no more references. 
+A difference from returning a pointer type of a registered type, when the C function returns a _ClassScriptObject &#42;_ ZetScript is in charge to deallocate automatically when it has no more references to it. 
 
-To be have the class wrappable inside _ClassScriptObject &#42;_, it must be registered as instancialbe (see <<Register class as instanciable>>)
+====
+To be have the class wrappable inside _ClassScriptObject &#42;_, it must be registered as instancialbe (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_an_instantiable[section 3.5.1] to know how to register a type AS INSTANTIABLE])
+====
 
 *Example*
 
-In the following example it registers a native type _Point_ and its properties _x_ and _y_ and it registers native function _returnPoint_ that instances and returns a _ClassScriptObject_ as _Point_ type. 
+In the following example it registers type _Number_ as instantiable (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_as_instantiable[section 3.5.1] to know how to register a type AS INSTANTIABLE) and its property _value_. Finally, it registers C function _returnNumber_ that instances and returns a _ClassScriptObject_ as _Number_ type. 
 
 [source,c++]
 ----
@@ -269,7 +277,7 @@ This section will explain how to register C functions that accepts the following
 
 ===== Parameter Boolean
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]_ it must specify _bool_ as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[Boolean]_ it must specify _bool_ as parameter type.
 
 *Example*
 
@@ -287,7 +295,7 @@ include::../examples/the_api/register_function/register_function_param_bool_out.
 
 ===== Parameter Integer
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;integer[Integer]_ it must specify _zs_int_ as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;integer[Integer]_ it must specify _zs_int_ as parameter type.
 
 *Example*
 
@@ -305,7 +313,7 @@ include::../examples/the_api/register_function/register_function_param_zs_int_ou
 
 ===== Parameter Float
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;float[Float]_ it must specify _zs_float_ as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;float[Float]_ it must specify _zs_float_ as parameter type.
 
 *Example*
 
@@ -323,33 +331,7 @@ include::../examples/the_api/register_function/register_function_param_zs_float_
 
 ===== Parameter String
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#_boolean[String]_ it can specify the following types as a parameter on its function prototype,
-
-- const char *
-- zs_string *
-- StringScriptObject *
-
-===== Parameter String as const char *
-
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify *const char &#42;* as parameter type on its function prototype.
-
-*Example*
-
-[source,c++]
-----
-include::../examples/the_api/register_function/register_function_param_const_char.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/the_api/register_function/register_function_param_const_char_out.txt[]
-----
-
-===== Parameter String as zs_string *
-
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify *zs_string &#42;* as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify _const char *_ , _zs_string *_  or _StringScriptObject *_ as a parameter type,
 
 *Example*
 
@@ -365,27 +347,9 @@ Console output:
 include::../examples/the_api/register_function/register_function_param_zs_string_out.txt[]
 ----
 
-===== Parameter String as StringScriptObject *
-
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;string[String]_ it can specify _StringScriptObject &#42;_ as parameter type on its function prototype.
-
-*Example*
-
-[source,c++]
-----
-include::../examples/the_api/register_function/register_function_param_string_script_object.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/the_api/register_function/register_function_param_string_script_object_out.txt[]
-----
-
 ===== Parameter Array
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ as parameter type.
 
 *Example*
 
@@ -403,7 +367,7 @@ include::../examples/the_api/register_function/register_function_param_array_scr
 
 ===== Parameter Object
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]_ it must specify _ObjectScriptObject &#42;_ as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;object[Object]_ it must specify _ObjectScriptObject &#42;_ as parameter type.
 
 *Example*
 
@@ -421,9 +385,11 @@ include::../examples/the_api/register_function/register_function_param_object_sc
 
 ===== Parameter Function
 
-To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]_ it must specify *ScriptFunction &#42;* as parameter type on its function prototype. To make  _ScriptFunction_ callable from C++ it must to bind that using <<bindScriptFunction>>.
+To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]_ it must specify _ScriptFunction &#42;_ as parameter type. To make  _ScriptFunction_ callable from C++ must use _ZetScript::bindScriptFunction_ (see xref:_chapter_3_the_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ZetScript functions binding)
 
 *Example*
+
+The following example it registers function _paramScriptFunction_ that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]_ as parameter. Later, it evaluates an script that calls _paramScriptFunction_ passing anonymous function. In the calling function _paramScriptFunction_ it binds the anonymous function and it calls.
 
 [source,c++]
 ----
@@ -439,11 +405,11 @@ include::../examples/the_api/register_function/register_function_param_script_fu
 
 ===== Parameter Registered Type
 
-To register a C function that accepts a <<Registered type>> as a parameter, it must specify the *Registered type pointer* as parameter type on its function prototype.
+To register a C function that accepts a _xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_type[registered type]_ as a parameter, it must specify native pointer type as parameter type.
 
 *Example*
 
-In the following example it registers the Point type and its properties _x_ and _y_  (see <<Register type>> section to know about how to register class and properties) and it registers function _mul10Point_ that accepts a Point type pointer as parameter. In the script execution it instances a Point type and is passed as argument to _mul10Point_ that multiply its properties by 10.
+In the following example it registers the _Number_ type (see xref:chapter_3_the_api_expose_cpp_types#_register_type[section 3.5.1] to know how to register a type) and its property _value_ (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;properties[section 3.5.5] to know how to register a property) and it registers function _mul10Number_ that accepts a _Number &#x2a;_ type as parameter. In the script execution it instances a _Number_ and it is passed as argument to _mul10Number_ that multiplies its property _value_ by 10.
 
 [source,c++]
 ----

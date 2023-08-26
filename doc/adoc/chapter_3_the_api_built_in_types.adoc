@@ -6,15 +6,15 @@ The built-in types that interfaces from ZetScript to C++ and viceversa are the f
 - zs_int
 - zs_float
 - zs_string
-- StringStringObject
-- ArrayStringObject
-- ObjectStringObject
+- StringScriptObject
+- ArrayScriptObject
+- ObjectScriptObject
+- ClassScriptObject
 - ScriptFunction
-- ClassStringObject
 
 ==== zs_int
 
-Integer data type it defines a integer variable with range from `-(2^b-1^)` to `2^b-1^-1` where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from -(2^b-1^)` to `2^b-1^-1 where `b=32` or `b=64` it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -45,108 +45,74 @@ _zs_string_ it defines a string represented a sequence of chars
 zetscript::zs_string s="Hello World";
 ----
 
-===== Operators
-
-_zs_string_ has the following operators,
-
-[cols="3m,6a"]
-|====
-|Operator |Description
-|=
-|Assigment
-
-|+=
-|Concatenates and assings to string
-
-|[]
-|Access to element
-
-|+
-|Concatenates two zs_strings
-
-|==
-|Performs equals operation between two zs_strings
-
-|!=
-|Performs not equal operation between two zs_strings
-|====
-
-
 ===== Member functions
 
 _zs_string_ has the following member functions,
 
-- *zs_string::at()*:
-- *zs_string::clear()*:
-- *zs_string::substr()*:
-- *zs_string::find()*:
-- *zs_string::find_last_of()*:
-- *zs_string::replace()*:
-- *zs_string::append()*:
-- *zs_string::erase()*:
-- *zs_string::insert()*:
-- *zs_string::empty()*:
-- *zs_string::length()*:
-- *zs_string::c_str()*:
+- *zs_string::operator=(&#x5f;string)*:Assigns a new value to the string, replacing its current contents.
+- *zs_string::operator+=(&#x5f;string)*: Appends __string_ at the end of current contents.
+- *zs_string::operator[](&#x5f;pos)*: Returns a reference to the character at position __pos_.
+- *zs_string::at(_pos)*: Returns a reference to the character at position __pos_.
+- *zs_string::clear()*: Erases the contents of the string.
+- *zs_string::substr(&#x5f;pos,&#x5f;len)*: Returns a new string with its value initialized to a copy of a substring of this object. The substring is the portion of the object that starts at character position __pos_ and spans _&#x5f;len_ characters.
+- *zs_string::find(&#x5f;string,&#x5f;pos)*: Searches the string for the first occurrence of the sequence specified by its arguments. When _&#x5f;pos_ is specified, the search only includes characters at or after position _&#x5f;pos_, ignoring any possible occurrences that include characters before _&#x5f;pos_.
+- *zs_string::find_last_of(&#x5f;string,&#x5f;pos)*: Searches the string for the last character that matches any of the characters specified in its arguments. When _&#x5f;pos_ is specified, the search only includes characters at or before position _&#x5f;pos_, ignoring any possible occurrences after _&#x5f;pos_.
+- *zs_string::replace(&#x5f;pos,&#x5f;len,&#x5f;string_to_replace)*: Replaces the portion of the string that begins at character _&#x5f;pos_ and spans _&#x5f;len_ characters.
+- *zs_string::append(&#x5f;string)*: Appends __string_ at the end of current contents.
+- *zs_string::erase(&#x5f;pos,&#x5f;len)*: Erases part of the string, reducing its length.
+- *zs_string::insert()*: Inserts additional characters into the string right before the character indicated by _&#x5f;pos_.
+- *zs_string::empty()*: Returns whether the string is empty.
+- *zs_string::length()*: Returns the length of the string, in terms of bytes.
+- *zs_string::c_str()*: Returns a pointer to an array that contains a null-terminated sequence of characters (i.e., a C-string) representing the current value of the string object.
+
+===== Static functions
+
+_zs_string_ has the following static functions,
+
+- *zs_string::operator+(&#x5f;string,&#x5f;string)*: Returns a new string object with its value being the concatenation of the characters in left operand followed by those of right operand.
+- *zs_string::operator==(&#x5f;string,&#x5f;string)*: Performs the EQUAL comparison operation between the left operand and right operand.
+- *zs_string::operator!=(&#x5f;string,&#x5f;string)*: Performs the NOT EQUAL comparison operation between the left operand and right operand.
 
 
 ==== StringScriptObject
 
 _StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced
 
-*Example*
-
-[source,c++]
-----
-zetscript::StringScriptObject str=zs.newStringScriptObject();
-str.set("Hello World");
-----
-
-See <<zetscript::StringScriptObject>> for more information
-
-==== ArrayScriptObject
-
-_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
-
-*Example*
-
-[source,c++]
-----
-zetscript::ArrayScriptObject array=zs.newArrayScriptObject();
-
-// push as integer 10 value
-object->push<zs_int>(10)
-----
-
 
 ===== Member functions
 
 _ArrayScriptObject_ member functions available for user operations are the following,
 
-- *ArrayScriptObject::push()*:
+- *StringScriptObject::set(&#x5f;string)*: Replaces current string value.
 
+==== ArrayScriptObject
+
+_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
+
+===== Member functions
+
+_ArrayScriptObject_ member functions available for user operations are the following,
+
+- *ArrayScriptObject::push<_T>(&#x5f;value)*: Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
+- *ArrayScriptObject::set<_T>(&#x5f;pos, &#x5f;value)*: Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_.
+- *ArrayScriptObject::get<_T>(&#x5f;pos)*: Returns a reference element of type _&#x5f;T_ at position __pos_.
 
 ==== ObjectScriptObject
 
-_ObjectScriptObject_ it defines a object script object that acts as a container of fields. It uses zetscript context in order to be instanced
+_ObjectScriptObject_ it defines a object script object that acts as a container of fields. It uses zetscript context in order to be instanced.
 
-*Example*
-
-[source,c++]
-----
-zetscript::ObjectScriptObject *object=zs.newObjectScriptObject();
-
-// add field "a" and 10 int as value
-object->set<zetscript::zs_int>("a",10)
-
-----
 
 ===== Member functions
 
 _ObjectScriptObject_ member functions available for user operations are the following,
 
-- *ObjectScriptObject::set()*:
+- *ObjectScriptObject::set<_T>(&#x5f;key,&#x5f;value)*: Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
+- *ObjectScriptObject::get<_T>(&#x5f;key)*: Returns element of type _&#x5f;T_ from key __key_.
 
-==== zetscript::FunctionObject
+==== ClassScriptObject
 
-_FunctionObject_ it defines a function object that contains function information.
+_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+
+==== ScriptFunction
+
+_ScriptFunction_ it defines a function object that contains function information. 

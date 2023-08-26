@@ -1,81 +1,61 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_int;
+using zetscript::zs_float;
 
-// A native type 'Point' to register
-class Point{
+// C++ class to be registered
+class Number{
 public:
-	int x,y;
+	float value;
 
-	Point(){
-		x=0;
-		y=0;
+	Number(){
+		value=0;
 	}
 };
 
-Point *_point=NULL;
-
 //------------------------------
-// WRAP POINT
+// REGISTER FUNCTIONS
 
-// defines new function Point ClassScriptObject
-Point *PointZs_new(ZetScript *_zs){
-	return new  Point();
+// defines getter property for Number::value
+zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+	return _this->value;
 }
 
-// defines getter property Point::x ClassScriptObject
-zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
-	return _this->x;
-}
-
-// defines getter property Point::y ClassScriptObject
-zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
-	return _this->y;
-}
-
-// defines delete function Point ClassScriptObject
-void PointZs_delete(ZetScript *_zs, Point *_this){
-	delete _this;
-}
-
-// WRAP POINT
+// REGISTER FUNCTIONS
 //------------------------------
 
-// C function that returns a Point type pointer
-Point *returnPoint(ZetScript *_zs){
+Number *_number=NULL;
 
-	// return global _point
-    return _point;
+// C function that returns a Number type pointer
+Number *returnNumber(ZetScript *_zs){
+
+	// return global _number
+    return _number;
 }
 
 int main(){
 	ZetScript zs;
 
-	// Creates point and init its fields x,y
-	_point=new Point();
-	_point->x=10;
-	_point->y=10;
+	// Creates number and init its field value
+	_number=new Number();
+	_number->value=10;
 
-	// registers class Point
-	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
+	// Registers class Number as non instantiable type
+	zs.registerType<Number>("Number");
 
-	// registers property getter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
+	// registers property getter Number::value
+	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// registers property getter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
-
-	// registers C function that returns a Point type pointer
-    zs.registerFunction("returnPoint",returnPoint);
+	// registers C function that returns a Number type pointer
+    zs.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
     zs.eval(
-        "Console::outln(\"result : \"+returnPoint());"
+        "Console::outln(\"result : \"+returnNumber());"
  	);
 
-	// deletes _point
-	delete _point;
+	// deletes _number
+	delete _number;
 
     return 0;
 }

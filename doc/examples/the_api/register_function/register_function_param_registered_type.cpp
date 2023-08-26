@@ -1,92 +1,74 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_int;
+using zetscript::zs_float;
 
-// C structure to be registered
-struct Point{
-	int x,y;
+// C++ class to be registered
+class Number{
+public:
+	float value;
 
-	Point(){
-		x=0;
-		y=0;
+	Number(){
+		value=0;
 	}
 };
 
 //------------------------------
-// WRAP POINT
+// WRAP NUMBER
 
-// defines new function for Point object
-Point *PointZs_new(ZetScript *_zs){
-	return new  Point();
+// defines new function for Number object
+Number *NumberZs_new(ZetScript *_zs){
+	return new  Number();
 }
 
-// defines setter property for Point::x
-void PointZs_set_x(ZetScript *_zs, Point *_this, zs_int _x){
-	_this->x=_x;
+// defines setter property for Number::x
+void NumberZs_set_value(ZetScript *_zs, Number *_this, zs_float _value){
+	_this->value=_value;
 }
 
-// defines setter property for Point::y
-void PointZs_set_y(ZetScript *_zs, Point *_this, zs_int _y){
-	_this->y=_y;
+// defines getter property for Number::x
+zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+	return _this->value;
 }
 
-// defines getter property for Point::x
-zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
-	return _this->x;
-}
-
-// defines getter property for Point::y
-zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
-	return _this->y;
-}
-
-// defines delete function for Point object
-void PointZs_delete(ZetScript *_zs, Point *_this){
+// defines delete function for Number object
+void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
-// WRAP POINT
+// WRAP NUMBER
 //------------------------------
 
-// C function the accepts native Point
-void mul10Point(ZetScript *_zs, Point *_point){
+// C function the accepts native Number
+void mul10Number(ZetScript *_zs, Number *_number){
 	// initialize x and y
-	_point->x*=10;
-	_point->y*=10;
+	_number->value*=10;
 
 }
 
 int main(){
 	ZetScript zs;
 
-	// Register class Point
-	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
+	// Register class Number
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 
-	// Register property setter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_set",PointZs_set_x);
+	// Register property setter Number::x
+	zs.registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_set_value);
 
-	// Register property setter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_set",PointZs_set_y);    
+	// Register property getter Number::x
+	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// Register property getter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
+	// Register native function mulNumber named as 'mulNumber'
+    zs.registerFunction("mul10Number",mul10Number);
 
-	// Register property getter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
-
-	// Register native function mulPoint named as 'mulPoint'
-    zs.registerFunction("mul10Point",mul10Point);
-
-    // Eval script that calls native function 'mulPoint'
+    // Eval script that calls native function 'mulNumber'
     zs.eval(
-        "var point=new Point();\n"
-        "point.x=10;\n"
-        "point.y=20;\n"
-        "Console::outln(\"before : \"+point);\n"
-        "mul10Point(point)\n"
-        "Console::outln(\"after : \"+point);"
+        "var number=new Number();\n"
+        "number.value=10;\n"
+        "Console::outln(\"before : \"+number);\n"
+        "mul10Number(number)\n"
+        "Console::outln(\"after call 'mul10Number': \"+number);"
  	);
 
     return 0;

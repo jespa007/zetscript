@@ -28,14 +28,15 @@ namespace zetscript{
 
 		ArrayScriptObject(ZetScript *_zs);
 
-		virtual	StackElement * 				setStackElement(int _idx, StackElement *_value);
-		virtual StackElement * 				getStackElement(int idx);
-
 		template<typename _T>
 		void 								set(int _idx, _T _value);
 
 		template<typename _T>
 		_T 									get(int _idx);
+
+		virtual	StackElement * 				setStackElement(int _idx, StackElement *_value);
+		virtual StackElement * 				getStackElement(int idx);
+
 		bool 								eraseElementAt(int idx);
 		void								eraseAllElements();
 

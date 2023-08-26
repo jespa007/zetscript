@@ -1,60 +1,54 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
+using zetscript::zs_float;
 using zetscript::ClassScriptObject;
-using zetscript::zs_int;
 
-// C structure to register
-struct Point{
-	int x,y;
+// C++ class to be registered
+class Number{
+public:
+	float value;
 
-	Point(){
-		x=0;
-		y=0;
+	Number(){
+		value=0;
 	}
 };
 
 //------------------------------
-// Point class functions to register
+// WRAP NUMBER
 
-// defines new function Point ClassScriptObject
-Point *PointZs_new(ZetScript *_zs){
-	return new  Point();
+// defines new function for Number object
+Number *NumberZs_new(ZetScript *_zs){
+	return new  Number();
 }
 
-// defines getter property Point::x ClassScriptObject
-zs_int PointZs_get_x(ZetScript *_zs, Point *_this){
-	return _this->x;
+// defines getter property for Number::x
+zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+	return _this->value;
 }
 
-// defines getter property Point::y ClassScriptObject
-zs_int PointZs_get_y(ZetScript *_zs, Point *_this){
-	return _this->y;
-}
-
-// defines delete function Point ClassScriptObject
-void PointZs_delete(ZetScript *_zs, Point *_this){
+// defines delete function for Number object
+void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
-// 
+// WRAP NUMBER
 //------------------------------
 
 // C function that returns classScriptObject
-ClassScriptObject *returnPoint(ZetScript *_zs){
+ClassScriptObject *returnNumber(ZetScript *_zs){
 
-	// define class script object
+	// Define script class object
 	ClassScriptObject *class_script_object=NULL;
 
-	// instance point
-	Point *point=new Point();
+	// Instances number
+	Number *number=new Number();
 
-	// initialize x and y
-	point->x=10;
-	point->y=10;
+	// initializes value
+	number->value=10;
 
-	// instance new ClassScriptObject using ZetScript context and passing point instance
-	class_script_object=_zs->newClassScriptObject(point);
+	// instance new ClassScriptObject using ZetScript context and number instance
+	class_script_object=_zs->newClassScriptObject(number);
 
 	// return class script object
     return class_script_object;
@@ -63,21 +57,18 @@ ClassScriptObject *returnPoint(ZetScript *_zs){
 int main(){
 	ZetScript zs;
 
-	// Register class Point as instanciable
-	zs.registerType<Point>("Point",PointZs_new,PointZs_delete);
+	// Register class Number as instanciable
+	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
-	// register property getter Point::x
-	zs.registerMemberPropertyMetamethod<Point>("x","_get",PointZs_get_x);
+	// register property getter Number::value
+	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// register property getter Point::y
-	zs.registerMemberPropertyMetamethod<Point>("y","_get",PointZs_get_y);
-
-	// register C function that returns Point ScriptClassObject
-    zs.registerFunction("returnPoint",returnPoint);
+	// register C function that returns Number ClassScriptObject
+    zs.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
     zs.eval(
-        "Console::outln(\"result : \"+returnPoint());"
+        "Console::outln(\"result : \"+returnNumber());"
  	);
 
     return 0;

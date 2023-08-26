@@ -573,7 +573,7 @@ zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
 // get
 zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	return _this->value;
+	return FLT_MAX;
 }
 // CONST MEMBER PROPERTY
 //------------------------------------------------------------------------------------------

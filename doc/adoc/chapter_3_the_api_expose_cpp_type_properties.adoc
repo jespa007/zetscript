@@ -19,6 +19,70 @@ class Test{
 }
 ----
 
+===== Register const property functions
+
+Returns the value of the property as constant.
+
+*Syntax*
+
+[source,javascript]
+----
+ReturnType RegisteredTypeProperty_get(ZetScript *_zs, RegisteredType *_this)
+----
+
+[.underline]#Parameters#
+
+- __zs_ : ZetScript context.
+- __this_ : The current instance.
+
+[.underline]#Returns#
+
+Returns the value of the property
+
+*Example*
+
+The following code defines a function that returns the _value_ contents of current instance,
+
+[source,cpp]
+----
+
+zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
+	return FLT_MAX;
+}
+
+----
+
+Next, the function is registered through _registerConstMemberProperty_,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ZetScript *_zs){
+
+	//...
+
+	_zs->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_get);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that returns _Number::MAX_VALUE_ property,
+
+[source,javascript]
+----
+include::../examples/the_api/register_type/register_constant_member_property.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/the_api/register_type/register_constant_member_property_out.txt[]
+----
+
+
 ===== Register property functions
 
 ====== _get()
@@ -100,7 +164,7 @@ void RegisteredTypeProperty_set(ZetScript *_zs, RegisteredType *_this, ParamType
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -164,7 +228,7 @@ void RegisteredTypeProperty_addset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -228,7 +292,7 @@ void RegisteredTypeProperty_subset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -293,7 +357,7 @@ void RegisteredTypeProperty_mulset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -357,7 +421,7 @@ void RegisteredTypeProperty_divset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -422,7 +486,7 @@ void RegisteredTypeProperty_modset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -485,7 +549,7 @@ void RegisteredTypeProperty_andset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -549,7 +613,7 @@ void RegisteredTypeProperty_orset(ZetScript *_zs, RegisteredType *_this, ParamTy
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -614,7 +678,7 @@ void RegisteredTypeProperty_xorset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -680,7 +744,7 @@ void RegisteredTypeProperty_shrset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -744,7 +808,7 @@ void RegisteredTypeProperty_shlset(ZetScript *_zs, RegisteredType *_this, ParamT
 
 - __zs_ : ZetScript context
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_types#_built_in_types[built-in types] or a pointer of other registered type.
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:chapter_3_the_api_built_in_types#_built_in_types[built-in types] or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -811,7 +875,7 @@ ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Example*
 
@@ -874,7 +938,7 @@ ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Example*
 
@@ -937,7 +1001,7 @@ ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Example*
 
@@ -994,7 +1058,7 @@ ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other registered type.
+Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Example*
 
