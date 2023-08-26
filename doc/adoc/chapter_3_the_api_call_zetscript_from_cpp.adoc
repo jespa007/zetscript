@@ -199,6 +199,8 @@ To bind a ZetScript function that returns an instance of _xref:chapter_2_the_lan
 
 After using the object returned by the function it has to decrease its reference count by calling _ZetScript::unrefLifeTimeObject_.
 
+<<<
+
 *Example*
 
 [source,c++]
@@ -234,6 +236,8 @@ Console output:
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_registered_type_out.txt[]
 ----
+
+<<<
 
 ==== Parameter types
 
@@ -310,6 +314,8 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
  - const char *
  - zs_string *
  - StringScriptObject *
+
+<<<
 
 ===== Parameter String as const char *
 

@@ -6,4 +6,6 @@ int main(){
 	zs.eval(
 		"Console::outln(\"Hello world\")"
 	);
+
+	return 0;
 }

@@ -2,6 +2,8 @@
 
 In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
 
+<<<
+
 ==== Register a type
 
 There's two ways to register a type,
@@ -106,6 +108,9 @@ ScriptType * registerType<_Type>(const zs_string & _class_name, RegisteredType *
 [.underline]#Parameters# 
 
 - __class_name_: The class name.
+
+<<<
+
 - __new_native_instance_: A C function that creates an returns a new instance. This function has the following signature,
 
 [source,cpp]
@@ -176,6 +181,8 @@ void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType
 	....
 }
 ----
+
+<<<
 
 Where,
 
@@ -313,15 +320,9 @@ The following code defines a function that returns a _xref:chapter_2_the_languag
 
 [source,cpp]
 ----
-
-//...
-
 zs_int NumberZs_toInteger(ZetScript *_zs,Number *_this){
 	return _this->value;
 }
-
-//...
-
 ----
 
 Next, it registers _NumberZs_toInteger_ as member function named _toInteger_ through with _ZetScript::registerMemberFunction_,
@@ -339,6 +340,8 @@ void NumberZs_register(ZetScript *_zs){
 
 }
 ----
+
+<<<
 
 Finally, the following code it shows an example of a script that calls member function _Number::toInteger()_ after create object _Number_ type,
 
@@ -404,6 +407,8 @@ void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_memb
 
 - __static_member_name_ : Static member function name
 - __function_: Member function C reference
+
+<<<
 
 *Example*
 
@@ -487,6 +492,8 @@ Console output,
 include::../examples/the_api/register_type/register_type_inheritance_out.txt[]
 ----
 
+<<<
+
 A ZetScript script class can be extended from any registered type. In the following evaluates an script that a script class called _ScriptMyCppTypeExtend_ extends from registered type _MyCppTypeExtend_,
 
 [source,javascript]
@@ -496,7 +503,6 @@ int main(){
 
 	// ...
 
-	// eval print
 	zs.eval(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
@@ -509,7 +515,6 @@ int main(){
 	);
 	
 	return 0;
-
 }
 
 ----

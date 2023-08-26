@@ -3,7 +3,6 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 
-// ZetScript C++ interface function
 zs_int returnInteger(ZetScript *_zs){
     return 10;
 }
@@ -18,7 +17,5 @@ int main(){
     zs.eval(
         "Console::outln(\"result : \"+returnInteger());"
  	);
-
     return 0;
 }
-

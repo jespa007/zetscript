@@ -12,7 +12,6 @@ class MyCppType{
 	}
 };
 
-
 class MyCppTypeExtend:public MyCppType{
 public:
 	float data2;
@@ -22,16 +21,9 @@ public:
 	}
 };
 
-
-//---- ZETSCRIPT-NATIVE INTERFACE FUNCTIONS
-
-// MyCppType
-
 zs_int MyCppType_function1(ZetScript *_zs, MyCppType *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
-
-// MyCppTypeExtend
 
 MyCppTypeExtend * MyCppTypeExtend_new(ZetScript *_zs){
 	return new MyCppTypeExtend();
@@ -50,16 +42,11 @@ void MyCppTypeExtend_delete(ZetScript *_zs, MyCppTypeExtend *_this){
 	delete _this;
 }
 
-//---- ZETSCRIPT-NATIVE INTERFACE FUNCTIONS
-
 int main(){
 	ZetScript zs; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
 	zs.registerType<MyCppType>("MyCppType");
-
-	// Register MyCppType::constructor
-	//zs.registerConstructor<MyCppType>(MyCppType_constructor);
 
 	// Register MyCppType::function1
  	zs.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
@@ -84,6 +71,5 @@ int main(){
 		"var object=new ScriptMyCppTypeExtend(10);\n"
 		"object.function1(5);\n"
 	);
-
 	return 0;
 }

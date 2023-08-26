@@ -55,6 +55,9 @@ _zs_string_ has the following member functions,
 - *zs_string::at(_pos)*: Returns a reference to the character at position __pos_.
 - *zs_string::clear()*: Erases the contents of the string.
 - *zs_string::substr(&#x5f;pos,&#x5f;len)*: Returns a new string with its value initialized to a copy of a substring of this object. The substring is the portion of the object that starts at character position __pos_ and spans _&#x5f;len_ characters.
+
+<<<
+
 - *zs_string::find(&#x5f;string,&#x5f;pos)*: Searches the string for the first occurrence of the sequence specified by its arguments. When _&#x5f;pos_ is specified, the search only includes characters at or after position _&#x5f;pos_, ignoring any possible occurrences that include characters before _&#x5f;pos_.
 - *zs_string::find_last_of(&#x5f;string,&#x5f;pos)*: Searches the string for the last character that matches any of the characters specified in its arguments. When _&#x5f;pos_ is specified, the search only includes characters at or before position _&#x5f;pos_, ignoring any possible occurrences after _&#x5f;pos_.
 - *zs_string::replace(&#x5f;pos,&#x5f;len,&#x5f;string_to_replace)*: Replaces the portion of the string that begins at character _&#x5f;pos_ and spans _&#x5f;len_ characters.
@@ -108,6 +111,8 @@ _ObjectScriptObject_ member functions available for user operations are the foll
 
 - *ObjectScriptObject::set<_T>(&#x5f;key,&#x5f;value)*: Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 - *ObjectScriptObject::get<_T>(&#x5f;key)*: Returns element of type _&#x5f;T_ from key __key_.
+
+<<<
 
 ==== ClassScriptObject
 

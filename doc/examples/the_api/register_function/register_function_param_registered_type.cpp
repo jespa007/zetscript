@@ -22,8 +22,8 @@ Number *NumberZs_new(ZetScript *_zs){
 }
 
 // defines setter property for Number::x
-void NumberZs_set_value(ZetScript *_zs, Number *_this, zs_float _value){
-	_this->value=_value;
+void NumberZs_set_value(ZetScript *_zs, Number *_this, zs_float *_value){
+	_this->value=*_value;
 }
 
 // defines getter property for Number::x

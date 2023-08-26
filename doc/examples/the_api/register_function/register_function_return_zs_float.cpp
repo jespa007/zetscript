@@ -3,7 +3,6 @@
 using zetscript::ZetScript;
 using zetscript::zs_float;
 
-// ZetScript C++ interface function
 zs_float returnFloat(ZetScript *_zs){
     return 10.5;
 }
@@ -18,7 +17,6 @@ int main(){
     zs.eval(
         "Console::outln(\"result : \"+returnFloat());"
  	);
-
     return 0;
 }
 

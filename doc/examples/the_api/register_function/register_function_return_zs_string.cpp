@@ -3,7 +3,6 @@
 using zetscript::ZetScript;
 using zetscript::zs_string;
 
-// ZetScript C++ interface function
 zs_string returnString(ZetScript *_zs){
     return "Hello world (zs_string)";
 }
@@ -18,7 +17,6 @@ int main(){
     zs.eval(
         "Console::outln(\"result : \"+returnString());"
  	);
-
     return 0;
 }
 
