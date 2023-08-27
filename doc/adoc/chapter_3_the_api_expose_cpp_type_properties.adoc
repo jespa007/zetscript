@@ -67,6 +67,7 @@ Console output:
 include::../examples/the_api/register_type/register_constant_member_property_out.txt[]
 ----
 
+<<<
 
 ===== Register property metamethods
 
@@ -98,7 +99,6 @@ The following code defines a function as a _get_ property operation that returns
 ----
 
 zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
 	return _this->value;
 }
 
@@ -134,6 +134,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_get_out.txt[]
 ----
 
+<<<
+
 ====== _set()
 
 Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
@@ -163,7 +165,6 @@ The following code defines a function that performs a _set_ to _value_ variable 
 ----
 
 void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=*_value;
 }
 ----
@@ -197,6 +198,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_set_out.txt[]
 ----
+
+<<<
 
 ====== _addset()
 
@@ -261,6 +264,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_addset_out.txt[]
 ----
 
+<<<
 
 ====== _subset()
 
@@ -327,6 +331,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_subset_out.txt[]
 ----
 
+<<<
+
 ====== _mulset()
 
 Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
@@ -356,7 +362,6 @@ The following code defines a function that performs and _mulset_ to _value_ vari
 ----
 
 void NumberZs_value_mulset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value*=*_value;
 }
 
@@ -391,6 +396,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_mulset_out.txt[]
 ----
 
+<<<
+
 ====== _divset()
 
 Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
@@ -421,7 +428,6 @@ The following code defines a function that performs and _divset_ to _value_ vari
 ----
 
 void NumberZs_value_divset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value/=*_value;
 }
 ----
@@ -456,6 +462,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_divset_out.txt[]
 ----
 
+<<<
+
 ====== _modset()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
@@ -485,7 +493,6 @@ The following code defines a function that performs and _modset_ to _value_ vari
 [source,cpp]
 ----
 void NumberZs_value_modset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=fmod(_this->value,*_value);
 }
 ----
@@ -519,6 +526,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_modset_out.txt[]
 ----
 
+<<<
+
 ====== _andset()
 
 Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
@@ -549,7 +558,6 @@ The following code defines a function that performs and _andset_ to _value_ vari
 ----
 
 void NumberZs_value_andset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)&(int)(*_value);
 }
 ----
@@ -583,6 +591,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_andset_out.txt[]
 ----
 
+<<<
+
 ====== _orset()
 
 Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
@@ -613,7 +623,6 @@ The following code defines a function that performs and _orset_ to _value_ varia
 ----
 
 void NumberZs_value_orset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)|(int)(*_value);
 }
 ----
@@ -647,6 +656,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_orset_out.txt[]
 ----
 
+<<<
 
 ====== _xorset()
 
@@ -678,7 +688,6 @@ The following code defines a function that performs and _xorset_ to _value_ vari
 ----
 
 void NumberZs_value_xorset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)^(int)(*_value);
 }
 ----
@@ -714,6 +723,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_xorset_out.txt[]
 ----
 
+<<<
+
 ====== _shrset()
 
 Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
@@ -744,7 +755,6 @@ The following code defines a function that performs and _shrset_ to _value_ vari
 ----
 
 void NumberZs_value_shrset(ZetScript *_zs,Number *_this,zs_float *_value){
-	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)>>(int)(*_value);
 }
 ----
@@ -777,6 +787,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_property_metamethod_shrset_out.txt[]
 ----
+
+<<<
 
 ====== _shlset()
 
@@ -841,6 +853,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_shlset_out.txt[]
 ----
 
+<<<
+
 ====== _postinc()
 
 
@@ -860,7 +874,7 @@ ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform post increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+Return the value before perform post increment operation. The return value can be one defined in  xref:chapter_3_the_api_call_cpp_from_zetscript#_return_types[return types].
 
 *Example*
 
@@ -905,6 +919,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_postinc_out.txt[]
 ----
 
+<<<
+
 ====== _postdec()
 
 Implements _post_decrement_ operator (aka a-- ) 
@@ -923,7 +939,7 @@ ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform post decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+Return the value before perform post decrement operation. The return value can be one defined in  xref:chapter_3_the_api_call_cpp_from_zetscript#_return_types[return types].
 
 *Example*
 
@@ -968,6 +984,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_postdec_out.txt[]
 ----
 
+<<<
+
 ====== _preinc()
 
 Implements _pre_increment_ operator (aka ++a ) 
@@ -986,7 +1004,7 @@ ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform pre increment operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+Return the value before perform pre increment operation. The return value can be one defined in  xref:chapter_3_the_api_call_cpp_from_zetscript#_return_types[return types].
 
 *Example*
 
@@ -1029,6 +1047,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_property_metamethod_preinc_out.txt[]
 ----
 
+<<<
+
 ====== _predec()
 
 [source,javascript]
@@ -1043,7 +1063,7 @@ ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return the value before perform pre decrement operation. The return value can be one defined in  <<ZetScript built-in return types>> or a pointer of other xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+Return the value before perform pre decrement operation. The return value can be one defined in  xref:chapter_3_the_api_call_cpp_from_zetscript#_return_types[return types].
 
 *Example*
 
@@ -1053,7 +1073,6 @@ The following code defines a function that performs a _predec_ of current instan
 ----
 
 zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
 	return --_this->value;
 }
 ----

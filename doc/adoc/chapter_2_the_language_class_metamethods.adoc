@@ -1,3 +1,4 @@
+<<<
 ==== Metamethods
 
 Metamethods are special member functions that able to define operators seen on xref:chapter_2_the_language_operators.adoc:#_operators[section 2.6]. Metamethods can be static or member function depending whether the operation affects or not the object itself. 
@@ -37,6 +38,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_tostring_out.txt[]
 ----
 
+<<<
+
 ====== _set()
 
 Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
@@ -69,6 +72,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_set_out.txt[]
 ----
+
+<<<
 
 ====== _addset()
 
@@ -103,6 +108,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_addset_out.txt[]
 ----
 
+<<<
+
 ====== _subset()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
@@ -122,8 +129,6 @@ _subset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -137,6 +142,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_subset_out.txt[]
 ----
+
+<<<
 
 ====== _mulset()
 
@@ -164,14 +171,14 @@ None.
 include::../examples/the_language/class/class_metamethod_mulset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_mulset_out.txt[]
 ----
+
+<<<
 
 ====== _divset()
 
@@ -206,6 +213,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_divset_out.txt[]
 ----
 
+<<<
+
 ====== _modset()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
@@ -225,8 +234,6 @@ _modset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -240,6 +247,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_modset_out.txt[]
 ----
+
+<<<
 
 ====== _andset()
 
@@ -267,14 +276,14 @@ None.
 include::../examples/the_language/class/class_metamethod_andset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_andset_out.txt[]
 ----
+
+<<<
 
 ====== _orset()
 
@@ -309,6 +318,7 @@ Console output:
 include::../examples/the_language/class/class_metamethod_orset_out.txt[]
 ----
 
+<<<
 
 ====== _xorset()
 
@@ -329,8 +339,6 @@ _xorset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -344,6 +352,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_xorset_out.txt[]
 ----
+
+<<<
 
 ====== _shrset()
 
@@ -371,14 +381,14 @@ None.
 include::../examples/the_language/class/class_metamethod_shrset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_shrset_out.txt[]
 ----
+
+<<<
 
 ====== _shlset()
 
@@ -413,6 +423,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_shlset_out.txt[]
 ----
 
+<<<
+
 ====== _not()
 
 Implements _not_ pre operator (aka !a).  
@@ -432,8 +444,6 @@ None
 
 - Boolean value as a result of not operation.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -447,6 +457,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_not_out.txt[]
 ----
+
+<<<
 
 ====== _neg()
 
@@ -481,8 +493,9 @@ Console output:
 include::../examples/the_language/class/class_metamethod_neg_out.txt[]
 ----
 
-====== _postinc()
+<<<
 
+====== _postinc()
 
 Implements _post increment_ operator (aka a++ ). 
 
@@ -514,6 +527,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_postinc_out.txt[]
 ----
+
+<<<
 
 ====== _postdec()
 
@@ -548,6 +563,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_postdec_out.txt[]
 ----
 
+<<<
+
 ====== _preinc()
 
 Implements _pre increment_ operator (aka ++a ). 
@@ -580,6 +597,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_preinc_out.txt[]
 ----
+
+<<<
 
 ====== _predec()
 
@@ -614,6 +633,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_predec_out.txt[]
 ----
 
+<<<
+
 ====== _in()
 
 Implements _in_ operator 
@@ -647,6 +668,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_in_out.txt[]
 ---- 
 
+<<<
+
 ===== Static functions
 
 ====== _equ()
@@ -670,8 +693,6 @@ _equ(_op1,_op2)
 - True if op1 and op2 are EQUAL
 - False if op1 and op2 are NOT EQUAL
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -685,6 +706,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_equ_out.txt[]
 ----
+
+<<<
 
 ====== _nequ()
 
@@ -721,6 +744,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_nequ_out.txt[]
 ----
 
+<<<
+
 ====== _lt()
 
 Implements _less than_ operator (aka < ) between first operand and second operand
@@ -731,8 +756,6 @@ Implements _less than_ operator (aka < ) between first operand and second operan
 ----
 _lt(_op1,_op2)
 ---- 
-
-<<<
 
 [.underline]#Parameters#
 
@@ -757,6 +780,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_lt_out.txt[]
 ----
+
+<<<
 
 ====== _lte()
 
@@ -793,6 +818,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_lte_out.txt[]
 ----
 
+<<<
+
 ====== _gt()
 
 Implements _greather than_ operator (aka > ) between first operand and second operand
@@ -828,6 +855,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_gt_out.txt[]
 ----
 
+<<<
+
 ====== _gte(_op1,_op2)
 
 Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
@@ -862,6 +891,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_gte_out.txt[]
 ----
+
+<<<
 
 ====== _add()
 
@@ -933,6 +964,7 @@ Console output:
 include::../examples/the_language/class/class_metamethod_div_out.txt[]
 ----
 
+<<<
 
 ====== _mul()
 
@@ -949,8 +981,6 @@ _mul(_op1,_op2)
 
 - __op1_ : 1st operand.
 - __op2_ : 2nd operand.
-
-<<<
 
 [.underline]#Returns#
 
@@ -969,6 +999,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_metamethod_mul_out.txt[]
 ----
+
+<<<
 
 ====== _mod()
 
@@ -1004,6 +1036,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_mod_out.txt[]
 ----
 
+<<<
+
 ====== _and()
 
 Implements _bitwise AND_ operator (aka & ) between first operand and second operand
@@ -1038,6 +1072,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_and_out.txt[]
 ----
 
+<<<
+
 ====== _or()
 
 Implements _bitwise OR_ operator (aka | ) between first operand and second operand
@@ -1065,14 +1101,14 @@ _or(_op1,_op2)
 include::../examples/the_language/class/class_metamethod_or.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_metamethod_or_out.txt[]
 ----
+
+<<<
 
 ====== _xor()
 
@@ -1108,6 +1144,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_xor_out.txt[]
 ----
 
+<<<
+
 ====== _shr()
 
 Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and second operand
@@ -1142,6 +1180,8 @@ Console output:
 include::../examples/the_language/class/class_metamethod_shr_out.txt[]
 ----
 
+<<<
+
 ====== _shl()
 
 Implements _bitwise SHIFT LEFT_ operator (aka << ) between first operand and second operand
@@ -1161,8 +1201,6 @@ _shl(_op1,_op2)
 [.underline]#Returns#
 
 - A new object as a result of bitwise shift left operation 
-
-<<<
 
 *Example*
 

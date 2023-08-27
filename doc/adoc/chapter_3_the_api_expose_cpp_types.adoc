@@ -1,8 +1,7 @@
+<<<
 === Exposing C++ types to ZetScript
 
 In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
-
-<<<
 
 ==== Register a type
 
@@ -43,6 +42,8 @@ Let's define a 'Number' type in the file called 'Number.h',
 ----
 include::../examples/the_api/register_type/Number.h[]
 ----
+
+<<<
 
 The code below it registers _Number_ type as non instantiable,
 
@@ -87,9 +88,10 @@ The only way to operate with a 'Number' object non intanciable is by a reference
 ----
 include::../examples/the_api/register_type/register_non_instantiable_type.cpp[]
 ----
-  
-===== Register a type as instantiable
 
+<<<
+
+===== Register a type as instantiable
 
 Register an instantiable type it means that it *CAN* create new objects of that 'type' in ZetScript code using operator _new_.
 
@@ -108,9 +110,6 @@ ScriptType * registerType<_Type>(const zs_string & _class_name, RegisteredType *
 [.underline]#Parameters# 
 
 - __class_name_: The class name.
-
-<<<
-
 - __new_native_instance_: A C function that creates an returns a new instance. This function has the following signature,
 
 [source,cpp]
@@ -181,8 +180,6 @@ void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType
 	....
 }
 ----
-
-<<<
 
 Where,
 
@@ -259,6 +256,7 @@ Finally, the following code it shows an example of a script that creates an obje
 include::../examples/the_api/register_type/register_instantiable_type_with_constructor.cpp[]
 ----
 
+<<<
 
 ==== Register members
 

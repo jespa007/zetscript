@@ -13,9 +13,6 @@ public:
 	}
 };
 
-//------------------------------
-// Number class functions to register
-
 // defines new function Number ClassScriptObject
 Number *NumberZs_new(ZetScript *_zs){
 	return new  Number();
@@ -35,15 +32,10 @@ void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
-
-//
-//------------------------------
-
-int main()
-{
+int main(){
 	ZetScript zs;
 
-   // Register class 'Number' as instantiable
+	// Register class 'Number' as instantiable
 	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register constructor
@@ -77,6 +69,5 @@ int main()
 
 	// 'unrefLifetimeObject' it decreases the reference count of script object to tell is not used anymore
 	zs.unrefLifetimeObject(class_script_object_number);
-
  	return 0;
 }

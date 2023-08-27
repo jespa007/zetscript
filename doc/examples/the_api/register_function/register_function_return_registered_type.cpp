@@ -13,16 +13,10 @@ public:
 	}
 };
 
-//------------------------------
-// REGISTER FUNCTIONS
-
 // defines getter property for Number::value
 zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
 	return _this->value;
 }
-
-// REGISTER FUNCTIONS
-//------------------------------
 
 Number *_number=NULL;
 

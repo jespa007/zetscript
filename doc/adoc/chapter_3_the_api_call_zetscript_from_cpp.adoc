@@ -85,6 +85,8 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int_out.txt[]
 ----
 
+<<<
+
 ===== Return Float
 
 To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_float[Float]_ it must specify _zs_float_ return type on its function signature.
@@ -151,6 +153,8 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_return_string_script_object_out.txt[]
 ----
 
+<<<
+
 ===== Return Array
 
 To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_types.adoc#_array[Array]_ it must specify _ArrayScriptObject &#42;_ return type on its function signature.
@@ -172,6 +176,7 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_return_array_script_object_out.txt[]
 ----
 
+<<<
 
 ===== Return Object
 
@@ -193,13 +198,13 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_return_object_script_object_out.txt[]
 ----
 
+<<<
+
 ===== Return instance of class type object
 
 To bind a ZetScript function that returns an instance of _xref:chapter_2_the_language_data_types.adoc#_class[Class]_ type object it can specify _ObjectScriptObject &#42;_ or _ClassScriptObject &#42;_ return type on its function signature.
 
 After using the object returned by the function it has to decrease its reference count by calling _ZetScript::unrefLifeTimeObject_.
-
-<<<
 
 *Example*
 
@@ -241,7 +246,6 @@ include::../examples/the_api/bind_script_function/bind_script_function_return_re
 
 ==== Parameter types
 
-
 This section will explain how to bind script functions that accepts the following types as parameters,
 
 - Boolean
@@ -251,7 +255,7 @@ This section will explain how to bind script functions that accepts the followin
 - Array
 - Object
 - Function
-- Registered class 
+- Registered class
 
 ===== Parameter Boolean
 
@@ -270,6 +274,8 @@ Console output:
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_bool_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Integer
 
@@ -307,6 +313,8 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_param_zs_float_out.txt[]
 ----
 
+<<<
+
 ===== Parameter String
 
 To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_string[String]_ it can specify the following types as a parameter on its function signature,
@@ -314,8 +322,6 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
  - const char *
  - zs_string *
  - StringScriptObject *
-
-<<<
 
 ===== Parameter String as const char *
 
@@ -372,6 +378,8 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_param_string_script_object_out.txt[]
 ----
 
+<<<
+
 ===== Parameter Array
 
 To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_types.adoc#_array[Array]_ it must specify or _ArrayScriptObject &#42;_ as parameter type on its function signature.
@@ -389,6 +397,8 @@ Console output:
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_array_script_object_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Object
 
@@ -408,6 +418,7 @@ Console output:
 include::../examples/the_api/bind_script_function/bind_script_function_param_object_script_object_out.txt[]
 ----
 
+<<<
 
 ===== Parameter registered type
 

@@ -14,9 +14,6 @@ public:
 	}
 };
 
-//------------------------------
-// WRAP NUMBER
-
 // defines new function for Number object
 Number *NumberZs_new(ZetScript *_zs){
 	return new  Number();
@@ -31,9 +28,6 @@ zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
 void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
-
-// WRAP NUMBER
-//------------------------------
 
 // C function that returns classScriptObject
 ClassScriptObject *returnNumber(ZetScript *_zs){

@@ -175,6 +175,8 @@ var b=new B(); // b.a==10, b.b=20
 include::chapter_2_the_language_class_metamethods.adoc[]
 include::chapter_2_the_language_class_property.adoc[]
 
+<<<
+
 ==== Iterator
 
 An iterator is a type with a set of metamethods defined that allow iteration from a custom container type. The metamethods are the following,
@@ -218,8 +220,6 @@ class Container{
 }
 
 ----
-
-<<<
 
 *Example*
 

@@ -13,9 +13,6 @@ public:
 	}
 };
 
-//------------------------------
-// WRAP NUMBER
-
 // defines new function for Number object
 Number *NumberZs_new(ZetScript *_zs){
 	return new  Number();
@@ -36,14 +33,10 @@ void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
-// WRAP NUMBER
-//------------------------------
-
 // C function the accepts native Number
 void mul10Number(ZetScript *_zs, Number *_number){
 	// initialize x and y
 	_number->value*=10;
-
 }
 
 int main(){
@@ -51,7 +44,6 @@ int main(){
 
 	// Register class Number
 	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
-
 
 	// Register property setter Number::x
 	zs.registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_set_value);

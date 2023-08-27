@@ -2,8 +2,7 @@
 
 using zetscript::zs_string;
 
-int main()
-{
+int main(){
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript function 'concat' that prints the result of the operation '+' from two arguments
@@ -13,17 +12,15 @@ int main()
         "}\n"
  	);
 
-    // It binds 'printConcat' as '(void *)(zs_string *, zs_string *)'
-    auto printConcat=zs.bindScriptFunction<void(zs_string * _value1, zs_string * _value2)>("printConcat");
+   // It binds 'printConcat' as '(void *)(zs_string *, zs_string *)'
+   auto printConcat=zs.bindScriptFunction<void(zs_string * _value1, zs_string * _value2)>("printConcat");
 
-    // Prepare param values
-    zs_string value1="Hello";
-    zs_string value2="World";
+   // Prepare param values
+   zs_string value1="Hello";
+   zs_string value2="World";
 
-    // Calls ZetScript function by value
-    printConcat(&value1,&value2);
-
-
+   // Calls ZetScript function by value
+   printConcat(&value1,&value2);
  	return 0;
 }
 

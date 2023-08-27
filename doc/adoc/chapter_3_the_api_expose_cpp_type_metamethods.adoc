@@ -72,6 +72,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_tostring_out.txt[]
 ----
 
+<<<
+
 ====== _set()
 
 Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
@@ -115,7 +117,6 @@ Next, each function _NumberZs_set_ function is registered as member metamethod _
 [source,cpp]
 ----
 
-
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
@@ -142,6 +143,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_set_out.txt[]
 ----
+
+<<<
 
 ====== _addset()
 
@@ -209,6 +212,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_addset_out.txt[]
 ----
 
+<<<
+
 ====== _subset()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
@@ -273,6 +278,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_subset_out.txt[]
 ----
 
+<<<
+
 ====== _mulset()
 
 Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
@@ -330,14 +337,14 @@ Finally, the following code it shows an example of a script that multiples and a
 include::../examples/the_api/register_type/register_member_metamethod_mulset.cpp[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mulset_out.txt[]
 ----
+
+<<<
 
 ====== _divset()
 
@@ -403,6 +410,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_divset_out.txt[]
 ----
+
+<<<
 
 ====== _modset()
 
@@ -470,6 +479,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_modset_out.txt[]
 ----
 
+<<<
 
 ====== _andset()
 
@@ -537,6 +547,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_andset_out.txt[]
 ----
 
+<<<
 
 ====== _orset()
 
@@ -604,6 +615,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_orset_out.txt[]
 ----
 
+<<<
+
 ====== _xorset()
 
 Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
@@ -670,6 +683,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_xorset_out.txt[]
 ----
 
+<<<
 
 ====== _shrset()
 
@@ -737,6 +751,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_shrset_out.txt[]
 ----
 
+<<<
 
 ====== _shlset()
 
@@ -804,6 +819,7 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_shlset_out.txt[]
 ----
 
+<<<
 
 ====== _not()
 
@@ -833,7 +849,6 @@ The following code defines a function as a _not_ operation as true when current 
 ----
 
 bool NumberZs_not(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
 	return _this->value == 0;
 }
 
@@ -899,7 +914,6 @@ The following code defines a function as a _neg_ operation by returning a new _N
 ----
 
 Number * NumberZs_neg(ZetScript *_zs,Number *_this){
-	ZS_UNUSUED_PARAM(_zs);
 	return new Number(-_this->value);
 }
 
@@ -1219,7 +1233,7 @@ bool RegisteredType_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value)
 
 [.underline]#Returns#
 
-Boolean telling whether the _value exist in or not
+Boolean telling whether the __value_ exist in or not.
 
 *Example*
 
@@ -1322,13 +1336,10 @@ Next, each function _NumberZs_equ_ is registered as member metamethod __equ_ thr
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_equ));
 	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_equ));
 	_zs->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_equ));
-
 	//...
-
 }
 ----
 
@@ -1345,6 +1356,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_equ_out.txt[]
 ----
+
+<<<
 
 ====== _nequ()
 
@@ -1419,6 +1432,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_nequ_out.txt[]
 ----
 
+<<<
+
 ====== _lt()
 
 Implements _less than_ operator (aka < ) between first operand and second operand
@@ -1447,17 +1462,14 @@ The following code defines three functions that performs _lt_ operation from _Fl
 [source,cpp]
 ----
 bool  NumberZs_lt(ZetScript *_zs,Number *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _n1->value <_n2->value;
 }
 
 bool  NumberZs_lt(ZetScript *_zs,Number *_n1, zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _n1->value < *_n2;
 }
 
 bool NumberZs_lt(ZetScript *_zs,zs_float *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return *_n1 < _n2->value;
 }
 ----
@@ -1490,6 +1502,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_lt_out.txt[]
 ----
 
+<<<
+
 ====== _lte()
 
 Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
@@ -1519,17 +1533,14 @@ The following code defines three functions that performs _lte_ operation from _F
 ----
 
 bool  NumberZs_lte(ZetScript *_zs,Number *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _n1->value <=_n2->value;
 }
 
 bool  NumberZs_lte(ZetScript *_zs,Number *_n1, zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _n1->value <= *_n2;
 }
 
 bool NumberZs_lte(ZetScript *_zs,zs_float *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return *_n1 <= _n2->value;
 }
 ----
@@ -1547,8 +1558,6 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-<<<
-
 Finally, the following code it shows an example of a script that performs _lte_ operation from a _Float_ and _Number_.
 
 [source,javascript]
@@ -1562,6 +1571,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_lte_out.txt[]
 ----
+
+<<<
 
 ====== _gt()
 
@@ -1634,7 +1645,9 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_gt_out.txt[]
 ----
 
-====== _gte(_op1,_op2)
+<<<
+
+====== _gte()
 
 Implements _greather than or equal_ operator (aka &gt;= ) between first operand and second operand
 
@@ -1690,8 +1703,6 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 }
 ----
 
-<<<
-
 Finally, the following code it shows an example of a script that performs _gte_ operation from a _Float_ and _Number_.
 
 [source,javascript]
@@ -1705,6 +1716,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_gte_out.txt[]
 ----
+
+<<<
 
 ====== _add()
 
@@ -1777,6 +1790,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_add_out.txt[]
 ----
 
+<<<
+
 ====== _sub()
 
 Implements _subtraction_ operator (aka - ) between first operand and second operand
@@ -1848,6 +1863,8 @@ Console output:
 include::../examples/the_api/register_type/register_member_metamethod_sub_out.txt[]
 ----
 
+<<<
+
 ====== _mul()
 
 Implements _multiplication_ operator (aka * ) between first operand and second operand
@@ -1876,17 +1893,14 @@ The following code defines three functions that performs _mul_ operation from _F
 ----
 
 ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(_n1->value * _n2->value));
 }
 
 ClassScriptObject * NumberZs_mul(ZetScript *_zs,Number *_n1, zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(_n1->value * (*_n2)));
 }
 
 ClassScriptObject * NumberZs_mul(ZetScript *_zs,zs_float *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(*_n1 * _n2->value));
 }
 
@@ -1918,6 +1932,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mul_out.txt[]
 ----
+
+<<<
 
 ====== _div()
 
@@ -1966,13 +1982,10 @@ Next, each function _NumberZs_div_ is registered as member metamethod __div_ thr
 void NumberZs_register(zetscript::ZetScript *_zs){
 
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_div));
 	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_div));
 	_zs->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_div));
-
 	//...
-
 }
 ----
 
@@ -1989,6 +2002,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
 ----
+
+<<<
 
 ====== _mod()
 
@@ -2017,17 +2032,14 @@ The following code defines three functions that performs _mod_ operation from _F
 [source,cpp]
 ----
 ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(fmod(_n1->value,_n2->value)));
 }
 
 ClassScriptObject * NumberZs_mod(ZetScript *_zs,Number *_n1, zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(fmod(_n1->value, *_n2)));
 }
 
 ClassScriptObject * NumberZs_mod(ZetScript *_zs,zs_float *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number(fmod(*_n1, _n2->value)));
 }
 ----
@@ -2038,15 +2050,11 @@ Next, each function _NumberZs_mod_ is registered as member metamethod __mod_ thr
 ----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_mod));
 	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mod));
 	_zs->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mod));
-
 	//...
-
 }
 ----
 
@@ -2063,6 +2071,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_mod_out.txt[]
 ----
+
+<<<
 
 ====== _and()
 
@@ -2109,15 +2119,11 @@ Next, each function _NumberZs_and_ is registered as member metamethod __AND_ thr
 [source,cpp]
 ----
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_and));
 	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_and));
 	_zs->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_and));
-
 	//...
-
 }
 ----
 
@@ -2134,6 +2140,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_and_out.txt[]
 ----
+
+<<<
 
 ====== _or()
 
@@ -2182,15 +2190,11 @@ Next, each function _NumberZs_or_ is registered as member metamethod __OR_ throu
 ----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_or));
 	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_or));
 	_zs->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_or));
-
 	//...
-
 }
 ----
 
@@ -2207,6 +2211,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_or_out.txt[]
 ----
+
+<<<
 
 ====== _xor()
 
@@ -2255,15 +2261,11 @@ Next, each function _NumberZs_xor_ is registered as member metamethod __XOR_ thr
 ----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_xor));
 	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xor));
 	_zs->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xor));
-
 	//...
-
 }
 ----
 
@@ -2280,6 +2282,9 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_xor_out.txt[]
 ----
+
+<<<
+
 ====== _shl()
 
 Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
@@ -2308,17 +2313,14 @@ ClassScriptObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2
 //...
 
 ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
 }
 
 ClassScriptObject * NumberZs_shl(ZetScript *_zs,Number *_n1, zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
 }
 
 ClassScriptObject * NumberZs_shl(ZetScript *_zs,zs_float *_n1, Number *_n2){
-	ZS_UNUSUED_PARAM(_zs);
 	return _zs->newClassScriptObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
 }
 
@@ -2330,15 +2332,11 @@ Next, each function _NumberZs_shl_ is registered as member metamethod __shl_ thr
 ----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shl));
 	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shl));
 	_zs->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shl));
-
 	//...
-
 }
 ----
 
@@ -2355,6 +2353,8 @@ Console output:
 ----
 include::../examples/the_api/register_type/register_member_metamethod_shl_out.txt[]
 ----
+
+<<<
 
 ====== _shr()
 
@@ -2403,15 +2403,11 @@ Next, each function _NumberZs_shr_ is registered as member metamethod __shr_ thr
 ----
 
 void NumberZs_register(zetscript::ZetScript *_zs){
-
 	//...
-
 	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,zs_float *,Number * )>(&NumberZs_shr));
 	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,zs_float * )>(&NumberZs_shr));
 	_zs->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shr));
-
 	//...
-
 }
 ----
 

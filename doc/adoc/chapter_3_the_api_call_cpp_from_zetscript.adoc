@@ -16,7 +16,7 @@ ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType *_arg1, ParamType *_a
 
 Where,
 
-- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type] (See next section)
 - _ParamType_: It can be a pointer of xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
@@ -163,6 +163,8 @@ Console output:
 include::../examples/the_api/register_function/register_function_return_string_script_object_out.txt[]
 ----
 
+<<<
+
 ===== Return Array
 
 To register a C function that returns a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
@@ -180,6 +182,8 @@ Console output:
 ----
 include::../examples/the_api/register_function/register_function_return_array_script_object_out.txt[]
 ----
+
+<<<
 
 ===== Return Object
 
@@ -199,7 +203,6 @@ Console output:
 include::../examples/the_api/register_function/register_function_return_object_script_object_out.txt[]
 ----
 
-
 ===== Return registered type
 
 
@@ -208,6 +211,8 @@ To register a C function that returns a _xref:chapter_3_the_api_expose_cpp_types
 - Return registered type by its reference
 - Return registered type by ClassScriptObject 
 
+
+<<<
  
 ===== Return registered type by its reference
 
@@ -228,6 +233,8 @@ In the following example it registers a type _Number_ as non instantiable (This 
 ----
 include::../examples/the_api/register_function/register_function_return_registered_type.cpp[]
 ----
+
+<<<
 
 Console output:
 
@@ -312,8 +319,6 @@ Console output:
 include::../examples/the_api/register_function/register_function_param_zs_int_out.txt[]
 ----
 
-<<<
-
 ===== Parameter Float
 
 To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;float[Float]_ it must specify _zs_float &#x2a;_ as parameter type.
@@ -331,6 +336,8 @@ Console output:
 ----
 include::../examples/the_api/register_function/register_function_param_zs_float_out.txt[]
 ----
+
+<<<
 
 ===== Parameter String
 
@@ -350,8 +357,6 @@ Console output:
 include::../examples/the_api/register_function/register_function_param_zs_string_out.txt[]
 ----
 
-<<<
-
 ===== Parameter Array
 
 To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;array[Array]_ it must specify _ArrayScriptObject &#42;_ as parameter type.
@@ -369,6 +374,8 @@ Console output:
 ----
 include::../examples/the_api/register_function/register_function_param_array_script_object_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Object
 
@@ -388,6 +395,8 @@ Console output:
 include::../examples/the_api/register_function/register_function_param_object_script_object_out.txt[]
 ----
 
+<<<
+
 ===== Parameter Function
 
 To register a C function that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]_ it must specify _ScriptFunction &#42;_ as parameter type. To make  _ScriptFunction_ callable from C++ must use _ZetScript::bindScriptFunction_ (see xref:_chapter_3_the_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ZetScript functions binding)
@@ -401,14 +410,14 @@ The following example it registers function _paramScriptFunction_ that accepts a
 include::../examples/the_api/register_function/register_function_param_script_function.cpp[]
 ----
 
-<<<
-
 Console output:
 
 [source,txt]
 ----
 include::../examples/the_api/register_function/register_function_param_script_function_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Registered Type
 

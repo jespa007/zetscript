@@ -57,6 +57,7 @@ include::chapter_2_the_language_conditionals.adoc[]
 include::chapter_2_the_language_loops.adoc[]
 include::chapter_2_the_language_function.adoc[]
 include::chapter_2_the_language_class.adoc[]
+<<<
 include::chapter_2_the_language_modules.adoc[]
 
 

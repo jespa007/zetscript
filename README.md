@@ -9,13 +9,19 @@
 <ul>
 	<li>Virtual Machine</li>
 	<li>Language syntax close to Javascript</li>
+	<li>Dynamic Garbage collector</li>
+	<li>Straightforward way to expose C++ types and call functions from C++ to ZetScript and Viceversa</li>
+	<li>Operator defintion through metamethods</li>
+</ul>
+
+Minimmum requirements:</p>
+
+<ul>
 	<li>MSVC++ 32/64 bits MSVC 2015/2017 or build tools v141</li>
 	<li>Linux/MinGW 32/64 bits, g++ 4.8.1 or above</li>
 	<li>CMake 3.15 or above</li>
-	<li>Dynamic Garbage collector</li>
-	<li>Straightforward way to expose C++ types and call functions from C++ to ZetScript and Viceversa</li>
-	<li>Override operators through metamethods</li>
 </ul>
+
 
 <p>A&nbsp;helloworld in shown in the following code,</p>
 
@@ -49,21 +55,6 @@ int main(){
 
 <ul>
 </ul>
-
-<h2>Install</h2>
-
-<p>From the source code included in this article, the install is quite easy, it uses cmake method so to configure the project depending which compiler is installed,</p>
-
-<pre>
-cmake CMakeLists.txt</pre>
-
-<p>&nbsp;</p>
-
-<blockquote class="quote">
-<div class="op">Quote:</div>
-
-<p>Note:&nbsp;MSVC 2017, it has a feature a Open Folder that easily configures a CMakeFile project just opening the folder where the project is, avoiding configure the project in the same directory and leave a lot of files and directories related with configuration</p>
-</blockquote>
 
 <h2>Language overview</h2>
 
@@ -504,32 +495,11 @@ c++ argument is 15 </pre>
 
 <h2>Metamethods</h2>
 
-<p>ZetScript implements metamethods to map operators or other operations&nbsp;through objects. Currently, it&nbsp;supports the following metamethods:</p>
-
-<ul>
-	<li>_equ (aka ==)</li>
-	<li>_not_equ (aka !=)</li>
-	<li>_lt (aka &lt;)</li>
-	<li>_lte&nbsp;(aka &gt;=)</li>
-	<li>_gt&nbsp;(aka &gt;)</li>
-	<li>_gte&nbsp;(aka &gt;=)</li>
-	<li>_not&nbsp;(aka !)</li>
-	<li>_neg&nbsp;(aka -)</li>
-	<li>_add&nbsp;(aka +)</li>
-	<li>_div&nbsp;(aka /)</li>
-	<li>_mul&nbsp;(aka *)</li>
-	<li>_mod&nbsp;(aka %)</li>
-	<li>_and&nbsp;(aka &amp;)</li>
-	<li>_or&nbsp;(aka |)</li>
-	<li>_xor&nbsp;(aka ^)</li>
-	<li>_shl&nbsp;(aka &lt;&lt;)</li>
-	<li>_shr&nbsp;(aka &gt;&gt;)&nbsp;</li>
-	<li>_set (aka =)</li>
-</ul>
+<p>ZetScript implements metamethods to map operators or other operations&nbsp;through objects.
 
 <p>&nbsp;</p>
 
-<p>For example, if in script side we want to do the operation + for an object we have to declare the function _add with two parameters, as we can see in the following code,</p>
+<p>For example, if in script side we want to define the <i>add</i> operation (aka +) for an object we have to declare the function _add with two parameters, as we can see in the following code,</p>
 
 <pre lang="javascript">
 class MyNumber{
@@ -546,114 +516,6 @@ var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
 var n3 =n1+n2;
 
-Console::outln(&quot;n1 (&quot;+n1.num+&quot;) n2 (&quot;+n2.num+&quot;) = &quot;+n3.num);</pre>
-
 <p style="text-align: center"><em>List 1.4</em></p>
 
-<p>the same can be applied for C++ class. We have to register _add function in the C++ object,</p>
-
-<pre lang="c++">
-#include &quot;ZetScript.h&quot;
-
-using namespace zetscript;
-
-class MyNumber{
-public:
-	int num;
-	MyNumber(){
-		this-&gt;num=0;
-	}
-	MyNumber(int _n){
-		this-&gt;num=_n;
-	}
-	void set(int _n){
-		this-&gt;num=_n;
-	}
-};
-
-//-------------------------------------------------
-// wraping functions
-
-MyNumber *MyNumberWrap_new(){
-	return new MyNumber;
-}
-
-zs_int MyNumberWrap_num_get(MyNumber *_this, zs_int _num){
-	return _this->num;
-}
-
-void MyNumberWrap_set(MyNumber *_this, zs_int _num){
-	_this->num=_num;
-}
-
-MyNumber * MyNumberWrap_add(MyNumber *op1, MyNumber *op2){
-	return new MyNumber(op1-&gt;num + op2-&gt;num);
-}
-
-void MyNumberWrap_delete(MyNumber *_this){
-	delete _this;
-}
-	
-// wrapping functions
-//----------------------------------------------------
-
-int main(){
-	ZetScript *zs = new ZetScript();
-
-	// register class MyNumber
-	zs->registerClass&lt;MyNumber&gt;(&quot;MyNumber&quot;,MyNumberWrap_new,MyNumberWrap_delete);
-
-	// register member attribute getter (only read)
-	zs->registerMemberAttributeGetter&lt;MyNumber&gt;(&quot;num&quot;,&amp;MyNumberWrap_num_get);
-
-	// register constructor through function MyNumber::set
-	zs->registerMemberFunction&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumberWrap_set);
-
-	// register static function _add as metamethod
-	zs->registerStaticMemberFunction&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumberWrap_add);
-
-	try{
-		zs-&gt;eval(
-			&quot;var n1 = new MyNumber (20);\n&quot;
-			&quot;var n2 = new MyNumber (10); \n&quot;
-			&quot;var n3 =n1+n2; \n &quot;
-			&quot;Console::outln(\&quot;n1 (\&quot;+n1.num+\&quot;) + n2 (\&quot;+n2.num+\&quot;) = \&quot;+n3.num);\n&quot;
-		);
-	}catch(std::exception & ex){
-		fprintf(stderr,ex.what());
-	}
-	
-	delete zs;
-	
-	return 0;
-}
-</pre>
-
-<p style="text-align: center"><em>List 1.5</em></p>
-
-<p>&nbsp;</p>
-
-<blockquote class="quote">
-<div class="op">Quote:</div>
-
-<p><strong>Note that the codes</strong>&nbsp;shown at list 1.4 and 1.5 the _add function is static due operates from two objects and it doesn&#39;t the object member itself.</p>
-</blockquote>
-
-<h2>Save state/Clear</h2>
-
-<p>Sometimes is useful to reset the script cleaning global variables or restore&nbsp;from one point&nbsp;when, for example,&nbsp;C++&nbsp;application is restarted.</p>
-
-<p>ZetScript supports a way to save current compiled state. This operation saves AST nodes, registered C functions, variables and classes.</p>
-
-<p>To save current state we have to invoke <em>CState::saveState</em>. This function returns an index that tells compiled state index saved.</p>
-
-<pre>
-zs->saveState()</pre>
-
-<p>To clear current state and restore all registered variables/functions/classes,etc after last save state invoke **clear**</p>
-
-<pre>
-zs->clear()</pre>
-
-<p>&nbsp;</p>
 

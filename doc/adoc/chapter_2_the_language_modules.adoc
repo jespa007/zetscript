@@ -66,6 +66,8 @@ Console output:
 include::../examples/the_language/console/console_outln_out.txt[]
 ----
 
+<<<
+
 ===== Console::error()
 
 Prints error message to the console.
@@ -90,8 +92,6 @@ Prints error message to the console with a ending carry return.
 
 [source,zetscript]
 Console::outln(_value,..._args)
-
-<<<
 
 [.underline]#Parameters#
 
@@ -131,6 +131,8 @@ The integer as the equivalent character readed from console.
   
 ----
 
+<<<
+
 ==== System
 
 _System_ module implements a set of functions for system.
@@ -158,8 +160,6 @@ The amount of time in seconds as _Float_ type.
 ----
 include::../examples/the_language/system/system_clock.zs[]
 ----
-
-<<<
 
 Console output:
 
@@ -264,6 +264,8 @@ Console output:
 Error !(m < 20). 'm' is 30
 ----
 
+<<<
+
 ==== Math
 
 _Math_ module implements a set of functions and properties related with maths.
@@ -293,7 +295,6 @@ Console output:
 include::../examples/the_language/math/math_pi_out.txt[]
 ----
 
-
 ===== Static functions
 
 ====== Math::sin()
@@ -307,9 +308,7 @@ Math::sin(_radians)
 
 [.underline]#Parameters#
 
-- __radians_: Radians value
-
-<<<
+- __radians_: Radians value.
 
 [.underline]#Returns#
 
@@ -340,11 +339,13 @@ Math::cos(_radians)
 
 [.underline]#Parameters#
 
-- __radians_: Radians value
+- __radians_: Radians value.
 
 [.underline]#Returns#
 
 A _Float_ value as result of cosinus of __radians_ between 0..1.
+
+<<<
 
 *Example*
 
@@ -391,8 +392,6 @@ Console output:
 include::../examples/the_language/math/math_abs_out.txt[]
 ----
 
-<<<
-
 ====== Math::pow()
 
 Performs a power operation.
@@ -424,6 +423,8 @@ Console output:
 ----
 include::../examples/the_language/math/math_pow_out.txt[]
 ----
+
+<<<
 
 ====== Math::degToRad()
 
@@ -486,6 +487,8 @@ Console output:
 ----
 include::../examples/the_language/math/math_random_out.txt[]
 ----
+
+<<<
 
 ====== Math::max()
 
@@ -567,6 +570,8 @@ Math::sqrt(_value)
 [.underline]#Returns#
 
 A _Float_ value as the result of the square root of __value_
+
+<<<
 
 *Example*
 
@@ -676,6 +681,8 @@ Console output:
 include::../examples/the_language/math/math_round_out.txt[]
 ----
 
+<<<
+
 ==== Json
 
 _Json_ module implements a set of functions about json format.
@@ -698,8 +705,6 @@ Json::serialize(_object, _format)
 
 A _String_ as the result of the serialization.
 
-<<<
-
 *Example*
 
 [source,zetscript]
@@ -713,6 +718,8 @@ Console output:
 ----
 include::../examples/the_language/json/json_serialize_out.txt[]
 ----
+
+<<<
 
 ===== Json::deserialize()
 
@@ -745,6 +752,8 @@ Console output:
 include::../examples/the_language/json/json_deserialize_out.txt[]
 ----
 
+<<<
+
 ==== TimeSpan
 
 _TimeSpan_ represents a time interval that is difference between two times measured in number of _days_, _hours_, _minutes_, and _seconds_. _TimeSpan_ is used to compare two _DateTime_ (see in section <<DateTime>>) objects to find the difference between two dates.
@@ -767,6 +776,8 @@ Datetime has the following member properties,
 |seconds
 |====
 
+
+<<<
 
 ==== DateTime
 
@@ -807,8 +818,6 @@ Console output:
 include::../examples/the_language/datetime/datetime_metamethod_sub_out.txt[]
 ----
 
-<<<
-
 ====== DateTime::now()
 
 Creates a new _DateTime_ object at LOCAL time.
@@ -846,6 +855,8 @@ DateTime::nowUtc()
 ----
 include::../examples/the_language/datetime/datetime_now_utc.zs[]
 ----
+
+<<<
 
 Console output:
 
@@ -886,8 +897,6 @@ A _DateTime_ object.
 include::../examples/the_language/datetime/datetime_constructor.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,txt]
@@ -923,6 +932,8 @@ Datetime has the following member properties,
 |year
 |====
 
+<<<
+
 *Example*
 
 [source,zetscript]
@@ -956,8 +967,6 @@ DateTime::addSeconds(_seconds)
 
 None
 
-<<<
-
 *Example*
 
 [source,zetscript]
@@ -971,6 +980,8 @@ Console output:
 ----
 include::../examples/the_language/datetime/datetime_add_seconds_out.txt[]
 ----
+
+<<<
 
 ====== DateTime::addMinutes()
 
@@ -1033,6 +1044,8 @@ Console output:
 ----
 include::../examples/the_language/datetime/datetime_add_hours_out.txt[]
 ----
+
+<<<
 
 ====== DateTime::addDays()
 

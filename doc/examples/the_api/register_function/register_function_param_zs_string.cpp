@@ -18,7 +18,5 @@ int main(){
         "paramString(\"Hello world!\");"
  	);
 
-
  	return 0;
 }
-

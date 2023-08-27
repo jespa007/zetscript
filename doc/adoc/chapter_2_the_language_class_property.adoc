@@ -1,4 +1,4 @@
-
+<<<
 ==== Properties
 
 A property is a kind of variable that are acceded through a metamethods.
@@ -34,8 +34,6 @@ _get()
 
 None
 
-<<<
-
 [.underline]#Returns#
 
 Returns the value of the property
@@ -53,6 +51,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_property_metamethod_get_out.txt[]
 ----
+
+<<<
 
 ====== _set()
 
@@ -80,14 +80,14 @@ None.
 include::../examples/the_language/class/class_property_metamethod_set.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
 ----
+
+<<<
 
 ====== _addset()
 
@@ -122,6 +122,7 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_addset_out.txt[]
 ----
 
+<<<
 
 ====== _subset()
 
@@ -143,8 +144,6 @@ _subset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -158,6 +157,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_property_metamethod_subset_out.txt[]
 ----
+
+<<<
 
 ====== _mulset()
 
@@ -185,14 +186,14 @@ None.
 include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_property_metamethod_mulset_out.txt[]
 ----
+
+<<<
 
 ====== _divset()
 
@@ -227,6 +228,8 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_divset_out.txt[]
 ----
 
+<<<	
+
 ====== _modset()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
@@ -246,8 +249,6 @@ _modset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -261,6 +262,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_property_metamethod_modset_out.txt[]
 ----
+
+<<<
 
 ====== _andset()
 
@@ -288,14 +291,14 @@ None.
 include::../examples/the_language/class/class_property_metamethod_andset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_property_metamethod_andset_out.txt[]
 ----
+
+<<<
 
 ====== _orset()
 
@@ -330,6 +333,7 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_orset_out.txt[]
 ----
 
+<<<
 
 ====== _xorset()
 
@@ -350,8 +354,6 @@ _xorset(_value)
 
 None.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -365,6 +367,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_property_metamethod_xorset_out.txt[]
 ----
+
+<<<
 
 ====== _shrset()
 
@@ -392,14 +396,14 @@ None.
 include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
 ----
 
-<<<
-
 Console output:
 
 [source,text]
 ----
 include::../examples/the_language/class/class_property_metamethod_shrset_out.txt[]
 ----
+
+<<<
 
 ====== _shlset()
 
@@ -434,6 +438,8 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
 ----
 
+<<<
+
 ====== _postinc()
 
 
@@ -454,8 +460,6 @@ None
 
 The value before perform post increment operation.
 
-<<<
-
 *Example*
 
 [source,javascript]
@@ -469,6 +473,8 @@ Console output:
 ----
 include::../examples/the_language/class/class_property_metamethod_postinc_out.txt[]
 ----
+
+<<<
 
 ====== _postdec()
 
@@ -503,6 +509,8 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_postdec_out.txt[]
 ----
 
+<<<
+
 ====== _preinc()
 
 Implements _pre_increment_ operator (aka ++a ) 
@@ -536,6 +544,8 @@ Console output:
 include::../examples/the_language/class/class_property_metamethod_preinc_out.txt[]
 ----
 
+<<<
+
 ====== _predec()
 
 Implements _pre_decrement_ operator (aka --a ) 
@@ -554,8 +564,6 @@ None
 [.underline]#Returns#
 
 The value before perform pre decrement operation.
-
-<<<
 
 *Example*
 
