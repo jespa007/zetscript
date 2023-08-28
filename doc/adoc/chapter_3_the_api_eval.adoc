@@ -1,0 +1,364 @@
+=== Evaluation
+
+ZetScript can evaluate scripts from string or from file
+
+==== Evaluation from string
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/the_api/eval/eval_string_out.txt[]
+----
+
+
+==== Evaluation from file
+
+Having the following script file called `file.zs` with the following content,
+[source,javascript]
+----
+include::../examples/the_api/eval/file.zs[]
+----
+
+Console output:
+
+At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as it shows as it follows,
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/the_api/eval/eval_file_out.txt[]
+----
+
+
+==== Evaluation options
+
+===== EVAL_OPTION_NO_EXECUTE
+
+In order to eval script but no execute add _EVAL_OPTION_NO_EXECUTE_ option
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file_option_no_execute.cpp[]
+----
+
+
+===== EVAL_OPTION_PRINT_BYTE_CODE
+
+In order to show byte code for a script add _EVAL_OPTION_PRINT_BYTE_CODE_ option
+
+[source,c++]
+----
+include::../examples/the_api/eval/eval_file_option_print_byte_code.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/the_api/eval/eval_file_option_print_byte_code_out.txt[]
+----
+
+As we can see in the output _EVAL_OPTION_PRINT_BYTE_CODE_ option prints the byte code per each function. At the begin it prints summary,
+
+ - *Function*: Function name
+ - *Stack code*: Stack required for code
+ - *Stack local vars*: Stack required for local variables
+ - *Total stack required*: Total stack required
+ - *Scopes*: Total scopes
+
+Apart there's a description per instruction with the following columns,
+
+- *NUM*: Instruction number
+- *RS*: Required Stack for current instruction
+- *AS*: Acumulated Stack in the current instruction
+- *INSTRUCTION*: Byte code and operands if it needs
+
+<<<
+Here there's a meaning of each byte code
+
+[cols="3m,6a"]
+|====
+|Instruction |Description
+
+|EQU
+|Logical equal
+
+|NOT_EQU
+|Logical not equal
+
+|LT
+|Less than
+
+|LTE
+|Less than equal
+
+|GT
+|Greather than		
+
+|GTE
+|Greather than equal
+
+|LOGIC_AND
+|Login AND
+
+|LOGIC_OR
+|Logic OR
+
+|INSTANCEOF
+|Instanceof
+
+|NOT
+|Not
+
+|NEG
+|Negate
+
+|ADD
+|Addition
+
+|SUB
+|Substraction
+
+|DIV
+|Division	
+
+|MUL
+|Multiplication	
+
+|MOD
+|Modulus
+
+|AND
+|Bitwise AND
+
+|OR
+|Bitwise OR
+
+|XOR
+|Bitwise XOR
+
+|SHL
+|Bitwise SHIFT LEFT
+
+|SHR
+|Bitwise SHIFT RIGHT
+
+|BWC
+|Bitwise complement
+
+|STORE
+|Store
+
+|STORE_ADD
+|Addition and assignment
+
+|STORE_SUB
+|Substraction and assignment
+
+|STORE_MUL
+|Multiplication and assignment
+
+|STORE_DIV
+|Division and assignment
+
+|STORE_MOD
+|Modulus and assignment
+
+|STORE_AND
+|Bitwise AND and assignment
+
+|STORE_OR
+|Bitwise OR and assignment
+
+|STORE_XOR
+|Bitwise XOR and assignment
+
+|STORE_SHL
+|Bitwise SHIFT LEFT and assignment
+
+|STORE_SHR
+|Bitwise SHIFT RIGHT and assignment
+
+|PUSH_STK_GLOBAL_IRGO
+|Push global variable from return function to stack
+
+|PUSH_STK_GLOBAL
+|Push global variable to stack
+
+|PUSH_STK_LOCAL
+|Push local variable to stack
+			
+|PUSH_STK_REF
+|Push argument reference to stack
+
+|PUSH_STK_THIS
+|Push current object instance to stack
+
+|PUSH_STK_ARRAY@ITEM
+|Push array item to stack
+
+|PUSH_STK_OBJ@ITEM 
+|Push object item to stack
+
+|PUSH_STK_THIS@VAR
+|Push member variable to stack
+
+|LOAD_GLOBAL
+|Load global variable to stack
+
+|LOAD_LOCAL
+|Load local variable to stack
+
+|LOAD_REF
+|Load argument reference to stack
+
+|LOAD_THIS
+|Load current instance to stack
+
+|LOAD_CONSTRUCTOR_FUNCT
+|Load constructor function to stack
+
+|LOAD_???
+|Unresolved load symbol. It tries to resolve and load at runtime
+
+|CALL
+|Performs a direct call
+
+|CALL???
+|Unresolved direct call. It tries to load at runtime
+
+|STK_CALL
+|Performs a call from current stack
+
+|MEMBER_CALL
+|Performs member call
+
+|LOAD_THIS@VAR
+|Load member variable to stack
+
+|LOAD_THIS@FUN
+|Load member function to stack
+
+|LOAD_ARRAY@ITEM
+|Load array item to stack
+
+|LOAD_OBJ@ITEM
+|Load object item to stack
+
+|LOAD_FUN
+|Load function to stack
+
+|LOAD_UNDEFINED
+|Load undefined value to stack
+
+|LOAD_NULL
+|Load Null value to stack
+
+|LOAD_STK
+|Load stack element to stack
+
+|LOAD_STR
+|Load _String_ value to stack
+
+|LOAD_FLT
+|Load _Float_ value to stack
+
+|LOAD_BOOL
+|Load _Boolean_ value to stack
+
+|LOAD_INT
+|Load _Integer_ value to stack
+
+|LOAD_TYPE
+|Load _Type_ value to stack
+
+|JMP
+|Performs an unconditional jump.
+
+|JMP_CASE 
+|Performs a jump Switch-Case.
+			
+|JNT
+|Performs a jump if not true
+
+|JT
+|Performs jump if true.
+			
+|JE_CASE
+|Performs a jump if equal Switch-Case
+
+|CALL_CONSTRUCTOR
+|Performs a constructor call
+
+|NEW_ARRAY
+|Creates an array object
+			
+|PUSH_AITEM
+|Push array item to stack
+			
+|RET
+|Return
+
+|NEW_OBJECT_BY_TYPE
+|Creates new object by type
+
+|NEW_OBJECT_BY_VALUE
+|Creates new object by value
+			
+|DELETE
+|Deletes object
+
+|POP_SCOPE
+|Pop scope
+
+|PUSH_SCOPE
+|Push scope
+
+|PUSH_OITEM
+|Push object item
+
+|NEW_OBJECT
+|Creates new object
+
+|NEW_STR
+|Creates new string
+	
+|IT_INIT
+|Performs iterator init
+
+|STORE_CONST
+|Performs a constant assignment
+			
+|PRE_INC
+|Performs a preincrement
+
+|PRE_DEC
+|Performs a predecrement
+
+|POST_INC
+|Performs a postincrement
+
+|POST_DEC
+|Performs a postdecrement
+
+|RESET_STACK
+|Resets stack
+			
+|TYPEOF
+|Typeof
+
+|IN
+|In operator
+|====
