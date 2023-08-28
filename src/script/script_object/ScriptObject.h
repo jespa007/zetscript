@@ -9,9 +9,9 @@ namespace zetscript{
 
 	class RefObjectScriptObject;
 	struct InfoSharedPointerNode;
-	class VirtualMachine;
+	struct VirtualMachine;
 	class ScriptTypeFactory;
-	class VM_ScopeBlock;
+	struct VM_ScopeBlock;
 	class ScriptFunction;
 
 	typedef enum{

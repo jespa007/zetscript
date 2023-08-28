@@ -525,7 +525,7 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Error accessing array, index out of bounds");
 					}
 
-					if((stk_var =((ArrayScriptObject *)so_aux)->getStackElement(index_aux1))==NULL){
+					if((stk_var =((ArrayScriptObject *)so_aux)->getStackElementByIndex(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}

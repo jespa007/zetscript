@@ -48,7 +48,7 @@ namespace zetscript{
 		return this->stk_elements.size();
 	}
 
-	StackElement	*ArrayScriptObject::setStackElement(int _idx, StackElement *_stk_src){
+	StackElement	*ArrayScriptObject::setStackElementByIndex(int _idx, StackElement *_stk_src){
 		if(_idx >= stk_elements.size()){
 			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
 		}
@@ -63,7 +63,7 @@ namespace zetscript{
 	}
 
 
-	StackElement * ArrayScriptObject::getStackElement(int _idx){
+	StackElement * ArrayScriptObject::getStackElementByIndex(int _idx){
 		if(_idx >= stk_elements.size()){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;

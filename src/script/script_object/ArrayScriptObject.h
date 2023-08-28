@@ -34,8 +34,8 @@ namespace zetscript{
 		template<typename _T>
 		_T 									get(int _idx);
 
-		virtual	StackElement * 				setStackElement(int _idx, StackElement *_value);
-		virtual StackElement * 				getStackElement(int idx);
+		virtual	StackElement * 				setStackElementByIndex(int _idx, StackElement *_value);
+		virtual StackElement * 				getStackElementByIndex(int idx);
 
 		bool 								eraseElementAt(int idx);
 		void								eraseAllElements();

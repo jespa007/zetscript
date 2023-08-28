@@ -42,7 +42,7 @@ namespace zetscript{
 					_zs
 					,_this_object
 					,_str_result
-					,_array->getStackElement(i)
+					,_array->getStackElementByIndex(i)
 					,_ident
 					,_is_formatted
 					,_strict_json_format

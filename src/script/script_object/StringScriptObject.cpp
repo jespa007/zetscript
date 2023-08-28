@@ -218,7 +218,7 @@ namespace zetscript{
 
 							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
 								zs_string str_format_results="";
-								StackElement stk_arg=*sov->getStackElement(idx_num);
+								StackElement stk_arg=*sov->getStackElementByIndex(idx_num);
 
 								if(stk_arg.properties & STK_PROPERTY_CONTAINER_SLOT){
 									stk_arg.value=(zs_int)(((ContainerSlot *)stk_arg.value)->getSrcContainerRef());
