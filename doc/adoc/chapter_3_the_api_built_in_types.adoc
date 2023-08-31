@@ -234,6 +234,62 @@ zs_vector& operator=(const zs_vector& _obj);
 			return count;
 		}
 
+==== ArrayScriptObject
+
+_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
+
+===== Member functions
+
+_ArrayScriptObject_ member functions available for user operations are the following,
+
+====== ArrayScriptObject::push()
+
+Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
+
+		template<typename _T>
+		void 								push(_T _value);
+
+====== ArrayScriptObject::set()
+
+Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_.
+
+	template<typename _T>
+		void 								set(int _idx, _T _value);
+
+
+====== ArrayScriptObject::get()
+
+Returns a reference element of type _&#x5f;T_ at position __pos_.
+
+		template<typename _T>
+		_T 									get(int _idx);
+
+====== ArrayScriptObject::toString()
+
+virtual 							zs_string toString();
+
+==== ObjectScriptObject
+
+_ObjectScriptObject_ it defines a object script object that acts as a container of fields. It uses zetscript context in order to be instanced.
+
+
+===== Member functions
+
+_ObjectScriptObject_ member functions available for user operations are the following,
+
+====== ObjectScriptObject::set()
+
+Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
+
+====== ObjectScriptObject::get()
+
+Returns element of type _&#x5f;T_ from key __key_.
+
+==== ClassScriptObject
+
+_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+
+
 ==== StackElement
 
 ===== Propeties
@@ -244,27 +300,25 @@ bla,bla,bla
 
 properties
 
-	typedef enum:unsigned short {
-		//---------- BEGIN PRIMITIVE TYPES HERE--------------------
-		ZS_STK_PROPERTY_UNDEFINED				=0x0000,
-		ZS_STK_PROPERTY_NULL					=0x0001,
-		ZS_STK_PROPERTY_CHAR_PTR			=0x0002,
-		ZS_STK_PROPERTY_INT					=0x0004,
-		ZS_STK_PROPERTY_FLOAT				=0x0008,
-		ZS_STK_PROPERTY_BOOL					=0x0010,
-		ZS_STK_PROPERTY_TYPE					=0x0020,
-		//---------- END PRIMITIVE TYPES HERE--------------------
-		ZS_STK_PROPERTY_FUNCTION				=0x0040,
-		ZS_STK_PROPERTY_MEMBER_FUNCTION		=0x0080,
-		ZS_STK_PROPERTY_MEMBER_PROPERTY		=0x0100,
-		ZS_STK_PROPERTY_SCRIPT_OBJECT			=0x0200,
-		ZS_STK_PROPERTY_CONTAINER_SLOT			=0x0400,
-		ZS_STK_PROPERTY_MAX					=0x0800,
-		//-- VM RUNTIME
-		ZS_STK_PROPERTY_PTR_STK				= ZS_STK_PROPERTY_MAX,	 				// 0x1000
-		ZS_STK_PROPERTY_READ_ONLY				=0x1000,
+	
+		
+- ZS_STK_PROPERTY_UNDEFINED:
+- ZS_STK_PROPERTY_NULL:
+- ZS_STK_PROPERTY_CHAR_PTR:
+- ZS_STK_PROPERTY_INT:
+- ZS_STK_PROPERTY_FLOAT:
+- ZS_STK_PROPERTY_BOOL:	
+- ZS_STK_PROPERTY_TYPE:
+	
+- ZS_STK_PROPERTY_FUNCTION:
+- ZS_STK_PROPERTY_MEMBER_FUNCTION:
+- ZS_STK_PROPERTY_MEMBER_PROPERTY:
+- ZS_STK_PROPERTY_SCRIPT_OBJECT:
+- ZS_STK_PROPERTY_CONTAINER_SLOT:
+- ZS_STK_PROPERTY_PTR_STK:
+- ZS_STK_PROPERTY_READ_ONLY:
 
-	}StkProperty;
+	
 
 
 ===== Member functions
@@ -351,23 +405,19 @@ _ScriptFunction_ it defines a function object that contains function information
 		template<typename _C>
 		StackElement	toStackElement( _C _val);
 
-===== ZetScript::ObjectScriptObject_new()
-		ObjectScriptObject * newObjectScriptObject();
+===== newStringScriptObject();
 
-===== ZetScript::ObjectScriptObject_set()
-===== ZetScript::ObjectScriptObject_get()
-
-===== ZetScript::StringScriptObject_new()
 		StringScriptObject * newStringScriptObject(const zs_string & _str="");
 
-===== ZetScript::StringScriptObject_set()
-===== ZetScript::StringScriptObject_get()
+===== ZetScript::newObjectScriptObject()
 
+		ObjectScriptObject * newObjectScriptObject();
 
-===== ZetScript::ArrayScriptObject_new()
+===== ZetScript::newArrayScriptObject()
 		ArrayScriptObject * newArrayScriptObject();
 
 ===== ZetScript::newClassScriptObject()
+
 		template<typename _C>
 		ClassScriptObject * newClassScriptObject(_C  *_instance=NULL);
 
@@ -401,7 +451,21 @@ _ScriptFunction_ it defines a function object that contains function information
 ===== ZetScript::registerFunction()
 
 		template <typename F>
-		void registerFunction( const zs_string & _name_script_function,F ptr_function, const char *_registered_file="",short _registered_line=-1)
+		void registerFunction( const zs_string & _name_script_function,F ptr_function)
+
+*Syntax*
+
+[source,c++]
+----
+void registerFunction( const zs_string & _function_name,F _c_function, const char *_registered_file="",short _registered_line=-1);
+----
+
+[.underline]#Parameters#
+
+- __function_name_ : The function name to be refered in ZetScript.
+- __c_function_ : The C function to register.
+- __registered_file_ : Source file where the function was registered
+- __registered_line_ : Line file where the function was registered
 
 
 ===== ZetScript::extends()
@@ -481,58 +545,4 @@ _ScriptFunction_ it defines a function object that contains function information
 		void saveState();
 
 
-==== ArrayScriptObject
-
-_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
-
-===== Member functions
-
-_ArrayScriptObject_ member functions available for user operations are the following,
-
-====== ArrayScriptObject::push()
-
-Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
-
-		template<typename _T>
-		void 								push(_T _value);
-
-====== ArrayScriptObject::set()
-
-Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_.
-
-	template<typename _T>
-		void 								set(int _idx, _T _value);
-
-
-====== ArrayScriptObject::get()
-
-Returns a reference element of type _&#x5f;T_ at position __pos_.
-
-		template<typename _T>
-		_T 									get(int _idx);
-
-====== ArrayScriptObject::toString()
-
-virtual 							zs_string toString();
-
-==== ObjectScriptObject
-
-_ObjectScriptObject_ it defines a object script object that acts as a container of fields. It uses zetscript context in order to be instanced.
-
-
-===== Member functions
-
-_ObjectScriptObject_ member functions available for user operations are the following,
-
-====== ObjectScriptObject::set()
-
-Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
-
-====== ObjectScriptObject::get()
-
-Returns element of type _&#x5f;T_ from key __key_.
-
-==== ClassScriptObject
-
-_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
 

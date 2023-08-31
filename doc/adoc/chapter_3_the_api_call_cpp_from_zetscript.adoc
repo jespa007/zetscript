@@ -20,19 +20,9 @@ Where,
 - _ParamType_: It can be a pointer of xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
-After the C function is created is registered with _ZetScript::registerFunction_. 
+After the C function is created is registered with _xref:chapter_3_the_api_built_in_types#&#95;_zetscript_registerfunction[ZetScript::registerFunction]_. 
 
-*Syntax*
 
-[source,c++]
-----
-void registerFunction( const zs_string & _function_name,F _c_function);
-----
-
-[.underline]#Parameters#
-
-- __function_name_ : The function name to be refered in ZetScript.
-- __c_function_ : The C function to register.
 
 *Example*
 
