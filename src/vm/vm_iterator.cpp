@@ -24,14 +24,14 @@ namespace zetscript{
 
 		// stk_op2 expects to be obj with container
 
-		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
+		if((stk_result_op2->properties & ZS_STK_PROPERTY_PTR_STK) == 0){
 			ZS_VM_ERRORF("internal: Expected stk");
 			return false;
 		}
 
-		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
+		if((stk_result_op1->properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT|ZS_STK_PROPERTY_CONTAINER_SLOT)) == 0){
 			//ZS_VM_ERROR("internal: Expected object");
-			if((data->vm_stk_current->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
+			if((data->vm_stk_current->properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT|ZS_STK_PROPERTY_CONTAINER_SLOT)) == 0){
 				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,data->zs->stackElementToString(data->vm_stk_current).c_str()
@@ -44,7 +44,7 @@ namespace zetscript{
 
 
 		// ok vm_stk_current holds the iter object
-		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			// get iterator object and references +1
 			obj=(ScriptObject *)stk_result_op1->value;
 		}else{ // slot container
@@ -69,19 +69,19 @@ namespace zetscript{
 				n_args=1;
 
 				// only stores and not increment (++ ) in order to start the stk arg
-				*data->vm_stk_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
+				*data->vm_stk_current={(intptr_t)so_object,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 				so_object=NULL;
 			}
 
 			ZS_VM_INNER_CALL(so_object,so_function,n_args);
 
 			// ok vm_stk_current holds the iter object
-			if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(data->vm_stk_current->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				// get iterator object and references +1
 				obj=(ScriptObject *)data->vm_stk_current->value;
 			}else{
 				// get iterator object and references +1
-				if(data->vm_stk_current->properties & STK_PROPERTY_CONTAINER_SLOT){
+				if(data->vm_stk_current->properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
 					obj=((ContainerSlot *)(data->vm_stk_current->value))->getSrcContainerRef();
 				}else{
 					ZS_VM_ERROR("Object '%s' does not returns an iterator object",obj->getTypeName());
@@ -150,12 +150,12 @@ namespace zetscript{
 		 stk_result_op2_aux=data->zs->unwrapStackElement(*stk_result_op2);
 
 
-		if(stk_result_op2_aux.properties & STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk_result_op2_aux.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2_aux.value;
 
 			switch(so_aux->idx_script_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
-			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
+			if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){
 				VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
 						data->zs
@@ -184,7 +184,7 @@ namespace zetscript{
 			);
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
-			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			 if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ObjectScriptObjectZs_contains(

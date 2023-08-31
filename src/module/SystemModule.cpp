@@ -59,7 +59,7 @@ namespace zetscript{
 						function_params[i]=ScriptFunctionParam(it.key);
 						stk_params.push_back(stk);
 
-						if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 							// inc number of ref as standard in pass object args
 							((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
 						}

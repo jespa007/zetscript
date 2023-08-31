@@ -6,7 +6,7 @@ namespace zetscript{
 	template<typename _T>
 	_T	ObjectScriptObject::get(const zs_string & _key){
 		StackElement *stk;
-		if((stk=getStackElement(_key))==NULL){
+		if((stk=getStackElementByKeyName(_key))==NULL){
 			ZS_THROW_EXCEPTION("key '%s' not exist",_key.c_str());
 		}
 
@@ -18,12 +18,12 @@ namespace zetscript{
 		StackElement stk=this->zs->toStackElement<_T>(_value);
 
 		// Create shared object due 'ObjectScriptObject::set' is called from user program
-		if(stk.properties == STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *obj = (ScriptObject *)stk.value;
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}
 
-		this->setStackElement(_key_name, &stk);
+		this->setStackElementByKeyName(_key_name, &stk);
 
 	}
 }

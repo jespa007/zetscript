@@ -146,7 +146,7 @@ namespace zetscript{
 					 }*/
 
 				 }else{ // Member function not exist try to get variable to call if exist
-					 sf_call_stk_function_ref=_this_object->getStackElement(SFI_GET_SYMBOL_NAME(_script_function,instruction));
+					 sf_call_stk_function_ref=_this_object->getStackElementByKeyName(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					 sf_call_is_member_function=false;
 					 if(sf_call_stk_function_ref==NULL){
 						 ZS_VM_STOP_EXECUTE("Error calling 'this.%s': member variable or function '%s::%s' not exist"
@@ -165,7 +165,7 @@ namespace zetscript{
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=_this_object->getStackElement(SFI_GET_SYMBOL_NAME(_script_function,instruction));
+				 sf_call_stk_function_ref=_this_object->getStackElementByKeyName(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
 					 ZS_VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					);
@@ -218,7 +218,7 @@ load_function:
 			sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 			sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 
-			if(sf_call_stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
+			if(sf_call_stk_function_ref->properties & ZS_STK_PROPERTY_MEMBER_FUNCTION){
 			  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 			  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 			  sf_call_is_member_function=true;
@@ -237,7 +237,7 @@ load_function:
 			  sf_call_is_member_function=true;
 			}else{
 				sf_call_is_member_function=false;
-				if((sf_call_stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
+				if((sf_call_stk_function_ref->properties & (ZS_STK_PROPERTY_FUNCTION))==0){
 					// error or continue
 					if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
 						// reset stack to last
@@ -304,14 +304,14 @@ execute_function:
 						if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
 
 							StackElement *check_ref=stk_arg;
-							if(stk_arg->properties & STK_PROPERTY_PTR_STK){
+							if(stk_arg->properties & ZS_STK_PROPERTY_PTR_STK){
 								check_ref=(StackElement *)check_ref->value;
 							}
 
 							// because arg by ref is always loaded directly we have the object stk...
 							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==false) { // create new
 
-								if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
+								if((stk_arg->properties & ZS_STK_PROPERTY_PTR_STK) != ZS_STK_PROPERTY_PTR_STK){
 									ZS_VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
 											,sf_call_script_function->name_script_function.c_str(),i+1);
 								}
@@ -320,26 +320,26 @@ execute_function:
 								vm_create_shared_script_object(_vm,sc);
 								so_param=sc;
 								stk_arg->value=(intptr_t)sc;
-								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								stk_arg->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 							}else{ // is a var ref already, keep its reference ...
 								so_param=(ScriptObject *)stk_arg->value;
 							}
 
 						}else{
-							if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
+							if(stk_arg->properties & ZS_STK_PROPERTY_PTR_STK){ // get its value
 								*stk_arg=*(StackElement *)stk_arg->value;
 							}
 
-							if((stk_arg->properties & STK_PROPERTY_CONTAINER_SLOT)){
+							if((stk_arg->properties & ZS_STK_PROPERTY_CONTAINER_SLOT)){
 								stk_arg->value=(zs_int)(((ContainerSlot *)stk_arg->value)->getSrcContainerRef());
-								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								stk_arg->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 							}
 
 							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==true) { // not passing by ref it gets its value
 								*stk_arg=*((VarRefScriptObject *)stk_arg->value)->getStackElementPtr();
 							}
 
-							if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+							if((stk_arg->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_param->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 									StringScriptObject *sc=ZS_NEW_STRING_OBJECT(data->zs);
@@ -347,7 +347,7 @@ execute_function:
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
 									so_param=sc;
 									stk_arg->value=(zs_int)sc;
-									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+									stk_arg->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 								}
 							} // else if member property it will manage itself on the stack
 						}
@@ -365,7 +365,7 @@ execute_function:
 								var_args->pushStackElement(stk_arg);
 								// replace for vector type...
 								stk_arg->value=(zs_int)var_args;
-								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								stk_arg->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 							}else{ // not push in var arg
 
 								if(so_param != NULL){ // share n+1 to function if not this
@@ -391,14 +391,14 @@ execute_function:
 					ScriptFunctionParam *param=sf_call_script_function->params+h;
 
 					switch(param->default_param_value.properties){
-					case STK_PROPERTY_UNDEFINED:
-					case STK_PROPERTY_NULL:
-					case STK_PROPERTY_ZS_INT:
-					case STK_PROPERTY_BOOL:
-					case STK_PROPERTY_ZS_FLOAT:
+					case ZS_STK_PROPERTY_UNDEFINED:
+					case ZS_STK_PROPERTY_NULL:
+					case ZS_STK_PROPERTY_INT:
+					case ZS_STK_PROPERTY_BOOL:
+					case ZS_STK_PROPERTY_FLOAT:
 						*data->vm_stk_current++=param->default_param_value;
 						break;
-					case STK_PROPERTY_FUNCTION: // we call function that return default value
+					case ZS_STK_PROPERTY_FUNCTION: // we call function that return default value
 						ZS_VM_INNER_CALL(
 							NULL
 							,(ScriptFunction *)(((Symbol *)param->default_param_value.value)->ref_ptr)
@@ -406,7 +406,7 @@ execute_function:
 						)
 
 						// if script object it shares in order to be used as variable in the function to be called
-						if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						if(data->vm_stk_current->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 							vm_share_script_object(_vm,(ScriptObject *)data->vm_stk_current->value);
 						}
 						data->vm_stk_current++;

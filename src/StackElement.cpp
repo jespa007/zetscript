@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
+	extern const StackElement k_stk_undefined={0,ZS_STK_PROPERTY_UNDEFINED};
 
 
 
@@ -24,9 +24,9 @@ namespace zetscript{
 
 	StackElement	StackElement::typeOf(){
 		StackElement *stk= this;
-		StackElement result={-1,STK_PROPERTY_TYPE};
+		StackElement result={-1,ZS_STK_PROPERTY_TYPE};
 
-		if(stk->properties & STK_PROPERTY_PTR_STK){
+		if(stk->properties & ZS_STK_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;
 		}
 

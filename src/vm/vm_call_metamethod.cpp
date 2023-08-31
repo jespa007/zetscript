@@ -78,10 +78,10 @@ namespace zetscript{
 
 		// op1/op2 should be the object that have the metamethod
 
-		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+		if((stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
 			str_script_type_object_found=script_object->getTypeName();
-		}else if ((_is_static==true) && (stk_result_op2!=NULL && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT))){
+		}else if ((_is_static==true) && (stk_result_op2!=NULL && (stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT))){
 			script_object=(ScriptObject *)stk_result_op2->value;
 			str_script_type_object_found=script_object->getTypeName();
 		}
@@ -162,13 +162,13 @@ namespace zetscript{
 		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 			// we have to share any object to avoid be removed on function exit
 			if(_is_static == true){ // the share of the 1st object if static and object
-				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					vm_share_script_object(_vm,(ScriptObject *)stk_result_op1->value);
 				}
 			}
 
 			if(stk_result_op2!=NULL){
-				if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value);
 				}
 			}
@@ -281,7 +281,7 @@ namespace zetscript{
 		if(_metamethod_byte_code == METAMETHOD_BYTE_CODE_ADD_SET){
 			if(	STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
-						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
+						(stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
@@ -296,7 +296,7 @@ namespace zetscript{
 		}
 
 		// particular errors
-		if((stk_result_op2->properties==0) || (stk_result_op2->properties & STK_PROPERTY_NULL)){
+		if((stk_result_op2->properties==0) || (stk_result_op2->properties & ZS_STK_PROPERTY_NULL)){
 			ZS_VM_MAIN_ERROR(\
 					VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
 					,stk_result_op2\
@@ -316,7 +316,7 @@ namespace zetscript{
 
 			// call_metamethod_set is always non-static, so it shares stk_result_op2 if object to
 			// avoid be removed on function exit stk_result_op1 is always the _this object
-			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value);
 			}
 
@@ -390,9 +390,9 @@ namespace zetscript{
 					,0 \
 			);\
 		}else{ /* store object */ \
-			if(_stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(_stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				data->vm_stk_current->value=(zs_int)so_aux;\
-				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
 				*data->vm_stk_current=stk_aux1;
 			}

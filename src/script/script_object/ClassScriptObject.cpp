@@ -58,10 +58,10 @@ namespace zetscript{
 				*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 			}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 				se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
-				se->properties=STK_PROPERTY_PTR_STK;
+				se->properties=ZS_STK_PROPERTY_PTR_STK;
 			}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 				se->value=(zs_int)(new StackElementMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
-				se->properties=STK_PROPERTY_MEMBER_PROPERTY;
+				se->properties=ZS_STK_PROPERTY_MEMBER_PROPERTY;
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getStackElement(metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)) != NULL;
+		return getStackElementByKeyName(metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){

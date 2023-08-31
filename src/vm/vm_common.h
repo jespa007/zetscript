@@ -22,7 +22,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return) \
 	for(int i=0; i < _n_return; i++){\
 		StackElement *stk_ret = _stk_return+i;\
-		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+		if(stk_ret->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
 			if(sv->shared_pointer == NULL){\
 				vm_create_shared_script_object(_vm,sv);\

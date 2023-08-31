@@ -51,7 +51,7 @@ namespace zetscript{
 				ptr_str->append((char)idx);
 			}
 
-			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				ptr_str->append(((ScriptObject *)stk->value)->toString());
 			}
 			else{
@@ -85,12 +85,12 @@ namespace zetscript{
 		for(int i=0; i < stk_user_list_elements->size() && found == false;i++){
 			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
 			switch(stk_to_compare->properties & stk_element->properties){ // match element
-			case STK_PROPERTY_BOOL:
-			case STK_PROPERTY_ZS_INT:
-			case STK_PROPERTY_ZS_FLOAT:
+			case ZS_STK_PROPERTY_BOOL:
+			case ZS_STK_PROPERTY_INT:
+			case ZS_STK_PROPERTY_FLOAT:
 				found= (stk_element->value == stk_to_compare->value);
 				break;
-			case STK_PROPERTY_SCRIPT_OBJECT: // compare objects?
+			case ZS_STK_PROPERTY_SCRIPT_OBJECT: // compare objects?
 
 				if(
 					   ((ScriptObject *)stk_to_compare->value)->idx_script_type ==
@@ -124,19 +124,19 @@ namespace zetscript{
 
 			// compare primitives (inclusive strings) other objects as the same pointer
 			switch(stk_element_s1->properties | stk_element_s2->properties){
-				case STK_PROPERTY_ZS_INT:
-				case STK_PROPERTY_ZS_FLOAT:
-				case STK_PROPERTY_BOOL:
+				case ZS_STK_PROPERTY_INT:
+				case ZS_STK_PROPERTY_FLOAT:
+				case ZS_STK_PROPERTY_BOOL:
 					equal=stk_element_s1->value==stk_element_s2->value;
 					break;
-				case (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT):
-					if((stk_element_s1->properties & STK_PROPERTY_ZS_INT) && (stk_element_s2->properties & STK_PROPERTY_ZS_FLOAT)){
+				case (ZS_STK_PROPERTY_INT|ZS_STK_PROPERTY_FLOAT):
+					if((stk_element_s1->properties & ZS_STK_PROPERTY_INT) && (stk_element_s2->properties & ZS_STK_PROPERTY_FLOAT)){
 						equal=stk_element_s1->value == ZS_READ_INTPTR_FLOAT(stk_element_s2->value);
 					}else{
 						equal=ZS_READ_INTPTR_FLOAT(stk_element_s1->value)==stk_element_s2->value;
 					}
 					break;
-				case STK_PROPERTY_SCRIPT_OBJECT:
+				case ZS_STK_PROPERTY_SCRIPT_OBJECT:
 					if(STK_IS_STRING_SCRIPT_OBJECT(stk_element_s1) && STK_IS_STRING_SCRIPT_OBJECT(stk_element_s2)){
 						equal=((ScriptObject *)stk_element_s1->value)->toString() == ((ScriptObject *)stk_element_s2->value)->toString();
 					}else{

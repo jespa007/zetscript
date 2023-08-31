@@ -45,7 +45,7 @@ namespace zetscript{
 			R ret_value;
 
 			// returning instanced types it cannot be C++ types due it can become memory leaks
-			if((_idx_return >= IDX_TYPE_MAX) && (_stk->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+			if((_idx_return >= IDX_TYPE_MAX) && (_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
 				ClassScriptObject *class_script_object=(ClassScriptObject *)_stk->value;
 				if(class_script_object->was_created_by_constructor == true){
 					ZS_THROW_RUNTIME_ERROR("run-time converting result value to '%s'. Returning registered class type objects, return type from bind function signature should be set as 'Class ScriptObject * to be dereferenced after its use. (i.e bindScriptFunction<ClassScriptObject *(_type1, _type2, ...)> )"
@@ -1637,7 +1637,7 @@ namespace zetscript{
 							&& registered_symbol->scope == ZS_MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
-									if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+									if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 										calling_obj=(ScriptObject *)stk->value;
 									}
 								}
@@ -1664,9 +1664,9 @@ namespace zetscript{
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
-						se = calling_obj->getStackElement(symbol_to_find);
+						se = calling_obj->getStackElementByKeyName(symbol_to_find);
 						if(se!=NULL){
-							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
+							if(se->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->value;
 							}else{
 								ZS_THROW_EXCEPTION_FILE_LINE(

@@ -48,12 +48,12 @@ namespace zetscript{
 		}
 
 		//- check for packed dst_stk
-		if(stk_dst->properties & STK_PROPERTY_PTR_STK) {
+		if(stk_dst->properties & ZS_STK_PROPERTY_PTR_STK) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
+		}else if(stk_dst->properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
 			dst_container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=dst_container_slot->getPtrStackElement();
-		 }else if((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR)==0){
+		 }else if((stk_dst->properties & ZS_STK_PROPERTY_CHAR_PTR)==0){
 			ZS_VM_STOP_EXECUTE(
 				"Expected l-value on assignment but it was type '%s'"
 				,data->zs->stackElementToStringTypeOf(stk_dst).c_str()
@@ -61,7 +61,7 @@ namespace zetscript{
 		}
 
 		//-----------------------
-		if(stk_dst->properties & STK_PROPERTY_READ_ONLY){
+		if(stk_dst->properties & ZS_STK_PROPERTY_READ_ONLY){
 			ZS_VM_STOP_EXECUTEF("Assignment to constant variable");
 		}
 
@@ -75,7 +75,7 @@ namespace zetscript{
 					store_lst_setter_functions=NULL;
 				}
 			}
-		}else if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
+		}else if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 			stk_mp_aux=(StackElementMemberProperty *)stk_dst->value;\
 			if(stk_mp_aux->member_property!=NULL && stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
@@ -94,7 +94,7 @@ namespace zetscript{
 			const char *__STR_SETTER_METAMETHOD__=metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET);\
 			const char *__STR_AKA_SETTER_METAMETHOD__=metamethod_byte_code_to_operator_str(METAMETHOD_BYTE_CODE_SET);\
 			*stk_arg=*stk_src;\
-			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
+			if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
 				so_aux=stk_mp_aux->so_object;\
 			}else{
@@ -142,7 +142,7 @@ namespace zetscript{
 						,data->vm_str_metamethod_aux
 						,stk_arg \
 						,1))==NULL){ \
-					if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
+					if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){ \
 							data->vm_error_description=zs_strutils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
 								,so_aux->getScriptType()->str_script_type.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\
@@ -186,7 +186,7 @@ namespace zetscript{
 
 				// if argument is a script object should share, because on returning
 				// it does pop and it could deallocate twice
-				if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_arg->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					vm_share_script_object(_vm,(ScriptObject *)stk_arg->value);
 				}
 
@@ -201,7 +201,7 @@ namespace zetscript{
 
 		}else{ // store through script assignment
 
-			if((stk_src->properties & STK_PROPERTY_PTR_STK)!=0) {
+			if((stk_src->properties & ZS_STK_PROPERTY_PTR_STK)!=0) {
 				stk_src=(StackElement *)stk_src->value; // value is expect to contents a stack variable
 			}
 
@@ -210,32 +210,32 @@ namespace zetscript{
 
 			// init stk_dst
 
-			if(stk_src_properties == STK_PROPERTY_UNDEFINED){
+			if(stk_src_properties == ZS_STK_PROPERTY_UNDEFINED){
 				stk_dst->value=0;
-				stk_dst->properties=STK_PROPERTY_UNDEFINED;
-			}else if(stk_src_properties == STK_PROPERTY_NULL){
+				stk_dst->properties=ZS_STK_PROPERTY_UNDEFINED;
+			}else if(stk_src_properties == ZS_STK_PROPERTY_NULL){
 				stk_dst->value=0;
-				stk_dst->properties=STK_PROPERTY_NULL;
-			}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
-				if((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR)==0){
+				stk_dst->properties=ZS_STK_PROPERTY_NULL;
+			}else if(stk_src_properties & ZS_STK_PROPERTY_INT){
+				if((stk_dst->properties & ZS_STK_PROPERTY_CHAR_PTR)==0){
 					stk_dst->value=stk_src->value;
-					stk_dst->properties=STK_PROPERTY_ZS_INT;
+					stk_dst->properties=ZS_STK_PROPERTY_INT;
 				}else{
 					*((zs_char *)stk_dst->value)=stk_src->value;
 				}
-			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
-				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
+			}else if(stk_src_properties & ZS_STK_PROPERTY_FLOAT){
+				stk_dst->properties=ZS_STK_PROPERTY_FLOAT;
 				stk_dst->value=0; // reset value
 				ZS_WRITE_INTPTR_FLOAT(&stk_dst->value,ZS_READ_INTPTR_FLOAT(stk_src->value));
-			}else if(stk_src_properties & STK_PROPERTY_BOOL){
-				stk_dst->properties=STK_PROPERTY_BOOL;
+			}else if(stk_src_properties & ZS_STK_PROPERTY_BOOL){
+				stk_dst->properties=ZS_STK_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;
-			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
+			}else if(stk_src_properties  &  (ZS_STK_PROPERTY_FUNCTION | ZS_STK_PROPERTY_TYPE | ZS_STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
 				STK_IS_STRING_SCRIPT_OBJECT(stk_src)
 							||
-				(stk_src_properties & (STK_PROPERTY_ZS_CHAR_PTR))
+				(stk_src_properties & (ZS_STK_PROPERTY_CHAR_PTR))
 
 			){
 				StringScriptObject *str_object=NULL;
@@ -245,7 +245,7 @@ namespace zetscript{
 					unref_old_stk_script_object=false;
 				}else{ // Generates a zs_string var
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
-					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					stk_dst->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 					// create shared ptr
 					vm_create_shared_script_object(_vm,str_object);
 					// share ptr
@@ -253,16 +253,16 @@ namespace zetscript{
 					//-------------------------------------
 				}
 
-				if(stk_src_properties & (STK_PROPERTY_ZS_CHAR_PTR)){
+				if(stk_src_properties & (ZS_STK_PROPERTY_CHAR_PTR)){
 					str_object->set((const char *)stk_src->value);
 				}else{
 					str_object->set(((StringScriptObject *)(stk_src->value))->get());
 				}
 
 
-			}else if(stk_src_properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)){// object we pass its reference
+			}else if(stk_src_properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT | ZS_STK_PROPERTY_CONTAINER_SLOT)){// object we pass its reference
 
-				if(stk_src_properties & STK_PROPERTY_CONTAINER_SLOT){
+				if(stk_src_properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_src->value)->getSrcContainerRef();
 				}
 				else{
@@ -292,7 +292,7 @@ namespace zetscript{
 
 						// unref current
 						stk_dst->value=(intptr_t)so_aux;
-						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+						stk_dst->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 					}
 
 					vm_share_script_object(_vm,so_aux);
@@ -318,7 +318,7 @@ namespace zetscript{
 
 			// if old dst value was a script object, it has to be dereferenced because it was written by other type ...
 			if(
-				(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
+				(old_stk_dst.properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT))
 								&&
 					unref_old_stk_script_object==true
 			){
@@ -326,9 +326,9 @@ namespace zetscript{
 
 				vm_unref_shared_script_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK);
 			}else if(
-					(old_stk_dst.properties & STK_PROPERTY_CONTAINER_SLOT)!=0
+					(old_stk_dst.properties & ZS_STK_PROPERTY_CONTAINER_SLOT)!=0
 										&&
-					(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT)==0
+					(stk_dst->properties & ZS_STK_PROPERTY_CONTAINER_SLOT)==0
 				){
 
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
@@ -347,7 +347,7 @@ namespace zetscript{
 		}
 
 		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
-			stk_dst->properties |= STK_PROPERTY_READ_ONLY;
+			stk_dst->properties |= ZS_STK_PROPERTY_READ_ONLY;
 		}
 
 		if(n_element_left_to_store-- > 0){

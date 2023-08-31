@@ -14,7 +14,7 @@ namespace zetscript{
 		map_builtin_fields=new zs_map;
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
-		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
+		stk_this.properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 
 		ref_objects=NULL;//new zs_list<RefObject *>();
 
@@ -36,7 +36,7 @@ namespace zetscript{
 									this
 									,(MemberProperty *)symbol->ref_ptr)
 							)
-							,STK_PROPERTY_MEMBER_PROPERTY}
+							,ZS_STK_PROPERTY_MEMBER_PROPERTY}
 					);
 				}
 			}
@@ -44,24 +44,24 @@ namespace zetscript{
 	}
 
 	void ScriptObject::unrefStackElementContainer(StackElement *si){
-		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
+		unsigned short var_type = GET_ZS_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
 
-			case STK_PROPERTY_BOOL:
-			case STK_PROPERTY_ZS_INT:
-			case STK_PROPERTY_UNDEFINED:
-			case STK_PROPERTY_NULL:
-			case STK_PROPERTY_ZS_FLOAT:
+			case ZS_STK_PROPERTY_BOOL:
+			case ZS_STK_PROPERTY_INT:
+			case ZS_STK_PROPERTY_UNDEFINED:
+			case ZS_STK_PROPERTY_NULL:
+			case ZS_STK_PROPERTY_FLOAT:
 				break;
-			case STK_PROPERTY_CONTAINER_SLOT:
+			case ZS_STK_PROPERTY_CONTAINER_SLOT:
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)si->value);
 				break;
-			case STK_PROPERTY_FUNCTION:
+			case ZS_STK_PROPERTY_FUNCTION:
 				break;
 			default: // properties ...
 
-				if( (var_type & STK_PROPERTY_SCRIPT_OBJECT)
+				if( (var_type & ZS_STK_PROPERTY_SCRIPT_OBJECT)
 					&&(si->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (si->value != 0)
 				 ){ // deallocate but not if is c or this ref
@@ -154,7 +154,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getStackElement(const zs_string & _key_name){
+	StackElement 	* ScriptObject::getStackElementByKeyName(const zs_string & _key_name){
 		return getBuiltinField(_key_name);
 	}
 
@@ -182,7 +182,7 @@ namespace zetscript{
 		return &stk_builtin_elements;
 	}
 
-	StackElement * ScriptObject::setStackElement(
+	StackElement * ScriptObject::setStackElementByKeyName(
 		const zs_string & _key_value
 		,StackElement * stk_element
 	){
@@ -239,9 +239,9 @@ namespace zetscript{
 		for(int i=0; i< stk_builtin_elements.size(); i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
-			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
+			if(stk->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 				delete (StackElementMemberProperty *)stk->value;
-			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
+			}else if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (stk->value != 0)
 				  ){ // deallocate but not if is c or this ref

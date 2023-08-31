@@ -20,7 +20,7 @@ namespace zetscript{
 	):RefObjectScriptObject(_zs,_so_ref){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
 		stk_key.setUndefined();
-		stk_key.properties=(STK_PROPERTY_ZS_CHAR_PTR);
+		stk_key.properties=(ZS_STK_PROPERTY_CHAR_PTR);
 
 		// setup object
 		it=_so_ref->getMapFields()->begin();

@@ -21,13 +21,13 @@ namespace zetscript{
 		// get properties from object o1
 		zs_map *map=o1->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->setStackElement(it.key,(StackElement *)it.value);
+			obj->setStackElementByKeyName(it.key,(StackElement *)it.value);
 		}
 
 		// get properties from object o2
 		map=o2->getMapFields();
 		for(auto it=map->begin(); !it.end();it.next()){
-			obj->setStackElement(it.key,(StackElement *)it.value);
+			obj->setStackElementByKeyName(it.key,(StackElement *)it.value);
 		}
 		return obj;
 	}
@@ -39,7 +39,7 @@ namespace zetscript{
 		// get properties from object o2
 		zs_map *fields=o2->getMapFields();
 		for(auto it=fields->begin(); !it.end();it.next()){
-			o1->setStackElement(it.key,(StackElement *)it.value);
+			o1->setStackElementByKeyName(it.key,(StackElement *)it.value);
 		}
 	}
 
@@ -54,7 +54,7 @@ namespace zetscript{
 		map_fields=new zs_map();
 	}
 
-	StackElement * ObjectScriptObject::setStackElement(
+	StackElement * ObjectScriptObject::setStackElementByKeyName(
 			const zs_string &  _key_name
 			//,zs_string & error
 			,StackElement * _stk_src
@@ -86,7 +86,7 @@ namespace zetscript{
 		return stk_dst;
 	}
 
-	StackElement 	* ObjectScriptObject::getStackElement(const zs_string &  _key_name){
+	StackElement 	* ObjectScriptObject::getStackElementByKeyName(const zs_string &  _key_name){
 		StackElement *stk=getBuiltinField(_key_name);
 		if(stk==NULL){
 			// get user field
@@ -146,7 +146,7 @@ namespace zetscript{
 	}
 
 	zs_string ObjectScriptObject::toString(){
-		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};
+		StackElement stk={(zs_int)this,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 		return json::serialize(zs,&stk,false,false);
 	}
 

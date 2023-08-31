@@ -193,7 +193,7 @@ namespace zetscript{
 	bool vm_set_stack_element_at(VirtualMachine *_vm,unsigned int _idx, StackElement _stk){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		if(_idx >= VM_STACK_MAX){
-			ZS_VM_SET_USER_ERRORF(_vm,"setStackElement: out of bounds");
+			ZS_VM_SET_USER_ERRORF(_vm,"setStackElementByKeyName: out of bounds");
 			return false;
 		}
 
@@ -216,7 +216,7 @@ namespace zetscript{
 		if(_idx_glb_element < (unsigned)data->main_function_object->local_variables->size()){
 			return &data->vm_stack[_idx_glb_element];
 		}else{
-			ZS_VM_SET_USER_ERRORF(_vm,"getStackElement: out of bounds");
+			ZS_VM_SET_USER_ERRORF(_vm,"getStackElementByKeyName: out of bounds");
 		}
 		return NULL;
 	}
@@ -297,7 +297,7 @@ namespace zetscript{
 
 			StackElement *stk_it=stk_start;
 			for(int i = 0; i < n_stk_params; i++){
-				if(_stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(_stk_params[i].properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
@@ -358,7 +358,7 @@ namespace zetscript{
 				stk_return = ptr_stk_return[0];
 
 				// if object add into lifetime till user delete it
-				if(stk_return.properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_return.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					// add generated
 					vm_insert_lifetime_object(
 						_vm
@@ -374,7 +374,7 @@ namespace zetscript{
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					/*StackElement stk_ret=ptr_stk_return[i];
-					if(stk_ret.properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(stk_ret.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 						delete (ScriptObject *)stk_ret.value;
 					}*/
 					// deinit vm variable...
@@ -468,7 +468,7 @@ namespace zetscript{
 		}
 		else {
 			// object
-			stk_obj = dst_container_ref->getStackElement((const char*)dst_container_slot_id);
+			stk_obj = dst_container_ref->getStackElementByKeyName((const char*)dst_container_slot_id);
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
 				, _src_container_ref->getScriptType()->str_script_type.c_str()
@@ -477,7 +477,8 @@ namespace zetscript{
 				, dst_container_ref->getScriptType()->str_script_type.c_str()
 				, data->zs->stackElementToStringTypeOf( stk_obj).c_str()
 
-			);
+			);
+
 		}
 	
 	}
@@ -500,7 +501,7 @@ namespace zetscript{
 
 		// do the assigment
 		stk_dst->value=(zs_int)_container_slot;
-		stk_dst->properties=STK_PROPERTY_CONTAINER_SLOT;
+		stk_dst->properties=ZS_STK_PROPERTY_CONTAINER_SLOT;
 
 		// add ref into map of pointers
 		data->cyclic_container_instances.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
@@ -571,7 +572,7 @@ namespace zetscript{
 						// delete container slot
 						auto stk=slots.items[i]->data->getPtrStackElement();
 
-						if((stk->properties & STK_PROPERTY_CONTAINER_SLOT)==0){
+						if((stk->properties & ZS_STK_PROPERTY_CONTAINER_SLOT)==0){
 							ZS_THROW_RUNTIME_ERRORF("stk container is not container slot");
 						}
 

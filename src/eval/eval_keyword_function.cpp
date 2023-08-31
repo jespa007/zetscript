@@ -444,16 +444,16 @@ namespace zetscript{
 							param_info.default_param_value=k_stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_NULL:
-							param_info.default_param_value={0,STK_PROPERTY_NULL};
+							param_info.default_param_value={0,ZS_STK_PROPERTY_NULL};
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
-							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_ZS_INT};
+							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_INT};
 							break;
 						case BYTE_CODE_LOAD_ZS_FLOAT:
-							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
+							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_FLOAT};
 							break;
 						case BYTE_CODE_LOAD_BOOL:
-							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_BOOL};
+							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
 							create_anonymous_function_return_expression=true;
@@ -465,7 +465,7 @@ namespace zetscript{
 
 					if(create_anonymous_function_return_expression==true){
 						Symbol *sf_aux=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
-						param_info.default_param_value={(zs_int)sf_aux,STK_PROPERTY_FUNCTION};
+						param_info.default_param_value={(zs_int)sf_aux,ZS_STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code

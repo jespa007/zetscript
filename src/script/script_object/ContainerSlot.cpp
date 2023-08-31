@@ -47,7 +47,7 @@ namespace zetscript{
 		ptr_stk=_ptr_stk;
 
 		//ptr_stk->value=(zs_int)this;
-		//ptr_stk->properties=STK_PROPERTY_CONTAINER_SLOT;
+		//ptr_stk->properties=ZS_STK_PROPERTY_CONTAINER_SLOT;
 	}
 
 	void ContainerSlot::setSrcContainerRef(ContainerScriptObject *_src_container_ref){

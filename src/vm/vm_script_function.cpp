@@ -191,7 +191,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_NOT: // !
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // boolean operation
+				if(stk_result_op1->properties & ZS_STK_PROPERTY_BOOL){ // boolean operation
 					VM_PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
 				}else{
 					if(vm_call_metamethod(
@@ -209,9 +209,9 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_NEG: // -
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // arithmetic operation
+				if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){ // arithmetic operation
 					VM_PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
-				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
+				}else if(stk_result_op1->properties & ZS_STK_PROPERTY_FLOAT){
 					VM_PUSH_STK_ZS_FLOAT(-ZS_READ_INTPTR_FLOAT(stk_result_op1->value));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
@@ -229,7 +229,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_BWC: // ~
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // arithmetic operation
+				if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){ // arithmetic operation
 					VM_PUSH_STK_ZS_INT((~((zs_int)(stk_result_op1->value))));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
@@ -252,19 +252,19 @@ namespace zetscript{
 					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
-					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_INT)!=0);
 					break;
 				case IDX_TYPE_ZS_FLOAT_C:
-					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_FLOAT)!=0);
 					break;
 				case IDX_TYPE_BOOL_C:
-					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)!=0);
 					break;
 				case IDX_TYPE_FUNCTION:
-					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
-					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 						VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
 								((ObjectScriptObject *)(stk_result_op1->value))->idx_script_type // A
 								, instruction->value_op2		// B
@@ -280,7 +280,7 @@ namespace zetscript{
 				continue;
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				VM_POP_STK_ONE;
-				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
+				if((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
 						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
@@ -292,7 +292,7 @@ namespace zetscript{
 				continue;
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				VM_POP_STK_ONE;
-				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
+				if((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
 						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
@@ -329,17 +329,17 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_INT;
 				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=STK_PROPERTY_ZS_FLOAT;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_FLOAT;
 				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_BOOL:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=STK_PROPERTY_BOOL;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_BOOL;
 				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_STACK_ELEMENT:
@@ -349,7 +349,7 @@ namespace zetscript{
 				// to avoid deref global objects from returning functions
 			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
 
-				if((data->vm_stack+instruction->value_op2)->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if((data->vm_stack+instruction->value_op2)->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 					// push load
 					VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				}else{
@@ -363,7 +363,7 @@ namespace zetscript{
 
 					// if global var...
 					// else if object ...
-					if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)==STK_PROPERTY_SCRIPT_OBJECT){
+					if((stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)==ZS_STK_PROPERTY_SCRIPT_OBJECT){
 						// ... deref
 						if(vm_unref_script_object_for_ret(_vm, stk_result_op1)==false){
 							return;
@@ -504,7 +504,7 @@ namespace zetscript{
 						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
 					}
-					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 if(vm_new_object_by_value(
@@ -519,13 +519,13 @@ namespace zetscript{
 					so_aux=ZS_NEW_ARRAY_OBJECT(data->zs);
 					vm_create_shared_script_object(_vm,so_aux);
 					data->vm_stk_current->value=(zs_int)so_aux;
-					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					vm_create_shared_script_object(_vm,so_aux);
-					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
@@ -623,7 +623,7 @@ namespace zetscript{
 
 					 vm_create_shared_script_object(_vm,so_aux);
 					 data->vm_stk_current->value=(zs_int)so_aux;
-					 data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					 data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 					 data->vm_stk_current++;
 					continue;
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
@@ -632,7 +632,7 @@ namespace zetscript{
 						VM_PUSH_STK_UNDEFINED;
 					}else{
 						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->get(instruction->value_op2);
-						data->vm_stk_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+						data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
 						data->vm_stk_current++;
 					}
 					continue;
@@ -863,7 +863,7 @@ namespace zetscript{
 		if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_aux->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
 			so_aux=ZS_NEW_STRING_OBJECT(data->zs,so_aux->toString());
-			stk_var->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			stk_var->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
 			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here... remove share data
@@ -895,11 +895,11 @@ namespace zetscript{
 
 		VM_POP_STK_ONE;
 		//script_var
-		if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
+		if(stk_result_op1->properties & ZS_STK_PROPERTY_PTR_STK){
 			stk_result_op1=(StackElement *)stk_result_op1->value;
 		}
 
-		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			so_class_aux1=NULL;
 
 			so_aux = (ScriptObject *)(stk_result_op1)->value;
@@ -928,7 +928,7 @@ namespace zetscript{
 
 		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
 		vm_create_shared_script_object(_vm,so_aux);
-		(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+		(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 	}
 }
 

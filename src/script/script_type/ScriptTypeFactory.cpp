@@ -188,7 +188,7 @@ namespace zetscript{
 
 	bool isNumber(ZetScript *_zs,StackElement *_stk){
 		ZS_UNUSUED_PARAM(_zs);
-		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
+		return (_stk->properties & (ZS_STK_PROPERTY_INT | ZS_STK_PROPERTY_FLOAT)) != 0;
 	}
 
 	void ScriptTypeFactory::setup(){

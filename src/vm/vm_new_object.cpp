@@ -30,7 +30,7 @@ namespace zetscript{
 			vm_create_shared_script_object(_vm,so_aux);
 
 			data->vm_stk_current->value=(zs_int)so_aux;
-			data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 			data->vm_stk_current++;
 
 			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
@@ -45,7 +45,7 @@ namespace zetscript{
 
 				 if(symbol_aux != NULL){
 					 data->vm_stk_current->value=(zs_int)symbol_aux;
-					 data->vm_stk_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+					 data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
 					 data->vm_stk_current++;
 				 }
 			}

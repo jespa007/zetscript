@@ -185,7 +185,7 @@ namespace zetscript{
 
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		stk->value=(zs_int)symbol_function;
-		stk->properties=STK_PROPERTY_FUNCTION;
+		stk->properties=ZS_STK_PROPERTY_FUNCTION;
 		switch(_metamethod_byte_code){
 			case METAMETHOD_BYTE_CODE_SET:
 				setters.push_back(stk);
