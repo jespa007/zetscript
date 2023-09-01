@@ -33,7 +33,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_EXTRACT_FUNCTION_INFO\
 	{ /* get elements from type */ \
 		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
-		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
+		if(symbol->properties & ZS_SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
 			if((irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)\
 					&&\
@@ -132,7 +132,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 		);\
 		goto lbl_exit_function;
 
-#define ZS_VM_STK_IS_GLOBAL(stk_var) \
+#define ZS_VM_ZS_STK_IS_GLOBAL(stk_var) \
 		((stk_var - data->vm_stack)< data->main_function_object->local_variables->size())
 
 #define ZS_VM_CHECK_CONTAINER_FOR_SLOT(_container) \
@@ -151,11 +151,11 @@ namespace zetscript{
 	class ZetScript;
 
 	typedef enum{
-		VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR=0
-		,VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED
-		,VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED
-		,VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
-		,VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION
+		ZS_VM_MAIN_ERROR_ZS_LOAD_PROPERTIES_ERROR=0
+		,ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED
+		,ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED
+		,ZS_VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
+		,ZS_VM_MAIN_ERROR_POST_OPERATOR_CANNOT_PERFORM_NEGATE_OPERATION
 	}VM_MainError;
 
 	typedef struct{
@@ -174,10 +174,10 @@ namespace zetscript{
 		 char									vm_str_metamethod_aux[ZS_VM_STR_AUX_MAX_LENGTH];
 		 char									vm_str_aux[2][ZS_VM_STR_AUX_MAX_LENGTH];
 		 VM_ScopeFunction					*	vm_current_scope_function;
-		 VM_ScopeFunction						vm_scope_function[VM_FUNCTION_CALL_MAX];
+		 VM_ScopeFunction						vm_scope_function[ZS_VM_FUNCTION_CALL_MAX];
 
 
-		 StackElement     						vm_stack[VM_STACK_MAX];
+		 StackElement     						vm_stack[ZS_VM_STACK_MAX];
 		 zs_vector<InfoLifetimeObject *>		lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
@@ -249,7 +249,7 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
-		,MetamethodByteCode 		_metamethod_byte_code=METAMETHOD_BYTE_CODE_INVALID
+		,MetamethodByteCode 		_metamethod_byte_code=ZS_METAMETHOD_BYTE_CODE_INVALID
 	);
 
 	void vm_push_stk_boolean_equal_strings(

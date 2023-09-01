@@ -43,8 +43,8 @@ namespace zetscript{
 
 
 		// check if by ref
-		if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_dst)){
-			stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->value);
+		if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_dst)){
+			stk_dst=(StackElement *)(ZS_GET_STK_VAR_REF(stk_dst)->value);
 		}
 
 		//- check for packed dst_stk
@@ -68,8 +68,8 @@ namespace zetscript{
 		// store through metamethod
 		store_lst_setter_functions=NULL;
 
-		if(STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
-			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(METAMETHOD_BYTE_CODE_SET))!=NULL){
+		if(ZS_STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
+			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(ZS_METAMETHOD_BYTE_CODE_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
@@ -91,8 +91,8 @@ namespace zetscript{
 
 			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
-			const char *__STR_SETTER_METAMETHOD__=metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET);\
-			const char *__STR_AKA_SETTER_METAMETHOD__=metamethod_byte_code_to_operator_str(METAMETHOD_BYTE_CODE_SET);\
+			const char *__STR_SETTER_METAMETHOD__=metamethod_byte_code_to_symbol_str(ZS_METAMETHOD_BYTE_CODE_SET);\
+			const char *__STR_AKA_SETTER_METAMETHOD__=metamethod_byte_code_to_operator_str(ZS_METAMETHOD_BYTE_CODE_SET);\
 			*stk_arg=*stk_src;\
 			if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
@@ -129,7 +129,7 @@ namespace zetscript{
 					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
 						data->vm_str_metamethod_aux
 						,stk_mp_aux->member_property->property_name.c_str()
-						,METAMETHOD_BYTE_CODE_SET
+						,ZS_METAMETHOD_BYTE_CODE_SET
 					); // symbol to find"
 				}
 
@@ -233,14 +233,14 @@ namespace zetscript{
 			}else if(stk_src_properties  &  (ZS_STK_PROPERTY_FUNCTION | ZS_STK_PROPERTY_TYPE | ZS_STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
-				STK_IS_STRING_SCRIPT_OBJECT(stk_src)
+				ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_src)
 							||
 				(stk_src_properties & (ZS_STK_PROPERTY_CHAR_PTR))
 
 			){
 				StringScriptObject *str_object=NULL;
 
-				if(STK_IS_STRING_SCRIPT_OBJECT(stk_dst)){ // dst is string reload
+				if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_dst)){ // dst is string reload
 					str_object=(StringScriptObject *)stk_dst->value;
 					unref_old_stk_script_object=false;
 				}else{ // Generates a zs_string var
@@ -311,7 +311,7 @@ namespace zetscript{
 				}
 
 			}else{
-				ZS_VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
+				ZS_VM_STOP_EXECUTE("ZS_BYTE_CODE_STORE: (internal) cannot determine var type %s"
 					,data->zs->stackElementToStringTypeOf(stk_src).c_str()
 				);
 			}
@@ -346,7 +346,7 @@ namespace zetscript{
 			//dst_container_slot=NULL;
 		}
 
-		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
+		if(_instruction->byte_code ==ZS_BYTE_CODE_STORE_CONST){
 			stk_dst->properties |= ZS_STK_PROPERTY_READ_ONLY;
 		}
 

@@ -20,11 +20,11 @@
 #endif
 
 #define ZS_IDX_UNDEFINED 						-1
-#define IDX_ZS_SCRIPT_FUNCTION_EVAL				-10
+#define ZS_IDX_SCRIPT_FUNCTION_EVAL				-10
 #define ZS_MAX_NATIVE_FUNCTION_ARGS				10
 
-#define GET_METAMETHOD(m)												((this->zs))->getMetamethod(m)
-#define IS_IDX_TYPE_INSTANCEOF(zs,idx_script_type,idx_type_instance)	((this->script_type_factory))->scriptTypeInheritsFrom(idx_script_type,idx_type_instance)
+#define ZS_GET_METAMETHOD(m)												((this->zs))->getMetamethod(m)
+#define ZS_IS_IDX_TYPE_INSTANCEOF(zs,idx_script_type,idx_type_instance)		((this->script_type_factory))->scriptTypeInheritsFrom(idx_script_type,idx_type_instance)
 
 #ifndef TRUE
 #define TRUE 1
@@ -38,8 +38,8 @@
 #define MAX_PATH 4096
 #endif
 
-#define ZS_MAX(a,b) (a)>(b)?(a):(b)
-#define ZS_MIN(a,b) (a)<(b)?(a):(b)
+#define 	ZS_MAX(a,b) (a)>(b)?(a):(b)
+#define 	ZS_MIN(a,b) (a)<(b)?(a):(b)
 
 #define		ZS_MAX_STR_BUFFER 					4096
 #define 	ZS_UNUSUED_PARAM(x) 				((void)(x))

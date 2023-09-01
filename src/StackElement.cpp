@@ -11,7 +11,7 @@ namespace zetscript{
 
 
 	/*zs_string		StackElement::toString(){
-		if(STK_IS_STRING_SCRIPT_OBJECT(this)){
+		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(this)){
 			return ((StringScriptObject *)this->value)->toString();
 		}
 		return stk_utils::stk_to_str(NULL,this);
@@ -19,7 +19,7 @@ namespace zetscript{
 	}*/
 
 	void StackElement::setUndefined(){
-		STK_SET_UNDEFINED(this);
+		ZS_STK_SET_UNDEFINED(this);
 	}
 
 	StackElement	StackElement::typeOf(){
@@ -30,23 +30,23 @@ namespace zetscript{
 			stk=(StackElement *)stk->value;
 		}
 
-		if(STK_VALUE_IS_UNDEFINED(stk)){
+		if(ZS_STK_VALUE_IS_UNDEFINED(stk)){
 			result.value=IDX_TYPE_UNDEFINED;
-		}else if(STK_VALUE_IS_NULL(stk)){
+		}else if(ZS_STK_VALUE_IS_NULL(stk)){
 			result.value=IDX_TYPE_NULL;
-		}else if(STK_VALUE_IS_ZS_INT(stk)){
-			result.value=IDX_TYPE_ZS_INT_C;
-		}else if(STK_VALUE_IS_ZS_FLOAT(stk)){
-			result.value=IDX_TYPE_ZS_FLOAT_C;
-		}else if(STK_VALUE_IS_BOOLEAN(stk)){
+		}else if(ZS_STK_VALUE_IS_INT(stk)){
+			result.value=IDX_TYPE_INT_C;
+		}else if(ZS_STK_VALUE_IS_FLOAT(stk)){
+			result.value=IDX_TYPE_FLOAT_C;
+		}else if(ZS_STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
-		}else if(STK_VALUE_IS_FUNCTION(stk)){
+		}else if(ZS_STK_VALUE_IS_FUNCTION(stk)){
 			result.value=IDX_TYPE_FUNCTION;
-		}else if(STK_VALUE_IS_TYPE(stk)){
+		}else if(ZS_STK_VALUE_IS_TYPE(stk)){
 			result=*stk;
-		}else if(STK_VALUE_IS_CONTAINER_SLOT(stk)){
+		}else if(ZS_STK_VALUE_IS_CONTAINER_SLOT(stk)){
 			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->idx_script_type;;
-		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
+		}else if(ZS_STK_VALUE_IS_SCRIPT_OBJECT(stk)){
 			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->idx_script_type;
 		}
 

@@ -10,8 +10,8 @@
 #include "vm_scope.h"
 
 
-#define VM_STACK_MAX					150
-#define VM_FUNCTION_CALL_MAX 			100
+#define ZS_VM_STACK_MAX						150
+#define ZS_VM_FUNCTION_CALL_MAX 			100
 
 namespace zetscript{
 

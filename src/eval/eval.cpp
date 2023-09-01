@@ -77,7 +77,7 @@ namespace zetscript{
 
 		if(_eval_data_from == NULL){
 
-			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
+			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
 				if(scope_info->symbol_variables->size() == 0){ // remove scope
 					scope_info->markAsUnusued();
 				}
@@ -130,13 +130,13 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.insert(
 						scope->offset_instruction_push_scope
 						,
-								new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
+								new EvalInstruction(ZS_BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
 
 				);
 
 				// and finally insert pop scope
 				eval_data->current_function->eval_instructions.push_back(
-						new EvalInstruction(BYTE_CODE_POP_SCOPE,0)
+						new EvalInstruction(ZS_BYTE_CODE_POP_SCOPE,0)
 				);
 			}
 		}
@@ -160,8 +160,8 @@ namespace zetscript{
 		if(*aux_p == '{'){
 			aux_p++;
 
-			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
+			if(scope_info->numInnerScopes() >= ZS_MAX_INNER_SCOPES_FUNCTION){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",ZS_MAX_INNER_SCOPES_FUNCTION);
 			}
 
 			if((aux_p = eval_parse_and_compile_recursive(
@@ -240,7 +240,7 @@ namespace zetscript{
 					,eval_data->current_parsing_file
 					,params[i].line
 					,params[i].name
-					,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
+					,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?ZS_SYMBOL_PROPERTY_ARG_BY_REF:0
 				);
 
 			}catch(std::exception & ex){
@@ -345,7 +345,7 @@ namespace zetscript{
 
 						try{
 							// compile but not execute, it will execute the last eval
-							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
+							eval_data->zs->evalFile(str_symbol,EvalOption::ZS_EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
 							eval_data->error_file=ex.getFilename();
@@ -530,7 +530,7 @@ namespace zetscript{
 
 		sf->instruction_source_infos.clear();
 
-		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
+		// get total size op + 1 ends with 0 (INVALID ZS_BYTE_CODE)
 		int count =eval_data->current_function->eval_instructions.size();
 		int len=count + 1; // +1 for end instruction
 		int total_size_bytes = (len) * sizeof(Instruction);
@@ -559,14 +559,14 @@ namespace zetscript{
 			switch(eval_instruction->vm_instruction.byte_code){
 			default:
 				break;
-			case BYTE_CODE_SUPER_CALL:
+			case ZS_BYTE_CODE_SUPER_CALL:
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
 					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name_script_function == sf->name_script_function;
-					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
 					if(
 							(match_names)
 						&& (match_params)
@@ -603,31 +603,31 @@ namespace zetscript{
 								symbol_sf_foundf->scope->script_type_owner->str_script_type)+"::"+symbol_sf_foundf->name);
 
 				break;
-			case BYTE_CODE_CALL:
+			case ZS_BYTE_CODE_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_CALL;
+					eval_instruction->vm_instruction.byte_code=ZS_BYTE_CODE_UNRESOLVED_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
-			case BYTE_CODE_THIS_CALL:
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					eval_data->zs->addUnresolvedSymbol(sf,i);
-				}
-				break;
-			case BYTE_CODE_INSTANCEOF:
+			case ZS_BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
-			case BYTE_CODE_FIND_VARIABLE:
+			case ZS_BYTE_CODE_INSTANCEOF:
+				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+					eval_data->zs->addUnresolvedSymbol(sf,i);
+				}
+				break;
+			case ZS_BYTE_CODE_FIND_VARIABLE:
 				// add instruction reference to solve later
 				eval_data->zs->addUnresolvedSymbol(sf,i);
 				break;
 			}
 
-			if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_RESET_STACK
-				|| eval_instruction->vm_instruction.byte_code == BYTE_CODE_RET
-				|| (eval_instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_RESET_STACK)
+			if(eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_RESET_STACK
+				|| eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_RET
+				|| (eval_instruction->vm_instruction.properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK)
 			){
 				// <-- reset stack
 				sum_stk_load_stk=0; // and reset stack
@@ -639,7 +639,7 @@ namespace zetscript{
 			if(	(lookup_sorted_table_local_variables != NULL)
 							&&
 				// the instruction does not refers to this variable which is not in the scope of this sort
-				((eval_instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) == 0)
+				((eval_instruction->vm_instruction.properties & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) == 0)
 			){
 				// add any instruction that references global instruction
 				ByteCode byte_code=eval_instruction->vm_instruction.byte_code;
@@ -647,21 +647,21 @@ namespace zetscript{
 				uint16_t properties_2=(uint16_t)(eval_instruction->vm_instruction.value_op2 & 0xffff);
 
 				switch(byte_code){ // reallocate instructions
-				case BYTE_CODE_INDIRECT_LOCAL_CALL:
-				case BYTE_CODE_LOAD_LOCAL:
-				case BYTE_CODE_LOAD_REF:
-				case BYTE_CODE_PUSH_STK_LOCAL:
+				case ZS_BYTE_CODE_INDIRECT_LOCAL_CALL:
+				case ZS_BYTE_CODE_LOAD_LOCAL:
+				case ZS_BYTE_CODE_LOAD_REF:
+				case ZS_BYTE_CODE_PUSH_STK_LOCAL:
 					eval_instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2];
 					break;
 				default:
 					// check if local access
-					if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_R) {// R
+					if(properties_1 & ZS_INSTRUCTION_PROPERTY_ILOAD_R) {// R
 						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
-					}else if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_KR) {// KR
+					}else if(properties_1 & ZS_INSTRUCTION_PROPERTY_ILOAD_KR) {// KR
 						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
-					}else if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_RK){ // RK
+					}else if(properties_1 & ZS_INSTRUCTION_PROPERTY_ILOAD_RK){ // RK
 						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
-					}else if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_RR){ // is RR local access
+					}else if(properties_1 & ZS_INSTRUCTION_PROPERTY_ILOAD_RR){ // is RR local access
 						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 						eval_instruction->vm_instruction.value_op2=(lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2>>16]<<16) | properties_2;
 					}

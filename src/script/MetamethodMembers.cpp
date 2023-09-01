@@ -7,38 +7,38 @@
 namespace zetscript{
 
 	const MetamethodByteCode MetamethodMembers::metamethod_byte_code_member_setter_list[]={
-			METAMETHOD_BYTE_CODE_SET
-			,METAMETHOD_BYTE_CODE_ADD_SET
-			,METAMETHOD_BYTE_CODE_SUB_SET
-			,METAMETHOD_BYTE_CODE_MUL_SET
-			,METAMETHOD_BYTE_CODE_DIV_SET
-			,METAMETHOD_BYTE_CODE_MOD_SET
-			,METAMETHOD_BYTE_CODE_AND_SET
-			,METAMETHOD_BYTE_CODE_OR_SET
-			,METAMETHOD_BYTE_CODE_XOR_SET
-			,METAMETHOD_BYTE_CODE_SHL_SET
-			,METAMETHOD_BYTE_CODE_SHR_SET
-			,METAMETHOD_BYTE_CODE_EQU //--> METAMETHOD_BYTE_CODE_EQU is special mark defined as 0 (end of elements)
+			ZS_METAMETHOD_BYTE_CODE_SET
+			,ZS_METAMETHOD_BYTE_CODE_ADD_SET
+			,ZS_METAMETHOD_BYTE_CODE_SUB_SET
+			,ZS_METAMETHOD_BYTE_CODE_MUL_SET
+			,ZS_METAMETHOD_BYTE_CODE_DIV_SET
+			,ZS_METAMETHOD_BYTE_CODE_MOD_SET
+			,ZS_METAMETHOD_BYTE_CODE_AND_SET
+			,ZS_METAMETHOD_BYTE_CODE_OR_SET
+			,ZS_METAMETHOD_BYTE_CODE_XOR_SET
+			,ZS_METAMETHOD_BYTE_CODE_SHL_SET
+			,ZS_METAMETHOD_BYTE_CODE_SHR_SET
+			,ZS_METAMETHOD_BYTE_CODE_EQU //--> ZS_METAMETHOD_BYTE_CODE_EQU is special mark defined as 0 (end of elements)
 	};
 
 	const MetamethodByteCode MetamethodMembers::metamethod_byte_code_member_list[]={
 
-			METAMETHOD_BYTE_CODE_SET
-			,METAMETHOD_BYTE_CODE_ADD_SET
-			,METAMETHOD_BYTE_CODE_SUB_SET
-			,METAMETHOD_BYTE_CODE_MUL_SET
-			,METAMETHOD_BYTE_CODE_DIV_SET
-			,METAMETHOD_BYTE_CODE_MOD_SET
-			,METAMETHOD_BYTE_CODE_AND_SET
-			,METAMETHOD_BYTE_CODE_OR_SET
-			,METAMETHOD_BYTE_CODE_XOR_SET
-			,METAMETHOD_BYTE_CODE_SHL_SET
-			,METAMETHOD_BYTE_CODE_SHR_SET
-			,METAMETHOD_BYTE_CODE_POST_INC
-			,METAMETHOD_BYTE_CODE_POST_DEC
-			,METAMETHOD_BYTE_CODE_PRE_INC
-			,METAMETHOD_BYTE_CODE_PRE_DEC
-			,METAMETHOD_BYTE_CODE_EQU //--> METAMETHOD_BYTE_CODE_EQU is special mark defined as 0  (end of elements)
+			ZS_METAMETHOD_BYTE_CODE_SET
+			,ZS_METAMETHOD_BYTE_CODE_ADD_SET
+			,ZS_METAMETHOD_BYTE_CODE_SUB_SET
+			,ZS_METAMETHOD_BYTE_CODE_MUL_SET
+			,ZS_METAMETHOD_BYTE_CODE_DIV_SET
+			,ZS_METAMETHOD_BYTE_CODE_MOD_SET
+			,ZS_METAMETHOD_BYTE_CODE_AND_SET
+			,ZS_METAMETHOD_BYTE_CODE_OR_SET
+			,ZS_METAMETHOD_BYTE_CODE_XOR_SET
+			,ZS_METAMETHOD_BYTE_CODE_SHL_SET
+			,ZS_METAMETHOD_BYTE_CODE_SHR_SET
+			,ZS_METAMETHOD_BYTE_CODE_POST_INC
+			,ZS_METAMETHOD_BYTE_CODE_POST_DEC
+			,ZS_METAMETHOD_BYTE_CODE_PRE_INC
+			,ZS_METAMETHOD_BYTE_CODE_PRE_DEC
+			,ZS_METAMETHOD_BYTE_CODE_EQU //--> ZS_METAMETHOD_BYTE_CODE_EQU is special mark defined as 0  (end of elements)
 	};
 
 	MetamethodMembers::MetamethodMembers(){
@@ -57,37 +57,37 @@ namespace zetscript{
 		info.metamethod_byte_code= _metamethod_byte_code;
 		info.metamethod_name=metamethod_byte_code_to_symbol_str(_metamethod_byte_code);
 		switch(_metamethod_byte_code){
-			case METAMETHOD_BYTE_CODE_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SET:
 				info.setters=&setters;
 				break;
-			case METAMETHOD_BYTE_CODE_ADD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_ADD_SET:
 				info.setters=&add_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_SUB_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SUB_SET:
 				 info.setters=&sub_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_MUL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MUL_SET:
 				info.setters=&mul_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_DIV_SET:
+			case ZS_METAMETHOD_BYTE_CODE_DIV_SET:
 				info.setters=&div_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_MOD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MOD_SET:
 				info.setters=&mod_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_AND_SET:
+			case ZS_METAMETHOD_BYTE_CODE_AND_SET:
 				info.setters=&and_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_OR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_OR_SET:
 				info.setters=&or_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_XOR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_XOR_SET:
 				info.setters=&xor_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_SHL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHL_SET:
 				info.setters=&shl_setters;
 				break;
-			case METAMETHOD_BYTE_CODE_SHR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHR_SET:
 				info.setters=&shr_setters;
 				break;
 			default:
@@ -98,7 +98,7 @@ namespace zetscript{
 
 	MetamethodMemberSetterInfo 		MetamethodMembers::getSetterInfo(const zs_string & _metamethod_name){
 		const MetamethodByteCode *it=metamethod_byte_code_member_setter_list;
-		MetamethodByteCode metamethod_byte_code=MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+		MetamethodByteCode metamethod_byte_code=MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 
 		while(*it!=0){
 			const char *_mt_name=metamethod_byte_code_to_symbol_str(*it);
@@ -118,22 +118,22 @@ namespace zetscript{
 		info.metamethod_byte_code= _metamethod_byte_code;
 		info.metamethod_name=metamethod_byte_code_to_symbol_str(_metamethod_byte_code);
 		switch(_metamethod_byte_code){
-			case METAMETHOD_BYTE_CODE_POST_INC:
+			case ZS_METAMETHOD_BYTE_CODE_POST_INC:
 				info.getter=&postinc;
 				break;
-			case METAMETHOD_BYTE_CODE_POST_DEC:
+			case ZS_METAMETHOD_BYTE_CODE_POST_DEC:
 				 info.getter=&postdec;
 				break;
-			case METAMETHOD_BYTE_CODE_PRE_INC:
+			case ZS_METAMETHOD_BYTE_CODE_PRE_INC:
 				info.getter=&preinc;
 				break;
-			case METAMETHOD_BYTE_CODE_PRE_DEC:
+			case ZS_METAMETHOD_BYTE_CODE_PRE_DEC:
 				info.getter=&predec;
 				break;
-			case METAMETHOD_BYTE_CODE_NEG:
+			case ZS_METAMETHOD_BYTE_CODE_NEG:
 				info.getter=&neg;
 				break;
-			case METAMETHOD_BYTE_CODE_BWC:
+			case ZS_METAMETHOD_BYTE_CODE_BWC:
 				info.getter=&bwc;
 				break;
 			default:
@@ -145,30 +145,30 @@ namespace zetscript{
 	MetamethodMemberGetterInfo MetamethodMembers::getGetterInfo(const zs_string & _metamethod_name){
 
 		// search setter
-		MetamethodByteCode metamethod_byte_code=METAMETHOD_BYTE_CODE_INVALID;
+		MetamethodByteCode metamethod_byte_code=ZS_METAMETHOD_BYTE_CODE_INVALID;
 
 		// particular case
 		if(_metamethod_name == "_get"){
 			return MetamethodMemberGetterInfo(
-				METAMETHOD_BYTE_CODE_GET
+				ZS_METAMETHOD_BYTE_CODE_GET
 				,&getter
 				,"_get"
 			);
 		}
 
 		MetamethodByteCode getter_bytecodes[]={
-			METAMETHOD_BYTE_CODE_POST_INC
-			,METAMETHOD_BYTE_CODE_POST_DEC
-			,METAMETHOD_BYTE_CODE_PRE_INC
-			,METAMETHOD_BYTE_CODE_PRE_DEC
-			,METAMETHOD_BYTE_CODE_NEG
-			,METAMETHOD_BYTE_CODE_BWC
-			,METAMETHOD_BYTE_CODE_INVALID
+			ZS_METAMETHOD_BYTE_CODE_POST_INC
+			,ZS_METAMETHOD_BYTE_CODE_POST_DEC
+			,ZS_METAMETHOD_BYTE_CODE_PRE_INC
+			,ZS_METAMETHOD_BYTE_CODE_PRE_DEC
+			,ZS_METAMETHOD_BYTE_CODE_NEG
+			,ZS_METAMETHOD_BYTE_CODE_BWC
+			,ZS_METAMETHOD_BYTE_CODE_INVALID
 		};
 
 		MetamethodByteCode *it=getter_bytecodes;
 
-		while(*it != METAMETHOD_BYTE_CODE_INVALID){
+		while(*it != ZS_METAMETHOD_BYTE_CODE_INVALID){
 			if(_metamethod_name==metamethod_byte_code_to_symbol_str(*it)){
 				metamethod_byte_code=*it;
 				break;
@@ -187,37 +187,37 @@ namespace zetscript{
 		stk->value=(zs_int)symbol_function;
 		stk->properties=ZS_STK_PROPERTY_FUNCTION;
 		switch(_metamethod_byte_code){
-			case METAMETHOD_BYTE_CODE_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SET:
 				setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_ADD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_ADD_SET:
 				add_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_SUB_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SUB_SET:
 				sub_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_MUL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MUL_SET:
 				mul_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_DIV_SET:
+			case ZS_METAMETHOD_BYTE_CODE_DIV_SET:
 				div_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_MOD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MOD_SET:
 				mod_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_AND_SET:
+			case ZS_METAMETHOD_BYTE_CODE_AND_SET:
 				and_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_OR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_OR_SET:
 				or_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_XOR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_XOR_SET:
 				xor_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_SHL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHL_SET:
 				shl_setters.push_back(stk);
 				break;
-			case METAMETHOD_BYTE_CODE_SHR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHR_SET:
 				shr_setters.push_back(stk);
 				break;
 			default:
@@ -231,26 +231,26 @@ namespace zetscript{
 	bool MetamethodMembers::isSetter(MetamethodByteCode _metamethod_byte_code){
 		auto setter_info = getSetterInfo(_metamethod_byte_code);
 
-		return setter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+		return setter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 	}
 
 	bool MetamethodMembers::isSetter(const zs_string & _metamethod_byte_code_str){
 		auto setter_info = getSetterInfo(_metamethod_byte_code_str);
 
-		return setter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+		return setter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 
 	}
 
 	bool MetamethodMembers::isGetter(MetamethodByteCode _metamethod_byte_code){
 		auto getter_info = getGetterInfo(_metamethod_byte_code);
 
-		return getter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+		return getter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 	}
 
 	bool MetamethodMembers::isGetter(const zs_string & _metamethod_byte_code_str){
 		auto getter_info = getGetterInfo(_metamethod_byte_code_str);
 
-		return getter_info.metamethod_byte_code != MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+		return getter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 
 	}
 

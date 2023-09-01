@@ -23,24 +23,24 @@ namespace zetscript{
 
 	bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error){
 		bool ok=true;
-		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
+		if(static_symbol->properties & ZS_SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
-			if((static_symbol->properties & SYMBOL_PROPERTY_FUNCTION)){
-				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+			if((static_symbol->properties & ZS_SYMBOL_PROPERTY_FUNCTION)){
+				instruction->byte_code=ZS_BYTE_CODE_LOAD_FUNCTION;
 				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
-			}else if(static_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+			}else if(static_symbol->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 				MemberProperty *metamethod_member=(MemberProperty *)(static_symbol->ref_ptr);
 				if(metamethod_member->metamethod_members.getter!=NULL){
-					instruction->byte_code=BYTE_CODE_CALL;
-					instruction->value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0);
+					instruction->byte_code=ZS_BYTE_CODE_CALL;
+					instruction->value_op1=ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0);
 					instruction->value_op2=(zs_int)metamethod_member->metamethod_members.getter;
 				}
 				else{
 					static_error="internal error: symbol property member null";
 					ok=false;
 				}
-			}else if((static_symbol->properties & SYMBOL_PROPERTY_CONST)){
-				instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+			}else if((static_symbol->properties & ZS_SYMBOL_PROPERTY_CONST)){
+				instruction->byte_code=ZS_BYTE_CODE_LOAD_GLOBAL;
 				instruction->value_op2=static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
 			}else{
 				static_error="symbol expected to be function or const";
@@ -122,13 +122,13 @@ namespace zetscript{
 			aux_p=aux_p+1;
 
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
-				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ZS_BYTE_CODE_NEG));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
-				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_BWC));
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ZS_BYTE_CODE_BWC));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
-				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ZS_BYTE_CODE_NOT));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}
 
@@ -258,12 +258,12 @@ namespace zetscript{
 
 						if(sc != NULL){ // if type exist ...
 
-							ei_first_token_node->vm_instruction.byte_code = BYTE_CODE_FIND_VARIABLE;
+							ei_first_token_node->vm_instruction.byte_code = ZS_BYTE_CODE_FIND_VARIABLE;
 
 							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
 
 							if(member_symbol != NULL){
-								if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
+								if(member_symbol->properties & ZS_SYMBOL_PROPERTY_STATIC){
 									if(!eval_set_instruction_static_symbol(&eval_instruction->vm_instruction,member_symbol,static_error)){
 										EVAL_ERROR_FILE_LINE_GOTO(
 												eval_data->current_parsing_file
@@ -288,16 +288,16 @@ namespace zetscript{
 						token_node_symbol_class=eval_data->script_type_factory->getScriptType(token_node_symbol->value);
 						EvalInstruction *ei_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
-							ei_instruction->vm_instruction.byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
+							ei_instruction->vm_instruction.byte_code= ZS_BYTE_CODE_LOAD_TYPE;
 							ei_instruction->vm_instruction.value_op2=token_node_symbol_class->idx_script_type;
 						}
 
 						// set operator symbol
-						if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
+						if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::ZS_OPERATOR_INSTANCEOF)){
 							last_operator_token_node->value=token_node_symbol->value;
 						}
 						/*else{ // sc is null
-							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
+							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::ZS_OPERATOR_INSTANCEOF)){
 								//last_operator_token_node->value=token_node_symbol->value;
 								//EvalInstruction *ei_last_operator=last_operator_token_node->eval_instructions.items[0];
 								ei_last_operator->instruction_source_info= InstructionSourceInfo(
@@ -344,8 +344,8 @@ namespace zetscript{
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_ARRAY
-				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
-				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==ZS_BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==ZS_BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
 			)==false){
 				EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
@@ -380,7 +380,7 @@ namespace zetscript{
 			int it_accessor_token=0;
 
 			do{
-				ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
+				ByteCode byte_code=ZS_BYTE_CODE_INVALID;
 				accessor_name="";
 				zs_int instruction_value2=ZS_IDX_UNDEFINED;
 				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
@@ -454,13 +454,13 @@ namespace zetscript{
 							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
 							// if not LOAD THIS set STK
-							if(byte_code_aux !=BYTE_CODE_LOAD_THIS_VARIABLE){
-								if(byte_code_aux ==BYTE_CODE_LOAD_REF){
-									ei_arg->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+							if(byte_code_aux !=ZS_BYTE_CODE_LOAD_THIS_VARIABLE){
+								if(byte_code_aux ==ZS_BYTE_CODE_LOAD_REF){
+									ei_arg->vm_instruction.byte_code=ZS_BYTE_CODE_LOAD_LOCAL;
 								}
 								else if(byte_code_is_load_var_type(byte_code_aux)){
 									ei_arg->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code_aux);
-									ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+									ei_arg->vm_instruction.properties |= ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
 								}
 							}
 						}
@@ -475,25 +475,25 @@ namespace zetscript{
 					}
 
 					if(token_node_symbol->value == SYMBOL_VALUE_SUPER){
-						byte_code=ByteCode::BYTE_CODE_SUPER_CALL;
+						byte_code=ZS_BYTE_CODE_SUPER_CALL;
 					}
 					else{
-						byte_code=ByteCode::BYTE_CODE_CALL;
+						byte_code=ZS_BYTE_CODE_CALL;
 
 						if(it_accessor_token==0){ // direct or indirect call
-							if( ei_first_token_node->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_FUNCTION ){
-								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
-							}else if( ei_first_token_node->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_LOCAL ){
-								byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
+							if( ei_first_token_node->vm_instruction.byte_code == ZS_BYTE_CODE_LOAD_THIS_FUNCTION ){
+								byte_code=ZS_BYTE_CODE_THIS_CALL;
+							}else if( ei_first_token_node->vm_instruction.byte_code == ZS_BYTE_CODE_LOAD_LOCAL ){
+								byte_code= ZS_BYTE_CODE_INDIRECT_LOCAL_CALL;
 							}
 						}else if(last_accessor_value==""){ // last access value was empty so is a stack call (a call from returning function)
-							byte_code=ByteCode::BYTE_CODE_STACK_CALL;
+							byte_code=ZS_BYTE_CODE_STACK_CALL;
 						}else{
-							if( last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE ){
-								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
+							if( last_instruction_token->vm_instruction.byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE ){
+								byte_code=ZS_BYTE_CODE_THIS_CALL;
 							}else{
-								byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;
-								last_instruction_token->vm_instruction.properties|=INSTRUCTION_PROPERTY_CALLING_FUNCTION;
+								byte_code=ZS_BYTE_CODE_MEMBER_CALL;
+								last_instruction_token->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION;
 							}
 						}
 					}
@@ -523,7 +523,7 @@ namespace zetscript{
 					}
 
 					aux_p++;
-					byte_code=ByteCode::BYTE_CODE_LOAD_ARRAY_ITEM;
+					byte_code=ZS_BYTE_CODE_LOAD_ARRAY_ITEM;
 					break;
 				case '.': // member/static access
 
@@ -554,7 +554,7 @@ namespace zetscript{
 						);
 					}
 
-					byte_code=ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM;
+					byte_code=ZS_BYTE_CODE_LOAD_OBJECT_ITEM;
 
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
 						instruction_token=ei_first_token_node;
@@ -583,17 +583,17 @@ namespace zetscript{
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
 						}
-						byte_code=ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE;
+						byte_code=ZS_BYTE_CODE_LOAD_THIS_VARIABLE;
 
 					}
 					break;
 				}
 
-				// if byte_code is type BYTE_CODE_LOAD_THIS_XXX it means that is Instruction BYTE_CODE_LOAD_THIS was muted into BYTE_CODE_LOAD_THIS_XXX. So
-				// we only create new instructions from bytes code != BYTE_CODE_LOAD_THIS_XXX
+				// if byte_code is type ZS_BYTE_CODE_LOAD_THIS_XXX it means that is Instruction ZS_BYTE_CODE_LOAD_THIS was muted into ZS_BYTE_CODE_LOAD_THIS_XXX. So
+				// we only create new instructions from bytes code != ZS_BYTE_CODE_LOAD_THIS_XXX
 				if((
-						   byte_code==ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE
-						|| byte_code==ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION
+						   byte_code==ZS_BYTE_CODE_LOAD_THIS_VARIABLE
+						|| byte_code==ZS_BYTE_CODE_LOAD_THIS_FUNCTION
 					)
 					==false){
 
@@ -604,23 +604,23 @@ namespace zetscript{
 				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 
 				switch(byte_code){
-				case BYTE_CODE_THIS_CALL:
-				case BYTE_CODE_SUPER_CALL:
-				case BYTE_CODE_CALL:
-				case BYTE_CODE_INDIRECT_LOCAL_CALL:
-				case BYTE_CODE_INDIRECT_GLOBAL_CALL:
-				case BYTE_CODE_UNRESOLVED_CALL:
+				case ZS_BYTE_CODE_THIS_CALL:
+				case ZS_BYTE_CODE_SUPER_CALL:
+				case ZS_BYTE_CODE_CALL:
+				case ZS_BYTE_CODE_INDIRECT_LOCAL_CALL:
+				case ZS_BYTE_CODE_INDIRECT_GLOBAL_CALL:
+				case ZS_BYTE_CODE_UNRESOLVED_CALL:
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.byte_code=byte_code;
-					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
+					instruction_token->vm_instruction.value_op1=ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
 					instruction_token->symbol_name=ei_first_token_node->symbol_name;
 					instruction_token->symbol_scope=ei_first_token_node->symbol_scope;
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
 
-					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
+					// The last instruction was ZS_BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
 					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
 					// to allow locate functions in the top most inherited type
-					if(byte_code==BYTE_CODE_THIS_CALL || byte_code==BYTE_CODE_SUPER_CALL){
+					if(byte_code==ZS_BYTE_CODE_THIS_CALL || byte_code==ZS_BYTE_CODE_SUPER_CALL){
 						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
 					}
 
@@ -632,10 +632,10 @@ namespace zetscript{
 					last_instruction_token=NULL;
 
 					break;
-				case BYTE_CODE_STACK_CALL:
-				case BYTE_CODE_MEMBER_CALL:
-				case BYTE_CODE_CONSTRUCTOR_CALL:
-					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params);
+				case ZS_BYTE_CODE_STACK_CALL:
+				case ZS_BYTE_CODE_MEMBER_CALL:
+				case ZS_BYTE_CODE_CONSTRUCTOR_CALL:
+					instruction_token->vm_instruction.value_op1=ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_params);
 
 					// also insert source file/line/symbol info to get info of this call...
 					instruction_token->instruction_source_info= eval_instruction_source_info(
@@ -710,8 +710,8 @@ namespace zetscript{
 			EvalInstruction *eval_instruction_post=NULL;
 			//EvalInstruction *eval_instruction_pre_op=NULL;
 
-			ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
-			//ByteCode byte_code_pre_operation= ByteCode::BYTE_CODE_INVALID;
+			ByteCode byte_code_post_operation= ZS_BYTE_CODE_INVALID;
+			//ByteCode byte_code_pre_operation= ZS_BYTE_CODE_INVALID;
 
 			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
@@ -747,9 +747,9 @@ namespace zetscript{
 			}
 
 		   if(post_operation == PostOperation::POST_OPERATION_INC){
-			   byte_code_post_operation=ByteCode::BYTE_CODE_POST_INC;
+			   byte_code_post_operation=ZS_BYTE_CODE_POST_INC;
 		   }else {
-			   byte_code_post_operation=ByteCode::BYTE_CODE_POST_DEC;
+			   byte_code_post_operation=ZS_BYTE_CODE_POST_DEC;
 		   }
 
 			token_node_symbol->eval_instructions.push_back(
@@ -770,14 +770,14 @@ namespace zetscript{
 
 			// pre op instruction
 		   /*if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
-			   byte_code_pre_operation=ByteCode::BYTE_CODE_NEG_POST_INC;
+			   byte_code_pre_operation=ZS_BYTE_CODE_NEG_POST_INC;
 			   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
 		   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
-			   byte_code_pre_operation=ByteCode::BYTE_CODE_BWC_POST_INC;
+			   byte_code_pre_operation=ZS_BYTE_CODE_BWC_POST_INC;
 			   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
 		   }
 
-		   if(byte_code_pre_operation != ByteCode::BYTE_CODE_INVALID){
+		   if(byte_code_pre_operation != ZS_BYTE_CODE_INVALID){
 				token_node_symbol->eval_instructions.push_back(
 					eval_instruction_pre_op=new EvalInstruction(
 							byte_code_pre_operation
@@ -796,8 +796,8 @@ namespace zetscript{
 			// if post inc/dec hange load by push because is mutable
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 				last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
-			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
-				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+			}else if(last_load_instruction->byte_code == ZS_BYTE_CODE_FIND_VARIABLE){
+				last_load_instruction->properties=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
 		}
 
@@ -837,12 +837,12 @@ namespace zetscript{
 
 			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_pre=new EvalInstruction(
-					pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
-					pre_operation == PreOperation::PRE_OPERATION_BWC ? ByteCode::BYTE_CODE_BWC:
-					pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
-					pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
-					pre_operation == PreOperation::PRE_OPERATION_TYPEOF ? ByteCode::BYTE_CODE_TYPEOF:
-					ByteCode::BYTE_CODE_PRE_INC
+					pre_operation == PreOperation::PRE_OPERATION_NEG ? ZS_BYTE_CODE_NEG:
+					pre_operation == PreOperation::PRE_OPERATION_BWC ? ZS_BYTE_CODE_BWC:
+					pre_operation == PreOperation::PRE_OPERATION_NOT ? ZS_BYTE_CODE_NOT:
+					pre_operation == PreOperation::PRE_OPERATION_DEC ? ZS_BYTE_CODE_PRE_DEC:
+					pre_operation == PreOperation::PRE_OPERATION_TYPEOF ? ZS_BYTE_CODE_TYPEOF:
+					ZS_BYTE_CODE_PRE_INC
 				)
 			);
 
@@ -861,8 +861,8 @@ namespace zetscript{
 
 				if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 					last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
-				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
-					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				}else if(last_load_instruction->byte_code == ZS_BYTE_CODE_FIND_VARIABLE){
+					last_load_instruction->properties=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}
 			}
 

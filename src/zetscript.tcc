@@ -59,7 +59,7 @@ namespace zetscript{
 			}
 
 			// particular case return type is string and stk is string script object
-			if(_idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(_stk)){
+			if(_idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(_stk)){
 				ScriptObject *so_string=(ScriptObject *)_stk->value;
 				this->unrefLifetimeObject(so_string);
 			}
@@ -125,7 +125,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -206,7 +206,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -299,7 +299,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -398,7 +398,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+					if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -501,7 +501,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -613,7 +613,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+					if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -728,7 +728,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -905,7 +905,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1093,7 +1093,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1294,7 +1294,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1507,7 +1507,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1572,7 +1572,7 @@ namespace zetscript{
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(
-						idx_script_type==IDX_TYPE_ZS_FLOAT_C
+						idx_script_type==IDX_TYPE_FLOAT_C
 						|| idx_script_type==IDX_TYPE_BOOL_C
 						|| idx_script_type == IDX_TYPE_ZS_STRING_C
 				){
@@ -1693,7 +1693,7 @@ namespace zetscript{
 				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.items[access_var.size()-1]);
 				if(symbol_sfm!=NULL){
 					ScriptFunction *test_fun=NULL;
-					if(symbol_sfm->properties & SYMBOL_PROPERTY_FUNCTION){
+					if(symbol_sfm->properties & ZS_SYMBOL_PROPERTY_FUNCTION){
 						test_fun=(ScriptFunction *)symbol_sfm->ref_ptr;
 					}
 

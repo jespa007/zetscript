@@ -34,18 +34,18 @@ namespace zetscript{
 		Instruction			*	instruction=_instruction;
 
 
-		if(_metamethod_byte_code == METAMETHOD_BYTE_CODE_ADD){
-			if(		STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)\
+		if(_metamethod_byte_code == ZS_METAMETHOD_BYTE_CODE_ADD){
+			if(		ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)\
 						||\
-					STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)\
+					ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
 					vm_create_shared_script_object(_vm,so_string);\
-					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
+					ZS_VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 					return true;
-			}else if(STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
+			}else if(ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
+					ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				script_object=ArrayScriptObject::concat(\
 							data->zs\
@@ -53,11 +53,11 @@ namespace zetscript{
 							,(ArrayScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_script_object(_vm,script_object);\
-					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
+					ZS_VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
 					return true;
-			}else if(STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
+			}else if(ZS_STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
+					ZS_STK_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				script_object=ObjectScriptObject::concat(\
 							data->zs\
@@ -65,7 +65,7 @@ namespace zetscript{
 							,(ObjectScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_script_object(_vm,script_object);\
-					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
+					ZS_VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
 					return true;
 			}
 		}
@@ -92,7 +92,7 @@ namespace zetscript{
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
-				if(instruction->byte_code == BYTE_CODE_JE_CASE){
+				if(instruction->byte_code == ZS_BYTE_CODE_JE_CASE){
 					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
 				}else{
 					error_found=zs_strutils::format("Type '%s' does not implements metamethod '%s'"
@@ -223,7 +223,7 @@ namespace zetscript{
 			);
 		}else{
 			zs_string tip=". The operation is incompatible or its metamethod is not defined properly";
-			if(((stk_result_op2!=NULL) && STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op2)) || STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op1)){
+			if(((stk_result_op2!=NULL) && ZS_STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op2)) || ZS_STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op1)){
 				tip=". Check whether any of the member property involved in the operation has defined the getter (i.e _get) properly";
 			}
 
@@ -278,19 +278,19 @@ namespace zetscript{
 		const char 					*			str_aka_set_metamethod=metamethod_byte_code_to_operator_str(_metamethod_byte_code);
 		Instruction					*			instruction=_instruction;
 
-		if(_metamethod_byte_code == METAMETHOD_BYTE_CODE_ADD_SET){
-			if(	STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
+		if(_metamethod_byte_code == ZS_METAMETHOD_BYTE_CODE_ADD_SET){
+			if(	ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
 						(stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
 				);\
-				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+				ZS_VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
-			}else if(STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
+			}else if(ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
+					ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
-				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+				ZS_VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
 			}
 		}
@@ -298,16 +298,16 @@ namespace zetscript{
 		// particular errors
 		if((stk_result_op2->properties==0) || (stk_result_op2->properties & ZS_STK_PROPERTY_NULL)){
 			ZS_VM_MAIN_ERROR(\
-					VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
+					ZS_VM_MAIN_ERROR_ZS_LOAD_PROPERTIES_ERROR\
 					,stk_result_op2\
 					,_metamethod_byte_code\
 			);\
 		}
 
-		LOAD_PROPERTIES(_metamethod_byte_code); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
+		ZS_LOAD_PROPERTIES(_metamethod_byte_code); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_metamethod_byte_code);
 		if(setter_info.setters->size()==0){\
-			METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code); \
+			ZS_METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code); \
 			goto lbl_exit_function;
 		}\
 		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
@@ -423,19 +423,19 @@ namespace zetscript{
 		StackElementMemberProperty	*	stk_mp_aux=NULL;
 		Instruction					*	instruction=_instruction;
 
-		LOAD_PROPERTIES(_metamethod_byte_code);\
+		ZS_LOAD_PROPERTIES(_metamethod_byte_code);\
 
 		switch(_metamethod_byte_code){
-		case METAMETHOD_BYTE_CODE_PRE_INC:
+		case ZS_METAMETHOD_BYTE_CODE_PRE_INC:
 			symbol_metamethod_pre=ptr_metamethod_members_aux->preinc;
 			break;
-		case METAMETHOD_BYTE_CODE_PRE_DEC:
+		case ZS_METAMETHOD_BYTE_CODE_PRE_DEC:
 			symbol_metamethod_pre=ptr_metamethod_members_aux->predec;
 			break;
-		case METAMETHOD_BYTE_CODE_POST_INC:
+		case ZS_METAMETHOD_BYTE_CODE_POST_INC:
 			symbol_metamethod_pre=ptr_metamethod_members_aux->postinc;
 			break;
-		case METAMETHOD_BYTE_CODE_POST_DEC:
+		case ZS_METAMETHOD_BYTE_CODE_POST_DEC:
 			symbol_metamethod_pre=ptr_metamethod_members_aux->postdec;
 			break;
 		default:
@@ -443,7 +443,7 @@ namespace zetscript{
 		}
 
 		if(symbol_metamethod_pre == NULL){
-			METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code);
+			ZS_METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code);
 			goto lbl_exit_function;
 		}
 

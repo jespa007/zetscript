@@ -17,7 +17,7 @@ namespace zetscript{
 		Instruction *instruction=_instruction;
 
 		VM_POP_STK_ONE;
-		 if(STK_VALUE_IS_TYPE(stk_result_op1)){
+		 if(ZS_STK_VALUE_IS_TYPE(stk_result_op1)){
 			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
 			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
 				ZS_VM_STOP_EXECUTE("'%s' type is not instantiable",sc_aux1->getTypeName());
@@ -51,7 +51,7 @@ namespace zetscript{
 			}
 
 			if(symbol_aux == NULL){
-				VM_PUSH_STK_UNDEFINED;
+				ZS_VM_PUSH_STK_UNDEFINED;
 			}
 
 		 }else{

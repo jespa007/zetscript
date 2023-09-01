@@ -94,7 +94,7 @@ namespace zetscript{
 					if(
 						((stk_se.properties & ZS_STK_PROPERTY_FUNCTION) == 0)
 							&&
-						STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
+						ZS_STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
 					){
 						bool getter_found=false;
 						bool value_from_vm_execute=false;
@@ -148,7 +148,7 @@ namespace zetscript{
 										str_aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;
-									case  IDX_TYPE_ZS_FLOAT_C:
+									case  IDX_TYPE_FLOAT_C:
 										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
@@ -219,7 +219,7 @@ namespace zetscript{
 
 			stk=_zs->unwrapStackElement(stk);
 
-			var_type = GET_ZS_STK_PROPERTY_TYPES(stk.properties);
+			var_type = ZS_GET_STK_PROPERTY_TYPES(stk.properties);
 
 			switch(var_type){
 			default:

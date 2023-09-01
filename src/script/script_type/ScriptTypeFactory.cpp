@@ -202,17 +202,17 @@ namespace zetscript{
 		SCF_REGISTER_TYPE(ZS_TYPE_NAME_UNDEFINED,IDX_TYPE_UNDEFINED);
 		SCF_REGISTER_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
 		SCF_REGISTER_NATIVE_TYPE(void,IDX_TYPE_VOID_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_INT,zs_int,IDX_TYPE_ZS_INT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_int *,IDX_TYPE_ZS_INT_PTR_C);
+		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_INT,zs_int,IDX_TYPE_INT_C);
+		SCF_REGISTER_NATIVE_TYPE(zs_int *,IDX_TYPE_INT_PTR_C);
 		SCF_REGISTER_NATIVE_TYPE(char *,IDX_TYPE_CHAR_PTR_C);
 		SCF_REGISTER_NATIVE_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
 		SCF_REGISTER_NATIVE_TYPE(zs_string,IDX_TYPE_ZS_STRING_C);
 		SCF_REGISTER_NATIVE_TYPE(zs_string *,IDX_TYPE_ZS_STRING_PTR_C);
 		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_BOOL,bool,IDX_TYPE_BOOL_C);
 		SCF_REGISTER_NATIVE_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_FLOAT,zs_float,IDX_TYPE_ZS_FLOAT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_float *,IDX_TYPE_ZS_FLOAT_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(const zs_float *,IDX_TYPE_CONST_ZS_FLOAT_PTR_C);
+		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_FLOAT,zs_float,IDX_TYPE_FLOAT_C);
+		SCF_REGISTER_NATIVE_TYPE(zs_float *,IDX_TYPE_FLOAT_PTR_C);
+		SCF_REGISTER_NATIVE_TYPE(const zs_float *,IDX_TYPE_CONST_FLOAT_PTR_C);
 
 		// estructures
 		SCF_REGISTER_STRUCT(StackElement,IDX_TYPE_STACK_ELEMENT);
@@ -423,12 +423,12 @@ namespace zetscript{
 					index==IDX_TYPE_BOOL_C
 					|| index==IDX_TYPE_UNDEFINED
 					|| index==IDX_TYPE_NULL
-					|| index==IDX_TYPE_ZS_INT_C
-					|| index==IDX_TYPE_ZS_FLOAT_C
+					|| index==IDX_TYPE_INT_C
+					|| index==IDX_TYPE_FLOAT_C
 			){
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
-			// BYTE_CODE_NEW SCOPE C and register ...
+			// ZS_BYTE_CODE_NEW SCOPE C and register ...
 			Scope * scope_class = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
@@ -501,7 +501,7 @@ namespace zetscript{
 
 
 					// attribs has to be copy MemberProperty...
-					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+					if(symbol_src->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 						MemberProperty *mp_src=(MemberProperty *)symbol_src->ref_ptr;
 						MemberProperty *mp_dst=new MemberProperty(sc,mp_src->property_name);
 						mp_dst->metamethod_members.getter=mp_src->metamethod_members.getter;

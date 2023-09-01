@@ -106,30 +106,30 @@ namespace zetscript{
 		default:
 			 ZS_VM_STOP_EXECUTE("byte code '%s' not handled",instruction->byte_code);
 			break;
-			case  BYTE_CODE_CALL: // immediate call this
+			case  ZS_BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
-				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
+				 sf_call_n_args = ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
-			case BYTE_CODE_SUPER_CALL:
+			case ZS_BYTE_CODE_SUPER_CALL:
 				 sf_call_calling_object = _this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
-				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
+				 sf_call_n_args = ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
 				 goto execute_function;
-			case  BYTE_CODE_THIS_CALL: // immediate call this
+			case  ZS_BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = _this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
-				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
+				 sf_call_n_args = ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 symbol_aux=NULL;
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
@@ -160,7 +160,7 @@ namespace zetscript{
 
 				 //sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 				 goto execute_function;
-			case BYTE_CODE_INDIRECT_THIS_CALL:
+			case ZS_BYTE_CODE_INDIRECT_THIS_CALL:
 				 sf_call_calling_object = _this_object;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
@@ -171,58 +171,58 @@ namespace zetscript{
 					);
 				 }
 				 goto load_function;
-			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
+			case  ZS_BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
 				goto load_function;
-			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
+			case  ZS_BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
-			case  BYTE_CODE_STACK_CALL: // stack call
+			case  ZS_BYTE_CODE_STACK_CALL: // stack call
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=data->vm_stk_current-(INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
+				 sf_call_stk_function_ref=data->vm_stk_current-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
 				 goto load_function;
-			 case  BYTE_CODE_CONSTRUCTOR_CALL:
+			 case  ZS_BYTE_CODE_CONSTRUCTOR_CALL:
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_script_function=NULL;
-				 sf_call_stk_function_ref = (data->vm_stk_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				 sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 				// get object
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
 				// if we invoke constructor we need to keep object to pass after, else remove object+function
 				sf_call_stk_start_function_object=1;
 				goto load_function;
-		 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
+		 case  ZS_BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 			sf_call_script_function=NULL;
-			sf_call_stk_function_ref = (data->vm_stk_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+			sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 			// if we invoke constructor we need to keep object to pass after, else remove object+function
-			sf_call_stk_start_function_object=1;//instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
+			sf_call_stk_start_function_object=1;//instruction->byte_code==ZS_BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
 load_function:
 
 			sf_call_is_member_function=false;
-			sf_call_is_constructor=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL;
+			sf_call_is_constructor=instruction->byte_code==ZS_BYTE_CODE_CONSTRUCTOR_CALL;
 
-			sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
+			sf_call_n_args = ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 			sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 
 			if(sf_call_stk_function_ref->properties & ZS_STK_PROPERTY_MEMBER_FUNCTION){
 			  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 			  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 			  sf_call_is_member_function=true;
-			}else if(STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(sf_call_stk_function_ref)){
+			}else if(ZS_STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(sf_call_stk_function_ref)){
 			  MemberFunctionScriptObject *sofm=(  MemberFunctionScriptObject *)sf_call_stk_function_ref->value;
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
@@ -239,16 +239,16 @@ load_function:
 				sf_call_is_member_function=false;
 				if((sf_call_stk_function_ref->properties & (ZS_STK_PROPERTY_FUNCTION))==0){
 					// error or continue
-					if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
+					if(instruction->byte_code== ZS_BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
 						// reset stack to last
-						if((instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)==0){
+						if((instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK)==0){
 							data->vm_stk_current=sf_call_stk_function_ref;//sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
 						}
 						goto lbl_exit_function_ok;
 					}
 
 					// indirect this call / member call or stk call
-					if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
+					if(instruction->byte_code==ZS_BYTE_CODE_INDIRECT_THIS_CALL){
 
 						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
@@ -256,12 +256,12 @@ load_function:
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 
-					}else if(instruction->byte_code==BYTE_CODE_MEMBER_CALL){
+					}else if(instruction->byte_code==ZS_BYTE_CODE_MEMBER_CALL){
 						ZS_VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
-					}else if(instruction->byte_code==BYTE_CODE_INDIRECT_LOCAL_CALL){
+					}else if(instruction->byte_code==ZS_BYTE_CODE_INDIRECT_LOCAL_CALL){
 						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
@@ -309,7 +309,7 @@ execute_function:
 							}
 
 							// because arg by ref is always loaded directly we have the object stk...
-							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==false) { // create new
+							if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==false) { // create new
 
 								if((stk_arg->properties & ZS_STK_PROPERTY_PTR_STK) != ZS_STK_PROPERTY_PTR_STK){
 									ZS_VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
@@ -335,7 +335,7 @@ execute_function:
 								stk_arg->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 							}
 
-							if(STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==true) { // not passing by ref it gets its value
+							if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_arg)==true) { // not passing by ref it gets its value
 								*stk_arg=*((VarRefScriptObject *)stk_arg->value)->getStackElementPtr();
 							}
 
@@ -436,7 +436,7 @@ execute_function:
 
 				if(data->vm_error == false && sf_call_is_constructor==true){
 					// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
-					// exposin 'this' candidate to be dereferenced and destroyed. In the BYTE_CODE_CONSTRUCTOR_CALL was shared +1.
+					// exposin 'this' candidate to be dereferenced and destroyed. In the ZS_BYTE_CODE_CONSTRUCTOR_CALL was shared +1.
 					// In this case deref the shared 'this' is dereferenced
 					vm_unref_shared_script_object(
 							_vm
@@ -554,16 +554,16 @@ execute_function:
 			// calcule returned stack elements
 			sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_symbols); // +1 points to starting return...
 			sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;
-			sf_call_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
+			sf_call_return=ZS_INSTRUCTION_GET_RETURN_COUNT(instruction);
 
 			// setup all returned variables from function
 			ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function)
 
-			if((instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)==0){
+			if((instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK)==0){
 
 				// add as many values expects to the left
 				for(int i=sf_call_n_returned_arguments_from_function; i < sf_call_return;i++){
-					VM_PUSH_STK_UNDEFINED;
+					ZS_VM_PUSH_STK_UNDEFINED;
 					sf_call_n_returned_arguments_from_function++;
 				}
 

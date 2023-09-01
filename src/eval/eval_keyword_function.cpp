@@ -76,10 +76,10 @@ namespace zetscript{
 
 		// 4. add load/store/reset stack
 		*start_ptr++=Instruction(
-				BYTE_CODE_PUSH_STK_THIS_VARIABLE
+				ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			,(uint8_t)ZS_IDX_UNDEFINED
 			,ZS_IDX_UNDEFINED
-			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
+			,ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
 		_sf->instruction_source_infos.push_back(new InstructionSourceInfo(
 			eval_instruction_source_info(
@@ -90,7 +90,7 @@ namespace zetscript{
 		)));
 
 
-		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
+		*start_ptr++=Instruction(ZS_BYTE_CODE_STORE,1);
 		_sf->instruction_source_infos.push_back(NULL);
 
 		if(_sf->instructions != NULL){
@@ -134,9 +134,9 @@ namespace zetscript{
 			// save instruction ...
 			*start_ptr=instruction->vm_instruction;
 
-			if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD_STRING){
-				start_ptr->byte_code = BYTE_CODE_NEW_STRING;
-				start_ptr->properties=INSTRUCTION_PROPERTY_STRING;
+			if(instruction->vm_instruction.byte_code == ZS_BYTE_CODE_LOAD_STRING){
+				start_ptr->byte_code = ZS_BYTE_CODE_NEW_STRING;
+				start_ptr->properties=ZS_INSTRUCTION_PROPERTY_STRING;
 			}
 
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
@@ -152,7 +152,7 @@ namespace zetscript{
 		}
 
 		// add return in the end...
-		start_ptr->byte_code=BYTE_CODE_RET;
+		start_ptr->byte_code=ZS_BYTE_CODE_RET;
 		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 		start_ptr->value_op2=ZS_IDX_UNDEFINED;
 		sf->instruction_source_infos.push_back(NULL);
@@ -196,7 +196,7 @@ namespace zetscript{
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
-			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
+			   || (properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
 			  )
 			   // is function member
 			){ // type members are defined as functions
@@ -277,7 +277,7 @@ namespace zetscript{
 			}
 			else{ // name anonymous function
 
-				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
+				if((properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
 					// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
 					return NULL;
 				}
@@ -291,7 +291,7 @@ namespace zetscript{
 					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 							"declaring function member '%s::%s'"
 							,scope_info->script_type_owner->str_script_type.c_str()
-							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
+							,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 							).c_str():"declaring function"
 							,*aux_p
 
@@ -302,7 +302,7 @@ namespace zetscript{
 							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 									"declaring function member '%s::%s'"
 									,scope_info->script_type_owner->str_script_type.c_str()
-									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
+									,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 									).c_str():"declaring function"
 
 					);
@@ -440,19 +440,19 @@ namespace zetscript{
 						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
-						case BYTE_CODE_LOAD_UNDEFINED:
+						case ZS_BYTE_CODE_LOAD_UNDEFINED:
 							param_info.default_param_value=k_stk_undefined;
 							break;
-						case BYTE_CODE_LOAD_NULL:
+						case ZS_BYTE_CODE_LOAD_NULL:
 							param_info.default_param_value={0,ZS_STK_PROPERTY_NULL};
 							break;
-						case BYTE_CODE_LOAD_ZS_INT:
+						case ZS_BYTE_CODE_LOAD_INT:
 							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_INT};
 							break;
-						case BYTE_CODE_LOAD_ZS_FLOAT:
+						case ZS_BYTE_CODE_LOAD_FLOAT:
 							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_FLOAT};
 							break;
-						case BYTE_CODE_LOAD_BOOL:
+						case ZS_BYTE_CODE_LOAD_BOOL:
 							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
@@ -481,7 +481,7 @@ namespace zetscript{
 			}
 
 			// register function ...
-			if(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
+			if(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
 				if(custom_symbol_name != ""){
 					name_script_function=custom_symbol_name;
 				}else{
@@ -546,7 +546,7 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
 
-				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
+				if((properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
 					if(scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)){ // is a function that was created within a member function...
 						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
@@ -647,9 +647,9 @@ namespace zetscript{
 
 				// If byte code is a global var load (find var is also global) set as push stk to
 				// avoid deref global objects
-				if(byte_code_aux ==BYTE_CODE_LOAD_GLOBAL){
-					ei_arg->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
-				}else if(byte_code_aux ==BYTE_CODE_FIND_VARIABLE){
+				if(byte_code_aux ==ZS_BYTE_CODE_LOAD_GLOBAL){
+					ei_arg->vm_instruction.byte_code=ZS_BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
+				}else if(byte_code_aux ==ZS_BYTE_CODE_FIND_VARIABLE){
 					ei_arg->vm_instruction.value_op1=ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO;
 				}
 			}
@@ -665,7 +665,7 @@ namespace zetscript{
 		}while(!end);
 
 		eval_data->current_function->eval_instructions.push_back(
-			new EvalInstruction(BYTE_CODE_RET)
+			new EvalInstruction(ZS_BYTE_CODE_RET)
 		);
 
 		return aux_p;

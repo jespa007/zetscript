@@ -13,7 +13,7 @@ namespace zetscript{
 		const char *metamethod_name;
 
 		MetamethodMemberSetterInfo() {
-			metamethod_byte_code = MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+			metamethod_byte_code = MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 			setters = NULL;
 			metamethod_name = NULL;
 
@@ -26,7 +26,7 @@ namespace zetscript{
 		const char *metamethod_name;
 
 		MetamethodMemberGetterInfo() {
-			metamethod_byte_code = MetamethodByteCode::METAMETHOD_BYTE_CODE_INVALID;
+			metamethod_byte_code = MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 			getter = NULL;
 			metamethod_name = NULL;
 

@@ -37,13 +37,13 @@ int main(int argc, char * argv[]) {
 			if(is_option){
 
 				if(strcmp(argv[idx_arg],"--no-execute")==0){
-					eval_options |= zetscript::EvalOption::EVAL_OPTION_NO_EXECUTE;
+					eval_options |= zetscript::EvalOption::ZS_EVAL_OPTION_NO_EXECUTE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code")==0){
-					eval_options|=zetscript::EvalOption::EVAL_OPTION_PRINT_BYTE_CODE;
+					eval_options|=zetscript::EvalOption::ZS_EVAL_OPTION_PRINT_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-all")==0){
-					eval_options|=(zetscript::EvalOption::EVAL_OPTION_PRINT_BYTE_CODE|zetscript::EvalOption::EVAL_OPTION_PRINT_ALL_BYTE_CODE);
+					eval_options|=(zetscript::EvalOption::ZS_EVAL_OPTION_PRINT_BYTE_CODE|zetscript::EvalOption::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-system")==0){
-					eval_options|=zetscript::EvalOption::EVAL_OPTION_PRINT_ALL_BYTE_CODE;
+					eval_options|=zetscript::EvalOption::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--no-execution-time")==0){
 					no_execution_time=true;
 				}else if(strcmp(argv[idx_arg],"--version")==0){

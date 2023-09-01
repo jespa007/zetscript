@@ -57,10 +57,10 @@ ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 
 
 if((CMAKE_SIZEOF_VOID_P EQUAL 8) OR "${FLOAT_PRECISION}" STREQUAL "DOUBLE")
-	set( ZS_FLOAT_TYPE 		"double" )
+	set( FLOAT_TYPE 		"double" )
 	MESSAGE("-- Float precision: double"  )
 else()
-	set( ZS_FLOAT_TYPE		"float" )
+	set( FLOAT_TYPE		"float" )
 	MESSAGE("-- Float precision: single"  )
 endif()
 

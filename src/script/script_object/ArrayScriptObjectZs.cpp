@@ -137,7 +137,7 @@ namespace zetscript{
 					}
 					break;
 				case ZS_STK_PROPERTY_SCRIPT_OBJECT:
-					if(STK_IS_STRING_SCRIPT_OBJECT(stk_element_s1) && STK_IS_STRING_SCRIPT_OBJECT(stk_element_s2)){
+					if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_element_s1) && ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_element_s2)){
 						equal=((ScriptObject *)stk_element_s1->value)->toString() == ((ScriptObject *)stk_element_s2->value)->toString();
 					}else{
 						equal=stk_element_s1->value==stk_element_s2->value;

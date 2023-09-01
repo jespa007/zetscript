@@ -65,7 +65,7 @@ namespace zetscript{
 			int n_args=0;
 
 			// ObjectScriptObject uses static method in order to call iter (i.e Object::iter(o)
-			if((symbol_iter->properties & SYMBOL_PROPERTY_STATIC)!= 0){ //is static
+			if((symbol_iter->properties & ZS_SYMBOL_PROPERTY_STATIC)!= 0){ //is static
 				n_args=1;
 
 				// only stores and not increment (++ ) in order to start the stk arg
@@ -156,16 +156,16 @@ namespace zetscript{
 			switch(so_aux->idx_script_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){
-				VM_PUSH_STK_BOOLEAN(
+				ZS_VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
 						data->zs
 						,((StringScriptObject *)so_aux)
 						,(zs_int)stk_result_op1->value
 					)
 				);
-			}else if(STK_IS_STRING_SCRIPT_OBJECT(&stk_result_op1_aux)){
+			}else if(ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk_result_op1_aux)){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
-				VM_PUSH_STK_BOOLEAN(
+				ZS_VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
 						data->zs
 						,(StringScriptObject *)so_aux
@@ -177,7 +177,7 @@ namespace zetscript{
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_ARRAY: // check whether value exists...
 			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
-				VM_PUSH_STK_BOOLEAN(
+				ZS_VM_PUSH_STK_BOOLEAN(
 				ArrayScriptObjectZs_contains(
 					data->zs,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
 				)
@@ -186,7 +186,7 @@ namespace zetscript{
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
-				VM_PUSH_STK_BOOLEAN(
+				ZS_VM_PUSH_STK_BOOLEAN(
 					ObjectScriptObjectZs_contains(
 						data->zs,(ObjectScriptObject *)so_aux,&str_op1
 					)
@@ -200,7 +200,7 @@ namespace zetscript{
 						_vm,
 						_script_function,
 						_instruction,
-						METAMETHOD_BYTE_CODE_IN,
+						ZS_METAMETHOD_BYTE_CODE_IN,
 						&stk_result_op2_aux,
 						&stk_result_op1_aux,
 						false
