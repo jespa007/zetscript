@@ -385,8 +385,8 @@ _ArrayScriptObject_ member functions available for user operations are the follo
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
-		template<typename _T>
-		void 								push(_T _value);
+template<typename _T>
+void 								push(_T _value);
 
 ====== ArrayScriptObject::set()
 
