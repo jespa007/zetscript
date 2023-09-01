@@ -80,7 +80,7 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
 void RegisteredType_set(ZetScript * _zs, RegisteredType *_this, ParamType * _value);
 ----
@@ -132,7 +132,7 @@ void NumberZs_register(zetscript::ZetScript *_zs){
 
 Finally, the following code it shows an example of a script that assigns  values from a _Float_ value and _Number_ object.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_type/register_member_metamethod_set.cpp[]
 ----

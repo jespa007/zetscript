@@ -4,7 +4,7 @@ To make a ZetScript function callable from C&#43;&#43; is done through _ZetScrip
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
  ZetScript::bindScriptFunction<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)>(const zs_string & _script_function);
 ----
@@ -24,7 +24,7 @@ Returns a _std::function_ with the signature provided.
 
 The following example it binds a _sayHelloWorld_ function.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function.cpp[]
 ----
@@ -55,7 +55,7 @@ To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_bool.cpp[]
 ----
@@ -73,7 +73,7 @@ To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_zs_int.cpp[]
 ----
@@ -94,7 +94,7 @@ To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_zs_float.cpp[]
 ----
@@ -120,7 +120,7 @@ To bind a ZetScript function that returns a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_zs_string.cpp[]
 ----
@@ -141,7 +141,7 @@ After using the object returned by the function it has to decrease its reference
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_string_script_object.cpp[]
 ----
@@ -164,7 +164,7 @@ After using the object returned by the function it has to decrease its reference
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_array_script_object.cpp[]
 ----
@@ -186,7 +186,7 @@ After using the object returned by the function it has to decrease its reference
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_object_script_object.cpp[]
 ----
@@ -208,7 +208,7 @@ After using the object returned by the function it has to decrease its reference
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_class_script_object.cpp[]
 ----
@@ -230,7 +230,7 @@ After using the object returned by the function it has to decrease its reference
 
 In this example, it registers the _Number_ type (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_type[section 3.5.1] to know how to register a type) and the property _Number::value_ (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;properties[section 3.5.5] to know how to register a property). In the example also, it can see the implementation of a function 'newNumber' in the ZetScript code that returns a new _Number_. After evaluate the script code, it binds the script function _newNumber_ into a in C&#x2b;&#x2b;  variable called _newNumber_.  Finally, it calls _newNumber_ from C&#x2b;&#x2b; and save the _ClassScriptObject &_ type returned into C&#x2b;&#x2b; _class_script_object_number_ variable to print its content information.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_return_registered_type.cpp[]
 ----
@@ -263,7 +263,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_bool.cpp[]
 ----
@@ -283,7 +283,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_zs_int.cpp[]
 ----
@@ -301,7 +301,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_zs_float.cpp[]
 ----
@@ -329,7 +329,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_const_char.cpp[]
 ----
@@ -347,7 +347,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_zs_string.cpp[]
 ----
@@ -366,7 +366,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_string_script_object.cpp[]
 ----
@@ -386,7 +386,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_array_script_object.cpp[]
 ----
@@ -406,7 +406,7 @@ To bind a ZetScript function that accepts a _xref:chapter_2_the_language_data_ty
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_object_script_object.cpp[]
 ----
@@ -426,7 +426,7 @@ To bind a ZetScript function that accepts a _xref:chapter_3_the_api_expose_cpp_t
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/bind_script_function/bind_script_function_param_registered_type.cpp[]
 ----

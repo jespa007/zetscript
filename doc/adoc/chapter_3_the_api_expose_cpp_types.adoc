@@ -174,7 +174,7 @@ As parameters, the function must always include _ZetScript *_ as the FIRST param
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
 void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
@@ -270,7 +270,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _z
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
 ReturnType RegisteredType_memberFunction(ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
@@ -295,7 +295,7 @@ After the member function is defined it has to be registered with _ZetScript::re
 
 
 *Syntax*
-[source,c++]
+[source,cpp]
 ----
 void registerMemberFunction<RegisteredType>(const zs_string & __member_function_name_, Function _function);
 ----
@@ -366,7 +366,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _z
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
 ReturnType RegisteredType_staticMemberFunction(ZetScript *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
 	....
@@ -390,7 +390,7 @@ After the constructor function is defined it has to be registered with _ZetScrip
 
 
 *Syntax*
-[source,c++]
+[source,cpp]
 ----
 void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_member_name, Function _function);
 ----
