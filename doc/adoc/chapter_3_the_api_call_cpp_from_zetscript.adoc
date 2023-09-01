@@ -3,7 +3,7 @@
 
 To call C&#43;&#43; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and C&#43;&#43;code. 
 
-The function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+The function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Syntax*
 
@@ -16,11 +16,11 @@ ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType *_arg1, ParamType *_a
 
 Where,
 
-- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type] (See next section)
+- _ParamType_: It can be a pointer of xref:chapter_3_the_api_types#_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
-After the C function is created is registered with _xref:chapter_3_the_api_built_in_types#&#95;_zetscript_registerfunction[ZetScript::registerFunction]_. 
+After the C function is created is registered with _xref:chapter_3_the_api_types#&#95;_zetscript_registerfunction[ZetScript::registerFunction]_. 
 
 
 
