@@ -101,7 +101,7 @@ for(var v in array){
 
 </pre>						
 
-##### Classes and inheritance
+#### Classes and inheritance
 
 Zetscript supports class and inheritance. Function and variables members are referenced through <b>this</b> keyword. Also it can define variables/functions later. Inheritance support <b>super()</b> function in order to call parent function. To instance class is done through <b>new</b> operator.
 						
@@ -146,7 +146,7 @@ var t=new TestExtended(); // instances TestExtended class
 				
 #### Call C++ code from ZetScript
 
-Call C++ code from ZetScript is possible by defining and register a C function.
+To call C++ code from ZetScript is done by defining and registering a C function. 
 						
 <pre lang="c++">
 #include "zetscript.h"
@@ -169,7 +169,7 @@ int main(){
 
 #### Exposing C++ types to ZetScript
 
-To expose C++ type to ZetScript is done by register C++ types as instantiable or not instatiable (see documentation for more information). To expose members functions or variables is done by define and register C functions with particular prototype. The following code shows and example of register <i>MyClass</i> class as instantiable.
+To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by by defining and registering a C function.
 						
 <pre lang="c++">
 #include "ZetScript.h"
@@ -240,7 +240,7 @@ int main(){
 	
 </pre>
 <br>
-An important feature of ZetScript is that a script class can inherit c++ registered type. For example the following code inherits the registered type <i>MyClass</i> 
+ZetScript allows inherits is that a script class can inherit c++ registered type.
 <br>
 <pre lang="c++">
 int main(){
