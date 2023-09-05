@@ -2,520 +2,299 @@
 
 ## Simple Script engine for C++
 
-<h2>Introduction</h2>
+### Introduction
 
-<p>ZetScript is a&nbsp;programming language with an API that allows bind C++ code in script side. ZetScript includes&nbsp;the following features:</p>
-
-<ul>
-	<li>Virtual Machine</li>
-	<li>Language syntax close to Javascript</li>
-	<li>Dynamic Garbage collector</li>
-	<li>Straightforward way to expose C++ types and call functions from C++ to ZetScript and Viceversa</li>
-	<li>Operator defintion through metamethods</li>
-</ul>
-
-Minimmum requirements:</p>
-
-<ul>
-	<li>MSVC++ 32/64 bits MSVC 2015/2017 or build tools v141</li>
-	<li>Linux/MinGW 32/64 bits, g++ 4.8.1 or above</li>
-	<li>CMake 3.15 or above</li>
-</ul>
-
-
-<p>A&nbsp;helloworld in shown in the following code,</p>
-
+<p>ZetScript is a programming language and comes with and API that allows bind your C++ code into script side.</p><p>A Hello World sample is shown below,</p>
+							
 <pre lang="c++">
-#include &quot;ZetScript.h&quot;
-
-using namespace zetscript;
-
-// Function C++ to be called from ZetScript
-void sayHelloworld(ZetScript *_zs){
-	printf(&quot;Hello World!\n&quot;);
-}
+#include "zetscript.h"
 
 int main(){
 
-	// ZetScript instantiation
-	ZetScript zs;
+	zetscript::ZetScript zs;
 
-	// register function 'sayHelloworld'
-	zs.registerFunction(&quot;sayHelloworld&quot;,sayHelloworld);
+	zs.eval("Console::outln(\"Hello World from script!\")");
 
-	// Evaluates ZetScript code that calls 'sayHelloworld'
-	zs.eval(&quot;sayHelloworld();&quot;); 
-	
 	return 0;
-}</pre>
-
-<p style="text-align: center"><em>List 1.1</em></p>
-
-<p>The code presented on list 1.1 it registers <strong><em> </em></strong><em>sayHelloworld</em> function. Then, it evaluates a code <em>sayHelloworld();</em>&nbsp; that, simply, calls C++ function <em>sayHelloword</em> from ZetScript.</p>
-
-<ul>
-</ul>
-
-<h2>Language overview</h2>
-
-<h3>Built-in types</h3>
-
-<p>Zetscript has a built in types Integers, Float, Boolean, String, Array and Object.</p>
-
-<pre lang="javascript">
-var i=10; // Integer
-var f=0.5; // Float
-var s=&quot;a string&quot;; // String
-var b=true; // Boolean
-
-var array=[1,0.5, &quot;a string&quot;, true]; // Array
-
-// Object
-var object={ 
-	i: 10,
-	f: 0.5,
-	s: &quot;a string&quot;,
-	b: true,
-	v: [1,0.5, &quot;a string&quot;, true]
-};</pre>
-
-<p>&nbsp;</p>
-
-<h3>Scope</h3>
-
-<p>ZetScript has an easy concept of global scope declaring variables in the top of evaluating scope. Local variables are within blocks like function or loops. Local vars are destroyed when it exits from block, unless is not referenced by other variable</p>
-
-<pre lang="javascript">
-var i= 0; // global var (never is destroyed when is declared)
-
-{ // starting block --&gt; declaring local variables starts here. 
-  // You can access also to global var.
-
-	var j= 2; // local var 
-	// ...
-
-} // ending block --&gt; j is destroyed
+}
 </pre>
 
-<h3>Conditionals</h3>
+### Language overview
+					
+#### ZetScript types
 
-<p>Zetscript supports if-else and switch conditionals</p>
+Zetscript has defined types as integers, numbers, booleans, arrays and objects.
 
 <pre lang="javascript">
+var i=10; //integer
+var f=0.5; // float
+var s="a string"; // string
+var b=true; // boolean
+
+var array=[1,0.5, "a string", true]; // array
+
+var object={ // object
+	i: 10,
+	f: 0.5,
+	s: "a string",
+	b: true,
+	v: [1,0.5, "a string", true]
+};
+ 
+</pre>
+						
+#### Conditionals
+
+Zetscript supports if-else, switch conditionals and more
+<pre lang="javascript">
 // if-else conditional
-var number=5;
-if(number &lt; 10){
-	Console::outln(&quot;number less than 10&quot;);
+if(number < 10){
+	Console::outln("number less than 10");
 }else{
-	Console::outln(&quot;number greater equal than 10&quot;);
+	Console::outln("number greater equal than 10");
 }
 
 // switch conditional
 switch(number){
 case 0:
 case 1: 
-	Console::outln(&quot;number is 0 or 1&quot;);
+	Console::outln("number is 0 or 1");
 	break;
 case 2:
-	Console::outln(&quot;number is 2&quot;);
+	Console::outln("number is 2");
 	break;
 default:
-	Console::outln(&quot;number is : &quot;+number);
+	Console::outln("number is : "+number);
 	break;
-}</pre>
+}
+</pre>
 
-<h3>Loops</h3>
+#### Loops</h3>
 
-<p>Zetscript supports while,do-while and for as loops iterators</p>
+Zetscript supports while,do-while,for and for-in as loops iterators
 
 <pre lang="javascript">
 var i=0;
 // while loop
 while(i &lt; 10){
-	Console::outln(&quot;i:&quot;+i);
+	Console::outln("i:"+i);
 	i++;
 }
 
 // do-while loop
 do{
-	Console::outln(&quot;i:&quot;+i);
+	Console::outln("i:"+i);
 	i++;
 }while(i &lt; 20);
 
 // for loop
-for(var j=0; j &lt; 10; j++){
-	Console::outln(&quot;j:&quot;+i);
+for(var j=0; j < 10; j++){
+	Console::outln("j:"+i);
 }
 
-</pre>
+// for-in loop
+var array=[1,0.5, "a string", true]; // array
 
-<h3>Classes and inheritance</h3>
+for(var v in array){
+	Console::outln("value:"+v);
+}
 
-<p>Zetscript supports define custom types. Function and variable members are referenced as fields. Inside the function is referenced as <em><strong>this </strong></em>keyword and out is accessed with field operator (i.e <em><strong>.</strong></em>). Also is possible to post declare static variables and functions members. 
-ZetScript also supports inheritance.</p>
+</pre>						
+
+##### Classes and inheritance
+
+Zetscript supports class and inheritance. Function and variables members are referenced through <b>this</b> keyword. Also it can define variables/functions later. Inheritance support <b>super()</b> function in order to call parent function. To instance class is done through <b>new</b> operator.
+						
 
 <pre lang="javascript">
 // A class example
 class Test{
-	var data0=10; // Variable members 'data1' is initialized as 10
-	
-	constructor(){
-		this.data1=5;
-		this.
-	}
-	
-	initData2(_a){
-		this.data2=a;  // Variable member 'data2' is initialized as '_a'
+
+	function1(a){
+		this.data1 =a;
+		Console::outln("calling from Test. Data1:"+this.data1);
 	}
 };
 
-// Postdeclaration of constant Test::MY_CONSTANT;
-const Test::MY_CONSTANT=10; 
+// include member variable data2
+var Test::data2; 
 
-// Postdeclaration of function member Test::function2
-function Test::add(){ 
-	return this.data0+this.data1+this.data2+Test::MY_CONSTANT; // returns 'data1' + 'data2' + Test::MY_CONSTANT
+// include member function function2
+function Test::function2(){ 
+	this.data2="a string";
 }
 
 // A inheritance class example. 
 // TestExtended inherites data1,data2,function1 and function2. 
 class TestExtended extends Test{
-	initData2(a){
-		initData2(a+2); // Calls 'Test::function1(2)'
+	function1(a){
+		super(2); // it calls Test::function1(2)
+		this.data1+=5; // Now data1=5+2 = 7
+		Console::outln("calling from TestExtended. Data1:"+this.data1);
 	}
 	
-
+	function3(){ // 
+		this.data3=6;
+		Console::outln("data3 is "+this.data3);
+	}
 };
 
-var t=new TestExtended(); // instances TestExtended class</pre>
+var t=new TestExtended(); // instances TestExtended class
+</pre>
+						
+### API Overview
+				
+#### Call C++ code from ZetScript
 
-
-<p style="text-align: center">&nbsp;</p>
-
-<h3>Calling script function from c++</h3>
-
-<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::zs->registerFunction</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
-
+Call C++ code from ZetScript is possible by defining and register a C function.
+						
 <pre lang="c++">
-#include &quot;ZetScript.h&quot;
-
-using namespace zetscript;
-
+#include "zetscript.h"
+using zetscript::ZetScript;
+// ZetScript C++ interface function
+void sayHelloWorld(ZetScript *_zs){
+	printf("Hello world\n");
+}
 int main(){
-
-	ZetScript zs = new ZetScript(); // instance zetscript
-
-	zs-&gt;eval(
-		&quot;class Test{&quot;
-		&quot;	var data1;&quot;
-		&quot;	function function1(arg){&quot;
-		&quot;		Console::outln(\&quot;calling Test.Function:\&quot;+arg);&quot;
-		&quot;	}&quot;
-		&quot;};&quot;
-		&quot;&quot;
-		&quot;function delete_test(){&quot;
-		&quot;	delete test;&quot;
-		&quot;	Console::outln(\&quot;test variable was deleted\&quot;);&quot;
-		&quot;}&quot;
-		&quot;&quot;
-		&quot;var test=new Test();&quot;
+	ZetScript zs;
+	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
+	zs.registerFunction("sayHelloWorld",sayHelloWorld);
+	// Evaluates a script where it calls 'sayHelloWorld' function
+	zs.eval(
+	"sayHelloWorld();"
 	);
-
-	
-    	// instance function delete_test function.
-	std::function&lt;void()&gt;  * delete_test=zs->registerFunction&lt;void ()&gt;(&quot;delete_test&quot;); 
-
-    	// instance member function test.function1.
-	std::function&lt;void(int)&gt; * test_function1=zs->registerFunction&lt;void (int)&gt;(&quot;test.function1&quot;); 
-	
-   	// it calls &quot;test.function&quot; member function with 10 as parameter.
-	(*test_function1)(10); 
-
-    	// it calls &quot;delete_test&quot; function with no parameters
-	(*delete_test)(); 
-
-	// delete functions when they are used anymore
-	delete 	test_function1;
-	delete 	delete_test;
-	delete  zs;
-
-}</pre>
-
-<p>&nbsp;</p>
-
-<h2>API overview</h2>
-
-<h3>Bind C++ variables</h3>
-
-<p>Zetscrip can bind basic C&nbsp;types as int, float, bool and string types to operate in the script side.</p>
-
-<pre lang="c++">
-#include &quot;ZetScript.h&quot;
-
-using namespace zetscript;
-
-int main(){
-
-	int i=10;
-	std::string	string_var = &quot;in c++&quot;;
-	bool b=false;
-	zs_float f=5.0;
-
-	ZetScript *zs = new ZetScript(); // instance zetscript
-
-    	zs->registerVariable(&quot;i&quot;,i); // it registers int variable called i
-    	zs->registerVariable(&quot;b&quot;,b); // it registers bool var ble called b
-    	zs->registerVariable(&quot;f&quot;,f); // it registers float variable called f
-	zs->registerVariable(&quot;string_var&quot;,string_var); // it registers string variable called string_var
-
-	zs-&gt;eval(
-		&quot;i+=10;&quot; // i+=10 =&gt; i=20
-		&quot;b=!b;&quot; //  b=!b  =&gt; b=true
-		&quot;f+=10.5;&quot; // f+=10.5 =&gt; f = 15.5
-		&quot;string_var+=\&quot; and in script\&quot;;&quot; // concatenates &quot; and in script
-		&quot;Console::outln(\&quot;string_var:\&quot;+string_var);&quot; // prints &quot;string_var:in c++ and in script
-	);
-	
-	delete zs;
 	return 0;
-}</pre>
+}
+</pre>
 
-<h3>Bind C++ classes and its members</h3>
+#### Exposing C++ types to ZetScript
 
-<p>Binding C++ class in Zetscript is done easyly with&nbsp;<i>zs->registerClass</i>&nbsp;method. To bind variables and functions members it can be done through <i>register_C_VariableMember</i>&nbsp;and&nbsp;<i>zs->registerMemberFunction</i>&nbsp;respectively. In script you can instance the C++ class in script side through operator&nbsp;<strong><i>new</i></strong>. When the instanced C Class variable is not used anymore the user has to delete it with operator&nbsp;<i><strong>delete</strong>.</i></p>
-
+To expose C++ type to ZetScript is done by register C++ types as instantiable or not instatiable (see documentation for more information). To expose members functions or variables is done by define and register C functions with particular prototype. The following code shows and example of register <i>MyClass</i> class as instantiable.
+						
 <pre lang="c++">
-#include &quot;ZetScript.h&quot;
+#include "ZetScript.h"
 
-using namespace zetscript;
+using zetscript::ZetScript;
+using zetscript::zs_int;
+
 
 class MyClass{
 public:
 	int data1;
 
-	void function1(int arg){
-		this-&gt;data1 = arg;
-		printf(&quot;Int argument is %i\n&quot;,this-&gt;data1);
+	MyClass(){
+		this->data1=0;
 	}
+
+	void setData(int _data){
+		this->data1 = _data;
+		printf("Int value as %i\n",this->data1);
+	}
+	
 };
 
-//-------------------------------------------------
-// wraping functions for MyClass
-
-MyClass *MyClassWrap_new(){
+// define new and delete functions
+MyClass *MyClassWrap_new(ZetScript *_zs){
 	return new MyClass;
 }
 
-//--------------------------------------------------------
-// GET/SET for data1 (read & write)
-void MyClassWrap_set_data1(MyClass *_this, zs_int v){
+void MyClassWrap_delete(ZetScript *_zs,MyClass *_this){
+	delete _this;
+}
+
+// bind data1 member variable (read & write)
+void MyClassWrap_set_data1(ZetScript *_zs,MyClass *_this, zs_int v){
 	_this->data1=v;
 }
 
-zs_int MyClassWrap_get_data1(MyClass *_this){
+zs_int MyClassWrap_get_data1(ZetScript *_zs,MyClass *_this){
 	return _this->data1;
 }
-//--------------------------------------------------------
-// GET for data2 (only read)
-zs_int MyClassWrap_get_data2(MyClass *_this){
-	return _this->data2;
+
+// 'MyClassWrap::setData' wrap function
+void MyClassWrap_setData(ZetScript *_zs,MyClass *_this, zs_int v){
+	_this->setValue(v);
 }
-//--------------------------------------------------------
-// SET for data3 (only write)
-void MyClassWrap_set_data3(MyClass *_this, zs_int v){
-	_this->data3=v;
-}
-
-void MyClassWrap_function0(MyClass *_this){
-	_this->function0();
-}
-
-// register function1 named function1 in script side as function member.
-void MyClassWrap_function1(MyClass *_this, zs_int v){
-	_this->function1(v);
-}
-
-void MyClassWrap_delete(MyClass *_this){
-	delete _this;
-}
-
-// wraping functions for MyClass
-//-------------------------------------------------
-
-
-class MyClassExtend:public MyClass{
-public:
-	float data2;
-
-	void function2(float * arg){
-		this-&gt;data2 = *arg;
-		printf(&quot;Float argument is %.02f\n&quot;,this-&gt;data2);
-	}
-};
-
-//-------------------------------------------------
-// wraping functions for MyClassExtend
-
-MyClassExtend *MyClassExtendWrap_new(){
-	return new MyClassExtend;
-}
-
-zs_int MyClassExtendWrap_get_data4(MyClassExtend *_this){
-	return _this->data4;
-}
-
-void MyClassExtendWrap_set_data4(MyClassExtend *_this, zs_int v){
-	_this->data4=v;
-}
-
-void MyClassExtendWrap_function2(MyClassExtend *_this, zs_float *f){
-	_this->function2(*f);
-}
-
-void MyClassExtendWrap_delete(MyClassExtend *_this){
-	delete _this;
-}
-
-// wraping functions for MyClassExtend
-//-------------------------------------------------
 
 int main(){
 
-	ZetScript *zs = new ZetScript(); // instance zetscript
+	ZetScript zs;
+
+	// Register class type 'MyClass' as instantiable
+	zs.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+
+	// Register member variable 'MyClass::data1' through get/set metamethod using 'MyClassWrap_set_data1'/'MyClassWrap_get_data1' functions
+	zs.registerMemberPropertyMetamethod<MyClass>("_set","data1",&MyClassWrap_set_data1);
+	zs.registerMemberPropertyMetamethod<MyClass>("_get","data1",&MyClassWrap_get_data1);
+
+	// Register member function 'MyClass::setData' using 'MyClassWrap_setData' wrapper
+	zs.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
+	zs.eval(
+		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
+		"myclass.setData(5);\n" // it prints "Int value as 5"
+		"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:5"
+	);
 	
-	try{
-
-		// register MyClass with name MyClass in script side.
-		zs->register<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
-
-		 // register MyClassExtend with name MyClassExtend in script side.
-		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
-
-		// register data1 named data1 in script side as variable member and read/write.
-		zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_get_data1);
-
-		// register data2 named data1 in script side as variable member (only read).
-		zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_get_data2);
-
-		// register data1 named data1 in script side as variable member (only write).
-		zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_set_data3);
-
-		// register function0 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
-
-		// register function1 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
-
-
-		// register data2 named data1 in script side as variable member.
-		zs->registerMemberAttributeSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs->registerMemberAttributeGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
-
-		// register function2 named function2 in script side as function member.
-		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
-
-		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-		zs->classInheritsFrom<MyClassExtend,MyClass>();
-
-	}catch(std::exception & ex){
-		fprintf(stderr,"register error: %s\n",ex.what());
-		exit(-1);
-	}
-
-	try{
-
-		zs->eval(
-			"class ScriptMyClassExtend extends MyClassExtend{\n"
-			"	var data5;\n"
-			"	function function0(){\n"
-			"		super();\n"
-			"   }\n"
-			"	function function1(arg){\n"
-			"		var i=this.data1;\n"
-			"		super(this.data1+arg);\n"
-			"		Console::outln(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
-			"   }\n"
-			"};\n"
-			"class ScriptMyClassExtend2 extends ScriptMyClassExtend{\n"
-			"	var data6;\n"
-			"	function function5(arg){\n"
-			"		var i=this.data1;\n"
-			"   }\n"
-			"};\n"
-			"var myclass = new ScriptMyClassExtend2();\n" // instances MyClassExtend
-			"myclass.function0();\n" // it prints "function0"
-			"myclass.function1(12);\n" // it prints "Int argument is 12"
-			"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
-			"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:12"
-			"Console::outln(\"data2:\"+myclass.data2);\n" // it prints "data2:0.5"
-		);
-
-	}catch(std::exception & ex){
-		fprintf(stderr,"runtime error: %s\n",ex.what());
-		exit(-1);
-
-	}
+	return 0;
+}
 	
-	delete zs;
+</pre>
+<br>
+An important feature of ZetScript is that a script class can inherit c++ registered type. For example the following code inherits the registered type <i>MyClass</i> 
+<br>
+<pre lang="c++">
+int main(){
+
+	// ...
+
+	zs.eval(
+		"class ScriptMyClass extends MyClass{\n"
+		"	setData(arg){\n"
+		"		var i=this.data1;\n"
+		"		super(this.data1+arg);\n" // it calls MyClass::setData from C++ 
+		"		Console::outln(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
+		"   }\n"
+		"};\n"
+
+		"var myclass = new ScriptMyClass();\n" // instances ScriptMyClass and MyClass from C++
+		"myclass.setData(5);\n"
+	);
 
 	return 0;
-}</pre>
-
-<p style="text-align: center"><em>List 1.2</em></p>
-
-<h3>Inheritance c++ Class on Script Class</h3>
-
-<p>An important feature of ZetScript is that it has supports c++ class inheritance for script class. <em><strong>this </strong></em>and <em><strong>super()&nbsp;</strong></em>keywords works as a normal behavior.</p>
-
-<p>From list 1.2 we present an example script that <em>ScripMyClassExtends </em>class is inherited by <em>MyClassExtends </em>class (from C++),</p>
-
-<pre lang="javascript">
-class ScriptMyClassExtended extends MyClassExtend{ // &lt;-- inheritances MyClassExtend (c++)
-  function1(arg1){
-    Console::outln(&quot;script argument is &quot;+arg1)
-    super(this.data1+arg1); // &lt;-- calls MyClassExtend::function1 (c++) from list 1.2
-  }
 }
-
-var myclass=new ScriptMyClassExtend();
-Myclass.function1(5);
-
 </pre>
+<br>
+It prints
+<br>
+```
+Int value as 10
+result => 5+5=10
+```
 
-<p style="text-align: center"><em>List 1.3</em></p>
+#### Call ZetScript from c++
+Once you have evaluated the script you can call function script from c++.
+						
+<pre lang="c++">
+	
+#include "zetscript.h"
 
-<p>The code shown at list 1.3 will print,</p>
+void test_call_script_function(){
 
-<pre>
-script argument is 5
-c++ argument is 15 </pre>
+	zetscript::ZetScript zs;
 
-<p>&nbsp;</p>
+	zs.eval(
+		"function sayHello(){\n"
+		"	Console::outln(\"hello from 'sayHello'!\")\n"
+		"}\n"
+	);
 
-<h2>Metamethods</h2>
+	// instance ZetScript function 'sayHello'
+	auto  say_hello=zs.bindScriptFunction<void ()>("sayHello");
 
-<p>ZetScript implements metamethods to map operators or other operations&nbsp;through objects.
+	// it calls 'say_hello' script function from C++
+	say_hello();
 
-<p>&nbsp;</p>
-
-<p>For example, if in script side we want to define the <i>add</i> operation (aka +) for an object we have to declare the function _add with two parameters, as we can see in the following code,</p>
-
-<pre lang="javascript">
-class MyNumber{
-  var num;
-  MyNumber(_n){
-    this.num=_n;
-  }
-  static _add(op1,op2){
-    return new MyNumber(op1.num+op2.num);
-  }
-};
-
-var n1 = new MyNumber (20);
-var n2 = new MyNumber (10);
-var n3 =n1+n2;
-
-<p style="text-align: center"><em>List 1.4</em></p>
-
-
+	return 0;
+}
+   
+</pre>					
