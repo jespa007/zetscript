@@ -35,7 +35,7 @@ namespace zetscript{
 			zs_string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 			is_constant=key_w == Keyword::KEYWORD_CONST;
-			Operator ending_op=Operator::OPERATOR_UNKNOWN;
+			Operator ending_op=Operator::ZS_OPERATOR_UNKNOWN;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -125,7 +125,7 @@ namespace zetscript{
 							try{
 								symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 									variable_name
-									,SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC
+									,ZS_SYMBOL_PROPERTY_CONST | ZS_SYMBOL_PROPERTY_STATIC
 									,eval_data->current_parsing_file
 									,line
 								);
@@ -185,12 +185,12 @@ namespace zetscript{
 
 							// unset last reset stack
 							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.size()-1];
-							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
+							eval_instruction->vm_instruction.properties&=~ZS_INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
 							eval_data->current_function->eval_instructions.push_back(
 									eval_instruction=new EvalInstruction(
-											is_static?BYTE_CODE_PUSH_STK_GLOBAL:BYTE_CODE_PUSH_STK_LOCAL
+											is_static?ZS_BYTE_CODE_PUSH_STK_GLOBAL:ZS_BYTE_CODE_PUSH_STK_LOCAL
 									)
 							);
 
@@ -201,10 +201,10 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
-										BYTE_CODE_STORE_CONST
+										ZS_BYTE_CODE_STORE_CONST
 										,1
 										,ZS_IDX_UNDEFINED
-										,INSTRUCTION_PROPERTY_RESET_STACK
+										,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 									)
 							);
 						}
@@ -229,8 +229,8 @@ namespace zetscript{
 			}while(!end); // is new variable
 
 			// after variable declaration is expected to have any keyword but is not valid any operator,
-			if((ending_op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
-				if((((properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)==EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && (ending_op == Operator::OPERATOR_IN))==false){
+			if((ending_op=is_operator(aux_p))!=Operator::ZS_OPERATOR_UNKNOWN){
+				if((((properties & ZS_EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)==ZS_EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && (ending_op == Operator::ZS_OPERATOR_IN))==false){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
 				}
 			}

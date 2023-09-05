@@ -12,74 +12,74 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
 			break;
 		// assign and arithmetic with assign
-		case Operator::OPERATOR_ASSIGN:
-			return ByteCode::BYTE_CODE_STORE;
-		case Operator::OPERATOR_ASSIGN_ADD:
-			return ByteCode::BYTE_CODE_ADD_STORE;
-		case Operator::OPERATOR_ASSIGN_SUB:
-			return ByteCode::BYTE_CODE_SUB_STORE;
-		case Operator::OPERATOR_ASSIGN_MUL:
-			return ByteCode::BYTE_CODE_MUL_STORE;
-		case Operator::OPERATOR_ASSIGN_DIV:
-			return ByteCode::BYTE_CODE_DIV_STORE;
-		case Operator::OPERATOR_ASSIGN_MOD:
-			return ByteCode::BYTE_CODE_MOD_STORE;
-		case Operator::OPERATOR_ASSIGN_XOR:
-			return ByteCode::BYTE_CODE_BITWISE_XOR_STORE;
-		case Operator::OPERATOR_ASSIGN_AND:
-			return ByteCode::BYTE_CODE_BITWISE_AND_STORE;
-		case Operator::OPERATOR_ASSIGN_OR:
-			return ByteCode::BYTE_CODE_BITWISE_OR_STORE;
-		case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
-			return ByteCode::BYTE_CODE_SHL_STORE;
-		case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
-			return ByteCode::BYTE_CODE_SHR_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN:
+			return ZS_BYTE_CODE_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_ADD:
+			return ZS_BYTE_CODE_ADD_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_SUB:
+			return ZS_BYTE_CODE_SUB_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_MUL:
+			return ZS_BYTE_CODE_MUL_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_DIV:
+			return ZS_BYTE_CODE_DIV_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_MOD:
+			return ZS_BYTE_CODE_MOD_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_XOR:
+			return ZS_BYTE_CODE_BITWISE_XOR_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_AND:
+			return ZS_BYTE_CODE_BITWISE_AND_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_OR:
+			return ZS_BYTE_CODE_BITWISE_OR_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_LEFT:
+			return ZS_BYTE_CODE_SHL_STORE;
+		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_RIGHT:
+			return ZS_BYTE_CODE_SHR_STORE;
 
 		// arithmetic ops
-		case Operator::OPERATOR_ADD:
-			return ByteCode::BYTE_CODE_ADD;
-		case Operator::OPERATOR_SUB:
-			return ByteCode::BYTE_CODE_SUB;
-		case Operator::OPERATOR_MUL:
-			return ByteCode::BYTE_CODE_MUL;
-		case Operator::OPERATOR_DIV:
-			return ByteCode::BYTE_CODE_DIV;
-		case Operator::OPERATOR_MOD:
-			return ByteCode::BYTE_CODE_MOD;
-		case Operator::OPERATOR_XOR:
-			return ByteCode::BYTE_CODE_BITWISE_XOR;
-		case Operator::OPERATOR_AND:
-			return ByteCode::BYTE_CODE_BITWISE_AND;
-		case Operator::OPERATOR_OR:
-			return ByteCode::BYTE_CODE_BITWISE_OR;
-		case Operator::OPERATOR_SHIFT_LEFT:
-			return ByteCode::BYTE_CODE_SHL;
-		case Operator::OPERATOR_SHIFT_RIGHT:
-			return ByteCode::BYTE_CODE_SHR;
+		case Operator::ZS_OPERATOR_ADD:
+			return ZS_BYTE_CODE_ADD;
+		case Operator::ZS_OPERATOR_SUB:
+			return ZS_BYTE_CODE_SUB;
+		case Operator::ZS_OPERATOR_MUL:
+			return ZS_BYTE_CODE_MUL;
+		case Operator::ZS_OPERATOR_DIV:
+			return ZS_BYTE_CODE_DIV;
+		case Operator::ZS_OPERATOR_MOD:
+			return ZS_BYTE_CODE_MOD;
+		case Operator::ZS_OPERATOR_XOR:
+			return ZS_BYTE_CODE_BITWISE_XOR;
+		case Operator::ZS_OPERATOR_AND:
+			return ZS_BYTE_CODE_BITWISE_AND;
+		case Operator::ZS_OPERATOR_OR:
+			return ZS_BYTE_CODE_BITWISE_OR;
+		case Operator::ZS_OPERATOR_SHIFT_LEFT:
+			return ZS_BYTE_CODE_SHL;
+		case Operator::ZS_OPERATOR_SHIFT_RIGHT:
+			return ZS_BYTE_CODE_SHR;
 
 		// logic
-		case Operator::OPERATOR_LOGIC_AND:
-			return ByteCode::BYTE_CODE_LOGIC_AND;
-		case Operator::OPERATOR_LOGIC_OR:
-			return ByteCode::BYTE_CODE_LOGIC_OR;
-		case Operator::OPERATOR_EQUAL:
-			return ByteCode::BYTE_CODE_EQU;
-		case Operator::OPERATOR_NOT_EQUAL:
-			return ByteCode::BYTE_CODE_NOT_EQU;
-		case Operator::OPERATOR_GT:
-			return ByteCode::BYTE_CODE_GT;
-		case Operator::OPERATOR_LT:
-			return ByteCode::BYTE_CODE_LT;
-		case Operator::OPERATOR_GTE:
-			return ByteCode::BYTE_CODE_GTE;
-		case Operator::OPERATOR_LTE:
-			return ByteCode::BYTE_CODE_LTE;
-		case Operator::OPERATOR_INSTANCEOF:
-			return ByteCode::BYTE_CODE_INSTANCEOF;
-		case Operator::OPERATOR_IN:
-			return ByteCode::BYTE_CODE_IN;
+		case Operator::ZS_OPERATOR_LOGIC_AND:
+			return ZS_BYTE_CODE_LOGIC_AND;
+		case Operator::ZS_OPERATOR_LOGIC_OR:
+			return ZS_BYTE_CODE_LOGIC_OR;
+		case Operator::ZS_OPERATOR_EQUAL:
+			return ZS_BYTE_CODE_EQU;
+		case Operator::ZS_OPERATOR_NOT_EQUAL:
+			return ZS_BYTE_CODE_NOT_EQU;
+		case Operator::ZS_OPERATOR_GT:
+			return ZS_BYTE_CODE_GT;
+		case Operator::ZS_OPERATOR_LT:
+			return ZS_BYTE_CODE_LT;
+		case Operator::ZS_OPERATOR_GTE:
+			return ZS_BYTE_CODE_GTE;
+		case Operator::ZS_OPERATOR_LTE:
+			return ZS_BYTE_CODE_LTE;
+		case Operator::ZS_OPERATOR_INSTANCEOF:
+			return ZS_BYTE_CODE_INSTANCEOF;
+		case Operator::ZS_OPERATOR_IN:
+			return ZS_BYTE_CODE_IN;
 		}
-		return ByteCode::BYTE_CODE_INVALID;
+		return ZS_BYTE_CODE_INVALID;
 	}
 
 	const char * eval_operator_to_str(Operator op){
@@ -87,69 +87,69 @@ namespace zetscript{
 		default:
 			break;
 		// assign and arithmetic with assign
-		case Operator::OPERATOR_ASSIGN:
+		case Operator::ZS_OPERATOR_ASSIGN:
 			return "=";
-		case Operator::OPERATOR_ASSIGN_ADD:
+		case Operator::ZS_OPERATOR_ASSIGN_ADD:
 			return "+=";
-		case Operator::OPERATOR_ASSIGN_SUB:
+		case Operator::ZS_OPERATOR_ASSIGN_SUB:
 			return "-=";
-		case Operator::OPERATOR_ASSIGN_MUL:
+		case Operator::ZS_OPERATOR_ASSIGN_MUL:
 			return "*=";
-		case Operator::OPERATOR_ASSIGN_DIV:
+		case Operator::ZS_OPERATOR_ASSIGN_DIV:
 			return "/=";
-		case Operator::OPERATOR_ASSIGN_MOD:
+		case Operator::ZS_OPERATOR_ASSIGN_MOD:
 			return "%=";
-		case Operator::OPERATOR_ASSIGN_XOR:
+		case Operator::ZS_OPERATOR_ASSIGN_XOR:
 			return "^=";
-		case Operator::OPERATOR_ASSIGN_AND:
+		case Operator::ZS_OPERATOR_ASSIGN_AND:
 			return "&=";
-		case Operator::OPERATOR_ASSIGN_OR:
+		case Operator::ZS_OPERATOR_ASSIGN_OR:
 			return "|=";
-		case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
+		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_LEFT:
 			return "<<=";
-		case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
+		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_RIGHT:
 			return ">>=";
 
 		// arithmetic ops
-		case Operator::OPERATOR_ADD:
+		case Operator::ZS_OPERATOR_ADD:
 			return "+";
-		case Operator::OPERATOR_SUB:
+		case Operator::ZS_OPERATOR_SUB:
 			return "-";
-		case Operator::OPERATOR_MUL:
+		case Operator::ZS_OPERATOR_MUL:
 			return "*";
-		case Operator::OPERATOR_DIV:
+		case Operator::ZS_OPERATOR_DIV:
 			return "/";
-		case Operator::OPERATOR_MOD:
+		case Operator::ZS_OPERATOR_MOD:
 			return "%";
-		case Operator::OPERATOR_XOR:
+		case Operator::ZS_OPERATOR_XOR:
 			return "^";
-		case Operator::OPERATOR_AND:
+		case Operator::ZS_OPERATOR_AND:
 			return "&";
-		case Operator::OPERATOR_OR:
+		case Operator::ZS_OPERATOR_OR:
 			return "|";
-		case Operator::OPERATOR_SHIFT_LEFT:
+		case Operator::ZS_OPERATOR_SHIFT_LEFT:
 			return ">>";
-		case Operator::OPERATOR_SHIFT_RIGHT:
+		case Operator::ZS_OPERATOR_SHIFT_RIGHT:
 			return "<<";
 
 		// logic
-		case Operator::OPERATOR_LOGIC_AND:
+		case Operator::ZS_OPERATOR_LOGIC_AND:
 			return "&&";
-		case Operator::OPERATOR_LOGIC_OR:
+		case Operator::ZS_OPERATOR_LOGIC_OR:
 			return "||";
-		case Operator::OPERATOR_EQUAL:
+		case Operator::ZS_OPERATOR_EQUAL:
 			return "==";
-		case Operator::OPERATOR_NOT_EQUAL:
+		case Operator::ZS_OPERATOR_NOT_EQUAL:
 			return "!=";
-		case Operator::OPERATOR_GT:
+		case Operator::ZS_OPERATOR_GT:
 			return ">";
-		case Operator::OPERATOR_LT:
+		case Operator::ZS_OPERATOR_LT:
 			return "<";
-		case Operator::OPERATOR_GTE:
+		case Operator::ZS_OPERATOR_GTE:
 			return ">=";
-		case Operator::OPERATOR_LTE:
+		case Operator::ZS_OPERATOR_LTE:
 			return "<=";
-		case Operator::OPERATOR_INSTANCEOF:
+		case Operator::ZS_OPERATOR_INSTANCEOF:
 			return "instanceof";
 		}
 

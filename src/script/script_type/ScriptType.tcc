@@ -35,7 +35,7 @@ namespace zetscript{
 		//---
 		// Property should be not registered
 		symbol_member_property=registerMemberProperty(_property_name,_registered_file,_registered_line);
-		symbol_member_property->properties|=SYMBOL_PROPERTY_STATIC;
+		symbol_member_property->properties|=ZS_SYMBOL_PROPERTY_STATIC;
 
 		// register member function...
 		this->registerMemberPropertyMetamethod(

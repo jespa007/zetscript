@@ -231,7 +231,7 @@ namespace zetscript{
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-			if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+			if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",eval_data_operators[tst_op_aux].str);
 			}
 
@@ -253,21 +253,21 @@ namespace zetscript{
 				return NULL;
 			}
 
-			if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+			if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected operator '%s' after delete identifier ",eval_data_operators[tst_op_aux].str);
 			}
 
 			// get last instruction...
 			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.size()-1];
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
-			if(byte_code==BYTE_CODE_FIND_VARIABLE){
-				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+			if(byte_code==ZS_BYTE_CODE_FIND_VARIABLE){
+				eval_instruction->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}else if(byte_code_is_load_var_type(byte_code)){
 				eval_instruction->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
-			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));
+			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(ZS_BYTE_CODE_DELETE));
+			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(ZS_BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}
@@ -368,7 +368,7 @@ namespace zetscript{
 						,aux_p
 						, line
 						,scope_info // pass type scope
-						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
+						, ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
 						,name_script_function+"@"+property_name
 					))==NULL){
@@ -418,7 +418,7 @@ namespace zetscript{
 
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
-						if(_mp_info.metamethod_byte_code!=METAMETHOD_BYTE_CODE_INVALID){
+						if(_mp_info.metamethod_byte_code!=ZS_METAMETHOD_BYTE_CODE_INVALID){
 							if(_mp_info.setters->size() == 0){
 								mp->metamethod_members.addSetter(_mp_info.metamethod_byte_code,symbol);
 							}else{
@@ -437,13 +437,13 @@ namespace zetscript{
 							zs_string list_valid_metamethods="";
 
 
-							list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(METAMETHOD_BYTE_CODE_SET)+"'\n";
+							list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(ZS_METAMETHOD_BYTE_CODE_SET)+"'\n";
 							list_valid_metamethods+=zs_string("- '_get'\n");
 
 							// get all member list
 							const MetamethodByteCode *it_mm=MetamethodMembers::metamethod_byte_code_member_list;
 							while(*it_mm!=0){
-								if(*it_mm!=METAMETHOD_BYTE_CODE_SET){
+								if(*it_mm!=ZS_METAMETHOD_BYTE_CODE_SET){
 									list_valid_metamethods+=zs_string("- '")+ metamethod_byte_code_to_symbol_str(*it_mm)+"'\n";
 								}
 								it_mm++;
@@ -453,7 +453,7 @@ namespace zetscript{
 							// get all member setter listMetamethodMembers::metamethod_byte_code_member_setter_list
 							const MetamethodByteCode *it_setters=MetamethodMembers::metamethod_byte_code_member_setter_list;
 							while(*it_setters!=0){
-								if(*it_setters!=METAMETHOD_BYTE_CODE_SET){
+								if(*it_setters!=ZS_METAMETHOD_BYTE_CODE_SET){
 									list_valid_metamethods+=zs_string("- '")+metamethod_byte_code_to_symbol_str(*it_setters)+"'\n";
 								}
 								it_setters++;

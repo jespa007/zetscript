@@ -3,11 +3,11 @@
 
 To call C&#43;&#43; code from _ZetScript_ it has to create and register a C function with a particular prototype. That C function acts as interface between ZetScript and C&#43;&#43;code. 
 
-The function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+The function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 *Syntax*
 
-[source,c++]
+[source,cpp]
 ----
 ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 ){
 	....
@@ -16,11 +16,11 @@ ReturnType zetscriptCppInterface(ZetScript *_zs, ParamType *_arg1, ParamType *_a
 
 Where,
 
-- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:chapter_3_the_api_built_in_types#_built_in_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+- _ReturnType_: It can be _void_ , a xref:chapter_3_the_api_types#_types[built-in type] or a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type] (See next section)
+- _ParamType_: It can be a pointer of xref:chapter_3_the_api_types#_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
 
 
-After the C function is created is registered with _xref:chapter_3_the_api_built_in_types#&#95;_zetscript_registerfunction[ZetScript::registerFunction]_. 
+After the C function is created is registered with _xref:chapter_3_the_api_types#&#95;_zetscript_registerfunction[ZetScript::registerFunction]_. 
 
 
 
@@ -28,7 +28,7 @@ After the C function is created is registered with _xref:chapter_3_the_api_built
 
 The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function.cpp[]
 ----
@@ -59,7 +59,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types#
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_bool.cpp[]
 ----
@@ -77,7 +77,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_zs_int.cpp[]
 ----
@@ -95,7 +95,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_zs_float.cpp[]
 ----
@@ -121,7 +121,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_zs_string.cpp[]
 ----
@@ -141,7 +141,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_string_script_object.cpp[]
 ----
@@ -161,7 +161,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_array_script_object.cpp[]
 ----
@@ -181,7 +181,7 @@ To register a C function that returns a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_object_script_object.cpp[]
 ----
@@ -219,7 +219,7 @@ Because the function it returns a native reference the type can be registered as
 In the following example it registers a type _Number_ as non instantiable (This is because in this example it doesn't need to instantiate any new object in the script code. See xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_as_non_instantiable[section 3.5.1] to know how to register a type as NON INSTANTIABLE) and the property _Number::value_ (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;properties[section 3.5.5] to know how to register a property). Finally, it registers C function _returnNumber_ that returns a _Number *_. In the main program instantiates _Number_ object and is acceded globally, so is active during the execution of the script.
 
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_registered_type.cpp[]
 ----
@@ -247,7 +247,7 @@ The action of return a _ClassScriptObject &#42;_ ZetScript it considers the inst
 
 In the following example it registers type _Number_ as instantiable (See xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_a_type_as_instantiable[section 3.5.1] to know how to register a type AS INSTANTIABLE) and the property _Number::value_. Finally, it registers C function _returnNumber_ that instances and returns a _ClassScriptObject_ as _Number_ type. 
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_return_class_script_object.cpp[]
 ----
@@ -279,7 +279,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_bool.cpp[]
 ----
@@ -297,7 +297,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_zs_int.cpp[]
 ----
@@ -315,7 +315,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_zs_float.cpp[]
 ----
@@ -335,7 +335,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_zs_string.cpp[]
 ----
@@ -353,7 +353,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_array_script_object.cpp[]
 ----
@@ -373,7 +373,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 *Example*
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_object_script_object.cpp[]
 ----
@@ -395,7 +395,7 @@ To register a C function that accepts a _xref:chapter_2_the_language_data_types.
 
 The following example it registers function _paramScriptFunction_ that accepts a _xref:chapter_2_the_language_data_types.adoc#lowbar;function[Function]_ as parameter. Later, it evaluates an script that calls _paramScriptFunction_ passing anonymous function. In the calling function _paramScriptFunction_ it binds the anonymous function and it calls.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_script_function.cpp[]
 ----
@@ -417,7 +417,7 @@ To register a C function that accepts a _xref:chapter_3_the_api_expose_cpp_types
 
 In the following example it registers the _Number_ type (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;register_type[section 3.5.1] to know how to register a type) and the property _Number::value_ (see xref:chapter_3_the_api_expose_cpp_types#&#x5f;properties[section 3.5.5] to know how to register a property) and it registers function _mul10Number_ that accepts a _Number &#x2a;_ type as parameter. In the script execution it instances a _Number_ and it is passed as argument to _mul10Number_ that multiplies its property _value_ by 10.
 
-[source,c++]
+[source,cpp]
 ----
 include::../examples/the_api/register_function/register_function_param_registered_type.cpp[]
 ----

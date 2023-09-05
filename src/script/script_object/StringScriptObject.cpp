@@ -27,12 +27,12 @@ namespace zetscript{
 	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ZetScript *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		StringScriptObject *so_ref=NULL;
 		// we have to create an new string variable
-		if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
+		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
 			so_ref=(StringScriptObject *)stk_result_op1->value;
 		}
 
 		if(so_ref == NULL){
-		   if(STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){
+		   if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){
 			   so_ref=(StringScriptObject *)stk_result_op2->value;
 		   }else{
 			   ZS_THROW_RUNTIME_ERRORF("Expected one of both operants as string var");

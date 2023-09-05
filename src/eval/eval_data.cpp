@@ -63,8 +63,8 @@
 	EVAL_ERROR_BYTE_CODE(_str_error,NULL)
 
 
-#define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
-#define IS_OPERATOR_TYPE_ASSIGN(c) (IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) || (c)==Operator::OPERATOR_ASSIGN)
+#define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::ZS_OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::ZS_OPERATOR_ASSIGN_SHIFT_RIGHT)
+#define IS_OPERATOR_TYPE_ASSIGN(c) (IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) || (c)==Operator::ZS_OPERATOR_ASSIGN)
 
 namespace zetscript{
 
@@ -192,7 +192,7 @@ namespace zetscript{
 			value="";
 			line=-1;
 			token_type=TokenType::TOKEN_TYPE_UNKNOWN;
-			operator_type=Operator::OPERATOR_UNKNOWN;
+			operator_type=Operator::ZS_OPERATOR_UNKNOWN;
 			pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			eval_instructions.clear();
 		}
@@ -292,7 +292,7 @@ namespace zetscript{
 		}
 	};
 
-	EvalOperator eval_data_operators[OPERATOR_MAX];
+	EvalOperator eval_data_operators[ZS_OPERATOR_MAX];
 	EvalPreOperation eval_data_pre_operations[PRE_OPERATION_MAX];
 	EvalPostOperation eval_data_post_operations[POST_OPERATION_MAX];
 	EvalSeparator eval_data_separators[SEPARATOR_MAX];
@@ -442,36 +442,36 @@ namespace zetscript{
 	}
 
 	Operator   is_operator(const char *s){
-		for(unsigned char i = 1; i < OPERATOR_MAX; i++){
+		for(unsigned char i = 1; i < ZS_OPERATOR_MAX; i++){
 			if(eval_data_operators[i].eval_fun(s)){
 				return eval_data_operators[i].id;
 			}
 		}
-		return Operator::OPERATOR_UNKNOWN;
+		return Operator::ZS_OPERATOR_UNKNOWN;
 	}
 
 	unsigned char get_preference_operator_group(Operator _operator){
-		if(PREFERENCE_OPERATOR_GROUP_0(_operator)){
+		if(ZS_PREFERENCE_OPERATOR_GROUP_0(_operator)){
 			return 0;
-		}else if (PREFERENCE_OPERATOR_GROUP_1(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_1(_operator)){
 			return 1;
-		}else if (PREFERENCE_OPERATOR_GROUP_2(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_2(_operator)){
 			return 2;
-		}else if (PREFERENCE_OPERATOR_GROUP_3(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_3(_operator)){
 			return 3;
-		}else if (PREFERENCE_OPERATOR_GROUP_4(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_4(_operator)){
 			return 4;
-		}else if (PREFERENCE_OPERATOR_GROUP_5(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_5(_operator)){
 			return 5;
-		}else if (PREFERENCE_OPERATOR_GROUP_6(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_6(_operator)){
 			return 6;
-		}else if (PREFERENCE_OPERATOR_GROUP_7(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_7(_operator)){
 			return 7;
-		}else if (PREFERENCE_OPERATOR_GROUP_8(_operator)){
+		}else if (ZS_PREFERENCE_OPERATOR_GROUP_8(_operator)){
 			return 8;
 		}
 
-		return PREFERENCE_OPERATOR_GROUP_MAX;
+		return ZS_PREFERENCE_OPERATOR_GROUP_MAX;
 
 	}
 
@@ -561,7 +561,7 @@ namespace zetscript{
 	bool  is_end_symbol_token(char *s, char pre=0){
 
 		Operator _operator=is_operator(s);
-		return    (_operator!=Operator::OPERATOR_UNKNOWN && _operator!=Operator::OPERATOR_INSTANCEOF && _operator!=Operator::OPERATOR_IN)
+		return    (_operator!=Operator::ZS_OPERATOR_UNKNOWN && _operator!=Operator::ZS_OPERATOR_INSTANCEOF && _operator!=Operator::ZS_OPERATOR_IN)
 			   || is_post_operation(s)!=PostOperation::POST_OPERATION_UNKNOWN
 			   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
 			   || is_special_char(s)
@@ -595,7 +595,7 @@ namespace zetscript{
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' keyword", eval_data_keywords[kw].str);
 		}
 
-		if((op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
+		if((op=is_operator(aux_p))!=Operator::ZS_OPERATOR_UNKNOWN){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' operator",  eval_data_operators[op].str);
 		}
 
@@ -825,43 +825,43 @@ namespace zetscript{
 		memset(eval_data_separators,0,sizeof(eval_data_separators));
 		memset(eval_data_keywords,0,sizeof(eval_data_keywords));
 
-		eval_data_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "unknown-operator",NULL};
+		eval_data_operators[ZS_OPERATOR_UNKNOWN]={ZS_OPERATOR_UNKNOWN, "unknown-operator",NULL};
 
-		eval_data_operators[OPERATOR_ADD]={OPERATOR_ADD, "+",is_operator_add};
-		eval_data_operators[OPERATOR_SUB]={OPERATOR_SUB, "-",is_operator_sub};
-		eval_data_operators[OPERATOR_MUL]={OPERATOR_MUL, "*",is_operator_mul};
-		eval_data_operators[OPERATOR_DIV]={OPERATOR_DIV, "/",is_operator_div};
-		eval_data_operators[OPERATOR_MOD]={OPERATOR_MOD, "%",is_operator_mod};
+		eval_data_operators[ZS_OPERATOR_ADD]={ZS_OPERATOR_ADD, "+",is_operator_add};
+		eval_data_operators[ZS_OPERATOR_SUB]={ZS_OPERATOR_SUB, "-",is_operator_sub};
+		eval_data_operators[ZS_OPERATOR_MUL]={ZS_OPERATOR_MUL, "*",is_operator_mul};
+		eval_data_operators[ZS_OPERATOR_DIV]={ZS_OPERATOR_DIV, "/",is_operator_div};
+		eval_data_operators[ZS_OPERATOR_MOD]={ZS_OPERATOR_MOD, "%",is_operator_mod};
 
-		eval_data_operators[OPERATOR_TERNARY_IF]={OPERATOR_TERNARY_IF, "?",is_operator_ternary_if};
-		eval_data_operators[OPERATOR_TERNARY_ELSE]={OPERATOR_TERNARY_ELSE, ":",is_operator_ternary_else};
-		eval_data_operators[OPERATOR_ASSIGN]={OPERATOR_ASSIGN, "=",is_operator_assign};
-		eval_data_operators[OPERATOR_ASSIGN_ADD]={OPERATOR_ASSIGN_ADD, "+=",is_operator_assign_add};
-		eval_data_operators[OPERATOR_ASSIGN_SUB]={OPERATOR_ASSIGN_SUB, "-=",is_operator_assign_sub};
-		eval_data_operators[OPERATOR_ASSIGN_MUL]={OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
-		eval_data_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
-		eval_data_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
-		eval_data_operators[OPERATOR_ASSIGN_XOR]={OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
-		eval_data_operators[OPERATOR_ASSIGN_AND]={OPERATOR_ASSIGN_AND,"&=",is_operator_assign_and};
-		eval_data_operators[OPERATOR_ASSIGN_OR]={OPERATOR_ASSIGN_OR,"|=",is_operator_assign_or};
-		eval_data_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
-		eval_data_operators[OPERATOR_ASSIGN_SHIFT_RIGHT]={OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
+		eval_data_operators[ZS_OPERATOR_TERNARY_IF]={ZS_OPERATOR_TERNARY_IF, "?",is_operator_ternary_if};
+		eval_data_operators[ZS_OPERATOR_TERNARY_ELSE]={ZS_OPERATOR_TERNARY_ELSE, ":",is_operator_ternary_else};
+		eval_data_operators[ZS_OPERATOR_ASSIGN]={ZS_OPERATOR_ASSIGN, "=",is_operator_assign};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_ADD]={ZS_OPERATOR_ASSIGN_ADD, "+=",is_operator_assign_add};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_SUB]={ZS_OPERATOR_ASSIGN_SUB, "-=",is_operator_assign_sub};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_MUL]={ZS_OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_DIV]={ZS_OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_MOD]={ZS_OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_XOR]={ZS_OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_AND]={ZS_OPERATOR_ASSIGN_AND,"&=",is_operator_assign_and};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_OR]={ZS_OPERATOR_ASSIGN_OR,"|=",is_operator_assign_or};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_SHIFT_LEFT]={ZS_OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
+		eval_data_operators[ZS_OPERATOR_ASSIGN_SHIFT_RIGHT]={ZS_OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
 
-		eval_data_operators[OPERATOR_XOR]={OPERATOR_XOR, "^",is_operator_xor};
-		eval_data_operators[OPERATOR_AND]={OPERATOR_AND, "&",is_operator_and};
-		eval_data_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_or};
-		eval_data_operators[OPERATOR_SHIFT_LEFT]={OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
-		eval_data_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
-		eval_data_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
-		eval_data_operators[OPERATOR_LOGIC_OR]={OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
-		eval_data_operators[OPERATOR_EQUAL]={OPERATOR_EQUAL, "==",is_operator_logic_equal};
-		eval_data_operators[OPERATOR_NOT_EQUAL]={OPERATOR_NOT_EQUAL, "!=",is_operator_logic_not_equal};
-		eval_data_operators[OPERATOR_GT]={OPERATOR_GT, ">",is_operator_logic_gt};
-		eval_data_operators[OPERATOR_LT]={OPERATOR_LT, "<",is_operator_logic_lt};
-		eval_data_operators[OPERATOR_GTE]={OPERATOR_GTE, ">=",is_operator_logic_gte};
-		eval_data_operators[OPERATOR_LTE]={OPERATOR_LTE, "<=",is_operator_logic_lte};
-		eval_data_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
-		eval_data_operators[OPERATOR_IN]={OPERATOR_IN, "in",is_operator_in};
+		eval_data_operators[ZS_OPERATOR_XOR]={ZS_OPERATOR_XOR, "^",is_operator_xor};
+		eval_data_operators[ZS_OPERATOR_AND]={ZS_OPERATOR_AND, "&",is_operator_and};
+		eval_data_operators[ZS_OPERATOR_OR]={ZS_OPERATOR_OR, "|",is_operator_or};
+		eval_data_operators[ZS_OPERATOR_SHIFT_LEFT]={ZS_OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
+		eval_data_operators[ZS_OPERATOR_SHIFT_RIGHT]={ZS_OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
+		eval_data_operators[ZS_OPERATOR_LOGIC_AND]={ZS_OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
+		eval_data_operators[ZS_OPERATOR_LOGIC_OR]={ZS_OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
+		eval_data_operators[ZS_OPERATOR_EQUAL]={ZS_OPERATOR_EQUAL, "==",is_operator_logic_equal};
+		eval_data_operators[ZS_OPERATOR_NOT_EQUAL]={ZS_OPERATOR_NOT_EQUAL, "!=",is_operator_logic_not_equal};
+		eval_data_operators[ZS_OPERATOR_GT]={ZS_OPERATOR_GT, ">",is_operator_logic_gt};
+		eval_data_operators[ZS_OPERATOR_LT]={ZS_OPERATOR_LT, "<",is_operator_logic_lt};
+		eval_data_operators[ZS_OPERATOR_GTE]={ZS_OPERATOR_GTE, ">=",is_operator_logic_gte};
+		eval_data_operators[ZS_OPERATOR_LTE]={ZS_OPERATOR_LTE, "<=",is_operator_logic_lte};
+		eval_data_operators[ZS_OPERATOR_INSTANCEOF]={ZS_OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
+		eval_data_operators[ZS_OPERATOR_IN]={ZS_OPERATOR_IN, "in",is_operator_in};
 
 
 		eval_data_pre_operations[PRE_OPERATION_NOT]={PRE_OPERATION_NOT, "!",is_operator_logic_not};

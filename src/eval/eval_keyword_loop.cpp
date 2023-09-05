@@ -58,7 +58,7 @@ namespace zetscript{
 			// insert jmp instruction
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-						BYTE_CODE_JMP,
+						ZS_BYTE_CODE_JMP,
 						ZS_IDX_INSTRUCTION_JMP_BREAK,
 						0
 					)
@@ -88,7 +88,7 @@ namespace zetscript{
 
 			eval_data->current_function->eval_instructions.push_back(
 				new EvalInstruction(
-					BYTE_CODE_JMP,
+					ZS_BYTE_CODE_JMP,
 					ZS_IDX_INSTRUCTION_JMP_CONTINUE,
 					0
 				)
@@ -141,7 +141,7 @@ namespace zetscript{
 			idx_instruction_conditional_while=(int)(eval_data->current_function->eval_instructions.size());
 
 			// insert instruction if evaluated expression
-			eval_data->current_function->eval_instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
+			eval_data->current_function->eval_instructions.push_back(ei_jnt=new EvalInstruction(ZS_BYTE_CODE_JNT));
 			ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_jnt->instruction_source_info.line=line;
 
@@ -172,7 +172,7 @@ namespace zetscript{
 
 			// insert jmp instruction to begin condition while...
 			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(
-					BYTE_CODE_JMP
+					ZS_BYTE_CODE_JMP
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.size())-idx_instruction_jmp_while)
 				)
@@ -180,7 +180,7 @@ namespace zetscript{
 
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-						BYTE_CODE_POP_SCOPE
+						ZS_BYTE_CODE_POP_SCOPE
 					)
 			);
 
@@ -275,7 +275,7 @@ namespace zetscript{
 			// insert jmp instruction to begin condition while...
 			eval_data->current_function->eval_instructions.push_back(
 				ei_aux=new EvalInstruction(
-					BYTE_CODE_JT
+					ZS_BYTE_CODE_JT
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.size())-idx_do_while_start)
 			));
@@ -283,7 +283,7 @@ namespace zetscript{
 			// insert jmp instruction to skip pop ...
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-						BYTE_CODE_JMP
+						ZS_BYTE_CODE_JMP
 						,ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 						,2
 					)
@@ -291,7 +291,7 @@ namespace zetscript{
 
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-						BYTE_CODE_POP_SCOPE
+						ZS_BYTE_CODE_POP_SCOPE
 					)
 			);
 
@@ -363,12 +363,12 @@ namespace zetscript{
 					,aux_p
 					,line
 					,new_scope_init
-					, EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
+					, ZS_EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
 			))==NULL){
 				return NULL;
 			}
 
-			if(is_operator(aux_p)!=Operator::OPERATOR_IN){
+			if(is_operator(aux_p)!=Operator::ZS_OPERATOR_IN){
 				check_for_in=false;
 			}
 			else{ // in
@@ -410,7 +410,7 @@ namespace zetscript{
 				goto label_exit_for;
 			}
 
-			if(is_operator(test_aux)==Operator::OPERATOR_IN){
+			if(is_operator(test_aux)==Operator::ZS_OPERATOR_IN){
 				is_for_in=true;
 
 				aux_p=test_aux;
@@ -419,13 +419,13 @@ namespace zetscript{
 				// check each byte code is load...
 				for(int j=0; j<ei_init_vars_for.size();j++){
 					EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
-					if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
+					if(ins->vm_instruction.byte_code!=ZS_BYTE_CODE_LOAD_LOCAL){
 						error_some_instruction_not_load_local=true;
 						break;
 					}
 
 					// switch to push
-					ins->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+					ins->vm_instruction.byte_code=ZS_BYTE_CODE_PUSH_STK_LOCAL;
 
 				}
 
@@ -447,9 +447,9 @@ namespace zetscript{
 				line=test_line;
 
 				// all check instructions
-				IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
+				IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[ZS_OPERATOR_IN].str),line);
 
-				if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+				if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
 					EVAL_ERROR_FILE_LINE_GOTO(
 							eval_data->current_parsing_file
 							,test_line
@@ -487,11 +487,11 @@ namespace zetscript{
 				strncpy(name,aux_p,test_aux-aux_p);
 
 				switch(((EvalInstruction *)ei_load_container_identifier.items[0])->vm_instruction.byte_code){
-				case BYTE_CODE_LOAD_UNDEFINED:
-				case BYTE_CODE_LOAD_NULL:
-				case BYTE_CODE_LOAD_ZS_FLOAT:
-				case BYTE_CODE_LOAD_BOOL:
-				case BYTE_CODE_LOAD_ZS_INT:
+				case ZS_BYTE_CODE_LOAD_UNDEFINED:
+				case ZS_BYTE_CODE_LOAD_NULL:
+				case ZS_BYTE_CODE_LOAD_FLOAT:
+				case ZS_BYTE_CODE_LOAD_BOOL:
+				case ZS_BYTE_CODE_LOAD_INT:
 					EVAL_ERROR_FILE_LINE_GOTO(
 							eval_data->current_parsing_file
 							,test_line
@@ -507,7 +507,7 @@ namespace zetscript{
 				aux_p=test_aux;
 
 				if(*aux_p!=')'){
-					if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+					if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
 						EVAL_ERROR_FILE_LINE_GOTO(
 							eval_data->current_parsing_file
 							,line
@@ -535,7 +535,7 @@ namespace zetscript{
 					goto label_exit_for;
 				};
 
-				ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+				ei_iterator.vm_instruction.byte_code=ZS_BYTE_CODE_LOAD_LOCAL;
 				ei_iterator.vm_instruction.value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
 				ei_iterator.symbol_name=symbol_iterator->name;
@@ -555,14 +555,14 @@ namespace zetscript{
 				);
 
 				// change load by push stk because we have to store iterator variable returned by iter()
-				ei_aux->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+				ei_aux->vm_instruction.byte_code=ZS_BYTE_CODE_PUSH_STK_LOCAL;
 
 				eval_data->current_function->eval_instructions.push_back(
 						ei_aux=new EvalInstruction(
-							BYTE_CODE_IT_INIT
+							ZS_BYTE_CODE_IT_INIT
 							, (uint8_t)(ZS_IDX_UNDEFINED)
 							,ZS_IDX_UNDEFINED
-							,INSTRUCTION_PROPERTY_RESET_STACK
+							,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 					)
 				);
 
@@ -578,20 +578,20 @@ namespace zetscript{
 
 				// load object end symbol
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_end");
 
 				// call
 				eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-							BYTE_CODE_MEMBER_CALL
-							,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0)
+							ZS_BYTE_CODE_MEMBER_CALL
+							,ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,0)
 					)
 				);
 
 				eval_data->current_function->eval_instructions.push_back(
-						ei_jnt=new EvalInstruction(BYTE_CODE_JT)
+						ei_jnt=new EvalInstruction(ZS_BYTE_CODE_JT)
 				);
 				ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 				ei_jnt->instruction_source_info.line=line;
@@ -600,7 +600,7 @@ namespace zetscript{
 
 				// PUSH SCOPE
 				/*eval_data->current_function->eval_instructions.push_back(
-						new EvalInstruction(BYTE_CODE_PUSH_SCOPE)
+						new EvalInstruction(ZS_BYTE_CODE_PUSH_SCOPE)
 				);*/
 				new_scope_body =eval_new_scope_block(eval_data,new_scope_init);
 
@@ -611,7 +611,7 @@ namespace zetscript{
 
 				// load _get member function
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_get");
@@ -620,8 +620,8 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back(
 					// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
 					new EvalInstruction(
-							BYTE_CODE_MEMBER_CALL
-							,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(ei_init_vars_for.size(),0)
+							ZS_BYTE_CODE_MEMBER_CALL
+							,ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(ei_init_vars_for.size(),0)
 					)
 				);
 
@@ -635,10 +635,10 @@ namespace zetscript{
 				// store...
 				eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
-							BYTE_CODE_STORE
+							ZS_BYTE_CODE_STORE
 							,(uint8_t)ei_init_vars_for.size()
 							,ZS_IDX_UNDEFINED
-							,INSTRUCTION_PROPERTY_RESET_STACK
+							,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 					)
 				);
 
@@ -649,19 +649,19 @@ namespace zetscript{
 
 				// load object end symbol
 				ei_post_operations.push_back(
-					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_next");
 
 				// call
 				ei_post_operations.push_back(
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0,0,INSTRUCTION_PROPERTY_RESET_STACK)
+					new EvalInstruction(ZS_BYTE_CODE_MEMBER_CALL,0,0,ZS_INSTRUCTION_PROPERTY_RESET_STACK)
 				);
 
 				// reset zero pointers
 				/*ei_post_operations.push_back(
-					new EvalInstruction(BYTE_CODE_CLEAR_ZERO_POINTERS)
+					new EvalInstruction(ZS_BYTE_CODE_CLEAR_ZERO_POINTERS)
 				);*/
 			}else{ // is not for-in re eval for in with no in-break
 
@@ -716,7 +716,7 @@ namespace zetscript{
 					}
 
 					eval_data->current_function->eval_instructions.push_back(
-							ei_jnt=new EvalInstruction(BYTE_CODE_JNT)
+							ei_jnt=new EvalInstruction(ZS_BYTE_CODE_JNT)
 					);
 					ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 					ei_jnt->instruction_source_info.line=line;
@@ -800,7 +800,7 @@ namespace zetscript{
 		// insert jmp instruction to begin condition for...
 		eval_data->current_function->eval_instructions.push_back(
 				new EvalInstruction(
-					BYTE_CODE_JMP
+					ZS_BYTE_CODE_JMP
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.size())-(int)idx_instruction_for_start)
 				)
@@ -809,7 +809,7 @@ namespace zetscript{
 		// insert extra pop_scope for 'break' cases
 		eval_data->current_function->eval_instructions.push_back(
 				new EvalInstruction(
-					BYTE_CODE_POP_SCOPE
+					ZS_BYTE_CODE_POP_SCOPE
 				)
 		);
 

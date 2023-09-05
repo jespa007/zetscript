@@ -23,7 +23,7 @@ namespace zetscript{
 						 vm_unref_shared_script_object(vm,so,NULL);\
 					}\
 				}\
-				STK_SET_UNDEFINED(stk_local_var);\
+				ZS_STK_SET_UNDEFINED(stk_local_var);\
 				stk_local_var++;\
 			}\
 		}\

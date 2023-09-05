@@ -29,7 +29,7 @@ namespace zetscript{
 			// pre-register built-in members...
 			for(int i = 0; i < symbol_vars->size(); i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+				if(symbol->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinField(
 							symbol->name
 							,{(zs_int)(new StackElementMemberProperty(
@@ -44,7 +44,7 @@ namespace zetscript{
 	}
 
 	void ScriptObject::unrefStackElementContainer(StackElement *si){
-		unsigned short var_type = GET_ZS_STK_PROPERTY_TYPES(si->properties);
+		unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
 

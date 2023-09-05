@@ -95,9 +95,9 @@ namespace zetscript{
 
 	typedef enum{
 
-		 EVAL_OPTION_NO_EXECUTE					=0x1
-		,EVAL_OPTION_PRINT_BYTE_CODE			=0x2
-		,EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
+		 ZS_EVAL_OPTION_NO_EXECUTE					=0x1
+		,ZS_EVAL_OPTION_PRINT_BYTE_CODE			=0x2
+		,ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
 
 	}EvalOption;
 
@@ -196,8 +196,8 @@ namespace zetscript{
 			}
 
 			// particular case for zs_float
-			if(script_type->idx_script_type==IDX_TYPE_ZS_FLOAT_C){
-				return this->toStackElement((zs_int)&_val,IDX_TYPE_ZS_FLOAT_PTR_C);
+			if(script_type->idx_script_type==IDX_TYPE_FLOAT_C){
+				return this->toStackElement((zs_int)&_val,IDX_TYPE_FLOAT_PTR_C);
 			}
 			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
 		}

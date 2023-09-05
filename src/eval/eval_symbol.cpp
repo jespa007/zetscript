@@ -18,7 +18,7 @@ namespace zetscript{
 	){
 		// PRE:
 		zs_int value = ZS_IDX_UNDEFINED;
-		ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
+		ByteCode byte_code=ZS_BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;
 		EvalInstruction *eval_instruction=NULL;
@@ -44,7 +44,7 @@ namespace zetscript{
 				}
 
 				delete (zs_int *)const_obj;
-				byte_code = ByteCode::BYTE_CODE_LOAD_ZS_INT;
+				byte_code = ZS_BYTE_CODE_LOAD_INT;
 
 			}else if((const_obj=zs_strutils::parse_float(default_str_value))!=NULL){ // float literal
 				zs_float value_flt = *((zs_float *)const_obj);
@@ -63,7 +63,7 @@ namespace zetscript{
 
 				delete (zs_float *)const_obj;
 				ZS_FLOAT_COPY(&value,&value_flt);
-				byte_code = ByteCode::BYTE_CODE_LOAD_ZS_FLOAT;
+				byte_code = ZS_BYTE_CODE_LOAD_FLOAT;
 			}
 			else{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal '%s'",default_str_value.c_str());
@@ -93,7 +93,7 @@ namespace zetscript{
 				}
 				aux++;
 				value=(zs_int)eval_data->zs->registerStkConstantStringObject(zs_string("\"")+default_str_value+"\"",default_str_value);
-				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
+				byte_code = ZS_BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;
 				while(!end){
@@ -107,9 +107,9 @@ namespace zetscript{
 				}
 
 				if(default_str_value=="undefined"){ // undefined literal
-					byte_code=ByteCode::BYTE_CODE_LOAD_UNDEFINED;
+					byte_code=ZS_BYTE_CODE_LOAD_UNDEFINED;
 				}else if(default_str_value=="null"){ // null literal
-						byte_code=ByteCode::BYTE_CODE_LOAD_NULL;
+						byte_code=ZS_BYTE_CODE_LOAD_NULL;
 				}else if((const_obj=zs_strutils::parse_bool(default_str_value))!=NULL){ // bool literal
 
 					bool value_bool = *((bool *)const_obj);
@@ -121,10 +121,10 @@ namespace zetscript{
 
 					delete (bool *)const_obj;
 					value = value_bool;
-					byte_code=ByteCode::BYTE_CODE_LOAD_BOOL;
+					byte_code=ZS_BYTE_CODE_LOAD_BOOL;
 				}else{ // it's an identifier token  ...
 					token_node_symbol->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-					byte_code = ByteCode::BYTE_CODE_FIND_VARIABLE;
+					byte_code = ZS_BYTE_CODE_FIND_VARIABLE;
 
 					if(default_str_value == SYMBOL_VALUE_THIS || default_str_value == SYMBOL_VALUE_SUPER){
 
@@ -135,9 +135,9 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"'super' only allowed as function");
 							}
 
-							byte_code=ByteCode::BYTE_CODE_SUPER_CALL;
+							byte_code=ZS_BYTE_CODE_SUPER_CALL;
 						}else{
-							byte_code= ByteCode::BYTE_CODE_LOAD_THIS;// INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+							byte_code= ZS_BYTE_CODE_LOAD_THIS;// ZS_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}
 					}else{
 						Symbol *local_symbol=NULL;
@@ -149,7 +149,7 @@ namespace zetscript{
 							,line
 						)==FALSE){
 							Operator op;
-							if((op=is_operator(default_str_value.c_str()))!=Operator::OPERATOR_UNKNOWN){
+							if((op=is_operator(default_str_value.c_str()))!=Operator::ZS_OPERATOR_UNKNOWN){
 								EVAL_ERROR_FILE_LINE(
 									eval_data->current_parsing_file
 									,line
@@ -170,20 +170,20 @@ namespace zetscript{
 
 						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 
-							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
-								byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
+							if(local_symbol->properties & ZS_SYMBOL_PROPERTY_FUNCTION){
+								byte_code= ZS_BYTE_CODE_LOAD_FUNCTION;
 								value=(zs_int)local_symbol;
 
-							}else if(local_symbol->properties & SYMBOL_PROPERTY_TYPE){
-								byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
+							}else if(local_symbol->properties & ZS_SYMBOL_PROPERTY_TYPE){
+								byte_code= ZS_BYTE_CODE_LOAD_TYPE;
 								value=-1;
 							}else{
 
-								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
+								byte_code= ZS_BYTE_CODE_LOAD_LOCAL;
 								value=local_symbol->idx_position;
 
-								if((local_symbol->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
-									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
+								if((local_symbol->properties & ZS_SYMBOL_PROPERTY_ARG_BY_REF) == ZS_SYMBOL_PROPERTY_ARG_BY_REF){
+									byte_code= ZS_BYTE_CODE_LOAD_REF;
 								}
 							}
 						}else{

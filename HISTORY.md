@@ -225,7 +225,7 @@ Solved issues
 - #299 Do not allocate for attribute member in script object 
 - #300 Use linear array instead of zs_vector in vm runtime 
 - #301 Solve inherited class call overrided function
-- #303 Implement BYTE_CODE_IMMEDIATE_CALL BYTE_CODE_THIS_CALL
+- #303 Implement ZS_BYTE_CODE_IMMEDIATE_CALL ZS_BYTE_CODE_THIS_CALL
 - #304 Cache scope data
 - #305 Simplify VMScope info optimitzation
 - #306 Get rid PUSH/POP begining function optimitzation

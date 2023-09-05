@@ -40,7 +40,7 @@ namespace zetscript{
 		if((_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)){
 			Symbol *p_irv = _scope->getSymbol(_function_name);
 			ScriptFunction *sf_repeaded=NULL;
-			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_FUNCTION)){
+			if(p_irv!=NULL && (p_irv->properties & ZS_SYMBOL_PROPERTY_FUNCTION)){
 				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
 				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_script_type_owner != _idx_script_type){
 					_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS;
@@ -61,7 +61,7 @@ namespace zetscript{
 		);
 
 		if(_function_properties & FUNCTION_PROPERTY_STATIC){
-			symbol->properties|=SYMBOL_PROPERTY_STATIC;
+			symbol->properties|=ZS_SYMBOL_PROPERTY_STATIC;
 		}
 
 		int idx_script_function = script_functions->size();

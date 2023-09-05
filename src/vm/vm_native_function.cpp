@@ -106,7 +106,7 @@ namespace zetscript{
 						arg_idx_script_type=irfs->params[k+start_param].idx_script_type;
 
 						if(arg_idx_script_type!=IDX_TYPE_STACK_ELEMENT){
-							//unsigned short var_type = GET_ZS_STK_PROPERTY_TYPES(current_arg->properties);
+							//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
 							if(current_arg->properties & ZS_STK_PROPERTY_PTR_STK){
 								current_arg=(StackElement *)current_arg->value;
 							}
@@ -118,15 +118,15 @@ namespace zetscript{
 									break;
 								case ZS_STK_PROPERTY_INT:
 									all_check=
-											arg_idx_script_type==IDX_TYPE_ZS_INT_PTR_C
-										  ||arg_idx_script_type==IDX_TYPE_ZS_INT_C
-										  ||arg_idx_script_type==IDX_TYPE_ZS_FLOAT_PTR_C;
+											arg_idx_script_type==IDX_TYPE_INT_PTR_C
+										  ||arg_idx_script_type==IDX_TYPE_INT_C
+										  ||arg_idx_script_type==IDX_TYPE_FLOAT_PTR_C;
 									break;
 								case ZS_STK_PROPERTY_FLOAT:
-									all_check=arg_idx_script_type==IDX_TYPE_ZS_FLOAT_PTR_C
-											||arg_idx_script_type==IDX_TYPE_ZS_FLOAT_C
-											||arg_idx_script_type==IDX_TYPE_ZS_INT_PTR_C
-											||arg_idx_script_type==IDX_TYPE_ZS_INT_C;
+									all_check=arg_idx_script_type==IDX_TYPE_FLOAT_PTR_C
+											||arg_idx_script_type==IDX_TYPE_FLOAT_C
+											||arg_idx_script_type==IDX_TYPE_INT_PTR_C
+											||arg_idx_script_type==IDX_TYPE_INT_C;
 									break;
 								case ZS_STK_PROPERTY_BOOL:
 									all_check=arg_idx_script_type==IDX_TYPE_BOOL_PTR_C;
@@ -143,7 +143,7 @@ namespace zetscript{
 									break;*/
 								case ZS_STK_PROPERTY_SCRIPT_OBJECT:
 
-									if(STK_IS_STRING_SCRIPT_OBJECT(current_arg)){
+									if(ZS_STK_IS_STRING_SCRIPT_OBJECT(current_arg)){
 										all_check=arg_idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
@@ -190,7 +190,7 @@ namespace zetscript{
 					args_str.append(",");
 				}
 
-				//unsigned short var_type = GET_ZS_STK_PROPERTY_TYPES(current_arg->properties);
+				//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
 				if(current_arg->properties & ZS_STK_PROPERTY_PTR_STK){
 					current_arg=(StackElement *)current_arg->value;
 				}
@@ -404,7 +404,7 @@ namespace zetscript{
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & ZS_STK_PROPERTY_INT) && (_c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & ZS_STK_PROPERTY_INT) && (_c_function->params[i].idx_script_type == IDX_TYPE_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(
@@ -620,7 +620,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(_c_function->idx_script_type_return==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->idx_script_type_return==IDX_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
