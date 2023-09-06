@@ -32,10 +32,6 @@
 #define ZS_MSK_STK_OP1_FLOAT_OP2_FLOAT						((ZS_STK_PROPERTY_FLOAT<<16)|	ZS_STK_PROPERTY_FLOAT)
 #define ZS_MSK_STK_OP1_TYPE_OP2_TYPE						((ZS_STK_PROPERTY_TYPE<<16)	|	ZS_STK_PROPERTY_TYPE)
 
-#define ZS_STK_VALUE_IS_UNDEFINED(stk) 						(stk->properties == ZS_STK_PROPERTY_UNDEFINED)
-#define ZS_STK_VALUE_IS_NULL(stk) 							(stk->properties == ZS_STK_PROPERTY_NULL)
-
-
 // Check types
 #define ZS_STK_VALUE_IS_FLOAT(stk) 							((stk)->properties & ZS_STK_PROPERTY_FLOAT)
 #define ZS_STK_VALUE_IS_INT(stk) 							((stk)->properties & ZS_STK_PROPERTY_INT)

@@ -380,7 +380,7 @@ namespace zetscript{
 		}
 		else{
 			// check metamethod function (not property metamethod)...
-			for(int i = 0; i < MAX_METAMETHOD_BYTE_CODES; i++){
+			for(int i = 0; i < ZS_MAX_METAMETHOD_BYTE_CODES; i++){
 				if(ZS_STRCMP(metamethod_byte_code_to_symbol_str((MetamethodByteCode)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
 					MetamethodMemberSetterInfo info_mp;

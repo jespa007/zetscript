@@ -231,7 +231,7 @@ namespace zetscript{
 		ZS_BYTE_CODE_TYPEOF,
 		ZS_BYTE_CODE_IN,
 		ZS_MAX_BYTE_CODES
-	}ZS_ByteCode;
+	}ByteCode;
 
 
 	const char * byte_code_to_str(ByteCode  op);
