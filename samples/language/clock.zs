@@ -1,5 +1,7 @@
-for(var i=0; i < 10; i++){
-	if(i%10==0){
-		Console::outln("Ellapsed seconds: {0}",System::clock());
-	}
+var start=System::clock();
+
+while((System::clock()-start) < 1){
+	var subtime_start=System::clock()
+	while((System::clock()-subtime_start) < 0.1){}
+	Console::outln("Ellapsed seconds: {0}",System::clock()-start);
 }
