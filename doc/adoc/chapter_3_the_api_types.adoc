@@ -40,6 +40,26 @@ zetscript::zs_string s="Hello World";
 
 _zs_string_ has the following member functions,
 
+====== zs_string::zs_string()
+
+
+*Syntax*
+
+[source,cpp]
+----
+zs_string();
+zs_string(const char * _s);
+zs_string(const zs_string & _str);
+zs_string(const zs_buffer & _buf);
+zs_string(zs_string && _str_tmp);
+----
+
+[.underline]#Parameters#
+- _&#95;s_ :
+- _&#95;str_ :
+- _&#95;buf_ :
+- _&#95;str_tmp_ :
+
 ====== zs_string::operator=()
 
 Assigns a new value to the string, replacing its current contents.

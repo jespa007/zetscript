@@ -12,8 +12,8 @@ namespace zetscript{
 		static int npos;
 
 		zs_string();
-		zs_string(const char * _const_char);
-		zs_string(const zs_string & _obj);
+		zs_string(const char * _s);
+		zs_string(const zs_string & _str);
 		zs_string(const zs_buffer & _buf);
 		zs_string(zs_string && _str_tmp);
 
