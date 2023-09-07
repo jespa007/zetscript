@@ -68,11 +68,6 @@ namespace zetscript{
 		set(_obj);
 	}
 
-	zs_string::zs_string(const zs_buffer & _buf){
-		set((const char *)_buf.ptr,_buf.ptr_len);
-	}
-
-
 	zs_string::zs_string(zs_string && _str_tmp) // move constructor
 	// && is a reference operator defined in the C++11 standard
 	// which means "dyingObj" is an r-value reference.
@@ -287,8 +282,6 @@ namespace zetscript{
 	}
 
 	zs_string & zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
-		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
-		//zs_string str;
 
 		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
 

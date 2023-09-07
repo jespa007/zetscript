@@ -168,9 +168,9 @@ include::../examples/the_api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in _xref:chapter_2_the_language_class.adoc#_constructor[section 2.10.3]_.
+To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in _xref:language_class.adoc#_constructor[section 2.10.3]_.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:chapter_3_the_api_types#_types[built-in type] or a pointer of a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 *Syntax*
 
@@ -191,7 +191,7 @@ Where,
 
 - __zs_ : ZetScript context.
 - __this_: The current instance.
-- __arg1_ .. __arg8_: Arguments which is a pointer of xref:chapter_3_the_api_types#_types[built-in type] or a pointer of xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type].
+- __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[built-in type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
 
 After the constructor function is defined it has to be registered with _ZetScript::registerConstructor_. _registerConstructor_ it has the following signature,
 
@@ -213,7 +213,7 @@ void registerConstructor<_RegisteredType>( Function _function);
 
 *Example*
 
-The following code defines two functions that accepts a _xref:chapter_2_the_language_data_types.adoc#&lowbar;float[Float]_ value or _Number_ pointer type respectively,
+The following code defines two functions that accepts a _xref:language_data_types.adoc#&lowbar;float[Float]_ value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----
@@ -264,7 +264,7 @@ include::../examples/the_api/register_type/register_instantiable_type_with_const
 
 To register a member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:chapter_3_the_api_types#_types[built-in type] or a pointer of a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _zs_string_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
@@ -288,7 +288,7 @@ Where,
 
 - __zs_ : ZetScript context
 - __this_: The current instance
-- __arg1_ .. __arg8_: Arguments which types are pointers of xref:chapter_3_the_api_types#_types[built-in types] or a pointer of a registered type.
+- __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[built-in types] or a pointer of a registered type.
 
 
 After the member function is defined it has to be registered with _ZetScript::registerMemberFunction_. _ZetScript::registerMemberFunction_ it has the following signature,
@@ -314,7 +314,7 @@ void registerMemberFunction<RegisteredType>(const zs_string & __member_function_
 *Example*
 
 
-The following code defines a function that returns a _xref:chapter_2_the_language_data_types.adoc#&lowbar;integer[Integer]_ ,
+The following code defines a function that returns a _xref:language_data_types.adoc#&lowbar;integer[Integer]_ ,
 
 [source,cpp]
 ----
@@ -360,7 +360,7 @@ include::../examples/the_api/register_type/register_member_function_out.txt[]
 
 To register a static member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:chapter_3_the_api_types#_types[built-in type] or a pointer of a xref:chapter_3_the_api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _zs_string_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
@@ -383,7 +383,7 @@ Where,
 [.underline]#Parameters# 
 
 - __zs_ : ZetScript context
-- __arg1_ .. __arg9_: Arguments which types are pointers of xref:chapter_3_the_api_types#_types[built-in types] or a pointer of a registered type.
+- __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[built-in types] or a pointer of a registered type.
 
 
 After the constructor function is defined it has to be registered with _ZetScript::registerStaticMemberFunction_. _ZetScript::registerStaticMemberFunction_ it has the following signature,
@@ -524,5 +524,5 @@ Console output,
 include::../examples/the_api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
 ----
 
-include::chapter_3_the_api_expose_cpp_type_metamethods.adoc[]
-include::chapter_3_the_api_expose_cpp_type_properties.adoc[]
+include::api_expose_cpp_type_metamethods.adoc[]
+include::api_expose_cpp_type_properties.adoc[]
