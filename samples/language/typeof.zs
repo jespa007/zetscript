@@ -13,7 +13,7 @@ var test_typeof=[
 
 
 for(var i in test_typeof){
-	Console::outln("{0}:{1}",i,System::eval(i))
+	Console::outln("{0}:{1}",i,System::eval("return" +i))
 }
 
 
