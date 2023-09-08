@@ -49,16 +49,16 @@ this is a block comment
 
 
 
-include::chapter_2_the_language_literals.adoc[]
-include::chapter_2_the_language_variables_and_scopes.adoc[]
-include::chapter_2_the_language_data_types.adoc[]
-include::chapter_2_the_language_operators.adoc[]
-include::chapter_2_the_language_conditionals.adoc[]
-include::chapter_2_the_language_loops.adoc[]
-include::chapter_2_the_language_function.adoc[]
-include::chapter_2_the_language_class.adoc[]
+include::language_literals.adoc[]
+include::language_variables_and_scopes.adoc[]
+include::language_data_types.adoc[]
+include::language_operators.adoc[]
+include::language_conditionals.adoc[]
+include::language_loops.adoc[]
+include::language_function.adoc[]
+include::language_class.adoc[]
 <<<
-include::chapter_2_the_language_modules.adoc[]
+include::language_modules.adoc[]
 
 
 

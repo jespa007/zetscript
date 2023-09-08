@@ -6,14 +6,14 @@
 #include "zetscript.h"
 #include "test_all_config.h"
 
-#include "test_arithmetic_constants.cpp"
-#include "test_arithmetic_metamethods.cpp"
-#include "test_arithmetic_common.cpp"
-#include "test_arithmetic_vars.cpp"
-#include "test_call_native_functions.cpp"
-#include "test_callbacks.cpp"
-#include "test_consecutive_evals.cpp"
-#include "test_register_constants.cpp"
+#include "api/test_arithmetic_constants.cpp"
+#include "api/test_arithmetic_metamethods.cpp"
+#include "api/test_arithmetic_common.cpp"
+#include "api/test_arithmetic_vars.cpp"
+#include "api/test_call_native_functions.cpp"
+#include "api/test_callbacks.cpp"
+#include "api/test_consecutive_evals.cpp"
+#include "api/test_register_constants.cpp"
 
 
 

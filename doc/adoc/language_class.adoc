@@ -172,8 +172,8 @@ class B extends A{
 var b=new B(); // b.a==10, b.b=20
 ----
 
-include::chapter_2_the_language_class_metamethods.adoc[]
-include::chapter_2_the_language_class_property.adoc[]
+include::language_class_metamethods.adoc[]
+include::language_class_property.adoc[]
 
 <<<
 

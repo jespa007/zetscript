@@ -66,7 +66,7 @@ endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
 
-set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/language" )
+set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/scripts" )
 MESSAGE("-- Script test path: " ${ZS_TEST_ALL_SCRIPT_TEST_PATH}  )
 
 configure_file(${PROJECT_SOURCE_DIR}/../test/test_all_config.h.in ${PROJECT_SOURCE_DIR}/../test/test_all_config.h)
@@ -281,7 +281,7 @@ if (SAMPLES)
 	#-----------------------------------------------
 	# print_object_sizes
 	add_executable(print_object_sizes${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/print_object_sizes.cpp
+		${PROJECT_SOURCE_DIR}/../test/api/print_object_sizes.cpp
 	)
 	target_link_libraries(print_object_sizes${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 			
