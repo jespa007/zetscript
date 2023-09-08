@@ -555,6 +555,45 @@ void 		insert(int _pos,const zs_vector<_T>  & _vector, int _n_list_elements_to_c
 			return count;
 		}
 
+==== zs_map
+
+===== Member functions
+====== zs_map::zs_map();
+====== zs_map::exist
+		bool		exist(const char * key);
+
+====== zs_map::begin
+		zs_map_iterator begin();
+====== zs_map::set
+		zs_map_node	*set(const char * key,zs_int val);
+====== zs_map::get()
+		zs_int 		get(const char * key, bool * exists=NULL);
+====== zs_map::getKey()
+		const char *getKey(const char * _key);
+====== zs_map::erase()
+		void  		erase(const char * key);
+====== zs_map::clear()
+		void 		clear();
+====== zs_map::data()
+		zs_map_node *data();
+====== zs_map::count()
+		int 		count();		
+
+
+==== zs_map_iterator
+===== Member functions
+
+====== zs_map_iterator::zs_map_iterator()
+
+		zs_map_iterator();
+		zs_map_iterator(zs_map *map);
+
+====== zs_map_iterator::next()
+		void next();
+
+====== zs_map_iterator::end()
+		bool end();
+
 ==== ArrayScriptObject
 
 _ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
