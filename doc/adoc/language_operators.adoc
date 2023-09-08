@@ -366,14 +366,14 @@ The _instanceof_ operator returns _true_ whether the object is an instance of th
 
 [source,javascript]
 ----
-include::../examples/the_language/type/type_instanceof.zs[]
+include::../examples/scripts/type/type_instanceof.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/type/type_instanceof_out.txt[]
+include::../examples/scripts/type/type_instanceof_out.txt[]
 ----
 
 ===== Typeof operator
@@ -384,14 +384,14 @@ The _typeof_ operator returns the type of operand's value.
 
 [source,javascript]
 ----
-include::../examples/the_language/type/type_typeof.zs[]
+include::../examples/scripts/type/type_typeof.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/type/type_typeof_out.txt[]
+include::../examples/scripts/type/type_typeof_out.txt[]
 ----
 
 <<<

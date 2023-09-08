@@ -225,12 +225,12 @@ class Container{
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_metamethod_iterator.zs[]
+include::../examples/scripts/class/class_metamethod_iterator.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_metamethod_iterator_out.txt[]
+include::../examples/scripts/class/class_metamethod_iterator_out.txt[]
 ----

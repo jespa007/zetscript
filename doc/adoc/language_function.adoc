@@ -154,7 +154,7 @@ function var_args(a,b,...args) {
 
 [source,javascript]
 ----
-include::../examples/the_language/function/function_rest_parameters.zs[]
+include::../examples/scripts/function/function_rest_parameters.zs[]
 ----
 
 <<<
@@ -163,7 +163,7 @@ Console output:
 
 [source,text]
 ----
-include::../examples/the_language/function/function_rest_parameters_out.txt[]
+include::../examples/scripts/function/function_rest_parameters_out.txt[]
 ----
 
 ==== Parameter by reference 
@@ -183,12 +183,12 @@ function(ref arg1, arg2, ..., ref arg_n){
 
 [source,javascript]
 ----
-include::../examples/the_language/function/function_parameter_by_reference.zs[]
+include::../examples/scripts/function/function_parameter_by_reference.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/function/function_parameter_by_reference_out.txt[]
+include::../examples/scripts/function/function_parameter_by_reference_out.txt[]
 ----

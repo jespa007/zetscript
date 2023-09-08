@@ -42,14 +42,14 @@ Returns the value of the property
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_get.zs[]
+include::../examples/scripts/class/class_property_metamethod_get.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_get_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_get_out.txt[]
 ----
 
 <<<
@@ -77,14 +77,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_set.zs[]
+include::../examples/scripts/class/class_property_metamethod_set.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_set_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_set_out.txt[]
 ----
 
 <<<
@@ -112,14 +112,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_addset.zs[]
+include::../examples/scripts/class/class_property_metamethod_addset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_addset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_addset_out.txt[]
 ----
 
 <<<
@@ -148,14 +148,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_subset.zs[]
+include::../examples/scripts/class/class_property_metamethod_subset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_subset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_subset_out.txt[]
 ----
 
 <<<
@@ -183,14 +183,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_mulset.zs[]
+include::../examples/scripts/class/class_property_metamethod_mulset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_mulset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_mulset_out.txt[]
 ----
 
 <<<
@@ -218,14 +218,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_divset.zs[]
+include::../examples/scripts/class/class_property_metamethod_divset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_divset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_divset_out.txt[]
 ----
 
 <<<	
@@ -253,14 +253,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_modset.zs[]
+include::../examples/scripts/class/class_property_metamethod_modset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_modset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_modset_out.txt[]
 ----
 
 <<<
@@ -288,14 +288,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_andset.zs[]
+include::../examples/scripts/class/class_property_metamethod_andset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_andset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_andset_out.txt[]
 ----
 
 <<<
@@ -323,14 +323,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_orset.zs[]
+include::../examples/scripts/class/class_property_metamethod_orset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_orset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_orset_out.txt[]
 ----
 
 <<<
@@ -358,14 +358,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_xorset.zs[]
+include::../examples/scripts/class/class_property_metamethod_xorset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_xorset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_xorset_out.txt[]
 ----
 
 <<<
@@ -393,14 +393,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_shrset.zs[]
+include::../examples/scripts/class/class_property_metamethod_shrset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_shrset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_shrset_out.txt[]
 ----
 
 <<<
@@ -428,14 +428,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_shlset.zs[]
+include::../examples/scripts/class/class_property_metamethod_shlset.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_shlset_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_shlset_out.txt[]
 ----
 
 <<<
@@ -464,14 +464,14 @@ The value before perform post increment operation.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_postinc.zs[]
+include::../examples/scripts/class/class_property_metamethod_postinc.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_postinc_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_postinc_out.txt[]
 ----
 
 <<<
@@ -499,14 +499,14 @@ The value before perform post decrement operation.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_postdec.zs[]
+include::../examples/scripts/class/class_property_metamethod_postdec.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_postdec_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_postdec_out.txt[]
 ----
 
 <<<
@@ -534,14 +534,14 @@ The value before perform pre increment operation.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_preinc.zs[]
+include::../examples/scripts/class/class_property_metamethod_preinc.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_preinc_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_preinc_out.txt[]
 ----
 
 <<<
@@ -569,13 +569,13 @@ The value before perform pre decrement operation.
 
 [source,javascript]
 ----
-include::../examples/the_language/class/class_property_metamethod_predec.zs[]
+include::../examples/scripts/class/class_property_metamethod_predec.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_language/class/class_property_metamethod_predec_out.txt[]
+include::../examples/scripts/class/class_property_metamethod_predec_out.txt[]
 ----
 
