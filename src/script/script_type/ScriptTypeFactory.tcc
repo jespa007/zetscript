@@ -138,7 +138,7 @@ namespace zetscript{
 
 
 		for(int i=0; i < main_class->idx_base_types->size(); i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
+			ScriptType *sc=getScriptType(main_class->idx_base_types->get(i)); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
 				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(str_script_type).c_str()
@@ -151,7 +151,7 @@ namespace zetscript{
 
 		// search native types that already inherits type B
 		for(int i=0; i < main_class->idx_base_types->size(); i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
+			ScriptType *sc=getScriptType(main_class->idx_base_types->get(i)); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->extendsFrom(idx_base_type)){
 				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
@@ -189,7 +189,7 @@ namespace zetscript{
 		// register all c vars symbols ...
 		for(int i = 0; i < base_functions->size(); i++){
 
-			Symbol *src_symbol = (Symbol *)base_functions->items[i];
+			Symbol *src_symbol = (Symbol *)base_functions->get(i);
 
 			bool is_metamethod_function = MemberProperty::symbolNameMatchStartSymbolNameMetamethod(src_symbol->name);
 
@@ -231,7 +231,7 @@ namespace zetscript{
 
 
 		for(int i = 0; i < base_vars->size(); i++){
-			Symbol *src_symbol = (Symbol *)base_vars->items[i];
+			Symbol *src_symbol = (Symbol *)base_vars->get(i);
 
 			if(src_symbol->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 
@@ -294,7 +294,7 @@ namespace zetscript{
 					if(mp_info.setters!=NULL){
 						for(int h=0; h < mp_info.setters->size(); h++){
 
-							StackElement *stk_setter=mp_info.setters->items[h];
+							StackElement *stk_setter=mp_info.setters->get(h);
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;
 							ScriptFunction *sf_setter=(ScriptFunction *)symbol_setter->ref_ptr,
 											*dst_script_function=NULL;

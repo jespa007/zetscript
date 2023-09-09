@@ -447,8 +447,9 @@ namespace zetscript{
 
 		bool contains(const zs_vector<zs_string> & _strings, const zs_string & _str_containts,StringComparer sc){
 
+			zs_string *_strings_items=_strings.data();
 			for(int i = 0; i < _strings.size(); i++){
-				if(contains(_strings.items[i],_str_containts,sc)){
+				if(contains(_strings_items[i],_str_containts,sc)){
 					return true;
 				}
 			}

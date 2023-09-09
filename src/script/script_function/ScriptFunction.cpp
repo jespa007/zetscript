@@ -11,8 +11,8 @@
 :"Local"\
 
 #define ZS_GET_ILOAD_R_STR(properties,value) \
-	((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name.c_str()\
-	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
+	((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->get(value))->name.c_str()\
+	:((Symbol *)sfo->local_variables->get(value))->name.c_str()\
 
 namespace zetscript{
 
@@ -62,7 +62,7 @@ namespace zetscript{
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
 		//if(instruction_source_info.items[idx]==1){
-		return (InstructionSourceInfo *)instruction_source_infos.items[idx];
+		return (InstructionSourceInfo *)instruction_source_infos.get(idx);
 	}
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptType *sc){
@@ -483,7 +483,7 @@ namespace zetscript{
 
 		for(int i=0; i < _scope->symbol_functions->size();i++){
 			bool same_signature=true;
-			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
+			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->get(i);
 			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
 			if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
 				for(int j=0; j < _params_len && same_signature;j++){
@@ -756,7 +756,7 @@ namespace zetscript{
 			const char *str_aux=NULL;
 			int i=0;
 			while(i < unresolved_symbols.size()){
-				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
+				Instruction *unresolved_instruction=&instructions[unresolved_symbols.get(i)];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
 				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
@@ -769,7 +769,7 @@ namespace zetscript{
 						instruction_file
 						,instruction_line
 						,"Cannot find symbol name at instruction %i"
-						,unresolved_symbols.items[i]
+						,unresolved_symbols.get(i)
 					);
 				}
 
@@ -810,7 +810,7 @@ namespace zetscript{
 
 						ScriptType *sc_sf=this->scope_script_function->getScriptTypeOwner();
 						for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->size(); j++){
-							Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
+							Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->get(j);
 							if(
 								   sv->name==ptr_str_symbol_to_find
 							){
@@ -893,7 +893,7 @@ namespace zetscript{
 		clear();
 
 		for(int i=0; i < instruction_source_infos.size(); i++){
-			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.items[i];
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.get(i);
 			if(isi != NULL){
 				delete isi;
 			}

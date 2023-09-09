@@ -184,7 +184,7 @@ namespace zetscript{
 						if(is_constant){ // make ptr as constant after variable is saved
 
 							// unset last reset stack
-							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.size()-1];
+							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.size()-1);
 							eval_instruction->vm_instruction.properties&=~ZS_INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
@@ -240,7 +240,7 @@ namespace zetscript{
 
 error_eval_keyword_var:
 		for(int i=0; i < ei_member_var_init.size(); i++){
-			delete (EvalInstruction *)ei_member_var_init.items[i];
+			delete ei_member_var_init.get(i);
 		}
 
 		ei_member_var_init.clear();

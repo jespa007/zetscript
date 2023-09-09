@@ -53,7 +53,7 @@ namespace zetscript{
 			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
 		}
 
-		StackElement *stk_dst=(StackElement *)stk_elements.items[_idx];
+		StackElement *stk_dst=(StackElement *)stk_elements.get(_idx);
 
 		ScriptObject::unrefStackElementContainer(stk_dst);
 
@@ -69,7 +69,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		return (StackElement *)stk_elements.items[_idx];
+		return (StackElement *)stk_elements.get(_idx);
 	}
 
 	bool ArrayScriptObject::eraseElementAt( int idx){//onst zs_string & varname){
@@ -80,7 +80,7 @@ namespace zetscript{
 			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_elements.size());
 		}
 
-		si=(StackElement *)stk_elements.items[idx];
+		si=(StackElement *)stk_elements.get(idx);
 
 		ScriptObject::unrefAndFreeStackElementContainer(si);
 
@@ -92,7 +92,7 @@ namespace zetscript{
 
 	void ArrayScriptObject::eraseAllElements(){
 		for(int i=0; i <stk_elements.size(); i++){
-			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_elements.items[i]);
+			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_elements.get(i));
 		}
 		stk_elements.clear();
 	}
@@ -114,7 +114,7 @@ namespace zetscript{
 
 	void ArrayScriptObject::pop(){
 		// save last element...
-		StackElement stk_element=*((StackElement *)stk_elements.items[stk_elements.size()-1]);
+		StackElement stk_element=*((StackElement *)stk_elements.get(stk_elements.size()-1));
 
 		// erase
 		if(!eraseElementAt(stk_elements.size()-1)){
@@ -127,7 +127,7 @@ namespace zetscript{
 
 	void ArrayScriptObject::concat(ArrayScriptObject *_v){
 		for(int i=0; i < _v->stk_elements.size();i++){
-			this->pushStackElement((StackElement *)_v->stk_elements.items[i]);
+			this->pushStackElement((StackElement *)_v->stk_elements.get(i));
 		}
 	}
 

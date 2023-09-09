@@ -66,7 +66,7 @@ namespace zetscript{
 
 	void Scope::removeChildrenBlockTypes(){
 		for(int i=0; i < this->scopes->size(); i++){
-			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->items[i]);
+			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->get(i));
 		}
 
 		this->scope_factory->clearUnusuedScopes();
@@ -84,7 +84,7 @@ namespace zetscript{
 
 			// check its
 			for(int i=0; i < _sc->scopes->size();i++){
-				Scope *_child=(Scope *)_sc->scopes->items[i];
+				Scope *_child=(Scope *)_sc->scopes->get(i);
 				if((_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
 					throw std::runtime_error("expected scope as block type");
 				}
@@ -113,7 +113,7 @@ namespace zetscript{
 			n_total=_sc->symbol_variables->size();
 
 			for(int i=0; i < _sc->scopes->size(); i++){
-				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i],idx_script_function_reference);
+				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->get(i),idx_script_function_reference);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace zetscript{
 		// because no variables in there it moves all scopes in the parent ...
 		if(scope_parent != NULL){
 			for(int i=0;i < scopes->size(); i++){
-				Scope *current_scope=(Scope *)scopes->items[i];
+				Scope *current_scope=(Scope *)scopes->get(i);
 				scope_parent->scopes->push_back(current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
@@ -247,7 +247,7 @@ namespace zetscript{
 
 		// for each variable in current scope ...
 		for(int i = 0; i < symbol_types->size(); i++){
-			Symbol *sv=(Symbol *)symbol_types->items[i];
+			Symbol *sv=(Symbol *)symbol_types->get(i);
 			if(
 				   ( sv->name == _str_symbol )
 			){
@@ -256,7 +256,7 @@ namespace zetscript{
 		}
 
 		for(int i = 0; i < symbol_variables->size(); i++){
-			Symbol *sv=(Symbol *)symbol_variables->items[i];
+			Symbol *sv=(Symbol *)symbol_variables->get(i);
 			if(
 				   ( sv->name == _str_symbol )
 			){
@@ -265,7 +265,7 @@ namespace zetscript{
 		}
 
 		for(int i = 0; i < symbol_functions->size(); i++){
-			Symbol *sv=(Symbol *)symbol_functions->items[i];
+			Symbol *sv=(Symbol *)symbol_functions->get(i);
 			if(
 				   ( sv->name == _str_symbol )
 			   &&  ( sv->n_params == _n_params || _n_params==ZS_NO_PARAMS_SYMBOL_ONLY )
@@ -287,7 +287,7 @@ namespace zetscript{
 
 		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
 			for(int i = 0; i < scopes->size(); i++){
-				Scope *s=(Scope *)scopes->items[i];
+				Scope *s=(Scope *)scopes->get(i);
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
@@ -305,7 +305,7 @@ namespace zetscript{
 	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
 		for(int i = 0; i < symbol_functions->size(); i++){
-			sv=(Symbol *)symbol_functions->items[i];
+			sv=(Symbol *)symbol_functions->get(i);
 			if(
 			    sv == symbol
 			){
@@ -316,7 +316,7 @@ namespace zetscript{
 		}
 
 		for(int i = 0; i < symbol_variables->size(); i++){
-			sv=(Symbol *)symbol_variables->items[i];
+			sv=(Symbol *)symbol_variables->get(i);
 			if(
 			    sv == symbol
 			){
@@ -341,7 +341,7 @@ namespace zetscript{
 		if(symbol_types != NULL){
 			// delete local local_symbols found...
 			for(int i = 0; i < symbol_types->size(); i++){
-				delete (Symbol *)symbol_types->items[i];
+				delete (Symbol *)symbol_types->get(i);
 			}
 
 			delete symbol_types;
@@ -352,7 +352,7 @@ namespace zetscript{
 
 		if(symbol_functions != NULL){
 			for(int i = 0; i < symbol_functions->size(); i++){
-				delete (Symbol *)symbol_functions->items[i];
+				delete (Symbol *)symbol_functions->get(i);
 			}
 
 			delete symbol_functions;
@@ -361,7 +361,7 @@ namespace zetscript{
 
 		if(symbol_variables!=NULL){
 			for(int i = 0; i < symbol_variables->size(); i++){
-				delete (Symbol *)symbol_variables->items[i];
+				delete (Symbol *)symbol_variables->get(i);
 			}
 			delete symbol_variables;
 			symbol_variables=NULL;

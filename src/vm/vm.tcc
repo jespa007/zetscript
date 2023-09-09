@@ -15,7 +15,7 @@ namespace zetscript{
 		int count=(int)scope_symbols->size();\
 
 		if(count > 0 ){
-			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
+			StackElement *stk_local_var=stk_local_vars+scope_symbols->data()[0]->idx_position;\
 			while(count--){\
 				if((stk_local_var->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){\
 					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\

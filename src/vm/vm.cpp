@@ -146,7 +146,7 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		for(int i=0; i < data->lifetime_object.size(); i++){
-			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
+			InfoLifetimeObject *info=data->lifetime_object.get(i);
 			if(info->script_object==_script_object){
 				return i;
 			}
@@ -164,7 +164,7 @@ namespace zetscript{
 		if((idx=vm_find_lifetime_object(_vm,_script_object))==ZS_IDX_UNDEFINED){
 			ZS_THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
-		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];
+		InfoLifetimeObject *info=data->lifetime_object.get(idx);
 		data->lifetime_object.erase(idx);
 
 		if(info->script_object->shared_pointer!=NULL){
@@ -408,7 +408,7 @@ namespace zetscript{
 
 			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
 			for(int i=0; i < data->lifetime_object.size();i++ ){
-				InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
+				InfoLifetimeObject *info=data->lifetime_object.get(i);
 				created_at="";
 				end="";
 
@@ -554,23 +554,23 @@ namespace zetscript{
 #endif
 
 			// if n_shares == shared_pointers
-			if(slots.count>0){
-				if(slots.count==cso->shared_pointer->data.n_shares){
+			if(slots.size()>0){
+				if(slots.size()==cso->shared_pointer->data.n_shares){
 					cyclic_container_instances_element=true;
 					auto container_slots_intance=cso->getListContainerSlotsRef();
 
-					for(int i=0; i < slots.count;i++){
+					for(int i=0; i < slots.size();i++){
 
 						// for each container slot.
 						// 1. dettach from container slot list
-						auto container_slot_node=slots.items[i]->data->getContainerSlotNode();
+						auto container_slot_node=slots.get(i)->data->getContainerSlotNode();
 						container_slots_intance->remove(container_slot_node);
 						vm_unref_shared_script_object(_vm,cso,ZS_VM_MAIN_SCOPE_BLOCK);
 
 						// 2. back container slot as undefined
 						//
 						// delete container slot
-						auto stk=slots.items[i]->data->getPtrStackElement();
+						auto stk=slots.get(i)->data->getPtrStackElement();
 
 						if((stk->properties & ZS_STK_PROPERTY_CONTAINER_SLOT)==0){
 							ZS_THROW_RUNTIME_ERRORF("stk container is not container slot");

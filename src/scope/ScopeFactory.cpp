@@ -33,7 +33,7 @@ namespace zetscript{
 	void ScopeFactory::clearUnusuedScopes(){
 		int v=(int)(scopes->size()-1);
 		while(v>=0){
-			Scope *scope=(Scope *)scopes->items[v];
+			Scope *scope=(Scope *)scopes->get(v);
 
 			if(scope!=NULL  // scope can be NULL due it was erased before by the removing parent
 					&&
@@ -43,7 +43,7 @@ namespace zetscript{
 					// remove child from parent to
 					zs_vector<Scope *> *childs=scope->scope_parent->getScopes();
 					for(int i=0; i < childs->size(); i++){
-						Scope *child=(Scope *)childs->items[i];
+						Scope *child=(Scope *)childs->get(i);
 						if(child==scope){
 							childs->erase(i);
 							break;
@@ -68,7 +68,7 @@ namespace zetscript{
 			v >= idx_start;
 			v--
 		){
-			Scope * info_scope = (Scope *)scopes->items[v];//(Scope *)scopes->get(v);
+			Scope * info_scope = (Scope *)scopes->get(v);//(Scope *)scopes->get(v);
 			info_scope->properties |= SCOPE_PROPERTY_UNUSUED;
 		}
 

@@ -89,7 +89,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
-		script_functions->items[idx]=sf;
+		script_functions->set(idx,sf);
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
@@ -97,7 +97,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 			return NULL;
 		}
-		return (ScriptFunction 	*)script_functions->items[idx];
+		return (ScriptFunction 	*)script_functions->get(idx);
 	}
 
 	void ScriptFunctionFactory::clear(int _idx_start){
@@ -110,7 +110,7 @@ namespace zetscript{
 			v--
 		){
 
-			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
+			ScriptFunction * info_function = (ScriptFunction * )script_functions->get(v);
 			delete info_function;
 			script_functions->pop_back();
 
@@ -118,7 +118,7 @@ namespace zetscript{
 
 		// clear unresolved symbols for main..
 		if(_idx_start == ZS_IDX_UNDEFINED){
-			((ScriptFunction *)script_functions->items[0])->clearUnresolvedSymbols();
+			((ScriptFunction *)script_functions->get(0))->clearUnresolvedSymbols();
 		}
 	}
 
@@ -129,7 +129,7 @@ namespace zetscript{
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		// erases all functions...
 		for(int i = 0;i < script_functions->size();i++){
-			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
+			ScriptFunction * info_function = (ScriptFunction *)script_functions->get(i);
 
 			if (info_function->instructions != NULL) {
 

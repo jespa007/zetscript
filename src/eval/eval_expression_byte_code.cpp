@@ -30,8 +30,8 @@ namespace zetscript{
 
 		if(size_instructions >= 2){
 
-			EvalInstruction *i1=(EvalInstruction *)_eval_instructions->items[size_instructions-2];
-			EvalInstruction *i2=(EvalInstruction *)_eval_instructions->items[size_instructions-1];
+			EvalInstruction *i1=(EvalInstruction *)_eval_instructions->get(size_instructions-2);
+			EvalInstruction *i2=(EvalInstruction *)_eval_instructions->get(size_instructions-1);
 
 			return i1->vm_instruction.isConstant() && i2->vm_instruction.isConstant();
 		}
@@ -64,7 +64,7 @@ namespace zetscript{
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
 			// concatenate instructions ...
-			TokenNode *end_node=(TokenNode *)token_nodes->items[idx_start];
+			TokenNode *end_node=(TokenNode *)token_nodes->get(idx_start);
 			end_node->are_instructions_moved=true; // mark as processed
 
 			eval_instructions->concat(end_node->eval_instructions);
@@ -75,8 +75,8 @@ namespace zetscript{
 		for(int i=idx_start; i<= idx_end; i++){
 
 			// get split preference
-			if(((TokenNode *)(token_nodes->items[i]))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
-				uint8_t idx_group_preference=get_preference_operator_group(((TokenNode *)(token_nodes->items[i]))->operator_type);
+			if(((TokenNode *)(token_nodes->get(i)))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
+				uint8_t idx_group_preference=get_preference_operator_group(((TokenNode *)(token_nodes->get(i)))->operator_type);
 
 				if(idx_group_preference <= idx_split_group_preference){
 					idx_split_group_preference=idx_group_preference;
@@ -90,7 +90,7 @@ namespace zetscript{
 		}
 
 		// split left/right by operator precedence...
-		split_node=(TokenNode *)token_nodes->items[idx_split];
+		split_node=(TokenNode *)token_nodes->get(idx_split);
 
 		// perform left side op (can have operators)...
 		eval_expression_tokens_to_byte_code(
@@ -243,7 +243,7 @@ namespace zetscript{
 
 	void eval_deallocate_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
 		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.size(); i++ ){
-			delete zs_ei_assign_loader_instructions_post_expression.items[i];
+			delete zs_ei_assign_loader_instructions_post_expression.get(i);
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
 
@@ -273,7 +273,7 @@ namespace zetscript{
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
-			Operator token_operator = ((TokenNode *)token_nodes->items[i])->operator_type;
+			Operator token_operator = ((TokenNode *)token_nodes->get(i))->operator_type;
 
 			if(IS_OPERATOR_TYPE_ASSIGN(token_operator)){ // ... save all assignables from operator split
 					idx_start=i+1;
@@ -285,8 +285,8 @@ namespace zetscript{
 		// operator assign = found --> assign operators, load identifiers first
 		for(int i=idx_start-2; i >= 0; i-=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 			EvalInstruction *eval_instruction=NULL;
-			TokenNode * token_node_symbol = (TokenNode *)token_nodes->items[i];
-			TokenNode * token_node_operator = (TokenNode *)token_nodes->items[i+1];
+			TokenNode * token_node_symbol = (TokenNode *)token_nodes->get(i);
+			TokenNode * token_node_operator = (TokenNode *)token_nodes->get(i+1);
 			Operator operator_type=token_node_operator->operator_type;
 			zs_vector<EvalInstruction *> *ei_assign_loader_instructions_post_expression=NULL;
 
@@ -316,7 +316,7 @@ namespace zetscript{
 				);
 			}
 
-			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1]);
+			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1));
 
 			if(ZS_IS_BYTE_CODE_CALL(
 					ei_load_assign_instruction->vm_instruction.byte_code
@@ -332,12 +332,12 @@ namespace zetscript{
 
 			// assign operators: add instructions related about its accessors...
 			for(int j=0;j<token_node_symbol->eval_instructions.size();j++){
-				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
-				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions.items[j]);
+				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.get(j);
+				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions.get(j));
 			}
 
 			// get last instruction...
-			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->items[ei_assign_loader_instructions_post_expression->size()-1];
+			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->get(ei_assign_loader_instructions_post_expression->size()-1);
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
@@ -422,7 +422,7 @@ namespace zetscript{
 			if(logical_and_jnt.size()>0){
 
 				if(logical_or_jt.size() > 0){ // modify jmp instruction
-					((EvalInstruction *)dst_instructions->items[idx_jmp_end])->vm_instruction.value_op2=4;
+					((EvalInstruction *)dst_instructions->get(idx_jmp_end))->vm_instruction.value_op2=4;
 
 					// to jmp true value space
 					dst_instructions->push_back(
@@ -446,13 +446,13 @@ namespace zetscript{
 			}
 
 			for(int i=idx_start_instructions; i < dst_instructions->size(); i++){
-				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
+				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->get(i);
 				if((eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
 					//logical_and_jnt.push_back((intptr_t)eval_instruction);
 					// go to next logic or
 					int idx_next_or_found=-1;
 					for(int j=i; j < dst_instructions->size(); j++){
-						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
+						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->get(j);
 						if((eval_instruction_post_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 							idx_next_or_found=j;
 							break;
@@ -509,7 +509,7 @@ namespace zetscript{
 			}
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->size()-1])->vm_instruction);
+				last_instruction=&(((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction);
 				if(ZS_IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
@@ -550,7 +550,7 @@ namespace zetscript{
 			body_size_else=dst_instructions->size()-jmp_instructions_start;
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->size()-1])->vm_instruction;
+				last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
 				if(ZS_IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
@@ -562,7 +562,7 @@ namespace zetscript{
 
 		}else{
 			if(unique_call_instructions != NULL){
-				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->size()-1])->vm_instruction;
+				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
 				if(ZS_IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
@@ -573,11 +573,11 @@ namespace zetscript{
 		// ... finally save store operators
 		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.size()-1); i >=0 ;i--){
 			//loaders
-			dst_instructions->concat(*zs_ei_assign_loader_instructions_post_expression.items[i]);
+			dst_instructions->concat(*zs_ei_assign_loader_instructions_post_expression.get(i));
 
 			// push back assign operator
 			dst_instructions->push_back(
-				ei_assign_store_instruction_post_expression.items[i]
+				ei_assign_store_instruction_post_expression.get(i)
 			);
 		}
 
@@ -589,7 +589,7 @@ eval_error_byte_code:
 
 		// only delete the new ones
 		for(int i=0; i < ei_assign_store_instruction_post_expression.size(); i++){
-			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
+			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.get(i);
 		}
 
 		eval_deallocate_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);

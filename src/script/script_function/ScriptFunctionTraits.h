@@ -211,7 +211,7 @@ namespace zetscript{
 			}
 
 			for(int i = 0; i < args.size(); i++){
-				const char *str_param=(const char *)args.items[i];
+				const char *str_param=(const char *)args.get(i);
 				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
 
 				if(i==0){

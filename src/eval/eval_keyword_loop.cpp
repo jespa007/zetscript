@@ -22,7 +22,7 @@ namespace zetscript{
 		int idx_end_instruction = eval_data->current_function->eval_instructions.size();
 
 		for(int i=idx_start; i < idx_end_instruction;i++){
-			Instruction *ins=&(((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
+			Instruction *ins=&(eval_data->current_function->eval_instructions.get(i)->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
 			if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_BREAK){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				ins->value_op2=idx_end_instruction-i-1; // -1 is for jmp to extra POP SCOPE, due it does PUSH SCOPE ALWAYS in the loops
@@ -418,7 +418,7 @@ namespace zetscript{
 
 				// check each byte code is load...
 				for(int j=0; j<ei_init_vars_for.size();j++){
-					EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
+					EvalInstruction *ins=ei_init_vars_for.get(j);
 					if(ins->vm_instruction.byte_code!=ZS_BYTE_CODE_LOAD_LOCAL){
 						error_some_instruction_not_load_local=true;
 						break;
@@ -486,7 +486,7 @@ namespace zetscript{
 
 				strncpy(name,aux_p,test_aux-aux_p);
 
-				switch(((EvalInstruction *)ei_load_container_identifier.items[0])->vm_instruction.byte_code){
+				switch(((EvalInstruction *)ei_load_container_identifier.get(0))->vm_instruction.byte_code){
 				case ZS_BYTE_CODE_LOAD_UNDEFINED:
 				case ZS_BYTE_CODE_LOAD_NULL:
 				case ZS_BYTE_CODE_LOAD_FLOAT:
@@ -546,7 +546,7 @@ namespace zetscript{
 				// 2. emit iterator init
 				for(int i=0; i < ei_load_container_identifier.size(); i++){
 					eval_data->current_function->eval_instructions.push_back(
-						new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.items[i]))
+						new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.get(i)))
 					);
 				}
 
@@ -566,7 +566,7 @@ namespace zetscript{
 					)
 				);
 
-				ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier.items[ei_load_container_identifier.size()-1])->instruction_source_info;
+				ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier.get(ei_load_container_identifier.size()-1))->instruction_source_info;
 
 				idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.size());
 
@@ -628,7 +628,7 @@ namespace zetscript{
 				// load k,v
 				for(int i=0; i <ei_init_vars_for.size() ;i++){
 					eval_data->current_function->eval_instructions.push_back(
-							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
+							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.get(i))
 					);
 				}
 
@@ -668,7 +668,7 @@ namespace zetscript{
 				// copy var initialization
 				for(int i=0; i <ei_init_vars_for.size() ;i++){
 					eval_data->current_function->eval_instructions.push_back(
-							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
+							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.get(i))
 					);
 				}
 
@@ -830,20 +830,20 @@ namespace zetscript{
 label_exit_for:
 
 		for(int i=0; i<ei_post_operations.size();i++){
-			EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
+			EvalInstruction *ei=(EvalInstruction *)ei_post_operations.get(i);
 			delete ei;
 		}
 		ei_post_operations.clear();
 
 
 		for(int j=0; j<ei_init_vars_for.size();j++){
-			EvalInstruction *ei= (EvalInstruction *)ei_init_vars_for.items[j];
+			EvalInstruction *ei= (EvalInstruction *)ei_init_vars_for.get(j);
 			delete ei;
 		}
 		ei_init_vars_for.clear();
 
 		for(int j=0; j<ei_load_container_identifier.size();j++){
-			EvalInstruction *ei= (EvalInstruction *)ei_load_container_identifier.items[j];
+			EvalInstruction *ei= (EvalInstruction *)ei_load_container_identifier.get(j);
 			delete ei;
 		}
 		ei_load_container_identifier.clear();

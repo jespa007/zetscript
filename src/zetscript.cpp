@@ -240,7 +240,7 @@ namespace zetscript{
 
 		 // print defined functions in main function
 		 for(int j =0; j < symbol_functions->size(); j++){
-			Symbol *symbol=(Symbol *)symbol_functions->items[j];
+			Symbol *symbol=(Symbol *)symbol_functions->get(j);
 
 			if(symbol->properties & ZS_SYMBOL_PROPERTY_FUNCTION){
 
@@ -284,7 +284,7 @@ namespace zetscript{
 				 symbol_functions=sc->scope_script_type->symbol_functions;
 				 for(int f = 0; f < symbol_functions->size(); f++){
 					 bool show_function=true;
-					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
+					 Symbol *symbol=(Symbol *)symbol_functions->get(f);
 
 					 if(show_function){
 						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
@@ -749,7 +749,7 @@ namespace zetscript{
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const zs_string & filename){
 		for(int i = 0; i < parsed_files.size(); i++){
-			if(((ParsedFile *)parsed_files.items[i])->filename==filename){
+			if(((ParsedFile *)parsed_files.get(i))->filename==filename){
 				return true;
 			}
 		}
@@ -1021,7 +1021,7 @@ namespace zetscript{
 
 				StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[v];
 
-				Symbol *symbol=(Symbol *)local_variables->items[v];
+				Symbol *symbol=(Symbol *)local_variables->get(v);
 
 
 				ScriptObject *script_object = NULL;
@@ -1085,7 +1085,7 @@ namespace zetscript{
 
 	void ZetScript::resetParsedFiles(){
 		for(int i=0;i<parsed_files.size();i++){
-			delete ((ParsedFile *)parsed_files.items[i]);
+			delete ((ParsedFile *)parsed_files.get(i));
 		}
 		parsed_files.clear();
 	}
@@ -1106,7 +1106,7 @@ namespace zetscript{
 			) {
 
 
-				Symbol *symbol=(Symbol *)global_symbol_functions->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)global_symbol_functions->get(v);//(Symbol *)main_function_object->registered_symbols->items[v];
 				delete symbol;
 				--v;
 			}
@@ -1126,7 +1126,7 @@ namespace zetscript{
 			) {
 
 
-				Symbol *symbol=(Symbol *)script_types->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)script_types->get(v);//(Symbol *)main_function_object->registered_symbols->items[v];
 				delete symbol;
 				--v;
 			}
@@ -1160,7 +1160,7 @@ namespace zetscript{
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
 		for(int i=0;i < functions_with_unresolved_symbols.size(); i++){
-			if(functions_with_unresolved_symbols.items[i]==_sf){
+			if(functions_with_unresolved_symbols.get(i)==_sf){
 				return true;
 			}
 		}
@@ -1179,7 +1179,7 @@ namespace zetscript{
 	void ZetScript::link(){
 		int i=0;
 		while(i<functions_with_unresolved_symbols.size()){
-			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.items[i];
+			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.get(i);
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
 				functions_with_unresolved_symbols.erase(i);
 			}else{ // next function

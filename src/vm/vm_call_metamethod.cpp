@@ -310,7 +310,7 @@ namespace zetscript{
 			ZS_METAMETHOD_OPERATION_NOT_FOUND(_metamethod_byte_code); \
 			goto lbl_exit_function;
 		}\
-		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
+		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->get(0))->value))->ref_ptr;\
 		/* find function if c */ \
 		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
 

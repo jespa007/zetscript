@@ -28,7 +28,7 @@ namespace zetscript{
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for(int i = 0; i < symbol_vars->size(); i++){
-				Symbol * symbol = (Symbol *)symbol_vars->items[i];
+				Symbol * symbol = (Symbol *)symbol_vars->get(i);
 				if(symbol->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinField(
 							symbol->name
@@ -162,7 +162,7 @@ namespace zetscript{
 		ScriptType *script_type=getScriptType();
 		zs_vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
 		for(int i=((int)s->size())-1;i>=0;i--){
-			Symbol *symbol=(Symbol *)s->items[i];
+			Symbol *symbol=(Symbol *)s->get(i);
 			if(symbol->name == _function_member_name){
 				return symbol;
 			}
@@ -196,7 +196,7 @@ namespace zetscript{
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
-		return (StackElement *)stk_builtin_elements.items[idx];
+		return (StackElement *)stk_builtin_elements.get(idx);
 	}
 
 	zs_string ScriptObject::toString(){
@@ -237,7 +237,7 @@ namespace zetscript{
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
 		for(int i=0; i< stk_builtin_elements.size(); i++){
-			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
+			StackElement *stk=(StackElement *)stk_builtin_elements.get(i);
 
 			if(stk->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 				delete (StackElementMemberProperty *)stk->value;

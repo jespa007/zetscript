@@ -177,8 +177,8 @@ bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * s
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::zs_vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
    for(int i =1; i < stk_elements->size(); i++){
-	   zetscript::StackElement *stk_1=stk_elements->items[i-1];
-	   zetscript::StackElement *stk_2=stk_elements->items[i-0];
+	   zetscript::StackElement *stk_1=stk_elements->get(i-1);
+	   zetscript::StackElement *stk_2=stk_elements->get(i-0);
        if(stk_1->value != stk_2->value) return false;
    }
    return true;
@@ -201,7 +201,7 @@ zetscript::zs_vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *
 			 item = rand()%(max_number);
 			found = false;
 		 	for(int j=0; j < i;j++){
-				if(index_rand.items[j] == item){
+				if(index_rand.get(j) == item){
 					found=true;
 				}
 		 	}
@@ -230,7 +230,7 @@ zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_
 		do{
 			rand_txt= newRandomCountExt(_zs,input_count,input_count);
 			 for(zetscript::zs_int i =0; i < input_count; i++){
-		         equal&=(i==rand_txt.items[i]); // check if not consecutive...
+		         equal&=(i==rand_txt.get(i)); // check if not consecutive...
 			 }
 		}while(equal);
     }catch(std::exception & ex){
@@ -240,7 +240,7 @@ zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_
     for(int i =0; i < input_count; i++){
     	// save resulting
     	zetscript::StackElement *stk=output->newSlot();
-    	stk->value=_input->getStackElementByIndex(rand_txt.items[i])->value;
+    	stk->value=_input->getStackElementByIndex(rand_txt.get(i))->value;
     	stk->properties=zetscript::ZS_STK_PROPERTY_INT;
     }
 

@@ -275,7 +275,7 @@ namespace zetscript{
 		while(*it!=NULL){
 
 			for(int i=0;i < (*it)->size(); i++){
-				StackElement *stk_el=(StackElement *)(*it)->items[i];
+				StackElement *stk_el=(StackElement *)(*it)->get(i);
 				free(stk_el);
 			}
 			(*it)->clear();

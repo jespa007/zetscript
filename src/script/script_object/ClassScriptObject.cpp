@@ -42,7 +42,7 @@ namespace zetscript{
 		// pre-register built-in members...
 		for(int i = 0; i < member_vars->size(); i++){
 
-			Symbol * symbol = (Symbol *)member_vars->items[i];
+			Symbol * symbol = (Symbol *)member_vars->get(i);
 
 			// we add symbol as field. In it will have the same idx as when were evaluated declared symbols on each type
 			if((se=addBuiltinField(
@@ -78,7 +78,7 @@ namespace zetscript{
 			ScriptType *sc=script_type;
 			// get first type with c inheritance...
 			while((sc->idx_base_types->size()>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base type (only first in script because has single inheritance)...
+				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->get(0)); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
 					break;
@@ -116,7 +116,7 @@ namespace zetscript{
 		}
 
 		if(sc->idx_base_types->size()>0){
-			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
+			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->get(0)));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script type
@@ -128,7 +128,7 @@ namespace zetscript{
 
 		ScriptType *script_type=getScriptType();
 		if(script_type->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)script_type->scope_script_type->symbol_functions->items[script_type->idx_function_member_constructor];
+			return (ScriptFunction *)script_type->scope_script_type->symbol_functions->get(script_type->idx_function_member_constructor);
 		}
 
 		return NULL;

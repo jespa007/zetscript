@@ -424,8 +424,8 @@ namespace zetscript{
 			return NULL;
 		}
 
-		EvalInstruction *i1=(EvalInstruction *)eval_instructions->items[size_instructions-2];
-		EvalInstruction *i2=(EvalInstruction *)eval_instructions->items[size_instructions-1];
+		EvalInstruction *i1=(EvalInstruction *)eval_instructions->get(size_instructions-2);
+		EvalInstruction *i2=(EvalInstruction *)eval_instructions->get(size_instructions-1);
 
 
 		is_i1_K=i1->vm_instruction.isConstant();

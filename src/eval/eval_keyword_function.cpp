@@ -54,7 +54,7 @@ namespace zetscript{
 
 		// 3. copy eval instructions
 		for(int i=0; i < _eval_instructions->size(); i++){
-			EvalInstruction *eval_instruction = (EvalInstruction *)_eval_instructions->items[i];
+			EvalInstruction *eval_instruction = _eval_instructions->get(i);
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
 
@@ -128,7 +128,7 @@ namespace zetscript{
 		sf->instructions_len=instructions_len;
 
 		for(int i=0; i < eval_instructions->size(); i++){
-			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
+			EvalInstruction *instruction = eval_instructions->get(i);
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
 			// save instruction ...
@@ -437,7 +437,7 @@ namespace zetscript{
 					// copy evaluated instruction
 					// convert instruction to stk_element
 					if(ei_instructions_default.size() == 1){
-						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
+						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.get(0))->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
 						case ZS_BYTE_CODE_LOAD_UNDEFINED:
@@ -470,7 +470,7 @@ namespace zetscript{
 
 					// finally delete all evaluated code
 					for(int i=0; i < ei_instructions_default.size(); i++){
-						delete (EvalInstruction *)ei_instructions_default.items[i];
+						delete ei_instructions_default.get(i);
 					}
 
 				}
@@ -494,7 +494,7 @@ namespace zetscript{
 
 			// remove collected script function params
 			for(int i=0; i < script_function_params.size(); i++){
-				delete (ScriptFunctionParam *)script_function_params.items[i];
+				delete (ScriptFunctionParam *)script_function_params.get(i);
 			}
 
 			aux_p++;
@@ -592,7 +592,7 @@ namespace zetscript{
 	eval_keyword_function_params:
 			// unallocate script function params
 			for(int h=0; h < script_function_params.size(); h++){
-				delete (ScriptFunctionParam *)script_function_params.items[h];
+				delete (ScriptFunctionParam *)script_function_params.get(h);
 			}
 			script_function_params.clear();
 			return NULL;
@@ -642,7 +642,7 @@ namespace zetscript{
 			// global variables should not deref object references due they are not incs its references through
 			// calling functions
 			if(partial_ex.size()==1){
-				EvalInstruction *ei_arg=partial_ex.items[0];
+				EvalInstruction *ei_arg=partial_ex.get(0);
 				ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
 				// If byte code is a global var load (find var is also global) set as push stk to

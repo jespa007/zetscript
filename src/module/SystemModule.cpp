@@ -27,6 +27,7 @@ namespace zetscript{
 		zs_string str_param_name;
 		ScriptFunction *sf_eval=NULL;
 		zs_vector<StackElement *> stk_params;
+		StackElement **stk_params_data=NULL;
 		const char *str_start=NULL;
 		zs_string str_unescaped_source="";
 		VirtualMachine *vm=_zs->getVirtualMachine();
@@ -36,6 +37,7 @@ namespace zetscript{
 		StackElement *stk_start_arg_call=data->vm_stk_current;
 		StackElement *stk_start=NULL;
 		VM_ScopeFunction *vm_eval_scope_function=data->vm_current_scope_function;
+
 
 		so_str_eval=_so_str_eval;
 
@@ -154,8 +156,9 @@ namespace zetscript{
 		// pass data to vm_stk_current
 		stk_n_params=(uint8_t)stk_params.size();
 		stk_start=stk_start_arg_call;//vm data->vm_stk_current;
+		stk_params_data=stk_params.data();
 		for(int i = 0; i < stk_n_params; i++){
-			*stk_start++=*((StackElement *)stk_params.items[i]);
+			*stk_start++=*stk_params_data[i];
 		}
 
 		vm_execute_script_function(

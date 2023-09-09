@@ -100,7 +100,7 @@ namespace zetscript{
 			}else{
 				so_aux=(ClassScriptObject *)stk_dst->value;
 			}
-			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
+			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
 
 				Symbol * symbol_setter = NULL;
@@ -117,7 +117,7 @@ namespace zetscript{
 
 				}else{
 
-					if(stk_mp_aux->member_property->metamethod_members.setters.count==0){
+					if(stk_mp_aux->member_property->metamethod_members.setters.size()==0){
 						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 								,so_aux->getScriptType()->str_script_type.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\

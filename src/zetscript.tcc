@@ -1567,7 +1567,7 @@ namespace zetscript{
 			}
 
 			for(int i = 0; i < params.size(); i++){
-				char *str_param=(char *)params.items[i];
+				char *str_param=(char *)params.get(i);
 				zs_int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
 
 				// exception: These variables are registered but not allowed to pass throught parameter
@@ -1628,11 +1628,11 @@ namespace zetscript{
 			// 1. some variable in main function ...
 			if(access_var.size()>1){
 				for(int i=0; i < access_var.size()-1; i++){
-					const char *symbol_to_find=access_var.items[i].c_str();
+					const char *symbol_to_find=access_var.get(i).c_str();
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
 						for(int j = 0; j < list_variables->size() && calling_obj==NULL; j++){
-							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
+							Symbol * registered_symbol=(Symbol *)list_variables->get(j);
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == ZS_MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
@@ -1690,7 +1690,7 @@ namespace zetscript{
 					}
 				}
 
-				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.items[access_var.size()-1]);
+				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.get(access_var.size()-1));
 				if(symbol_sfm!=NULL){
 					ScriptFunction *test_fun=NULL;
 					if(symbol_sfm->properties & ZS_SYMBOL_PROPERTY_FUNCTION){
@@ -1706,16 +1706,16 @@ namespace zetscript{
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
 							,function_access.c_str()
-							,access_var.items[access_var.size()-1].c_str()
+							,access_var.get(access_var.size()-1).c_str()
 					);
 				}
 
 			}else{ // some function in main function
-				zs_string symbol_to_find=access_var.items[0];
+				zs_string symbol_to_find=access_var.get(0);
 				zs_vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
 
 				for(int i = 0; i < list_functions->size() && fun_obj==NULL; i++){
-					Symbol *symbol=(Symbol *)list_functions->items[i];
+					Symbol *symbol=(Symbol *)list_functions->get(i);
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
 					if(	aux_fun_obj->name_script_function == symbol_to_find){
 						fun_obj=aux_fun_obj;
@@ -1730,7 +1730,7 @@ namespace zetscript{
 						,line
 						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
 						,function_access.c_str()
-						,access_var.items[access_var.size()-1].c_str()
+						,access_var.get(access_var.size()-1).c_str()
 				);
 			}
 			try{

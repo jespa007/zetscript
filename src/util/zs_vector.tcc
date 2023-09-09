@@ -97,7 +97,7 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	const _T &	zs_vector<_T>::get(int  _pos){
+	const _T &	zs_vector<_T>::get(int  _pos) const{
 		if (_pos<0 ||_pos >= this->size()) {
 			ZS_THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}

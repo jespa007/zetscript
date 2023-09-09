@@ -433,14 +433,14 @@ namespace zetscript{
 
 		eval_data->current_function = NULL;
 		if(eval_data->eval_functions.size() > 0){
-			eval_data->current_function = (EvalFunction *)eval_data->eval_functions.items[eval_data->eval_functions.size()-1];
+			eval_data->current_function = (EvalFunction *)eval_data->eval_functions.get(eval_data->eval_functions.size()-1);
 		}
 
 	}
 
 	bool eval_all_local_variables_in_scopes_already_sorted(Scope  *current_scope,  int & idx_local_variable){
 		for(int i=0; i < current_scope->symbol_variables->size(); i++){
-			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
+			Symbol *s=(Symbol *)current_scope->symbol_variables->get(i);
 			if(s->idx_position!=idx_local_variable++){
 				return false;
 			}
@@ -448,7 +448,7 @@ namespace zetscript{
 
 		auto scopes=current_scope->getScopes();
 		for(int i=0; i < scopes->size(); i++){
-			Scope *scope=(Scope *)scopes->items[i];
+			Scope *scope=(Scope *)scopes->get(i);
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
 
@@ -463,7 +463,7 @@ namespace zetscript{
 
 	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector<zs_int> *order_local_vars){
 		for(int i=0; i < current_scope->symbol_variables->size(); i++){
-			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
+			Symbol *s=(Symbol *)current_scope->symbol_variables->get(i);
 			lookup_table[s->idx_position]=n_variable++;
 			order_local_vars->push_back(s->idx_position);
 		}
@@ -471,7 +471,7 @@ namespace zetscript{
 		auto scopes=current_scope->getScopes();
 
 		for(int i=0; i < scopes->size(); i++){
-			Scope *scope=(Scope *)scopes->items[i];
+			Scope *scope=(Scope *)scopes->get(i);
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
 			}
@@ -524,7 +524,7 @@ namespace zetscript{
 
 		// remove old ref symbols
 		for(int i=0; i < sf->instruction_source_infos.size(); i++){
-			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_infos.items[i];
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_infos.get(i);
 			delete isi;
 		}
 
@@ -545,7 +545,7 @@ namespace zetscript{
 
 		for(int i=0; i < count; i++){
 
-			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
+			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.get(i);
 
 			int req_stk=instruction_num_required_stack(&eval_instruction->vm_instruction);
 			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
@@ -563,7 +563,7 @@ namespace zetscript{
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
+					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->get(j);
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name_script_function == sf->name_script_function;
 					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
@@ -692,8 +692,8 @@ namespace zetscript{
 			zs_vector<Symbol *> *local_vars_dst=new zs_vector<Symbol *>();
 
 			for(int i=0; i < sf->local_variables->size(); i++){
-				int idx_var=order_local_vars.items[i];
-				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
+				int idx_var=order_local_vars.get(i);
+				Symbol *s=(Symbol *)sf->local_variables->get(idx_var);
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];
 				local_vars_dst->push_back(s);
 			}

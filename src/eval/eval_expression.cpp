@@ -16,7 +16,7 @@ namespace zetscript{
 
 	void eval_deallocate_tokens(zs_vector<TokenNode *> 	& token_nodes){
 		for(int i=0; i < token_nodes.size(); i++){
-			delete (TokenNode *)token_nodes.items[i];
+			delete (TokenNode *)token_nodes.get(i);
 		}
 
 		token_nodes.clear();
@@ -117,7 +117,7 @@ namespace zetscript{
 								,line
 								,eval_error_sub_expression
 								,"Expected operator after '%s'"
-								,((TokenNode *)token_nodes.items[token_nodes.size()-1])->value.c_str());
+								,((TokenNode *)token_nodes.get(token_nodes.size()-1))->value.c_str());
 					}
 				}
 
@@ -214,11 +214,11 @@ namespace zetscript{
 eval_error_sub_expression:
 
 		for(int kk=0;kk<token_nodes.size();kk++){
-			TokenNode *node=(TokenNode *)token_nodes.items[kk];
+			TokenNode *node=(TokenNode *)token_nodes.get(kk);
 			if(node->are_instructions_moved == false){ // it means that instructions was not saved in instructions vector yet
 
 				for(int jj=0;jj<node->eval_instructions.size();jj++){
-					delete (EvalInstruction *)node->eval_instructions.items[jj];
+					delete (EvalInstruction *)node->eval_instructions.get(jj);
 				}
 			}
 		}
@@ -232,7 +232,7 @@ eval_error_sub_expression:
 	bool eval_check_all_instruction_only_load_op(zs_vector<EvalInstruction *> * eval_instructions){
 		// is load or find variable
 		for(int i=0;i < eval_instructions->size(); i++){
-			Instruction *ei=&((EvalInstruction *)eval_instructions->items[i])->vm_instruction;
+			Instruction *ei=&((EvalInstruction *)eval_instructions->get(i))->vm_instruction;
 			if(((byte_code_is_load_var_type(ei->byte_code) || ei->byte_code == ZS_BYTE_CODE_FIND_VARIABLE))==false){
 				return false;
 			}
@@ -267,7 +267,7 @@ eval_error_sub_expression:
 			, _str_expression
 			, line
 			, scope_info
-			, zs_ei_left_sub_expressions.items[0]
+			, zs_ei_left_sub_expressions.get(0)
 			, expected_ending_char
 			, _properties
 		);
@@ -282,7 +282,7 @@ eval_error_sub_expression:
 			zs_vector<EvalInstruction *> *expression=NULL;
 
 			int idx=0;
-			bool only_load_left_expression=eval_check_all_instruction_only_load_op(zs_ei_left_sub_expressions.items[0]);
+			bool only_load_left_expression=eval_check_all_instruction_only_load_op(zs_ei_left_sub_expressions.get(0));
 			zs_vector<Instruction *> unique_call_instruction;
 
 			do{
@@ -329,7 +329,7 @@ eval_error_sub_expression:
 					break;
 				}
 
-				only_load_left_expression&=eval_check_all_instruction_only_load_op((zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[0]);
+				only_load_left_expression&=eval_check_all_instruction_only_load_op((zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(0));
 
 				if(aux_p != NULL && *aux_p != 0 && *aux_p=='=' && (only_load_left_expression==true)){ // assignment op, start left assigments
 					if(zs_ei_left_sub_expressions.size() >= FUNCTION_RETURN_COUNT_MAX){
@@ -348,7 +348,7 @@ eval_error_sub_expression:
 
 			if(zs_ei_right_sub_expressions.size()==1 && unique_call_instruction.size() > 0){ // assign maximum return for this calls
 				for(int i=0; i < unique_call_instruction.size(); i++){
-					EvalInstruction *ei_call=(EvalInstruction *)unique_call_instruction.items[i];
+					EvalInstruction *ei_call=(EvalInstruction *)unique_call_instruction.get(i);
 					ZS_INSTRUCTION_SET_RETURN_COUNT(&ei_call->vm_instruction,zs_ei_left_sub_expressions.size());
 				}
 			}
@@ -365,7 +365,7 @@ eval_error_sub_expression:
 			for(int r=max_size-1; r >=0;r--){
 				if(r<right_size){
 					dst_instructions->concat(
-						*zs_ei_right_sub_expressions.items[r]
+						*zs_ei_right_sub_expressions.get(r)
 
 					);
 				}else{
@@ -381,8 +381,8 @@ eval_error_sub_expression:
 			// ASSIGMENTS
 			// write left assignments...
 			for(int l=0; l < left_size;l++){
-				zs_vector<EvalInstruction *> *ei_left_sub_expressions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[l];
-				Instruction *last_load_instruction=&((EvalInstruction *)ei_left_sub_expressions->items[ei_left_sub_expressions->size()-1])->vm_instruction;
+				zs_vector<EvalInstruction *> *ei_left_sub_expressions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(l);
+				Instruction *last_load_instruction=&((EvalInstruction *)ei_left_sub_expressions->get(ei_left_sub_expressions->size()-1))->vm_instruction;
 
 				if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 					last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
@@ -416,8 +416,8 @@ eval_error_sub_expression:
 
 			// check if any left assignment is not literal ...
 			for(int l=0; l < left_size;l++){
-				zs_vector<EvalInstruction *> *left_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[l];
-				EvalInstruction *instruction = (EvalInstruction *)left_sub_expression->items[left_sub_expression->size()-1];
+				zs_vector<EvalInstruction *> *left_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(l);
+				EvalInstruction *instruction = (EvalInstruction *)left_sub_expression->get(left_sub_expression->size()-1);
 
 				if(ZS_IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name;
@@ -435,7 +435,7 @@ eval_error_sub_expression:
 		}else{ // there's no assignment on the left --> make a reset stack in the end and write all instructions
 
 			for(int it=0;it<zs_ei_left_sub_expressions.size();it++){
-				zs_vector<EvalInstruction *> *left_instructions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[it];
+				zs_vector<EvalInstruction *> *left_instructions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(it);
 
 				if(left_instructions->size()>0){
 					// read first instruction
@@ -446,10 +446,10 @@ eval_error_sub_expression:
 				}
 
 				if(left_instructions->size()>0){
-					ei_last=(EvalInstruction *)left_instructions->items[left_instructions->size()-1];
+					ei_last=(EvalInstruction *)left_instructions->get(left_instructions->size()-1);
 
 					if(ei_last->vm_instruction.byte_code==ZS_BYTE_CODE_STORE){
-						EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->items[left_instructions->size()-1-1]);
+						EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->get(left_instructions->size()-1-1));
 						if(
 							eval_store_target->vm_instruction.byte_code==ZS_BYTE_CODE_PUSH_STK_ARRAY_ITEM
 							|| eval_store_target->vm_instruction.byte_code==ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
@@ -465,7 +465,7 @@ eval_error_sub_expression:
 
 		// special case for catching vars for-in...
 		if(dst_instructions->size()>0){
-			ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->size()-1];
+			ei_last=(EvalInstruction *)dst_instructions->get(dst_instructions->size()-1);
 			if(
 					ZS_IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
 			){
@@ -486,11 +486,11 @@ eval_error_sub_expression:
 
 		// erase all vectors ...
 		for(int it=0; it<zs_ei_left_sub_expressions.size(); it++){
-			delete (zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[it];
+			delete (zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(it);
 		}
 
 		for(int it=0; it<zs_ei_right_sub_expressions.size(); it++){
-			delete (zs_vector<EvalInstruction *> *)zs_ei_right_sub_expressions.items[it];
+			delete (zs_vector<EvalInstruction *> *)zs_ei_right_sub_expressions.get(it);
 		}
 
 
@@ -500,11 +500,11 @@ eval_error_expression_delete_left_right_sub_expressions:
 
 		// we delete all instructions for left
 		for(int le=0; le<zs_ei_left_sub_expressions.size(); le++){ // delete left expressions and vectors
-			zs_vector<EvalInstruction *> *ie_left_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.items[le];
+			zs_vector<EvalInstruction *> *ie_left_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(le);
 			for(int e=0 //delete expressions
 					; e<ie_left_sub_expression->size()
 					; e++){
-				EvalInstruction *ei=(EvalInstruction *)ie_left_sub_expression->items[e];
+				EvalInstruction *ei=(EvalInstruction *)ie_left_sub_expression->get(e);
 				delete ei;
 			}
 
@@ -512,11 +512,11 @@ eval_error_expression_delete_left_right_sub_expressions:
 		}
 
 		for(int re=0; re<zs_ei_right_sub_expressions.size(); re++){ // delete right expressions and vectors
-			zs_vector<EvalInstruction *> *ie_right_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_right_sub_expressions.items[re];
+			zs_vector<EvalInstruction *> *ie_right_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_right_sub_expressions.get(re);
 			for(int e=0 //delete expressions
 					; e!=ie_right_sub_expression->size()
 					; e++){
-					delete (EvalInstruction *)ie_right_sub_expression->items[e];
+					delete (EvalInstruction *)ie_right_sub_expression->get(e);
 			}
 
 			delete ie_right_sub_expression;

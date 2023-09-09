@@ -448,7 +448,7 @@ namespace zetscript{
 				ScriptType *base_type=NULL;
 
 				if(sc->idx_base_types->size() > 0){
-					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
+					ScriptType *match_class=getScriptType(sc->idx_base_types->get(0));
 					ZS_THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_script_type.c_str()
 							,match_class->str_script_type.c_str());
@@ -469,7 +469,7 @@ namespace zetscript{
 				// 1. extend all symbols from base type
 				zs_vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
 				for(int i=0; i < symbol_functions->size(); i++){
-					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
+					Symbol *symbol_src=(Symbol *)symbol_functions->get(i);
 					Symbol *symbol_dst=scope_class->registerSymbolFunction(
 							symbol_src->file
 							,symbol_src->line
@@ -489,7 +489,7 @@ namespace zetscript{
 				// 1. extend all symbols from base type
 				zs_vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
 				for(int i=0; i < symbol_variables->size(); i++){
-					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
+					Symbol *symbol_src=(Symbol *)symbol_variables->get(i);
 					Symbol *symbol_dst=scope_class->registerSymbolVariable(
 							symbol_src->file
 							,symbol_src->line
@@ -517,7 +517,7 @@ namespace zetscript{
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
 							for(int j=0; j < mp_info.setters->size();j++){
-								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->items[j])->value));
+								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->get(j))->value));
 
 							}
 							it_setters++;
@@ -688,7 +688,7 @@ namespace zetscript{
 		ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
 
 		for(int i=0; i < sc->idx_base_types->size(); i++){
-			if(scriptTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
+			if(scriptTypeInheritsFrom(sc->idx_base_types->get(i),_idx_base_type)){
 				return true;
 			}
 		}

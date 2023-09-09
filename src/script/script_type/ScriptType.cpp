@@ -50,7 +50,7 @@ namespace zetscript{
 	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
 		for(int i=0; i < scope->symbol_functions->size();i++){
-			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];
+			Symbol *symbol = (Symbol *)scope->symbol_functions->get(i);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			int start_idx=0;
 
@@ -126,7 +126,7 @@ namespace zetscript{
 		}
 
 		for(int i=0; i < this->idx_base_types->size(); i++){
-			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
+			if (script_type_factory->getScriptType(this->idx_base_types->get(i))->extendsFrom(_idx_script_type) == true) {
 				return true;
 			}
 		}
@@ -700,7 +700,7 @@ namespace zetscript{
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)list->items[i];
+			Symbol *member_symbol=(Symbol *)list->get(i);
 			if(member_symbol->name == symbol_name){
 				return member_symbol;
 			}
@@ -719,7 +719,7 @@ namespace zetscript{
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)symbol_functions->items[i];
+			Symbol *member_symbol=(Symbol *)symbol_functions->get(i);
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
 					return member_symbol;
@@ -754,7 +754,7 @@ namespace zetscript{
 	ScriptType::~ScriptType(){
 
 		for(int i=0; i < allocated_member_properties->size(); i++){
-			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
+			MemberProperty *mp=(MemberProperty *)allocated_member_properties->get(i);
 			delete mp;
 		}
 

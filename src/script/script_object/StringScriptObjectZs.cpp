@@ -63,7 +63,7 @@ namespace zetscript{
 
 			StackElement *stk=sv->newSlot();
 			StringScriptObject *so_partial=ZS_NEW_STRING_OBJECT(_zs);
-			so_partial->set(v.items[i]);
+			so_partial->set(v.get(i));
 
 			// create and share pointer
 			vm_create_shared_script_object(vm,so_partial);
@@ -85,7 +85,7 @@ namespace zetscript{
 		for(int i=0; i<v.size(); i++){
 			StackElement *stk=sv->newSlot();
 			StringScriptObject *so_partial=ZS_NEW_STRING_OBJECT(_zs);
-			so_partial->set(v.items[i]);
+			so_partial->set(v.get(i));
 
 			// create and share pointer
 			vm_create_shared_script_object(vm,so_partial);

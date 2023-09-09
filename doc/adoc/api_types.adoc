@@ -44,8 +44,6 @@ npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
-_zs_string_ has the following member functions,
-
 ====== zs_string::zs_string()
 
 Constructs a zs_string object as empty or initialized from other string.
@@ -453,7 +451,25 @@ true if &#95;s1 is NOT EQUAL to &#95;s2 and false otherwise.
 
 ==== zs_vector
 
+_zs_vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
+
+*Example*
+
+[source,cpp]
+----
+// Create a vector containing integers
+zetscript::zs_vector<int> v;
+----
+
+===== Member constants
+
+====== zs_vector::n_pos
+
+npos is a static member constant value with the greatest possible value.
+
 ===== Member functions
+
+====== zs_vector::zs_vector()
 
 ====== zs_vector::operator=()
 
@@ -465,6 +481,8 @@ Assigns a new value to the vector, replacing its current contents.
 ----
 zs_vector& operator=(const zs_vector& _vector);		
 ----
+
+[.underline]#Parameters#
 
 ====== zs_vector::set()
 

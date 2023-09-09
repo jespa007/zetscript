@@ -258,7 +258,7 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.size()-1];
+			eval_instruction = eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.size()-1);
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==ZS_BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;

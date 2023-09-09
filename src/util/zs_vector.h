@@ -10,34 +10,33 @@ namespace zetscript{
 	class zs_vector{
 	public:
 
+		// static
 		static int npos;
+
 		//public
-		_T* items;
-		int count; //number of items
-
 		zs_vector();
-		zs_vector(const zs_vector & _obj);
-		zs_vector& operator=(const zs_vector& _obj);
+		zs_vector(const zs_vector & _vector);
+		zs_vector& operator=(const zs_vector& _vector);
 
-		void 		set( int  _idx, const _T & _val);
-		const _T &	get( int  _idx);
-		void 		erase( int  _idx);
+		void 		set( int  _pos, const _T & _element);
+		const _T &	get( int  _pos) const;
+		void 		erase( int  _pos);
 		/**
 		 * Insert item at the end
 		 */
-		bool 		push_back( const _T & _val);
+		bool 		push_back( const _T & _element);
 		void 		concat(const zs_vector<_T>  & _vector);
-		void 		insert(int _idx,const zs_vector<_T>  & _vector, int _n_list_elements_to_copy=npos);
+		void 		insert(int _pos,const zs_vector<_T>  & _vector, int _n_list_elements_to_copy=npos);
 		/**
 		 * Insert item at position idx.
 		 */
-		void 		insert(int  idx, const _T & _val);
+		void 		insert(int  _pos, const _T & _element);
 
 		void 		clear();
 		_T    		pop_back();
 		void    	resize(int _len);
 
-		inline _T *data(){
+		inline _T *data() const{
 			return items;
 		}
 
@@ -51,7 +50,10 @@ namespace zetscript{
 		~zs_vector();
 	private:
 		//private
+		_T* 		items;
+		int 		count; //number of items
 		int			_size; // size vector (user count for iterate through items)
+
 		bool		push_back_slot();
 
 		void copy(const zs_vector<_T> & _vector);
