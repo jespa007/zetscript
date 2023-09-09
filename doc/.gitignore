@@ -3,5 +3,5 @@
 *.obj
 *.html
 *.pdf
-examples/the_api/build
+examples/api/build
 
