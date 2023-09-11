@@ -412,7 +412,7 @@ namespace zetscript{
 			,TokenNode   *token_operation
 			, zs_vector<EvalInstruction *> *eval_instructions
 	){
-		size_t size_instructions=eval_instructions->size();
+		int size_instructions=eval_instructions->size();
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;

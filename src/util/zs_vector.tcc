@@ -102,7 +102,6 @@ namespace zetscript{
 		if (_pos<0 ||_pos >= this->size()) {
 			ZS_THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}
-
 		return this->items[_pos];
 	}
 

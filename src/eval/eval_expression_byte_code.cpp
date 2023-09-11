@@ -26,7 +26,7 @@ namespace zetscript{
 
 	bool eval_two_last_instruction_are_constants(zs_vector<EvalInstruction *> *_eval_instructions){
 
-		size_t size_instructions=_eval_instructions->size();
+		int size_instructions=_eval_instructions->size();
 
 		if(size_instructions >= 2){
 
