@@ -22,7 +22,7 @@ void show_usage(){
 int main(int argc, char * argv[]) {
 
 	zetscript::ZetScript zs;
-	const char *file="";
+	const char *param_script_filename="";
 	unsigned short eval_options=0;
 	bool no_execution_time=false;
 
@@ -55,7 +55,7 @@ int main(int argc, char * argv[]) {
 					goto zs_exit;
 				}
 			}else{
-				file=argv[idx_arg];
+				param_script_filename =argv[idx_arg];
 				break;
 			}
 		}
@@ -63,7 +63,7 @@ int main(int argc, char * argv[]) {
 
 
 	// if file is empty run interactive console
-	if(*file==0){
+	if(*param_script_filename ==0){
 
 		bool exit = false;
 		char *expression=NULL;
@@ -114,17 +114,17 @@ int main(int argc, char * argv[]) {
 
 	}else{ // eval script file
 
-		if(zetscript::zs_file::exists(file)){
+		if(zetscript::zs_file::exists(param_script_filename)){
 
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 			try{
-				zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
+				zs.evalFile(param_script_filename,eval_options,NULL,__FILE__,__LINE__);
 			}catch(zetscript::zs_exception & ex){
-				zetscript::zs_string file=ex.getFilename();
+				zetscript::zs_string filename=ex.getFilename();
 				int line=ex.getLine();
-				if(file!="" && line!=-1){
-					fprintf(stderr,"[%s:%i] %s\n",file.c_str(),line,ex.what());
+				if(filename !="" && line!=-1){
+					fprintf(stderr,"[%s:%i] %s\n", filename.c_str(),line,ex.what());
 				}else if(line!=-1){
 					fprintf(stderr,"[%i] %s\n",line,ex.what());
 				}else{
@@ -135,11 +135,11 @@ int main(int argc, char * argv[]) {
 			if(no_execution_time==false){
 				std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 				std::chrono::duration<double, std::milli> time_span=t2-t1;
-				printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(file).c_str(),time_span.count());
+				printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(param_script_filename).c_str(),time_span.count());
 			}
 
 		}else{
-			fprintf(stderr,"file '%s' not exits\n",file);
+			fprintf(stderr,"file '%s' not exits\n", param_script_filename);
 		}
 	}
 

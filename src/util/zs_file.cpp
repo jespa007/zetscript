@@ -39,33 +39,30 @@ namespace zetscript{
 			size_t readed_elements;
 			FILE  *fp;
 
-			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
+			if ((fp = fopen(filename.c_str(), "rb")) == NULL)
 			{
-				if((length = size(filename)) != -1) {
-
-					int n_bytes_readed=length+1;
-					zs_buffer *buffer= new zs_buffer((uint8_t *)ZS_MALLOC(n_bytes_readed),n_bytes_readed);
-					readed_elements = fread(buffer->ptr, 1, (size_t)length, fp);
-
-					if((int)readed_elements != length) {
-
-						delete buffer;
-						ZS_THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
-					}
-
-					fclose(fp);
-
-					return buffer;
-				}
-				else  {
-					ZS_THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());
-				}
-			}
-			else  {
-				ZS_THROW_RUNTIME_ERROR("I can't open file '%s'",filename.c_str());
+				ZS_THROW_RUNTIME_ERROR("I can't open file '%s'", filename.c_str());
 			}
 
-			return NULL;
+
+			if ((length = size(filename)) == -1) {
+				ZS_THROW_RUNTIME_ERROR("I can't read file '%s'", filename.c_str());
+			}
+
+			int n_bytes_readed=length+1;
+			zs_buffer *buffer= new zs_buffer((uint8_t *)ZS_MALLOC(n_bytes_readed),n_bytes_readed);
+			readed_elements = fread(buffer->ptr, 1, (size_t)length, fp);
+
+			if((int)readed_elements != length) {
+
+				delete buffer;
+				ZS_THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
+			}
+
+			fclose(fp);
+
+			return buffer;
+
 		}
 
 		int  size(const  zs_string & filename)
