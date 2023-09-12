@@ -112,15 +112,15 @@ namespace zetscript{
 
 			}else{
 
-				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)so_aux;
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 				data->vm_stk_current++;
 
-
+				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)sf_member->ref_ptr;
-				data->vm_stk_current->value=ZS_STK_PROPERTY_FUNCTION;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_FUNCTION;
 				data->vm_stk_current++;
+
 			}
 
 			goto lbl_exit_function_ok;
