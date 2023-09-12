@@ -139,7 +139,7 @@ int main(int argc, char * argv[]) {
 			}
 
 		}else{
-			fprintf(stderr,"file '%s' not exits\n", param_script_filename);
+			fprintf(stderr,"file '%s' not exists\n", param_script_filename);
 		}
 	}
 
