@@ -303,7 +303,9 @@ namespace zetscript{
 					|| instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM
 					?"\t\t":"\t"
 					,symbol_value.c_str()
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":""
+					,instruction->properties & ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":
+					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_STORE? "[STORE]":
+					instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION?	"[CALL]":""
 				);
 				break;
 			case ZS_BYTE_CODE_JNT:

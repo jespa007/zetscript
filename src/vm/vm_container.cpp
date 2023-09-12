@@ -97,13 +97,31 @@ namespace zetscript{
 				);
 			}
 
-			somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
+			// If instruction->properties it has not ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION then it creates a MemberFunction object to available in
+			// case it has to be saved ...
+			if((instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0){
 
-			 vm_create_shared_script_object(_vm,somf);
+				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
-			data->vm_stk_current->value=(zs_int)somf;
-			data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
-			data->vm_stk_current++;
+				 vm_create_shared_script_object(_vm,somf);
+
+				data->vm_stk_current->value=(zs_int)somf;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+				data->vm_stk_current++;
+
+
+			}else{
+
+				// ... it push object and function into the stack
+				data->vm_stk_current->value=(zs_int)so_aux;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+				data->vm_stk_current++;
+
+
+				data->vm_stk_current->value=(zs_int)sf_member->ref_ptr;
+				data->vm_stk_current->value=ZS_STK_PROPERTY_FUNCTION;
+				data->vm_stk_current++;
+			}
 
 			goto lbl_exit_function_ok;
 

@@ -224,7 +224,7 @@ namespace zetscript{
 				case ZS_BYTE_CODE_UNRESOLVED_CALL:
 					return ZS_INSTRUCTION_GET_RETURN_COUNT(_instruction)-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+0);
 				 case  ZS_BYTE_CODE_CONSTRUCTOR_CALL:
-				 case  ZS_BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
+				 case  ZS_BYTE_CODE_MEMBER_CALL:
 					 // +1 to pop MemberFunctionScriptObject or MemberFunction for CONSTRUCTOR
 					return ZS_INSTRUCTION_GET_RETURN_COUNT(_instruction)-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:

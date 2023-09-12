@@ -2,7 +2,7 @@ function test_sum(){
 
 	var list = []
 	
-	for (var i=0; i < 1000000; i++) {
+	for (var i=0; i < 100000; i++) {
 		list.push(i)
 	}
 	

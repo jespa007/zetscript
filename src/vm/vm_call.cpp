@@ -206,7 +206,7 @@ namespace zetscript{
 		 case  ZS_BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 			sf_call_script_function=NULL;
-			sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+			sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-2);
 			// if we invoke constructor we need to keep object to pass after, else remove object+function
 			sf_call_stk_start_function_object=1;//instruction->byte_code==ZS_BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
