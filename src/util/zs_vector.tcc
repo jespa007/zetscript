@@ -20,7 +20,7 @@ namespace zetscript{
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->size()) {
-			int new_size=this->_size+this->_size;
+			int new_size=this->_size+this->_size*1.5;
 			if((this->_size+ ZS_ARRAY_EXPAND_SLOT_ELEMENTS) >= ZS_ARRAY_MAX_ELEMENTS){
 				ZS_THROW_RUNTIME_ERRORF("Max elements vector");
 			}

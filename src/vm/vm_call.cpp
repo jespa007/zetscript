@@ -192,7 +192,6 @@ namespace zetscript{
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->vm_stk_current-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
 				 goto load_function;
-			 case  ZS_BYTE_CODE_MEMBER_CALL:
 			 case  ZS_BYTE_CODE_CONSTRUCTOR_CALL:
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
@@ -201,17 +200,20 @@ namespace zetscript{
 				// get object
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
-				// if we invoke constructor we need to keep object to pass after, else remove object+function
+				// it passes constructor object +1
 				sf_call_stk_start_function_object=1;
-				/*goto load_function;
+				goto load_function;
+			 case  ZS_BYTE_CODE_MEMBER_CALL:
 
-
-			 	sf_call_script_function=NULL;
-				sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
+				 sf_call_script_function=NULL;
+				 sf_call_stk_function_ref = (data->vm_stk_current-ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				// get object
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
-				sf_call_stk_start_function_object=1;*/
-			// if we invoke constructor we need to keep object to pass after, else remove object+function
-			//sf_call_stk_start_function_object=1;//instruction->byte_code==ZS_BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
+
+				 // if we invoke constructor we need to keep object to pass after, else remove object+function
+				 sf_call_stk_start_function_object=2;
 
 load_function:
 

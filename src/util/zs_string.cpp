@@ -15,7 +15,7 @@ namespace zetscript{
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size <= (this->count+_n_slots)) {
-			this->_size = this->count+_n_slots+ZS_STRING_EXPAND_CHAR_ELEMENTS;
+			this->_size = this->count+_n_slots+this->count*1.5;//ZS_STRING_EXPAND_CHAR_ELEMENTS;
 			size_t _size_new=sizeof(char) * this->_size + 1;
 			buf=(char *)realloc(buf, _size_new); // + 1 for the keeping the null character
 			memset(buf+this->count,0,_size_new-this->count);

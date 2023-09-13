@@ -405,18 +405,20 @@ friend zs_string operator+(char  _s1, const zs_string & _s2);
 
 A string whose value is the concatenation of &#95;s1 and &#95;s2.
 
-====== Relational operators()
+====== Relational operators
 
-Performs the EQUAL comparison operation between the left operand and right operand.
+zs_string implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operation between the left operand and right operand.
 
 *Syntax*
 
 [source,cpp]
 ----
-friend bool operator==(const zs_string & _s1, const zs_string &_s2);
-friend bool operator==(const zs_string & _s1, const char *_s2);
-friend bool operator==(const char * _s1, const zs_string & _s2);
+friend bool operator _R(const zs_string & _s1, const zs_string &_s2);
+friend bool operator _R(const zs_string & _s1, const char *_s2);
+friend bool operator _R(const char * _s1, const zs_string & _s2);
 ----
+
+Where &#95;R can be *==* or *!=*
 
 [.underline]#Parameters#
 
@@ -425,29 +427,8 @@ friend bool operator==(const char * _s1, const zs_string & _s2);
 
 [.underline]#Return#
 
-true if &#95;s1 is EQUAL to &#95;s2 and false otherwise.
+true if satisfies the condition &#95;s1 _R &#95;s2 and false otherwise.
 
-====== zs_string::operator!=()
-
-Performs the NOT EQUAL comparison operation between the left operand and right operand.
-
-*Syntax*
-
-[source,cpp]
-----
-friend bool operator!=(const zs_string & _s1, const zs_string &_s2);
-friend bool operator!=(const zs_string & _s1, const char *_s2);
-friend bool operator!=(const char * _s1, const zs_string & _s2);
-----
-
-[.underline]#Parameters#
-
-- _&#95;s1_ : A pointer of character or zs_string object as left operand.
-- _&#95;s2_ : A pointer of character or zs_string object as right operand.
-
-[.underline]#Return#
-
-true if &#95;s1 is NOT EQUAL to &#95;s2 and false otherwise.
 
 ==== zs_vector
 
@@ -477,8 +458,11 @@ Constructs a zs_vector object as empty or initialized from other vector.
 ----
 zs_vector();
 zs_vector(const zs_vector & _vector);
-zs_vector& operator=(const zs_vector& _vector);
 ----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A zs_vector object.
 
 ====== zs_vector::operator=()
 
@@ -493,9 +477,15 @@ zs_vector& operator=(const zs_vector& _vector);
 
 [.underline]#Parameters#
 
+- _&#95;vector_ : A zs_vector object.
+
+[.underline]#Return#
+
+*this
+
 ====== zs_vector::set()
 
-Sets an element at from a position.
+Replaces the element from a position.
 
 *Syntax*
 
@@ -503,6 +493,11 @@ Sets an element at from a position.
 ----
 void 		set( int  _pos_, const _T & _element);
 ----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
 
 ====== zs_vector::get()
 
@@ -515,9 +510,17 @@ Returns a reference to the element from a position.
 const _T &	get( int  _pos);
 ----
 
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The element at the specified position in the vector.
+
 ====== zs_vector::erase()
 
-Erases an element from a position reducing its length by one.
+Erases an element from a position.
 
 *Syntax*
 
@@ -525,6 +528,14 @@ Erases an element from a position reducing its length by one.
 ----
 void 		erase( int  _pos);
 ----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the element to be erased.
+
+[.underline]#Return#
+
+None
 
 ====== zs_vector::push_back()
 
@@ -534,8 +545,16 @@ Appends an element at the end of current contents.
 
 [source,cpp]
 ----
-bool 		push_back( const _T & _val);
+bool 		push_back( const _T & _element);
 ----
+
+[.underline]#Parameters#
+
+- _&#95;element_ : The element to append.
+
+[.underline]#Return#
+
+None
 
 ====== zs_vector::pop_back()
 
@@ -548,6 +567,14 @@ Returns the last element by copy and erases the last element.
 _T    		pop_back();
 ----
 
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The last element of the vector before be erased.
+
 ====== zs_vector::concat()
 
 Copies all elements from other vector at the end of current contents.
@@ -559,6 +586,14 @@ Copies all elements from other vector at the end of current contents.
 void 		concat(const zs_vector<_T>  & _vector);
 ----
 
+[.underline]#Parameters#
+
+- _&#95;vector_ : A zs_vector object.
+
+[.underline]#Return#
+
+None
+
 ====== zs_vector::insert()        
 
 Inserts an element or copies all elements of other vector from a position.
@@ -568,9 +603,18 @@ Inserts an element or copies all elements of other vector from a position.
 [source,cpp]
 ----
 void 		insert(int _pos,const _T & _element);
-void 		insert(int _pos,const zs_vector<_T>  & _vector, int _n_list_elements_to_copy=npos);
+void 		insert(int _pos,const zs_vector<_T>  & _vector, int _len=npos);
 ----
 
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first element to insert.
+- _&#95;vector_ : The elements of vector source to insert.
+- _&#95;len_ : The number of elements to insert. A value of zs_vector::npos indicates all elements until the end of the vector.
+
+[.underline]#Return#
+
+None
 
 ====== zs_vector::clear()
 
@@ -583,6 +627,13 @@ Erases the contents of the vector.
 void 		clear();
 ----
 
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+None
 
 ====== zs_vector::resize()
 
@@ -594,6 +645,14 @@ Resizes the vector by a length.
 ----
 void    	resize(int _len);
 ----
+
+[.underline]#Parameters#
+
+- _&#95;len_ : The new capacity of the vector.
+
+[.underline]#Return#
+
+None
 
 
 ====== zs_vector::data()
@@ -607,6 +666,14 @@ Returns the pointer to the array of the elements.
 _T *data();
 ----
 
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A pointer of elements of the vector.
+
 ====== zs_vector::size()
 
 Returns the number of elements of the vector. 
@@ -618,44 +685,14 @@ Returns the number of elements of the vector.
 int	size() const;
 ----
 
-==== zs_map
+[.underline]#Parameters#
 
-===== Member functions
-====== zs_map::zs_map();
-====== zs_map::exist
-		bool		exist(const char * key);
+None
 
-====== zs_map::begin
-		zs_map_iterator begin();
-====== zs_map::set
-		zs_map_node	*set(const char * key,zs_int val);
-====== zs_map::get()
-		zs_int 		get(const char * key, bool * exists=NULL);
-====== zs_map::getKey()
-		const char *getKey(const char * _key);
-====== zs_map::erase()
-		void  		erase(const char * key);
-====== zs_map::clear()
-		void 		clear();
-====== zs_map::data()
-		zs_map_node *data();
-====== zs_map::count()
-		int 		count();		
+[.underline]#Return#
 
+The number of elements in the vector.
 
-==== zs_map_iterator
-===== Member functions
-
-====== zs_map_iterator::zs_map_iterator()
-
-		zs_map_iterator();
-		zs_map_iterator(zs_map *map);
-
-====== zs_map_iterator::next()
-		void next();
-
-====== zs_map_iterator::end()
-		bool end();
 
 ==== ArrayScriptObject
 
@@ -663,33 +700,57 @@ _ArrayScriptObject_ it defines a array script object that acts as a array contai
 
 ===== Member functions
 
-_ArrayScriptObject_ member functions available for user operations are the following,
+
+*Syntax*
+
+[source,cpp]
+----
+ArrayScriptObject(ZetScript *_zs);
+----
 
 ====== ArrayScriptObject::push()
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
-template<typename _T>
-void 								push(_T _value);
+*Syntax*
+
+[source,cpp]
+----
+void push(_T _value);
+----
 
 ====== ArrayScriptObject::set()
 
 Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_.
 
-	template<typename _T>
-		void 								set(int _idx, _T _value);
+*Syntax*
+
+[source,cpp]
+----
+void set(int _idx, _T _value);
+----
 
 
 ====== ArrayScriptObject::get()
 
 Returns a reference element of type _&#x5f;T_ at position __pos_.
 
-		template<typename _T>
-		_T 									get(int _idx);
+*Syntax*
+
+[source,cpp]
+----
+_T 	get(int _idx);
+----
 
 ====== ArrayScriptObject::toString()
 
+
+*Syntax*
+
+[source,cpp]
+----
 virtual 							zs_string toString();
+----
 
 ==== ObjectScriptObject
 
@@ -698,19 +759,50 @@ _ObjectScriptObject_ it defines a object script object that acts as a container 
 
 ===== Member functions
 
-_ObjectScriptObject_ member functions available for user operations are the following,
+
+ObjectScriptObject(ZetScript	*_zs);
 
 ====== ObjectScriptObject::set()
 
 Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
+*Syntax*
+
+[source,cpp]
+----
+----
+
+
 ====== ObjectScriptObject::get()
 
 Returns element of type _&#x5f;T_ from key __key_.
 
+*Syntax*
+
+[source,cpp]
+----
+----
+
+====== ObjectScriptObject::get()
+
+
+*Syntax*
+
+[source,cpp]
+----
+zs_vector<zs_string> getKeys();
+----
+
 ==== ClassScriptObject
 
 _ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+
+
+
+			ClassScriptObject(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
+
+			template<typename _C>
+			_C to();
 
 
 ==== StackElement
