@@ -18,7 +18,7 @@ namespace zetscript{
 		StackElement 				*	stk_var=NULL;
 		StackElementMemberProperty 		*	stk_mp_aux=NULL;
 		ScriptType					*	sc_type=NULL;
-		Symbol 						*	sf_member=NULL;
+		Symbol 						*	symbol_function_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
 		bool 							instruction_store=false;
 
@@ -84,8 +84,8 @@ namespace zetscript{
 
 		//
 		sc_type=so_aux->getScriptType();
-		sf_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);
-		if(sf_member !=NULL){
+		symbol_function_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);
+		if(symbol_function_member !=NULL){
 			if(
 				   ((instruction+1)->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM))
 				&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
@@ -101,7 +101,7 @@ namespace zetscript{
 			// case it has to be saved ...
 			if((instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0){
 
-				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
+				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)symbol_function_member->ref_ptr);
 
 				 vm_create_shared_script_object(_vm,somf);
 
@@ -111,14 +111,15 @@ namespace zetscript{
 
 
 			}else{
-
+				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)so_aux;
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 				data->vm_stk_current++;
 
-				// ... it push object and function into the stack
-				data->vm_stk_current->value=(zs_int)sf_member->ref_ptr;
-				data->vm_stk_current->properties=ZS_STK_PROPERTY_FUNCTION;
+
+				// pass symbol
+				data->vm_stk_current->value=(zs_int)symbol_function_member;
+				data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
 				data->vm_stk_current++;
 
 			}

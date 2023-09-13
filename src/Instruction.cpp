@@ -175,7 +175,13 @@ namespace zetscript{
 				//case ZS_BYTE_CODE_BWC_POST_DEC:	// pop -1 and stk +1 = 0
 				case ZS_BYTE_CODE_RESET_STACK:		// pop -1 and stk +1 = 0
 				//case ZS_BYTE_CODE_CLEAR_ZERO_POINTERS:
+					return 0;
 				case ZS_BYTE_CODE_LOAD_OBJECT_ITEM:
+					// If load item is for a calling member it does pop-1 and push+2 due it needs to push function + object
+					if((_instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)!=0){
+						return 1;
+					}
+					// else it will create object function member
 					return 0;
 				case ZS_BYTE_CODE_STORE:
 					return -_instruction->value_op1;

@@ -9,7 +9,7 @@ namespace zetscript{
 			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
 		}
 
-		return this->zs->stackElementTo<_T>(stk_elements.items[_idx]);
+		return this->zs->stackElementTo<_T>(stk_elements.get(_idx));
 	}
 
 	template<typename _T>

@@ -578,7 +578,7 @@ namespace zetscript{
 
 				// load object end symbol
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_end");
 
@@ -611,7 +611,7 @@ namespace zetscript{
 
 				// load _get member function
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_get");
@@ -649,7 +649,7 @@ namespace zetscript{
 
 				// load object end symbol
 				ei_post_operations.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_next");
