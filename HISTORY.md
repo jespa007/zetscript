@@ -258,6 +258,8 @@ Solved issues
 - #340 StackOverflow core dumped in deep recursion 
 - #346 ZetScript it can allow register two same C++ types 
 - #350 Extend from script from native type should be instantiable 
+- #353 Memory peak on exit for-in 
+> #352 Slow for.zs 
 
 ---
 Version: 1.3.0
