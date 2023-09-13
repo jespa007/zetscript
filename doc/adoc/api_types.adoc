@@ -471,9 +471,18 @@ npos is a static member constant value with the greatest possible value.
 
 ====== zs_vector::zs_vector()
 
+Constructs a zs_vector object as empty or initialized from other vector.
+
+[source,cpp]
+----
+zs_vector();
+zs_vector(const zs_vector & _vector);
+zs_vector& operator=(const zs_vector& _vector);
+----
+
 ====== zs_vector::operator=()
 
-Assigns a new value to the vector, replacing its current contents.
+Replaces current content by the set of elements from other vector.
 
 *Syntax*
 
@@ -486,7 +495,7 @@ zs_vector& operator=(const zs_vector& _vector);
 
 ====== zs_vector::set()
 
-Sets _&#x5f;element_ at position  _&#x5f;pos_.
+Sets an element at from a position.
 
 *Syntax*
 
@@ -497,7 +506,7 @@ void 		set( int  _pos_, const _T & _element);
 
 ====== zs_vector::get()
 
-Gets the _&#x5f;element_ at position  _&#x5f;pos_.
+Returns a reference to the element from a position.
 
 *Syntax*
 
@@ -508,7 +517,7 @@ const _T &	get( int  _pos);
 
 ====== zs_vector::erase()
 
-Erases the  _&#x5f;element_ at position  _&#x5f;pos_ reducing its length by one.
+Erases an element from a position reducing its length by one.
 
 *Syntax*
 
@@ -519,7 +528,7 @@ void 		erase( int  _pos);
 
 ====== zs_vector::push_back()
 
-Appends an  _&#x5f;element_ at the end of current contents.
+Appends an element at the end of current contents.
 
 *Syntax*
 
@@ -528,9 +537,20 @@ Appends an  _&#x5f;element_ at the end of current contents.
 bool 		push_back( const _T & _val);
 ----
 
+====== zs_vector::pop_back()
+
+Returns the last element by copy and erases the last element.
+
+*Syntax*
+
+[source,cpp]
+----
+_T    		pop_back();
+----
+
 ====== zs_vector::concat()
 
-Copies all elements of a vector at the end of current contents.
+Copies all elements from other vector at the end of current contents.
 
 *Syntax*
 
@@ -541,7 +561,7 @@ void 		concat(const zs_vector<_T>  & _vector);
 
 ====== zs_vector::insert()        
 
-Inserts an  element or copies all elements of vector at position.
+Inserts an element or copies all elements of other vector from a position.
 
 *Syntax*
 
@@ -553,25 +573,50 @@ void 		insert(int _pos,const zs_vector<_T>  & _vector, int _n_list_elements_to_c
 
 
 ====== zs_vector::clear()
-		void 		clear();
 
-====== zs_vector::pop_back()
-		_T    		pop_back();
+Erases the contents of the vector.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		clear();
+----
+
 
 ====== zs_vector::resize()
-		void    	resize(int _len);
+
+Resizes the vector by a length.
+
+*Syntax*
+
+[source,cpp]
+----
+void    	resize(int _len);
+----
 
 
 ====== zs_vector::data()
-		inline _T *data(){
-			return items;
-		}
+
+Returns the pointer to the array of the elements.
+
+*Syntax*
+
+[source,cpp]
+----
+_T *data();
+----
 
 ====== zs_vector::size()
 
-		inline int	size() const{
-			return count;
-		}
+Returns the number of elements of the vector. 
+
+*Syntax*
+
+[source,cpp]
+----
+int	size() const;
+----
 
 ==== zs_map
 
