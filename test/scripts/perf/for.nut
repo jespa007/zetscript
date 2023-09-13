@@ -16,7 +16,7 @@ function test_sum(){
 
 for(local i=0; i < 10; i++){
 	local start=clock();
-	print("fib: "+test_sum()+" time: "+(clock()-start)+" ms\n");
+	print("sum: "+test_sum()+" time: "+(clock()-start)+" ms\n");
 }
 
 
