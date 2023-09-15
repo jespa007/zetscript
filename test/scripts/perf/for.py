@@ -15,12 +15,12 @@ def test_sum():
 	
 	sum = 0
 	for i in list:
-	  sum += i
+	  sum = sum + i
 	  
 	return sum
 
-start = time.process_time()
 for i in range(0, 10):
+  start = time.process_time()
   print("sum: "+str(test_sum())+" elapsed: " + str(time.process_time() - start))
 
 
