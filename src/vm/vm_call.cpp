@@ -453,7 +453,7 @@ execute_function:
 				sf_call_n_local_symbols=sf_call_script_function->local_variables->size();
 			}
 			else{ // C function
-				if((sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME) && false){
+				if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){
 
 					ScriptType *sc=NULL;
 					bool ignore_call=false;
