@@ -29,7 +29,7 @@ then
 	mkdir -p api/build
 fi
 
-api_example_dirs=(eval bind_script_function register_function builtin_type register_type)
+api_example_dirs=(types eval bind_script_function register_function builtin_type register_type)
 
 dir_zs="api/eval/*.zs"
 for j in $dir_zs

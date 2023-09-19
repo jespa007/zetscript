@@ -1,7 +1,7 @@
 
 === Types
 
-This section wil describe the types used in the library in order to interop data native/script and the ZetScript class, the core the most operations in the library.
+This section wil describe the types used in the library in order to interop data native/script and the ZetScript class, the core the most operations in the library. Some of the types have methods and properties that are used internally for ZetScript but this section will describe ONLY methods or propierties that user can use.
 
 ==== zs_int
 
