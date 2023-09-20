@@ -19,6 +19,15 @@ namespace zetscript{
 		unsigned int 		   	idx_current;
 	};
 
+	void vm_reset_stack(VirtualMachine *_vm, StackElement *_reset_stack){
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		data->vm_stk_current=_reset_stack;
+
+		VM_ScopeBlock *scope_block=ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1;
+
+		vm_remove_empty_shared_pointers(_vm,scope_block);
+	}
+
 	void vm_do_stack_dump(
 			VirtualMachine *_vm
 	){

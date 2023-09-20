@@ -457,7 +457,8 @@ namespace zetscript{
 					return;
 				}
 				if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){
-					data->vm_stk_current=stk_start;
+					//data->vm_stk_current=stk_start;
+					vm_reset_stack(_vm,stk_start);
 				}
 				continue;
 			//----- immediate call
@@ -481,7 +482,8 @@ namespace zetscript{
 				}
 
 				if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){
-					data->vm_stk_current=stk_start;
+					//data->vm_stk_current=stk_start;
+					vm_reset_stack(_vm,stk_start);\
 				}
 				continue;
 			case ZS_BYTE_CODE_PUSH_STK_THIS: // load variable ...

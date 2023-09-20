@@ -49,7 +49,8 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}\
 
 
@@ -86,7 +87,8 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}\
 
 #define ZS_VM_OPERATION_DIV_SET() \
@@ -133,7 +135,8 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}\
 
 
@@ -181,7 +184,8 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}\
 
 #define ZS_VM_OPERATION_BINARY_SET(__C_OP__, __METAMETHOD__)\
@@ -200,6 +204,7 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 		}\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}\
 

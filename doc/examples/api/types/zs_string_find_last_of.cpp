@@ -1,7 +1,7 @@
 #include "zetscript.h"
+using zetscript::zs_string;
 int main(){
-	zetscript::zs_string string;
-
+	
 	
 	return 0;
 }

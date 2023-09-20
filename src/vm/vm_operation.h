@@ -287,62 +287,7 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-/*
-#define ZS_VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
-	stk_result_op1=--data->vm_stk_current;\
-	EXTRACT_STK_RESULT_OP1_POST\
-	switch(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
-	case ZS_STK_PROPERTY_INT:\
-		ZS_VM_PUSH_STK_INT(-stk_result_op1->value);\
-		stk_result_op1->value __C_OP__;\
-		break;\
-	case ZS_STK_PROPERTY_FLOAT:\
-		zs_float_aux=(zs_float *)&stk_result_op1->value;\
-		ZS_VM_PUSH_STK_FLOAT(-(*zs_float_aux));\
-		(*zs_float_aux) __C_OP__;\
-		break;\
-	default:metamethod\
-		if(vm_call_metamethod_operation_post(\
-			_vm\
-			,_script_function\
-			,instruction\
-			,stk_result_op1\
-			,__METAMETHOD__\
-			,ZS_METAMETHOD_BYTE_CODE_NEG\
-		)==false){\
-			goto lbl_exit_function;\
-		}\
-		break;\
-	}\
-	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
-	}
 
-#define ZS_VM_OPERATION_BWC_POST(__C_OP__, __METAMETHOD__) \
-	stk_result_op1=--data->vm_stk_current;\
-	EXTRACT_STK_RESULT_OP1_POST\
-	switch(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
-	case ZS_STK_PROPERTY_INT:\
-		ZS_VM_PUSH_STK_INT(~stk_result_op1->value);\
-		stk_result_op1->value __C_OP__;\
-		break;\
-	default:metamethod\
-		if(vm_call_metamethod_operation_post(\
-			_vm\
-			,_script_function\
-			,instruction\
-			,stk_result_op1\
-			,__METAMETHOD__\
-			,ZS_METAMETHOD_BYTE_CODE_BWC\
-		)==false){\
-			goto lbl_exit_function;\
-		}\
-		break;\
-	}\
-	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
-	}
-*/
 #define VM_POST_OPERATION(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	ZS_EXTRACT_STK_RESULT_PRE_POST_OPERATION\
@@ -369,7 +314,8 @@
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}
 
 #define VM_PRE_OPERATION(__C_OP__, __METAMETHOD__) \
@@ -398,5 +344,6 @@
 		break;\
 	}\
 	if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->vm_stk_current=stk_start;\
+		/*data->vm_stk_current=stk_start;*/\
+		vm_reset_stack(_vm,stk_start);\
 	}
