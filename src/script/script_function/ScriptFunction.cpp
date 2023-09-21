@@ -534,6 +534,19 @@ namespace zetscript{
 		return "unknown_file";
 	}
 
+	ScriptFunction	*	ScriptFunction::getInstructionScriptFunctionLastCall(Instruction * _instruction){
+		short idx= (_instruction-this->instructions);///sizeof(Instruction *);
+		ScriptFunction	*sf=NULL;
+		bool exists=false;
+		sf=(ScriptFunction	*)this->instruction_last_native_call.get(idx,&exists);
+		return sf;
+	}
+
+	void				ScriptFunction::setInstructionScriptFunctionLastCall(Instruction * _instruction,ScriptFunction *_sf){
+		short idx= (_instruction-this->instructions);///sizeof(Instruction *);
+		this->instruction_last_native_call.set(idx,(zs_int)_sf);
+	}
+
 	Symbol * ScriptFunction::registerLocalArgument(
 			 Scope * _scope_block
 			, const char *_file

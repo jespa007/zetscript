@@ -1,5 +1,4 @@
 #include "zetscript.h"
-#include <iostream>
 
 using zetscript::zs_float;
 

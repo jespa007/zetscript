@@ -52,6 +52,7 @@ namespace zetscript{
 		int					min_code_stack_needed;
 
 		PtrInstruction  	instructions; // The set of byte code instructions that executes the function
+		zs_map_int			instruction_last_native_call;
 
 		// number of instructions
 		size_t				instructions_len;
@@ -79,6 +80,8 @@ namespace zetscript{
 		short 				getInstructionLine(Instruction * ins);
 		const char * 		getInstructionSymbolName(Instruction * ins);
 		const char *		getInstructionSourceFile(Instruction * ins);
+		ScriptFunction	*	getInstructionScriptFunctionLastCall(Instruction * ins);
+		void				setInstructionScriptFunctionLastCall(Instruction * ins,ScriptFunction *sf);
 
 		//  DEBUG
 		//-----------

@@ -189,6 +189,10 @@ namespace zetscript{
 				"zs_char:%i\n"
 				"zs_int:%i\n"
 				"zs_float:%i\n"
+				"zs_string:%i\n"
+				"zs_vector<StackElement>:%i\n"
+				"zs_map:%i\n"
+				"zs_map_int:%i\n"
 				"bool:%i\n"
 				"ZetScript:%i\n"
 				"VirtualMachineData:%i\n"
@@ -207,6 +211,10 @@ namespace zetscript{
 				,(int)sizeof(zs_char)
 				,(int)sizeof(zs_int)
 				,(int)sizeof(zs_float)
+				,(int)sizeof(zs_string)
+				,(int)sizeof(zs_vector<StackElement>)
+				,(int)sizeof(zs_map)
+				,(int)sizeof(zs_map_int)
 				,(int)sizeof(bool)
 				,(int)sizeof(ZetScript)
 				, (int)sizeof(VirtualMachineData)
@@ -485,6 +493,104 @@ namespace zetscript{
 		}
 	}
 
+	bool ZetScript::canStackElementCastTo(StackElement * _stack_element, int _idx_type_to_convert){
+		zs_int val_ret=0;
+
+		// save return type ...
+		if(_stack_element->properties & ZS_STK_PROPERTY_PTR_STK){
+			_stack_element=((StackElement *)_stack_element->value);
+		}
+
+		if(_idx_type_to_convert == IDX_TYPE_STACK_ELEMENT){
+			return true;
+		}
+
+		switch(ZS_GET_STK_PROPERTY_TYPES(_stack_element->properties)){
+		case ZS_STK_PROPERTY_NULL:
+			return true;
+			break;
+		case ZS_STK_PROPERTY_BOOL:
+			switch(_idx_type_to_convert){
+			case IDX_TYPE_BOOL_C:
+			case IDX_TYPE_BOOL_PTR_C:
+				return true;
+				break;
+			}
+			break;
+		case ZS_STK_PROPERTY_FLOAT:
+			switch(_idx_type_to_convert){
+			case IDX_TYPE_FLOAT_C:
+			case IDX_TYPE_FLOAT_PTR_C:
+			case IDX_TYPE_INT_C:
+				return true;
+				break;
+			}
+			break;
+		case ZS_STK_PROPERTY_INT:
+			switch(_idx_type_to_convert){
+			case IDX_TYPE_INT_C:
+			case IDX_TYPE_INT_PTR_C:
+				return true;
+				break;
+			}
+			break;
+		// it expects the ScriptFunction directly
+		case ZS_STK_PROPERTY_FUNCTION:
+			return true;
+			break;
+		default:
+			// script variable by default ...
+			if(_stack_element->properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT | ZS_STK_PROPERTY_CONTAINER_SLOT)){
+				ScriptObject *script_object=NULL;
+				if(_stack_element->properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
+					script_object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
+				}else{
+					script_object=(ScriptObject *)_stack_element->value;
+				}
+
+				if(_idx_type_to_convert==script_object->idx_script_type){
+					return true;
+				}
+
+				if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+
+					switch(_idx_type_to_convert){
+					case IDX_TYPE_ZS_STRING_PTR_C:
+					case IDX_TYPE_ZS_STRING_C:
+					case IDX_TYPE_CONST_CHAR_PTR_C:
+						return true;
+					}
+
+				}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+					ClassScriptObject *script_object_class = NULL;
+					ScriptType *c_class=NULL;
+					// trivial case
+					if(
+						_idx_type_to_convert != IDX_TYPE_SCRIPT_OBJECT_CLASS
+					){
+						script_object_class = (ClassScriptObject *)script_object;
+						c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
+					}
+
+					if(c_class != NULL){
+						if((val_ret=c_class->extendsFrom(
+								_idx_type_to_convert
+							))==true
+						){
+							return true;
+						}
+					}else{ // Is script class
+						return true;
+					}
+				}
+			}
+
+			break;
+		}
+
+		return false;
+	}
+
 	bool ZetScript::stackElementTo(StackElement * _stack_element, int _idx_type_to_convert, zs_int *_ptr_var, zs_string  & _error){
 		zs_int val_ret=0;
 
@@ -570,6 +676,7 @@ namespace zetscript{
 				}else{
 					script_object=(ScriptObject *)_stack_element->value;
 				}
+
 				ScriptType *c_class=NULL;
 				val_ret=(zs_int)script_object;
 
@@ -578,14 +685,11 @@ namespace zetscript{
 					return false;
 				}
 
-				if(_idx_type_to_convert!=script_object->idx_script_type){
+				if(_idx_type_to_convert==script_object->idx_script_type){
+					val_ret=(zs_int)script_object->getNativeObject();
+				}else{
 
 					if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
-						if(_stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-							_error="internal error var_ref is NULL";
-							return false;
-						}
-
 						if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_PTR_C){
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->str_ptr);
 						}else if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_C){
@@ -639,8 +743,6 @@ namespace zetscript{
 							+"'";
 						return false;
 					}
-				}else{ // get native object...
-					val_ret=(zs_int)script_object->getNativeObject();
 				}
 			}else{
 				_error=zs_strutils::format("Cannot know how to convert type '%s' from '%s'"

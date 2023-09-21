@@ -21,7 +21,6 @@ namespace zetscript{
 		StackElement		*	stk_return=NULL;
 		size_t					n_stk_local_symbols=0;
 
-
 		if(((_script_function_to_call)->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 			vm_execute_script_function(
 				_vm
@@ -471,8 +470,38 @@ execute_function:
 
 					if(ignore_call == false)
 					{
-						ScriptFunction *sf_aux;
-						if((sf_aux=vm_find_native_function(
+						// TODO: get last call information to match parameters to be passed to on stacked.
+						// if some of parameters respect last call changed --> find the new function
+						// else it will use the same function symbol stored in the last call
+						ScriptFunction *sf_found=NULL;
+
+						sf_found=sf_call_script_function->getInstructionScriptFunctionLastCall(_instruction);
+						if(sf_found != NULL){
+							// check whether the parameters matches	EXACTLY with the current ones.
+							int start_param=1;
+							if((sf_found->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)
+									&&
+							 ((sf_found->properties & FUNCTION_PROPERTY_STATIC)==0)
+							){
+								start_param=2;
+							}
+
+							bool all_check=(sf_found->params_len-start_param)==sf_call_n_args;
+
+							for( unsigned k = 0; k < sf_call_n_args && all_check;k++){
+								StackElement *current_arg=sf_call_stk_start_arg_call+k;
+								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].idx_script_type);
+							}
+
+							if(all_check==false){
+								sf_found=NULL;
+							}
+						}
+
+						if(sf_found==NULL){
+
+
+							if((sf_found=vm_find_native_function(
 								_vm
 								,sc
 								,_script_function
@@ -481,9 +510,11 @@ execute_function:
 								,sf_call_script_function->name_script_function // symbol to find
 								,sf_call_stk_start_arg_call
 								,sf_call_n_args))==NULL){
-							goto lbl_exit_function;
+								goto lbl_exit_function;
+							}
+							sf_call_script_function=sf_found;
+							sf_call_script_function->setInstructionScriptFunctionLastCall(_instruction,sf_found);
 						}
-						sf_call_script_function=sf_aux;
 					}
 				}
 

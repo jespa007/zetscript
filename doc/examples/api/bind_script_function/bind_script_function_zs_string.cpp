@@ -1,5 +1,4 @@
 #include "zetscript.h"
-#include <iostream>
 
 using zetscript::zs_string;
 
@@ -17,7 +16,7 @@ int main()
     zs_string s1="Hello";
     zs_string s2="World";
 
-    std::cout << "result : " << add(&s1,&s2).c_str() << std::endl;
+    printf("result : %s\n", add(&s1,&s2).c_str());
 
  	return 0;
 }
