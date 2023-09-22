@@ -479,7 +479,7 @@ execute_function:
 						if(sf_found != NULL){
 							// check whether the parameters matches	EXACTLY with the current ones.
 
-							// start_param at 1 because param 0 is ZetScript ref
+							// start_param at 1 because param 0 is ZetScript reference
 							int start_param=1;
 							if((sf_found->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)
 									&&
