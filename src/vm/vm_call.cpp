@@ -470,7 +470,7 @@ execute_function:
 
 					if(ignore_call == false)
 					{
-						// TODO: get last call information to match parameters to be passed to on stacked.
+						// Get last call information to match parameters to be passed to on stacked.
 						// if some of parameters respect last call changed --> find the new function
 						// else it will use the same function symbol stored in the last call
 						ScriptFunction *sf_found=NULL;
@@ -478,11 +478,14 @@ execute_function:
 						sf_found=sf_call_script_function->getInstructionScriptFunctionLastCall(_instruction);
 						if(sf_found != NULL){
 							// check whether the parameters matches	EXACTLY with the current ones.
+
+							// start_param at 1 because param 0 is ZetScript ref
 							int start_param=1;
 							if((sf_found->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)
 									&&
 							 ((sf_found->properties & FUNCTION_PROPERTY_STATIC)==0)
 							){
+								// it passes ZetScript ref and object
 								start_param=2;
 							}
 

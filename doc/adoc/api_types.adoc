@@ -1,7 +1,7 @@
 
-=== Types
+=== Data types
 
-This section wil describe the types used in the library in order to interop data native/script and the ZetScript class, the core the most operations in the library. Some of the types have methods and properties that are used internally for ZetScript but this section will describe ONLY methods or propierties that user can use.
+This section wil describe the data types used in the library in order to interop data native/script and the ZetScript class, the core the most operations in the library. Some of the types have methods and properties that are used internally for ZetScript but this section will describe ONLY methods or propierties that user can use.
 
 ==== zs_int
 
@@ -63,6 +63,14 @@ zs_string(zs_string && _str);
 - _&#95;s_ : A pointer to an array of characters.
 - _&#95;str_ : A zs_string object.
 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_constructor.cpp[]
+----
+
 ====== zs_string::operator=()
 
 Assigns a new value to the string, replacing its current contents.
@@ -84,6 +92,14 @@ zs_string& operator=(const char* _s);
 [.underline]#Return#
 
 *this
+
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_operator_assign.cpp[]
+----
 
 ======  zs_string::operator+=()
 

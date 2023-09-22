@@ -1,18 +1,5 @@
 === Data types
 
-ZetScript supports the following data types,
-
-* Undefined
-* Null
-* Integer
-* Number
-* Boolean
-* String
-* Array
-* Object
-* Function
-* Class
-
 ==== Undefined
 
 The type _Undefined_ is defined as non initialized value. A variable is instanced as _Undefined_ once a its assings _undefined_ value or is not initialized.
