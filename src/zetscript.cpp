@@ -754,7 +754,13 @@ namespace zetscript{
 			break;
 		}
 
-		*_ptr_var = val_ret;
+		// prevent to
+		if(_idx_type_to_convert == IDX_TYPE_BOOL_C){
+			*((bool *)_ptr_var) = val_ret;
+		}else{
+			*_ptr_var = val_ret;
+		}
+
 
 		return true;
 	}
