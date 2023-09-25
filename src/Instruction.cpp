@@ -138,16 +138,16 @@ namespace zetscript{
 				case ZS_BYTE_CODE_SHR:
 				case ZS_BYTE_CODE_PUSH_ARRAY_ITEM:
 				// byte_code_XXX_store, it pops -2 and push +1 = -1
-				case ZS_BYTE_CODE_ADD_STORE:
-				case ZS_BYTE_CODE_SUB_STORE:
-				case ZS_BYTE_CODE_MUL_STORE:
-				case ZS_BYTE_CODE_DIV_STORE:
-				case ZS_BYTE_CODE_MOD_STORE:
-				case ZS_BYTE_CODE_BITWISE_AND_STORE:
-				case ZS_BYTE_CODE_BITWISE_OR_STORE:
-				case ZS_BYTE_CODE_BITWISE_XOR_STORE:
-				case ZS_BYTE_CODE_SHL_STORE:
-				case ZS_BYTE_CODE_SHR_STORE:
+				case ZS_BYTE_CODE_ADD_ST:
+				case ZS_BYTE_CODE_SUB_ST:
+				case ZS_BYTE_CODE_MUL_ST:
+				case ZS_BYTE_CODE_DIV_ST:
+				case ZS_BYTE_CODE_MOD_ST:
+				case ZS_BYTE_CODE_BITWISE_AND_ST:
+				case ZS_BYTE_CODE_BITWISE_OR_ST:
+				case ZS_BYTE_CODE_BITWISE_XOR_ST:
+				case ZS_BYTE_CODE_SHL_ST:
+				case ZS_BYTE_CODE_SHR_ST:
 					return -1;
 				// pop -1 and push stk +0 = -1
 				case ZS_BYTE_CODE_JNT:

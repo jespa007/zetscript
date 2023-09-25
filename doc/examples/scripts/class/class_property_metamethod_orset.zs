@@ -9,11 +9,11 @@ class Number{
 			return this.__value__
 		}
 		
-		_orset(_op1){
+		_orst(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
 	 			this.__value__ |= Integer::parse(_op1);
 	 		}else{
-	 			System::error("Number::value::_orset : right operand not supported");
+	 			System::error("Number::value::_orst : right operand not supported");
 	 		}
 		}
 	}

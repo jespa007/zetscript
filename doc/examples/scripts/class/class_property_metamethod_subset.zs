@@ -9,11 +9,11 @@ class Number{
 			return this.__value__
 		}
 		
-		_subset(_op1){
+		_subst(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
 	 			this.__value__ -= _op1;
 	 		}else{
-	 			System::error("Number::value::_subset : right operand not supported");
+	 			System::error("Number::value::_subst : right operand not supported");
 	 		}
 		}
 	}

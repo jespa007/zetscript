@@ -278,7 +278,7 @@ namespace zetscript{
 		const char 					*			str_aka_set_metamethod=metamethod_byte_code_to_operator_str(_metamethod_byte_code);
 		Instruction					*			instruction=_instruction;
 
-		if(_metamethod_byte_code == ZS_METAMETHOD_BYTE_CODE_ADD_SET){
+		if(_metamethod_byte_code == ZS_METAMETHOD_BYTE_CODE_ADD_ST){
 			if(	ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
 						(stk_result_op2->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\

@@ -304,7 +304,7 @@ namespace zetscript{
 					?"\t\t":"\t"
 					,symbol_value.c_str()
 					,instruction->properties & ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":
-					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_STORE? "[STORE]":
+					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST? "[STORE]":
 					instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION?	"[CALL]":""
 				);
 				break;
@@ -399,16 +399,16 @@ namespace zetscript{
 					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ZS_BYTE_CODE_ADD_STORE:
-			case ZS_BYTE_CODE_SUB_STORE:
-			case ZS_BYTE_CODE_MUL_STORE:
-			case ZS_BYTE_CODE_DIV_STORE:
-			case ZS_BYTE_CODE_MOD_STORE:
-			case ZS_BYTE_CODE_BITWISE_AND_STORE:
-			case ZS_BYTE_CODE_BITWISE_OR_STORE:
-			case ZS_BYTE_CODE_BITWISE_XOR_STORE:
-			case ZS_BYTE_CODE_SHL_STORE:
-			case ZS_BYTE_CODE_SHR_STORE:
+			case ZS_BYTE_CODE_ADD_ST:
+			case ZS_BYTE_CODE_SUB_ST:
+			case ZS_BYTE_CODE_MUL_ST:
+			case ZS_BYTE_CODE_DIV_ST:
+			case ZS_BYTE_CODE_MOD_ST:
+			case ZS_BYTE_CODE_BITWISE_AND_ST:
+			case ZS_BYTE_CODE_BITWISE_OR_ST:
+			case ZS_BYTE_CODE_BITWISE_XOR_ST:
+			case ZS_BYTE_CODE_SHL_ST:
+			case ZS_BYTE_CODE_SHR_ST:
 			case ZS_BYTE_CODE_PRE_INC:
 			case ZS_BYTE_CODE_PRE_DEC:
 			case ZS_BYTE_CODE_POST_INC:

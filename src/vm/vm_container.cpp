@@ -34,7 +34,7 @@ namespace zetscript{
 
 		instruction=(*_instruction_it)-1;
 
-		instruction_store = (instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_STORE)
+		instruction_store = (instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST)
 			||    instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
 			||  instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE;
 
@@ -234,7 +234,7 @@ namespace zetscript{
 									(instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
 								||	(instruction->byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE)
 								)
-								&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_STORE)==0)
+								&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST)==0)
 						  )
 
 					){

@@ -8,32 +8,32 @@ namespace zetscript{
 
 	const MetamethodByteCode MetamethodMembers::metamethod_byte_code_member_setter_list[]={
 			ZS_METAMETHOD_BYTE_CODE_SET
-			,ZS_METAMETHOD_BYTE_CODE_ADD_SET
-			,ZS_METAMETHOD_BYTE_CODE_SUB_SET
-			,ZS_METAMETHOD_BYTE_CODE_MUL_SET
-			,ZS_METAMETHOD_BYTE_CODE_DIV_SET
-			,ZS_METAMETHOD_BYTE_CODE_MOD_SET
-			,ZS_METAMETHOD_BYTE_CODE_AND_SET
-			,ZS_METAMETHOD_BYTE_CODE_OR_SET
-			,ZS_METAMETHOD_BYTE_CODE_XOR_SET
-			,ZS_METAMETHOD_BYTE_CODE_SHL_SET
-			,ZS_METAMETHOD_BYTE_CODE_SHR_SET
+			,ZS_METAMETHOD_BYTE_CODE_ADD_ST
+			,ZS_METAMETHOD_BYTE_CODE_SUB_ST
+			,ZS_METAMETHOD_BYTE_CODE_MUL_ST
+			,ZS_METAMETHOD_BYTE_CODE_DIV_ST
+			,ZS_METAMETHOD_BYTE_CODE_MOD_ST
+			,ZS_METAMETHOD_BYTE_CODE_AND_ST
+			,ZS_METAMETHOD_BYTE_CODE_OR_ST
+			,ZS_METAMETHOD_BYTE_CODE_XOR_ST
+			,ZS_METAMETHOD_BYTE_CODE_SHL_ST
+			,ZS_METAMETHOD_BYTE_CODE_SHR_ST
 			,ZS_METAMETHOD_BYTE_CODE_EQU //--> ZS_METAMETHOD_BYTE_CODE_EQU is special mark defined as 0 (end of elements)
 	};
 
 	const MetamethodByteCode MetamethodMembers::metamethod_byte_code_member_list[]={
 
 			ZS_METAMETHOD_BYTE_CODE_SET
-			,ZS_METAMETHOD_BYTE_CODE_ADD_SET
-			,ZS_METAMETHOD_BYTE_CODE_SUB_SET
-			,ZS_METAMETHOD_BYTE_CODE_MUL_SET
-			,ZS_METAMETHOD_BYTE_CODE_DIV_SET
-			,ZS_METAMETHOD_BYTE_CODE_MOD_SET
-			,ZS_METAMETHOD_BYTE_CODE_AND_SET
-			,ZS_METAMETHOD_BYTE_CODE_OR_SET
-			,ZS_METAMETHOD_BYTE_CODE_XOR_SET
-			,ZS_METAMETHOD_BYTE_CODE_SHL_SET
-			,ZS_METAMETHOD_BYTE_CODE_SHR_SET
+			,ZS_METAMETHOD_BYTE_CODE_ADD_ST
+			,ZS_METAMETHOD_BYTE_CODE_SUB_ST
+			,ZS_METAMETHOD_BYTE_CODE_MUL_ST
+			,ZS_METAMETHOD_BYTE_CODE_DIV_ST
+			,ZS_METAMETHOD_BYTE_CODE_MOD_ST
+			,ZS_METAMETHOD_BYTE_CODE_AND_ST
+			,ZS_METAMETHOD_BYTE_CODE_OR_ST
+			,ZS_METAMETHOD_BYTE_CODE_XOR_ST
+			,ZS_METAMETHOD_BYTE_CODE_SHL_ST
+			,ZS_METAMETHOD_BYTE_CODE_SHR_ST
 			,ZS_METAMETHOD_BYTE_CODE_POST_INC
 			,ZS_METAMETHOD_BYTE_CODE_POST_DEC
 			,ZS_METAMETHOD_BYTE_CODE_PRE_INC
@@ -60,34 +60,34 @@ namespace zetscript{
 			case ZS_METAMETHOD_BYTE_CODE_SET:
 				info.setters=&setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_ADD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_ADD_ST:
 				info.setters=&add_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SUB_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SUB_ST:
 				 info.setters=&sub_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_MUL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MUL_ST:
 				info.setters=&mul_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_DIV_SET:
+			case ZS_METAMETHOD_BYTE_CODE_DIV_ST:
 				info.setters=&div_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_MOD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MOD_ST:
 				info.setters=&mod_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_AND_SET:
+			case ZS_METAMETHOD_BYTE_CODE_AND_ST:
 				info.setters=&and_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_OR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_OR_ST:
 				info.setters=&or_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_XOR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_XOR_ST:
 				info.setters=&xor_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SHL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHL_ST:
 				info.setters=&shl_setters;
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SHR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHR_ST:
 				info.setters=&shr_setters;
 				break;
 			default:
@@ -190,34 +190,34 @@ namespace zetscript{
 			case ZS_METAMETHOD_BYTE_CODE_SET:
 				setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_ADD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_ADD_ST:
 				add_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SUB_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SUB_ST:
 				sub_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_MUL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MUL_ST:
 				mul_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_DIV_SET:
+			case ZS_METAMETHOD_BYTE_CODE_DIV_ST:
 				div_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_MOD_SET:
+			case ZS_METAMETHOD_BYTE_CODE_MOD_ST:
 				mod_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_AND_SET:
+			case ZS_METAMETHOD_BYTE_CODE_AND_ST:
 				and_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_OR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_OR_ST:
 				or_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_XOR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_XOR_ST:
 				xor_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SHL_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHL_ST:
 				shl_setters.push_back(stk);
 				break;
-			case ZS_METAMETHOD_BYTE_CODE_SHR_SET:
+			case ZS_METAMETHOD_BYTE_CODE_SHR_ST:
 				shr_setters.push_back(stk);
 				break;
 			default:

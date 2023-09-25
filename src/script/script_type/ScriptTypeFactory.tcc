@@ -798,7 +798,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_ADD_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_ADD_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -839,7 +839,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SUB_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_SUB_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -880,7 +880,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MUL_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_MUL_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -921,7 +921,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_DIV_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_DIV_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -962,7 +962,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MOD_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_MOD_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1003,7 +1003,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_AND_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_AND_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1044,7 +1044,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_OR_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_OR_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1085,7 +1085,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_XOR_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_XOR_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1126,7 +1126,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHL_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_SHL_ST
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1167,7 +1167,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHR_SET
+			 ,ZS_METAMETHOD_BYTE_CODE_SHR_ST
 			,&params
 			,params_len
 			,idx_script_type_return

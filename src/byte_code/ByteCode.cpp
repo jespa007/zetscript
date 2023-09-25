@@ -9,16 +9,16 @@ namespace zetscript{
 
 	const char * byte_code_to_str(ByteCode _byte_code){
 		switch(_byte_code){
-			case ZS_BYTE_CODE_EQU:        							return "EQU";  // ==
+			case ZS_BYTE_CODE_EQU:        						return "EQU";  // ==
 			case ZS_BYTE_CODE_INSTANCEOF:  						return "INSTANCEOF";  // ==
 			case ZS_BYTE_CODE_NOT_EQU:     						return "NOT_EQU" ;  // !=
 			case ZS_BYTE_CODE_LT:          						return "LT";  // <
 			case ZS_BYTE_CODE_LTE:         						return "LTE";  // <=
 			case ZS_BYTE_CODE_NOT:         						return "NOT"; // !
 			case ZS_BYTE_CODE_GT:          						return "GT";  // >
-			case ZS_BYTE_CODE_GTE:        							return "GTE"; // >=
+			case ZS_BYTE_CODE_GTE:        						return "GTE"; // >=
 			case ZS_BYTE_CODE_NEG:         						return "NEG"; // !
-			case ZS_BYTE_CODE_BWC:					return "BWC"; // ~
+			case ZS_BYTE_CODE_BWC:								return "BWC"; // ~
 			case ZS_BYTE_CODE_ADD:         						return "ADD"; // +
 			case ZS_BYTE_CODE_SUB:         						return "SUB"; // -
 			case ZS_BYTE_CODE_LOGIC_AND:   						return "LOGIC_AND"; // &&
@@ -27,21 +27,21 @@ namespace zetscript{
 			case ZS_BYTE_CODE_MUL:         						return "MUL"; // *
 			case ZS_BYTE_CODE_MOD:         						return "MOD";  // %
 			case ZS_BYTE_CODE_BITWISE_AND:         				return "AND"; // bitwise logic and
-			case ZS_BYTE_CODE_BITWISE_OR:         					return "OR"; // bitwise logic or
+			case ZS_BYTE_CODE_BITWISE_OR:         				return "OR"; // bitwise logic or
 			case ZS_BYTE_CODE_BITWISE_XOR:         				return "XOR"; // logic xor
 			case ZS_BYTE_CODE_SHL:         						return "SHL"; // shift left
 			case ZS_BYTE_CODE_SHR:         						return "SHR"; // shift right
 			case ZS_BYTE_CODE_STORE:       						return "STORE"; // =
-			case ZS_BYTE_CODE_ADD_STORE:       					return "STORE_ADD"; // +=
-			case ZS_BYTE_CODE_SUB_STORE:       					return "STORE_SUB"; // -=
-			case ZS_BYTE_CODE_MUL_STORE:       					return "STORE_MUL"; // *=
-			case ZS_BYTE_CODE_DIV_STORE:       					return "STORE_DIV"; // /=
-			case ZS_BYTE_CODE_MOD_STORE:       					return "STORE_MOD"; // %=
-			case ZS_BYTE_CODE_BITWISE_AND_STORE:      				return "STORE_AND"; // &=
-			case ZS_BYTE_CODE_BITWISE_OR_STORE: 	   				return "STORE_OR"; // |=
-			case ZS_BYTE_CODE_BITWISE_XOR_STORE: 	   				return "STORE_XOR"; // ^=
-			case ZS_BYTE_CODE_SHL_STORE: 	      					return "STORE_SHL"; // <<=
-			case ZS_BYTE_CODE_SHR_STORE: 	      					return "STORE_SHR"; // >>=
+			case ZS_BYTE_CODE_ADD_ST:       						return "ADD_ST"; // +=
+			case ZS_BYTE_CODE_SUB_ST:       						return "SUB_ST"; // -=
+			case ZS_BYTE_CODE_MUL_ST:       						return "MUL_ST"; // *=
+			case ZS_BYTE_CODE_DIV_ST:       						return "DIV_ST"; // /=
+			case ZS_BYTE_CODE_MOD_ST:       						return "MOD_ST"; // %=
+			case ZS_BYTE_CODE_BITWISE_AND_ST:      				return "AND_ST"; // &=
+			case ZS_BYTE_CODE_BITWISE_OR_ST: 	   				return "OR_ST"; // |=
+			case ZS_BYTE_CODE_BITWISE_XOR_ST: 	   				return "XOR_ST"; // ^=
+			case ZS_BYTE_CODE_SHL_ST: 	      					return "SHL_ST"; // <<=
+			case ZS_BYTE_CODE_SHR_ST: 	      					return "SHR_ST"; // >>=
 			case ZS_BYTE_CODE_PUSH_STK_GLOBAL_IRGO:				return "PUSH_STK_GLOBAL_IRGO"; // load type var
 			case ZS_BYTE_CODE_PUSH_STK_GLOBAL:						return "PUSH_STK_GLOBAL"; // push stk global
 			case ZS_BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
@@ -146,16 +146,16 @@ namespace zetscript{
 			case ZS_BYTE_CODE_SHL:         			return ">>"; // shift left
 			case ZS_BYTE_CODE_SHR:         			return "<<"; // shift right
 			case ZS_BYTE_CODE_STORE:       			return "="; // =
-			case ZS_BYTE_CODE_ADD_STORE:       		return "+="; // +=
-			case ZS_BYTE_CODE_SUB_STORE:       		return "-="; // -=
-			case ZS_BYTE_CODE_MUL_STORE:       		return "*="; // *=
-			case ZS_BYTE_CODE_DIV_STORE:       		return "/="; // /=
-			case ZS_BYTE_CODE_MOD_STORE:       		return "%="; // %=
-			case ZS_BYTE_CODE_BITWISE_AND_STORE:   	return "&="; // &=
-			case ZS_BYTE_CODE_BITWISE_OR_STORE: 		return "|="; // |=
-			case ZS_BYTE_CODE_BITWISE_XOR_STORE: 		return "^="; // ^=
-			case ZS_BYTE_CODE_SHL_STORE: 	      		return ">>="; // <<=
-			case ZS_BYTE_CODE_SHR_STORE: 	      		return "<<="; // >>=
+			case ZS_BYTE_CODE_ADD_ST:       		return "+="; // +=
+			case ZS_BYTE_CODE_SUB_ST:       		return "-="; // -=
+			case ZS_BYTE_CODE_MUL_ST:       		return "*="; // *=
+			case ZS_BYTE_CODE_DIV_ST:       		return "/="; // /=
+			case ZS_BYTE_CODE_MOD_ST:       		return "%="; // %=
+			case ZS_BYTE_CODE_BITWISE_AND_ST:   	return "&="; // &=
+			case ZS_BYTE_CODE_BITWISE_OR_ST: 		return "|="; // |=
+			case ZS_BYTE_CODE_BITWISE_XOR_ST: 		return "^="; // ^=
+			case ZS_BYTE_CODE_SHL_ST: 	      		return ">>="; // <<=
+			case ZS_BYTE_CODE_SHR_ST: 	      		return "<<="; // >>=
 			case ZS_BYTE_CODE_LOAD_GLOBAL:				return "LOAD_GLOBAL"; // load type var
 			case ZS_BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case ZS_BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var
