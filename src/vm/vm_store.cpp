@@ -18,7 +18,7 @@ namespace zetscript{
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
 		ScriptObject 				*		so_aux=NULL;
-		StackElementMemberProperty 		*		stk_mp_aux=NULL;
+		StackElementMemberProperty 	*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
 		Instruction					*		instruction=_instruction;
@@ -65,7 +65,7 @@ namespace zetscript{
 			ZS_VM_STOP_EXECUTEF("Assignment to constant variable");
 		}
 
-		// store through metamethod
+		// check if operand has setter metamethod/s
 		store_lst_setter_functions=NULL;
 
 		if(ZS_STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
@@ -88,6 +88,7 @@ namespace zetscript{
 		}
 
 		if(store_lst_setter_functions!=NULL){
+			// store through setter metamethod
 
 			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
@@ -101,7 +102,7 @@ namespace zetscript{
 				so_aux=(ClassScriptObject *)stk_dst->value;
 			}
 			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
-			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
+			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter different parameter types
 
 				Symbol * symbol_setter = NULL;
 				if(stk_mp_aux==NULL){
@@ -199,7 +200,8 @@ namespace zetscript{
 			}\
 			data->vm_stk_current=stk_vm_start;
 
-		}else{ // store through script assignment
+		}else{
+			// store through byte code
 
 			if((stk_src->properties & ZS_STK_PROPERTY_PTR_STK)!=0) {
 				stk_src=(StackElement *)stk_src->value; // value is expect to contents a stack variable
@@ -332,6 +334,7 @@ namespace zetscript{
 				){
 
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
+				dst_container_slot=NULL; // because old_stk_dst had reference to dst_container now it sets as NULL to no be freed twice
 #ifdef __ZS_LOG_CONTAINER_SLOT__
 				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).c_str());
 #endif
