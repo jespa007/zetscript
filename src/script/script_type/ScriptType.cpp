@@ -713,24 +713,18 @@ namespace zetscript{
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
+		const char *const_symbol_name=symbol_name.c_str();
+		int i = (int)(symbol_functions->size()-1);
 
-		for(
-				int i = (int)(symbol_functions->size()-1);
-				i >= idx_end
-				; i--
-		){
-			Symbol *member_symbol=(Symbol *)symbol_functions->get(i);
-			if(member_symbol->name == symbol_name){
-				if(only_symbol){
-					return member_symbol;
-				}
-
+		while(i >= idx_end){
+			Symbol *member_symbol=symbol_functions->data()[i];
+			if(strcmp(member_symbol->name.c_str(),const_symbol_name)==0){
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if(((n_params==(int8_t)sf->params_len) || (n_params==ZS_NO_PARAMS_SYMBOL_ONLY))
-				 ){
+				if(only_symbol || (n_params==(int8_t)sf->params_len)){
 					return member_symbol;
 				}
 			}
+			i--;
 		}
 
 		return NULL;
