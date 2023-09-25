@@ -178,6 +178,7 @@ namespace zetscript{
 				)
 			);
 
+			// add extra pop scope at the end in case there's a break and it has to pop for local variables
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
 						ZS_BYTE_CODE_POP_SCOPE
@@ -289,6 +290,7 @@ namespace zetscript{
 					)
 			);
 
+			// Insert pop scope declared variables in the do-while in case break instruction is found
 			eval_data->current_function->eval_instructions.push_back(
 					new EvalInstruction(
 						ZS_BYTE_CODE_POP_SCOPE
@@ -806,7 +808,7 @@ namespace zetscript{
 				)
 		);
 
-		// insert extra pop_scope for 'break' cases
+		// insert extra pop_scope for 'break'
 		eval_data->current_function->eval_instructions.push_back(
 				new EvalInstruction(
 					ZS_BYTE_CODE_POP_SCOPE
