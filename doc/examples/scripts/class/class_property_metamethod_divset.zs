@@ -9,11 +9,11 @@ class Number{
 			return this.__value__
 		}
 		
-		_divst(_op1){
+		_divassign(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
 	 			this.__value__ /= _op1;
 	 		}else{
-	 			System::error("Number::value::_divst : right operand not supported");
+	 			System::error("Number::value::_divassign : right operand not supported");
 	 		}
 		}
 	}

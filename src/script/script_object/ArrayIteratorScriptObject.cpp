@@ -34,7 +34,7 @@ namespace zetscript{
 
 		if(idx<sov->length()){
 			// set value
-			stk_value=*((StackElement *)sov->getStackElementByIndex(idx));
+			stk_value=*(sov->getStackElementByIndex(idx));
 		}
 
 		stk_key.value=idx;

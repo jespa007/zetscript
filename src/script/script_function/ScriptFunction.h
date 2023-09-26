@@ -126,7 +126,7 @@ namespace zetscript{
 				, const zs_string & name_script_function
 				, ScriptFunctionParam **_params=NULL
 				,int8_t _params_len=0
-				, int idx_script_type_return=ZS_IDX_UNDEFINED
+				, int idx_script_type_return=ZS_UNDEFINED_IDX
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);

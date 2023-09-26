@@ -102,7 +102,7 @@ namespace zetscript{
 
 	void ScriptFunctionFactory::clear(int _idx_start){
 
-		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+		int idx_start = _idx_start == ZS_UNDEFINED_IDX ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_functions->size()-1;
@@ -117,7 +117,7 @@ namespace zetscript{
 		}
 
 		// clear unresolved symbols for main..
-		if(_idx_start == ZS_IDX_UNDEFINED){
+		if(_idx_start == ZS_UNDEFINED_IDX){
 			((ScriptFunction *)script_functions->get(0))->clearUnresolvedSymbols();
 		}
 	}

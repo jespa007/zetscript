@@ -40,34 +40,34 @@ class Number{
 			--this.__value__;
 			return init_value;
 		}
-		_addst(_val){
+		_addassign(_val){
 			this.__value__+=_val;
 		}
-		_subst(_val){
+		_subassign(_val){
 			this.__value__-=_val;
 		}
-		_mulst(_val){
+		_mulassign(_val){
 			this.__value__*=_val;
 		}
-		_divst(_val){
+		_divassign(_val){
 			this.__value__/=_val;
 		}
-		_modst(_val){
+		_modassign(_val){
 			this.__value__%=_val;
 		}
-		_xorst(_val){
+		_xorassign(_val){
 			this.__value__=Integer::parse(this.__value__)^Integer::parse(_val);
 		}
-		_orst(_val){
+		_orassign(_val){
 			this.__value__=Integer::parse(this.__value__)|Integer::parse(_val);
 		}
-		_andst(_val){
+		_andassign(_val){
 			this.__value__=Integer::parse(this.__value__)&Integer::parse(_val);
 		}
-		_shlst(_val){
+		_shlassign(_val){
 			this.__value__=Integer::parse(this.__value__)<<Integer::parse(_val);
 		}
-		_shrst(_val){
+		_shrassign(_val){
 			this.__value__=Integer::parse(this.__value__)>>Integer::parse(_val);
 		}
 	}
@@ -120,13 +120,13 @@ class Number{
 		return new Number(n1+n2)
 	}
 	
-	_addst(_n1){
+	_addassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__+=_n1
 		}else if( _n1 instanceof Number){
 			this.__value__+=_n1.__value__	
 		}else{
-			System::error("Number::_addst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_addassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -136,13 +136,13 @@ class Number{
 		return new Number(n1-n2)
 	}
 	
-	_subst(_n1){
+	_subassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__-=_n1
 		}else if( _n1 instanceof Number){
 			this.__value__-=_n1.__value__	
 		}else{
-			System::error("Number::_subst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_subassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -153,13 +153,13 @@ class Number{
 	}
 	
 	
-	_mulst(_n1){
+	_mulassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__*=_n1
 		}else if( _n1 instanceof Number){
 			this.__value__*=_n1.__value__	
 		}else{
-			System::error("Number::_mulst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_mulassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -169,13 +169,13 @@ class Number{
 		return new Number(n1/n2)
 	}
 	
-	_divst(_n1){
+	_divassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__/=_n1
 		}else if( _n1 instanceof Number){
 			this.__value__/=_n1.__value__	
 		}else{
-			System::error("Number::_divst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_divassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -185,13 +185,13 @@ class Number{
 		return new Number(n1%n2)
 	}
 	
-	_modst(_n1){
+	_modassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__%=_n1
 		}else if( _n1 instanceof Number){
 			this.__value__%=_n1.__value__	
 		}else{
-			System::error("Number::_modst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_modassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -201,13 +201,13 @@ class Number{
 		return new Number(n1>>n2)
 	}
 	
-	_shrst(_n1){
+	_shrassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__=Integer::parse(this.__value__)>>Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
 			this.__value__=Integer::parse(this.__value__)>>Integer::parse(_n1.__value__)	
 		}else{
-			System::error("Number::_shrst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_shrassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 
@@ -217,13 +217,13 @@ class Number{
 		return new Number(n1<<n2)
 	}
 	
-	_shlst(_n1){
+	_shlassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__=Integer::parse(this.__value__)<<Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
 			this.__value__=Integer::parse(this.__value__)<<Integer::parse(_n1.__value__)	
 		}else{
-			System::error("Number::_shlst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_shlassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -233,13 +233,13 @@ class Number{
 		return new Number(n1&n2)
 	}
 	
-	_andst(_n1){
+	_andassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__=Integer::parse(this.__value__)&Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
 			this.__value__=Integer::parse(this.__value__)&Integer::parse(_n1.__value__)	
 		}else{
-			System::error("Number::_andst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_andassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -249,13 +249,13 @@ class Number{
 		return new Number(n1|n2)
 	}
 	
-	_orst(_n1){
+	_orassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__=Integer::parse(this.__value__)|Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
 			this.__value__=Integer::parse(this.__value__)|Integer::parse(_n1.__value__)	
 		}else{
-			System::error("Number::_orst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_orassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -265,13 +265,13 @@ class Number{
 		return new Number(n1^n2)
 	}
 	
-	_xorst(_n1){
+	_xorassign(_n1){
 		if(isNumber(_n1)){
 			this.__value__=Integer::parse(this.__value__)^Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
 			this.__value__=Integer::parse(this.__value__)^Integer::parse(_n1.__value__)	
 		}else{
-			System::error("Number::_xorst: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_xorassign: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	

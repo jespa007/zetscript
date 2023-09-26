@@ -28,16 +28,16 @@ namespace zetscript{
 			case	ZS_METAMETHOD_BYTE_CODE_SHL:		return  "<<"; 		// bitwise shift left
 			case	ZS_METAMETHOD_BYTE_CODE_SHR:		return  ">>"; 		// bitwise shift right
 			case	ZS_METAMETHOD_BYTE_CODE_SET:		return  "=";		// _set
-			case	ZS_METAMETHOD_BYTE_CODE_ADD_ST:	return  "+=";		// _set_add
-			case	ZS_METAMETHOD_BYTE_CODE_SUB_ST:	return  "-=";		// _set_sub
-			case 	ZS_METAMETHOD_BYTE_CODE_MUL_ST:   return  "*=";		// _mulst
-			case	ZS_METAMETHOD_BYTE_CODE_DIV_ST:	return  "/=";		// _set_div
-			case	ZS_METAMETHOD_BYTE_CODE_MOD_ST:	return  "%=";		// _set_mod
-			case	ZS_METAMETHOD_BYTE_CODE_AND_ST:	return  "&=";		// _set_and
-			case	ZS_METAMETHOD_BYTE_CODE_OR_ST:	return  "|=";		// _set_or
-			case	ZS_METAMETHOD_BYTE_CODE_XOR_ST:	return  "^=";		// _set_xor
-			case	ZS_METAMETHOD_BYTE_CODE_SHL_ST:	return  "<<=";		// _set_shl
-			case	ZS_METAMETHOD_BYTE_CODE_SHR_ST:	return  ">>=";		// _set_shr
+			case	ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:	return  "+=";		// _set_add
+			case	ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:	return  "-=";		// _set_sub
+			case 	ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:   return  "*=";		// _mulassign
+			case	ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:	return  "/=";		// _set_div
+			case	ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:	return  "%=";		// _set_mod
+			case	ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:	return  "&=";		// _set_and
+			case	ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:	return  "|=";		// _set_or
+			case	ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:	return  "^=";		// _set_xor
+			case	ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:	return  "<<=";		// _set_shl
+			case	ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:	return  ">>=";		// _set_shr
 			case	ZS_METAMETHOD_BYTE_CODE_BTWST:	return  "~=";		// _set_btw
 			//case	ZS_METAMETHOD_BYTE_CODE_GET:		return  "_get";		// _get
 			case	ZS_METAMETHOD_BYTE_CODE_TO_STRING: return  "_tostring";// _tostring
@@ -76,17 +76,17 @@ namespace zetscript{
 			case	ZS_METAMETHOD_BYTE_CODE_SHL:		return  "_shl"; 	// bitwise shift left
 			case	ZS_METAMETHOD_BYTE_CODE_SHR:		return  "_shr"; 	// bitwise shift right
 			case	ZS_METAMETHOD_BYTE_CODE_SET:		return  "_set"; 	// _set
-			case	ZS_METAMETHOD_BYTE_CODE_ADD_ST:		return  "_addst";	// _set_add
-			case	ZS_METAMETHOD_BYTE_CODE_SUB_ST:		return  "_subst";	// _set_sub
-			case	ZS_METAMETHOD_BYTE_CODE_MUL_ST:		return  "_mulst";	// _mulst
-			case	ZS_METAMETHOD_BYTE_CODE_DIV_ST:		return  "_divst";	// _set_div
-			case	ZS_METAMETHOD_BYTE_CODE_MOD_ST:		return  "_modst";	// _set_mod
-			case	ZS_METAMETHOD_BYTE_CODE_AND_ST:		return  "_andst";	// _set_and
-			case	ZS_METAMETHOD_BYTE_CODE_OR_ST:		return  "_orst"; 	// _set_or
-			case	ZS_METAMETHOD_BYTE_CODE_XOR_ST:		return  "_xorst";	// _set_xor
-			case	ZS_METAMETHOD_BYTE_CODE_SHL_ST:		return  "_shlst";	// _set_shl
-			case	ZS_METAMETHOD_BYTE_CODE_SHR_ST:		return  "_shrst";	// _set_shr
-			case	ZS_METAMETHOD_BYTE_CODE_BTWST:		return  "_btwst";	// _set_btw
+			case	ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:		return  "_addassign";	// _set_add
+			case	ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:		return  "_subassign";	// _set_sub
+			case	ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:		return  "_mulassign";	// _mulassign
+			case	ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:		return  "_divassign";	// _set_div
+			case	ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:		return  "_modassign";	// _set_mod
+			case	ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:		return  "_andassign";	// _set_and
+			case	ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:		return  "_orassign"; 	// _set_or
+			case	ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:		return  "_xorassign";	// _set_xor
+			case	ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:		return  "_shlassign";	// _set_shl
+			case	ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:		return  "_shrassign";	// _set_shr
+			case	ZS_METAMETHOD_BYTE_CODE_BTWST:		return  "_btwassign";	// _set_btw
 
 			//case	ZS_METAMETHOD_BYTE_CODE_GET:		return  "_get"; 	// _get
 			case	ZS_METAMETHOD_BYTE_CODE_TO_STRING:	return  "_tostring";// _tostring
@@ -113,16 +113,16 @@ namespace zetscript{
 			case ZS_METAMETHOD_BYTE_CODE_NEG:
 			case ZS_METAMETHOD_BYTE_CODE_BWC:
 				return 0;
-			case ZS_METAMETHOD_BYTE_CODE_ADD_ST:
-			case ZS_METAMETHOD_BYTE_CODE_SUB_ST:
-			case ZS_METAMETHOD_BYTE_CODE_MUL_ST:
-			case ZS_METAMETHOD_BYTE_CODE_DIV_ST:
-			case ZS_METAMETHOD_BYTE_CODE_MOD_ST:
-			case ZS_METAMETHOD_BYTE_CODE_AND_ST:
-			case ZS_METAMETHOD_BYTE_CODE_OR_ST:
-			case ZS_METAMETHOD_BYTE_CODE_XOR_ST:
-			case ZS_METAMETHOD_BYTE_CODE_SHL_ST:
-			case ZS_METAMETHOD_BYTE_CODE_SHR_ST:
+			case ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:
+			case ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:
 			case ZS_METAMETHOD_BYTE_CODE_SET:
 			case ZS_METAMETHOD_BYTE_CODE_IN:
 				return 1;

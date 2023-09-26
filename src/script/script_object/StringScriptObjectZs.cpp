@@ -151,18 +151,18 @@ namespace zetscript{
 		return str_out;
 	}
 
-	StringScriptObject * 	StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index){
+	StringScriptObject * 	StringScriptObjectZs_subassignring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index){
 		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
 		str_out->set(zs_strutils::substring(_so->toString(),_start_index, _end_index));
 		return str_out;
 	}
 
-	StringScriptObject * 	StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index){
-		return StringScriptObjectZs_substring(_zs, _so,  _start_index,-1);
+	StringScriptObject * 	StringScriptObjectZs_subassignring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index){
+		return StringScriptObjectZs_subassignring(_zs, _so,  _start_index,-1);
 	}
 
 	StringIteratorScriptObject * StringScriptObjectZs_iter(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_OBJECT_ITERATOR_STRING(_zs,so);
+		return ZS_NEW_OBJECT_ITERATOR_ASSIGNRING(_zs,so);
 	}
 }

@@ -34,7 +34,7 @@ namespace zetscript{
 
 		instruction=(*_instruction_it)-1;
 
-		instruction_store = (instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST)
+		instruction_store = (instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN)
 			||    instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
 			||  instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE;
 
@@ -81,10 +81,22 @@ namespace zetscript{
 	find_element_object:
 
 		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(_script_function,instruction);
+		symbol_function_member=NULL;
 
 		//
 		sc_type=so_aux->getScriptType();
-		symbol_function_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);
+		if(instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0){
+			symbol_function_member=(Symbol *)instruction->value_op2;
+			if(symbol_function_member->name!=str_symbol_aux1){
+				symbol_function_member=NULL;
+			}
+		}
+
+		if(symbol_function_member==NULL){
+			symbol_function_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);
+			instruction->value_op2=(zs_int)symbol_function_member;
+		}
+
 		if(symbol_function_member !=NULL){
 			if(
 				   ((instruction+1)->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM))
@@ -109,19 +121,16 @@ namespace zetscript{
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 				data->vm_stk_current++;
 
-
 			}else{
 				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)so_aux;
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 				data->vm_stk_current++;
 
-
 				// pass symbol
 				data->vm_stk_current->value=(zs_int)symbol_function_member;
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
 				data->vm_stk_current++;
-
 			}
 
 			goto lbl_exit_function_ok;
@@ -234,7 +243,7 @@ namespace zetscript{
 									(instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
 								||	(instruction->byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE)
 								)
-								&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST)==0)
+								&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN)==0)
 						  )
 
 					){
@@ -313,7 +322,7 @@ namespace zetscript{
 		StackElement 		*	stk_result=NULL;
 		Instruction			*	instruction=_instruction;
 
-		if(_offset != (uint8_t)ZS_IDX_UNDEFINED){
+		if(_offset != (uint8_t)ZS_UNDEFINED_IDX){
 			stk_result = _this_object->getBuiltinField(_offset);
 		}
 		if(stk_result != NULL && (stk_result->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY)){
@@ -364,7 +373,7 @@ namespace zetscript{
 								*	stk_dst_ref_value=NULL;
 		uint16_t					stk_src_properties=0;
 		Instruction				*	instruction=_instruction;
-		zs_int						id_slot=ZS_IDX_UNDEFINED;
+		zs_int						id_slot=ZS_UNDEFINED_IDX;
 
 		if(_dst_container_is_object==true){
 

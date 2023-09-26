@@ -40,6 +40,6 @@ namespace zetscript {
 	void throw_exception(const char * in_txt,...){
 		char out_txt[ZS_MAX_STR_BUFFER]={0};
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
-		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
+		throw zs_exception_error("",ZS_UNDEFINED_IDX,out_txt);
 	}
 }

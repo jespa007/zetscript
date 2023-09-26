@@ -114,7 +114,7 @@ namespace zetscript{
 			,ScriptFunctionParam **_params=NULL
 			,int _params_len=0
 			, uint16_t _function_properties=0
-			, int _idx_return_type=ZS_IDX_UNDEFINED
+			, int _idx_return_type=ZS_UNDEFINED_IDX
 			, zs_int _ref_ptr=0
 			, const char * _file=""
 			, short _line=-1

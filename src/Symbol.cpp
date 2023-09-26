@@ -86,7 +86,7 @@ namespace zetscript{
 		str_native_type = "";
 		file="";
 		line=-1;
-		idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
+		idx_position = ZS_UNDEFINED_IDX; // in principle is not on stack
 
 		scope = NULL;
 		n_params = ZS_NO_PARAMS_SYMBOL_ONLY;

@@ -77,8 +77,8 @@ namespace zetscript{
 		// 4. add load/store/reset stack
 		*start_ptr++=Instruction(
 				ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
-			,(uint8_t)ZS_IDX_UNDEFINED
-			,ZS_IDX_UNDEFINED
+			,(uint8_t)ZS_UNDEFINED_IDX
+			,ZS_UNDEFINED_IDX
 			,ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
 		_sf->instruction_source_infos.push_back(new InstructionSourceInfo(
@@ -154,7 +154,7 @@ namespace zetscript{
 		// add return in the end...
 		start_ptr->byte_code=ZS_BYTE_CODE_RET;
 		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-		start_ptr->value_op2=ZS_IDX_UNDEFINED;
+		start_ptr->value_op2=ZS_UNDEFINED_IDX;
 		sf->instruction_source_infos.push_back(NULL);
 
 		eval_instructions->clear();

@@ -11,7 +11,7 @@
 #define SCRIPT_TYPE_MAIN(script_type_factory)							((script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main type
 
 #define SCRIPT_OBJECT_STRING(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_ITERATOR_STRING(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
+#define SCRIPT_OBJECT_ITERATOR_ASSIGNRING(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING))
 //#define SCRIPT_CLASS_DICTIONARY(script_type_factory)					((script_type_factory->script_type_factory)->getScriptType(IDX_TYPE_DICTIONARY))
 #define SCRIPT_OBJECT_ARRAY(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ARRAY))
 #define SCRIPT_OBJECT_ITERATOR_ARRAY(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY))
@@ -182,7 +182,7 @@ namespace zetscript{
 			,short registered_line=-1
 		);
 
-		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);
+		void 	clear(short _idx_start=ZS_UNDEFINED_IDX);
 		void 	saveState();
 
 

@@ -78,13 +78,13 @@ namespace zetscript{
 		zs_string  name_script_function=zs_strutils::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	ScriptFunction(
 				_zs
-				,ZS_IDX_SCRIPT_FUNCTION_EVAL
+				,ZS_SCRIPT_FUNCTION_EVAL_IDX
 				,IDX_TYPE_CLASS_MAIN
 				,-1
 				,name_script_function
 				,function_params_ptr
 				,function_params_len
-				,ZS_IDX_UNDEFINED
+				,ZS_UNDEFINED_IDX
 				,0
 				,0
 		);

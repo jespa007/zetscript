@@ -3,13 +3,13 @@ class Number{
 		this.__value__=_value;
 	} 
 	
- 	_divst(_op1){
+ 	_divassign(_op1){
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			this.__value__ /= _op1;
  		}else if(_op1 instanceof Number){
  			this.__value__ /= _op1.__value__;
  		}else{
- 			System::error("Number::_divst : right operand not supported");
+ 			System::error("Number::_divassign : right operand not supported");
  		}
  	}
  	_tostring(){

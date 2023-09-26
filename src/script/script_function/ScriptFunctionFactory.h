@@ -35,7 +35,7 @@ namespace zetscript{
 				, ScriptFunctionParam **_params
 				,int _params_len
 
-				, int idx_script_type_return=ZS_IDX_UNDEFINED
+				, int idx_script_type_return=ZS_UNDEFINED_IDX
 				, zs_int ref_native_function_ptr=0
 				, unsigned short properties=0
 			);
@@ -43,7 +43,7 @@ namespace zetscript{
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void							setScriptFunction(int idx, ScriptFunction *sf);
 
-			void clear(int _idx_start = ZS_IDX_UNDEFINED);
+			void clear(int _idx_start = ZS_UNDEFINED_IDX);
 			void saveState();
 
 			~ScriptFunctionFactory();

@@ -133,7 +133,7 @@ namespace zetscript{
 				 symbol_aux=NULL;
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
-				 if(instruction->value_op2!=ZS_IDX_UNDEFINED){
+				 if(instruction->value_op2!=ZS_UNDEFINED_IDX){
 					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
 					 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 					 /*if(symbol_aux==NULL){ // it calls overrided function (top-most)

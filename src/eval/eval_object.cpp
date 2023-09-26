@@ -51,7 +51,7 @@ namespace zetscript{
 		eval_instructions->push_back(eval_instruction=new EvalInstruction(
 				byte_code
 				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-				,ZS_IDX_UNDEFINED
+				,ZS_UNDEFINED_IDX
 				,instruction_properties
 		));
 

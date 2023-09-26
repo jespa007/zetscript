@@ -26,7 +26,7 @@ namespace zetscript{
 				);
 			}
 
-			if(idx_script_type==ZS_IDX_UNDEFINED){
+			if(idx_script_type==ZS_UNDEFINED_IDX){
 				ZS_THROW_RUNTIME_ERROR(
 				"Cannot instance script object as native type '%s' because is not registered"
 				,zs_rtti::demangle(typeid(T *).name()).c_str()

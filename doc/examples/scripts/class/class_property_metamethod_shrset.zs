@@ -9,11 +9,11 @@ class Number{
 			return this.__value__
 		}
 		
-		_shrst(_op1){
+		_shrassign(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
 	 			this.__value__ >>= Integer::parse(_op1);
 	 		}else{
-	 			System::error("Number::value::_shrst : right operand not supported");
+	 			System::error("Number::value::_shrassign : right operand not supported");
 	 		}
 		}
 	}

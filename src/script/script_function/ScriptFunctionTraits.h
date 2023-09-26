@@ -243,7 +243,7 @@ namespace zetscript{
 					goto exit_function_traits;
 				}
 
-				if(idx_script_type==ZS_IDX_UNDEFINED){
+				if(idx_script_type==ZS_UNDEFINED_IDX){
 
 					error=zs_strutils::format("Argument %i type '%s' not registered"
 						,i+1

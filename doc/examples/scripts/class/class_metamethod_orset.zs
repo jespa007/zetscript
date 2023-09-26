@@ -3,13 +3,13 @@ class Number{
 		this.__value__=_value;
 	} 
 	
-	_orst(_op1){
+	_orassign(_op1){
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			this.__value__ |= Integer::parse(_op1);
  		}else if(_op1 instanceof Number){
  			this.__value__ |= Integer::parse(_op1.__value__);
  		}else{
- 			System::error("Number::_orst : right operand not supported");
+ 			System::error("Number::_orassign : right operand not supported");
  		}
  	}
  	_tostring(){

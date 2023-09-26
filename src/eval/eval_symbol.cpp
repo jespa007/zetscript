@@ -17,7 +17,7 @@ namespace zetscript{
 		//	, PostOperation post_operation
 	){
 		// PRE:
-		zs_int value = ZS_IDX_UNDEFINED;
+		zs_int value = ZS_UNDEFINED_IDX;
 		ByteCode byte_code=ZS_BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;

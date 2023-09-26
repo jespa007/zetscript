@@ -400,7 +400,7 @@ namespace zetscript{
 
 				new EvalInstruction(
 					ZS_BYTE_CODE_JMP
-					,(uint8_t)ZS_IDX_UNDEFINED
+					,(uint8_t)ZS_UNDEFINED_IDX
 					,2 // +2 jmp instructions by default
 				)
 			);
@@ -412,7 +412,7 @@ namespace zetscript{
 				dst_instructions->push_back(
 					new EvalInstruction(
 						ZS_BYTE_CODE_LOAD_BOOL
-						, (uint8_t)ZS_IDX_UNDEFINED
+						, (uint8_t)ZS_UNDEFINED_IDX
 						,1
 					)
 				);
@@ -428,7 +428,7 @@ namespace zetscript{
 					dst_instructions->push_back(
 						new EvalInstruction(
 							ZS_BYTE_CODE_JMP
-							, (uint8_t)ZS_IDX_UNDEFINED
+							, (uint8_t)ZS_UNDEFINED_IDX
 							,2
 						)
 					);
@@ -439,7 +439,7 @@ namespace zetscript{
 				dst_instructions->push_back(
 					new EvalInstruction(
 						ZS_BYTE_CODE_LOAD_BOOL
-						, (uint8_t)ZS_IDX_UNDEFINED
+						, (uint8_t)ZS_UNDEFINED_IDX
 						,0
 					)
 				);
@@ -465,13 +465,13 @@ namespace zetscript{
 						eval_instruction->vm_instruction.value_op2=idx_jmp_load_false_value-i;
 					}
 
-					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_IDX_UNDEFINED; // mark as undefined due the jmp offset it was assigned
+					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_UNDEFINED_IDX; // mark as undefined due the jmp offset it was assigned
 				}
 				else if((eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 
 					eval_instruction->vm_instruction.value_op2=idx_jmp_load_true_value-i;
 
-					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_IDX_UNDEFINED;  // mark as undefined due the jmp offset it was assigned
+					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_UNDEFINED_IDX;  // mark as undefined due the jmp offset it was assigned
 				}
 			}
 

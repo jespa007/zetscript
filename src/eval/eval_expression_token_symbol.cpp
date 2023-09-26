@@ -382,7 +382,7 @@ namespace zetscript{
 			do{
 				ByteCode byte_code=ZS_BYTE_CODE_INVALID;
 				accessor_name="";
-				zs_int instruction_value2=ZS_IDX_UNDEFINED;
+				zs_int instruction_value2=ZS_UNDEFINED_IDX;
 				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.get(0);
 
 				aux_p=test_aux_p;
@@ -621,7 +621,7 @@ namespace zetscript{
 					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
 					// to allow locate functions in the top most inherited type
 					if(byte_code==ZS_BYTE_CODE_THIS_CALL || byte_code==ZS_BYTE_CODE_SUPER_CALL){
-						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+						instruction_token->vm_instruction.value_op2=ZS_UNDEFINED_IDX;
 					}
 
 

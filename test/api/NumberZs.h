@@ -77,102 +77,102 @@ void NumberZs_set(ZetScript *_zs,Number *_this,Number *_n){
 }
 
 
-void NumberZs_addst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_addassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value+=*_n;
 }
 
-void NumberZs_addst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_addassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value+=_n->value;
 }
 
-void NumberZs_subst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_subassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value-=*_n;
 }
 
-void NumberZs_subst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_subassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value-=_n->value;
 }
 
-void NumberZs_mulst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_mulassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value*=*_n;
 }
 
-void NumberZs_mulst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_mulassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value*=_n->value;
 }
 
-void NumberZs_divst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_divassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value/=*_n;
 }
 
-void NumberZs_divst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_divassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value/=_n->value;
 }
 
-void NumberZs_modst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_modassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=fmod(_this->value,*_n);
 }
 
-void NumberZs_modst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_modassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=fmod(_this->value,_n->value);
 }
 
-void NumberZs_andst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_andassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) & ((zs_int)*_n);
 }
 
-void NumberZs_andst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_andassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) & ((zs_int)_n->value);
 }
 
-void NumberZs_orst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_orassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) | ((zs_int)*_n);
 }
 
-void NumberZs_orst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_orassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) | ((zs_int)_n->value);
 }
 
-void NumberZs_xorst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_xorassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) ^ ((zs_int)*_n);
 }
 
-void NumberZs_xorst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_xorassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) ^ ((zs_int)_n->value);
 }
 
-void NumberZs_shrst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_shrassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) >> ((zs_int)*_n);
 }
 
-void NumberZs_shrst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_shrassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) >> ((zs_int)_n->value);
 }
 
-void NumberZs_shlst(ZetScript *_zs, Number *_this,zs_float *_n){
+void NumberZs_shlassign(ZetScript *_zs, Number *_this,zs_float *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) << ((zs_int)*_n);
 }
 
-void NumberZs_shlst(ZetScript *_zs, Number *_this,Number *_n){
+void NumberZs_shlassign(ZetScript *_zs, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=((zs_int)_this->value) << ((zs_int)_n->value);
 }
@@ -480,63 +480,63 @@ void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 
-// _addst (a.k.a '+=')
-void NumberZs_value_addst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _addassign (a.k.a '+=')
+void NumberZs_value_addassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value+=*_value;
 }
 
 
-// _subst (a.k.a '-=')
-void NumberZs_value_subst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _subassign (a.k.a '-=')
+void NumberZs_value_subassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value-=*_value;
 }
 
-// _mulst (a.k.a '*=')
-void NumberZs_value_mulst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _mulassign (a.k.a '*=')
+void NumberZs_value_mulassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value*=*_value;
 }
 
-// _divst (a.k.a '/=')
-void NumberZs_value_divst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _divassign (a.k.a '/=')
+void NumberZs_value_divassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value/=*_value;
 }
 
-// _modst (a.k.a '%=')
-void NumberZs_value_modst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _modassign (a.k.a '%=')
+void NumberZs_value_modassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=fmod(_this->value,*_value);
 }
 
-// _andst (a.k.a '&=')
-void NumberZs_value_andst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _andassign (a.k.a '&=')
+void NumberZs_value_andassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)&(int)(*_value);
 }
 
-// _orst (a.k.a '|=')
-void NumberZs_value_orst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _orassign (a.k.a '|=')
+void NumberZs_value_orassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)|(int)(*_value);
 }
 
-// _xorst (a.k.a '^=')
-void NumberZs_value_xorst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _xorassign (a.k.a '^=')
+void NumberZs_value_xorassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)^(int)(*_value);
 }
 
-// _shrst (a.k.a '>>=')
-void NumberZs_value_shrst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _shrassign (a.k.a '>>=')
+void NumberZs_value_shrassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)>>(int)(*_value);
 }
 
-// _shlst (a.k.a '<<=')
-void NumberZs_value_shlst(ZetScript *_zs,Number *_this,zs_float *_value){
+// _shlassign (a.k.a '<<=')
+void NumberZs_value_shlassign(ZetScript *_zs,Number *_this,zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->value=(int)(_this->value)<<(int)(*_value);
 }
@@ -608,46 +608,46 @@ void NumberZs_register(ZetScript *_zs){
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *, zs_float *)>(&NumberZs_set));
 	_zs->registerMemberFunction<Number>("_set",static_cast<void (*)(ZetScript *_zs,Number *,Number *)>(&NumberZs_set));
 
-	// _addst  (a.k.a '+=')
-	_zs->registerMemberFunction<Number>("_addst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_addst));
-	_zs->registerMemberFunction<Number>("_addst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_addst));
+	// _addassign  (a.k.a '+=')
+	_zs->registerMemberFunction<Number>("_addassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_addassign));
+	_zs->registerMemberFunction<Number>("_addassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_addassign));
 
-	// _subst  (a.k.a '-=')
-	_zs->registerMemberFunction<Number>("_subst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_subst));
-	_zs->registerMemberFunction<Number>("_subst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_subst));
+	// _subassign  (a.k.a '-=')
+	_zs->registerMemberFunction<Number>("_subassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_subassign));
+	_zs->registerMemberFunction<Number>("_subassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_subassign));
 
-	// _mulst  (a.k.a '*=')
-	_zs->registerMemberFunction<Number>("_mulst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mulst));
-	_zs->registerMemberFunction<Number>("_mulst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mulst));
+	// _mulassign  (a.k.a '*=')
+	_zs->registerMemberFunction<Number>("_mulassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_mulassign));
+	_zs->registerMemberFunction<Number>("_mulassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_mulassign));
 
-	// _divst  (a.k.a '/=')
-	_zs->registerMemberFunction<Number>("_divst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_divst));
-	_zs->registerMemberFunction<Number>("_divst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_divst));
+	// _divassign  (a.k.a '/=')
+	_zs->registerMemberFunction<Number>("_divassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_divassign));
+	_zs->registerMemberFunction<Number>("_divassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_divassign));
 
 
-	// _modst  (a.k.a '%=')
-	_zs->registerMemberFunction<Number>("_modst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_modst));
-	_zs->registerMemberFunction<Number>("_modst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_modst));
+	// _modassign  (a.k.a '%=')
+	_zs->registerMemberFunction<Number>("_modassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_modassign));
+	_zs->registerMemberFunction<Number>("_modassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_modassign));
 
-	// _andst  (a.k.a '&=')
-	_zs->registerMemberFunction<Number>("_andst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_andst));
-	_zs->registerMemberFunction<Number>("_andst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_andst));
+	// _andassign  (a.k.a '&=')
+	_zs->registerMemberFunction<Number>("_andassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_andassign));
+	_zs->registerMemberFunction<Number>("_andassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_andassign));
 
-	// _orst   (a.k.a '|=')
-	_zs->registerMemberFunction<Number>("_orst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_orst));
-	_zs->registerMemberFunction<Number>("_orst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_orst));
+	// _orassign   (a.k.a '|=')
+	_zs->registerMemberFunction<Number>("_orassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_orassign));
+	_zs->registerMemberFunction<Number>("_orassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_orassign));
 
-	// _xorst  (a.k.a '^=')
-	_zs->registerMemberFunction<Number>("_xorst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xorst));
-	_zs->registerMemberFunction<Number>("_xorst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xorst));
+	// _xorassign  (a.k.a '^=')
+	_zs->registerMemberFunction<Number>("_xorassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_xorassign));
+	_zs->registerMemberFunction<Number>("_xorassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_xorassign));
 
-	// _shrst  (a.k.a '>>=')
-	_zs->registerMemberFunction<Number>("_shrst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shrst));
-	_zs->registerMemberFunction<Number>("_shrst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shrst));
+	// _shrassign  (a.k.a '>>=')
+	_zs->registerMemberFunction<Number>("_shrassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shrassign));
+	_zs->registerMemberFunction<Number>("_shrassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shrassign));
 
-	// _shlst  (a.k.a '<<=')
-	_zs->registerMemberFunction<Number>("_shlst",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shlst));
-	_zs->registerMemberFunction<Number>("_shlst",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shlst));
+	// _shlassign  (a.k.a '<<=')
+	_zs->registerMemberFunction<Number>("_shlassign",static_cast<void (*)(ZetScript *_zs,Number *,zs_float *)>(&NumberZs_shlassign));
+	_zs->registerMemberFunction<Number>("_shlassign",static_cast<void (*)(ZetScript *_zs,Number *,Number * )>(&NumberZs_shlassign));
 
 	// _neg (a.k.a '-a')
 	_zs->registerMemberFunction<Number>("_neg",&NumberZs_neg);
@@ -763,35 +763,35 @@ void NumberZs_register(ZetScript *_zs){
 	// _get
 	_zs->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
 	
-	// _addst (a.k.a '+=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_addst",NumberZs_value_addst);
+	// _addassign (a.k.a '+=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_addassign",NumberZs_value_addassign);
 	
-	// _subst (a.k.a '-=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_subst",NumberZs_value_subst);
+	// _subassign (a.k.a '-=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_subassign",NumberZs_value_subassign);
 
-	// _mulst (a.k.a '*=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_mulst",NumberZs_value_mulst);
+	// _mulassign (a.k.a '*=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_mulassign",NumberZs_value_mulassign);
 	
-	// _divst (a.k.a '/=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_divst",NumberZs_value_divst);
+	// _divassign (a.k.a '/=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_divassign",NumberZs_value_divassign);
 	
-	// _modst (a.k.a '%=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_modst",NumberZs_value_modst);
+	// _modassign (a.k.a '%=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_modassign",NumberZs_value_modassign);
 	
-	// _andst  (a.k.a '&=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_andst",NumberZs_value_andst);
+	// _andassign  (a.k.a '&=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_andassign",NumberZs_value_andassign);
 
-	// _orst  (a.k.a '|=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_orst",NumberZs_value_orst);
+	// _orassign  (a.k.a '|=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_orassign",NumberZs_value_orassign);
 
-	// _xorst (a.k.a '^=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_xorst",NumberZs_value_xorst);
+	// _xorassign (a.k.a '^=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_xorassign",NumberZs_value_xorassign);
 
-	// _shrst  (a.k.a '>>=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shrst",NumberZs_value_shrst);
+	// _shrassign  (a.k.a '>>=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shrassign",NumberZs_value_shrassign);
 
-	// _shlst  (a.k.a '<<=')
-	_zs->registerMemberPropertyMetamethod<Number>("value","_shlst",NumberZs_value_shlst);
+	// _shlassign  (a.k.a '<<=')
+	_zs->registerMemberPropertyMetamethod<Number>("value","_shlassign",NumberZs_value_shlassign);
 
 	// _postinc  (a.k.a 'a++')
 	_zs->registerMemberPropertyMetamethod<Number>("value","_postinc",NumberZs_value_postinc);

@@ -122,11 +122,11 @@ namespace zetscript{
 			iload_info="";
 			unsigned idx_instruction=instruction-sfo->instructions;
 
-			if((int8_t)value_op1 != ZS_IDX_UNDEFINED){
+			if((int8_t)value_op1 != ZS_UNDEFINED_IDX){
 				n_ops++;
 			}
 
-			 if(value_op2 != ZS_IDX_UNDEFINED){
+			 if(value_op2 != ZS_UNDEFINED_IDX){
 				 n_ops++;
 			 }
 
@@ -210,7 +210,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(int8_t)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
+					,(int8_t)instruction->value_op1!=ZS_UNDEFINED_IDX?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
 				);
 				break;
 			case ZS_BYTE_CODE_LOAD_BOOL:
@@ -304,7 +304,7 @@ namespace zetscript{
 					?"\t\t":"\t"
 					,symbol_value.c_str()
 					,instruction->properties & ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":
-					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ST? "[STORE]":
+					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN? "[STORE]":
 					instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION?	"[CALL]":""
 				);
 				break;
@@ -359,7 +359,7 @@ namespace zetscript{
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->byte_code==ZS_BYTE_CODE_STACK_CALL?"\t\t":"\t\t\t"
-					,instruction->byte_code==ZS_BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_IDX_UNDEFINED?"??":""
+					,instruction->byte_code==ZS_BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_UNDEFINED_IDX?"??":""
 					,symbol_value.c_str()
 					,ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,ZS_INSTRUCTION_GET_RETURN_COUNT(instruction)
@@ -399,16 +399,16 @@ namespace zetscript{
 					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ZS_BYTE_CODE_ADD_ST:
-			case ZS_BYTE_CODE_SUB_ST:
-			case ZS_BYTE_CODE_MUL_ST:
-			case ZS_BYTE_CODE_DIV_ST:
-			case ZS_BYTE_CODE_MOD_ST:
-			case ZS_BYTE_CODE_BITWISE_AND_ST:
-			case ZS_BYTE_CODE_BITWISE_OR_ST:
-			case ZS_BYTE_CODE_BITWISE_XOR_ST:
-			case ZS_BYTE_CODE_SHL_ST:
-			case ZS_BYTE_CODE_SHR_ST:
+			case ZS_BYTE_CODE_ADD_ASSIGN:
+			case ZS_BYTE_CODE_SUB_ASSIGN:
+			case ZS_BYTE_CODE_MUL_ASSIGN:
+			case ZS_BYTE_CODE_DIV_ASSIGN:
+			case ZS_BYTE_CODE_MOD_ASSIGN:
+			case ZS_BYTE_CODE_BITWISE_AND_ASSIGN:
+			case ZS_BYTE_CODE_BITWISE_OR_ASSIGN:
+			case ZS_BYTE_CODE_BITWISE_XOR_ASSIGN:
+			case ZS_BYTE_CODE_SHL_ASSIGN:
+			case ZS_BYTE_CODE_SHR_ASSIGN:
 			case ZS_BYTE_CODE_PRE_INC:
 			case ZS_BYTE_CODE_PRE_DEC:
 			case ZS_BYTE_CODE_POST_INC:
@@ -776,7 +776,7 @@ namespace zetscript{
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
 				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
 				Symbol *symbol_found=NULL;
-				short idx_sc_found=ZS_IDX_UNDEFINED;
+				short idx_sc_found=ZS_UNDEFINED_IDX;
 
 
 				if(ptr_str_symbol_to_find==NULL){
@@ -789,7 +789,7 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if type
+				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_UNDEFINED_IDX){ // check if type
 
 					// set idx type found
 					unresolved_instruction->value_op2=idx_sc_found;
@@ -850,7 +850,7 @@ namespace zetscript{
 						// 2. load function
 						if(unresolved_instruction->byte_code!=ZS_BYTE_CODE_THIS_CALL){
 
-							if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
+							if(unresolved_instruction->value_op1==(uint8_t)ZS_UNDEFINED_IDX){
 								// if byte code has not defined number of parameters, it loads the function
 								unresolved_instruction->byte_code=ZS_BYTE_CODE_LOAD_FUNCTION;
 							}else{

@@ -18,7 +18,7 @@ namespace zetscript{
 	):ScriptObject(_zs){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_VAR_REF;
 		stk_var_ref.setUndefined();
-		//idx_call=ZS_IDX_UNDEFINED;
+		//idx_call=ZS_UNDEFINED_IDX;
 
 	}
 

@@ -3,13 +3,13 @@ class Number{
 		this.__value__=_value;
 	} 
 	
- 	_andst(_op1){
+ 	_andassign(_op1){
  		if(_op1 instanceof Integer || _op1 instanceof Float){
  			this.__value__ &= Integer::parse(_op1);
  		}else if(_op1 instanceof Number){
  			this.__value__ &= Integer::parse(_op1.__value__);
  		}else{
- 			System::error("Number::_andst : right operand not supported");
+ 			System::error("Number::_andassign : right operand not supported");
  		}
  	}
  	_tostring(){

@@ -203,7 +203,7 @@ namespace zetscript{
 									new EvalInstruction(
 										ZS_BYTE_CODE_STORE_CONST
 										,1
-										,ZS_IDX_UNDEFINED
+										,ZS_UNDEFINED_IDX
 										,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 									)
 							);

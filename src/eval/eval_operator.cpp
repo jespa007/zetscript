@@ -15,25 +15,25 @@ namespace zetscript{
 		case Operator::ZS_OPERATOR_ASSIGN:
 			return ZS_BYTE_CODE_STORE;
 		case Operator::ZS_OPERATOR_ASSIGN_ADD:
-			return ZS_BYTE_CODE_ADD_ST;
+			return ZS_BYTE_CODE_ADD_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SUB:
-			return ZS_BYTE_CODE_SUB_ST;
+			return ZS_BYTE_CODE_SUB_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_MUL:
-			return ZS_BYTE_CODE_MUL_ST;
+			return ZS_BYTE_CODE_MUL_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_DIV:
-			return ZS_BYTE_CODE_DIV_ST;
+			return ZS_BYTE_CODE_DIV_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_MOD:
-			return ZS_BYTE_CODE_MOD_ST;
+			return ZS_BYTE_CODE_MOD_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_XOR:
-			return ZS_BYTE_CODE_BITWISE_XOR_ST;
+			return ZS_BYTE_CODE_BITWISE_XOR_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_AND:
-			return ZS_BYTE_CODE_BITWISE_AND_ST;
+			return ZS_BYTE_CODE_BITWISE_AND_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_OR:
-			return ZS_BYTE_CODE_BITWISE_OR_ST;
+			return ZS_BYTE_CODE_BITWISE_OR_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_LEFT:
-			return ZS_BYTE_CODE_SHL_ST;
+			return ZS_BYTE_CODE_SHL_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_RIGHT:
-			return ZS_BYTE_CODE_SHR_ST;
+			return ZS_BYTE_CODE_SHR_ASSIGN;
 
 		// arithmetic ops
 		case Operator::ZS_OPERATOR_ADD:

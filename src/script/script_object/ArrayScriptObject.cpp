@@ -69,7 +69,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		return (StackElement *)stk_elements.get(_idx);
+		return stk_elements.get(_idx);
 	}
 
 	bool ArrayScriptObject::eraseElementAt( int idx){//onst zs_string & varname){

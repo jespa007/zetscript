@@ -19,7 +19,7 @@ namespace zetscript{
 		zs_vector& operator=(const zs_vector& _vector);
 
 		void 		set( int  _pos, const _T & _element);
-		const _T &	get( int  _pos) const;
+		inline const _T &	get( int  _pos) const;
 		void 		erase( int  _pos);
 		/**
 		 * Insert item at the end

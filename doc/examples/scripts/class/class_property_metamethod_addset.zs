@@ -9,11 +9,11 @@ class Number{
 			return this.__value__
 		}
 		
-		_addst(_op1){
+		_addassign(_op1){
 			if(_op1 instanceof Integer || _op1 instanceof Float){
 	 			this.__value__ += _op1;
 	 		}else{
-	 			System::error("Number::value::_addst : right operand not supported");
+	 			System::error("Number::value::_addassign : right operand not supported");
 	 		}
 		}
 	}

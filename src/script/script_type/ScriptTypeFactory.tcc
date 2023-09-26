@@ -61,13 +61,13 @@ namespace zetscript{
 		ScriptType *sc=NULL;
 		const char * str_script_type_ptr = typeid( T *).name();
 		//int size=script_types->size();
-		int idx_script_type=ZS_IDX_UNDEFINED;
+		int idx_script_type=ZS_UNDEFINED_IDX;
 		Scope * scope = NULL;
 
 
 		checkScriptTypeName(str_script_type);
 
-		if(getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr)!=ZS_IDX_UNDEFINED){
+		if(getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr)!=ZS_UNDEFINED_IDX){
 			ZS_THROW_RUNTIME_ERROR(
 			"Native type '%s' is already registered"
 			,zs_rtti::demangle(typeid( T).name()).c_str()
@@ -75,14 +75,14 @@ namespace zetscript{
 		}
 
 		idx_script_type=script_types->size();
-		scope = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
+		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,str_script_type);
 
 		sc = new ScriptType(zs,idx_script_type,str_script_type,scope,str_script_type_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptTypeOwner(sc);
 
 		// in T there's no script constructor ...
-		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
+		sc->idx_function_member_constructor=ZS_UNDEFINED_IDX;
 		// allow dynamic constructor in function its parameters ...
 		sc->new_native_instance = NULL;
 		sc->delete_native_instance = NULL;
@@ -120,7 +120,7 @@ namespace zetscript{
 
 
 		int idx_register_class = getIdxScriptTypeFromTypeNamePtr(class_name_ptr);
-		if(idx_register_class == ZS_IDX_UNDEFINED) {
+		if(idx_register_class == ZS_UNDEFINED_IDX) {
 			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
 		}
 
@@ -798,7 +798,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_ADD_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -839,7 +839,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SUB_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -880,7 +880,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MUL_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -921,7 +921,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_DIV_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -962,7 +962,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MOD_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1003,7 +1003,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_AND_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1044,7 +1044,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_OR_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1085,7 +1085,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_XOR_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1126,7 +1126,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHL_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return
@@ -1167,7 +1167,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHR_ST
+			 ,ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN
 			,&params
 			,params_len
 			,idx_script_type_return

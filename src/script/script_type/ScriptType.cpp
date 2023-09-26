@@ -27,7 +27,7 @@ namespace zetscript{
 		str_script_type_ptr=NULL;
 		delete_native_instance = NULL;
 		new_native_instance=NULL;
-		idx_function_member_constructor = ZS_IDX_UNDEFINED;
+		idx_function_member_constructor = ZS_UNDEFINED_IDX;
 		idx_script_type=_idx_script_type;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
@@ -539,16 +539,16 @@ namespace zetscript{
 								}
 								break;
 							case ZS_METAMETHOD_BYTE_CODE_SET:
-							case ZS_METAMETHOD_BYTE_CODE_ADD_ST:
-							case ZS_METAMETHOD_BYTE_CODE_SUB_ST:
-							case ZS_METAMETHOD_BYTE_CODE_MUL_ST:
-							case ZS_METAMETHOD_BYTE_CODE_DIV_ST:
-							case ZS_METAMETHOD_BYTE_CODE_MOD_ST:
-							case ZS_METAMETHOD_BYTE_CODE_AND_ST:
-							case ZS_METAMETHOD_BYTE_CODE_OR_ST:
-							case ZS_METAMETHOD_BYTE_CODE_XOR_ST:
-							case ZS_METAMETHOD_BYTE_CODE_SHL_ST:
-							case ZS_METAMETHOD_BYTE_CODE_SHR_ST:
+							case ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:
+							case ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:
 							case ZS_METAMETHOD_BYTE_CODE_PRE_INC: // ++i
 							case ZS_METAMETHOD_BYTE_CODE_PRE_DEC: // --i
 								// ok do not return nothing
@@ -609,16 +609,16 @@ namespace zetscript{
 
 
 					case ZS_METAMETHOD_BYTE_CODE_SET:
-					case ZS_METAMETHOD_BYTE_CODE_ADD_ST:
-					case ZS_METAMETHOD_BYTE_CODE_SUB_ST:
-					case ZS_METAMETHOD_BYTE_CODE_MUL_ST:
-					case ZS_METAMETHOD_BYTE_CODE_DIV_ST:
-					case ZS_METAMETHOD_BYTE_CODE_MOD_ST:
-					case ZS_METAMETHOD_BYTE_CODE_AND_ST:
-					case ZS_METAMETHOD_BYTE_CODE_OR_ST:
-					case ZS_METAMETHOD_BYTE_CODE_XOR_ST:
-					case ZS_METAMETHOD_BYTE_CODE_SHL_ST:
-					case ZS_METAMETHOD_BYTE_CODE_SHR_ST:
+					case ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:
+					case ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:
 
 						info_mp=metamethod_members.getSetterInfo(op);
 

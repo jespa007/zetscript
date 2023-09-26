@@ -328,8 +328,8 @@ namespace zetscript{
 			result=ZS_TYPE_NAME_OBJECT_ARRAY;
 		else if(ZS_STK_IS_OBJECT_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_OBJECT;
-		else if(ZS_STK_IS_ITERATOR_STRING_SCRIPT_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_ITERATOR_STRING;
+		else if(ZS_STK_IS_ITERATOR_ASSIGNRING_SCRIPT_OBJECT(stk))
+			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING;
 		else if(ZS_STK_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY;
 		else if(ZS_STK_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
@@ -768,7 +768,6 @@ namespace zetscript{
 	// Helpers...
 	 StackElement ZetScript::toStackElement(zs_int ptr_var, short idx_builtin_type_var){
 		//zs_int ptr_var = (zs_int)input_var;
-			zs_string s_return_value;
 			StackElement stk_result=k_stk_undefined;
 			StringScriptObject *so=NULL;
 
@@ -829,7 +828,7 @@ namespace zetscript{
 			 case IDX_TYPE_SCRIPT_OBJECT_CLASS:
 			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:
 			 case IDX_TYPE_SCRIPT_OBJECT_STRING:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING:
+			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING:
 				 if(ptr_var==0) return stk_result;
 				stk_result = {
 					 (intptr_t)ptr_var
@@ -1103,7 +1102,7 @@ namespace zetscript{
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		ZS_UNUSUED_PARAM(_idx_start_function);
 		zs_string global_symbol;
-		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
+		int idx_start_variable = _idx_start_variable == ZS_UNDEFINED_IDX ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=ZS_MAIN_SCOPE(this);
 		zs_vector<Symbol *> *local_variables=main_function_object->local_variables;

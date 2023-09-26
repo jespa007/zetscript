@@ -8,7 +8,7 @@ namespace zetscript{
 		Instruction::Instruction(){
 			byte_code=ZS_BYTE_CODE_INVALID;
 			value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-			value_op2=ZS_IDX_UNDEFINED;
+			value_op2=ZS_UNDEFINED_IDX;
 			properties=0;
 		}
 
@@ -138,16 +138,16 @@ namespace zetscript{
 				case ZS_BYTE_CODE_SHR:
 				case ZS_BYTE_CODE_PUSH_ARRAY_ITEM:
 				// byte_code_XXX_store, it pops -2 and push +1 = -1
-				case ZS_BYTE_CODE_ADD_ST:
-				case ZS_BYTE_CODE_SUB_ST:
-				case ZS_BYTE_CODE_MUL_ST:
-				case ZS_BYTE_CODE_DIV_ST:
-				case ZS_BYTE_CODE_MOD_ST:
-				case ZS_BYTE_CODE_BITWISE_AND_ST:
-				case ZS_BYTE_CODE_BITWISE_OR_ST:
-				case ZS_BYTE_CODE_BITWISE_XOR_ST:
-				case ZS_BYTE_CODE_SHL_ST:
-				case ZS_BYTE_CODE_SHR_ST:
+				case ZS_BYTE_CODE_ADD_ASSIGN:
+				case ZS_BYTE_CODE_SUB_ASSIGN:
+				case ZS_BYTE_CODE_MUL_ASSIGN:
+				case ZS_BYTE_CODE_DIV_ASSIGN:
+				case ZS_BYTE_CODE_MOD_ASSIGN:
+				case ZS_BYTE_CODE_BITWISE_AND_ASSIGN:
+				case ZS_BYTE_CODE_BITWISE_OR_ASSIGN:
+				case ZS_BYTE_CODE_BITWISE_XOR_ASSIGN:
+				case ZS_BYTE_CODE_SHL_ASSIGN:
+				case ZS_BYTE_CODE_SHR_ASSIGN:
 					return -1;
 				// pop -1 and push stk +0 = -1
 				case ZS_BYTE_CODE_JNT:

@@ -51,7 +51,7 @@ namespace zetscript{
 		buf=NULL;
 		_size=0;
 		count=0;
-		set("");
+		//set("");
 	}
 
 	zs_string::zs_string(const char * _const_char) // constructor
@@ -151,7 +151,7 @@ namespace zetscript{
     }
 
     void zs_string::clear(){
-    	set("");
+    	__cleanup__();
     }
 
     zs_string zs_string::new_from_two(const char *_s1, const char *_s2) {
@@ -466,7 +466,7 @@ namespace zetscript{
 
 	const char * zs_string::c_str() const
 	{
-		return buf;
+		return buf==NULL?"":buf;
 	}
 
 	void zs_string::__cleanup__()

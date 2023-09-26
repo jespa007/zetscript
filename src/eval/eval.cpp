@@ -77,7 +77,7 @@ namespace zetscript{
 
 		if(_eval_data_from == NULL){
 
-			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
+			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != ZS_SCRIPT_FUNCTION_EVAL_IDX){ // is anonyomuse function
 				if(scope_info->symbol_variables->size() == 0){ // remove scope
 					scope_info->markAsUnusued();
 				}
@@ -126,7 +126,7 @@ namespace zetscript{
 	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _is_block_body_loop){
 		if(scope->symbol_variables->size() > 0 || _is_block_body_loop==true){
 			// if there's local symbols insert push/pop scope
-			if(scope->offset_instruction_push_scope!=ZS_IDX_UNDEFINED){
+			if(scope->offset_instruction_push_scope!=ZS_UNDEFINED_IDX){
 				eval_data->current_function->eval_instructions.insert(
 						scope->offset_instruction_push_scope
 						,
@@ -604,18 +604,18 @@ namespace zetscript{
 
 				break;
 			case ZS_BYTE_CODE_CALL:
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
 					eval_instruction->vm_instruction.byte_code=ZS_BYTE_CODE_UNRESOLVED_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case ZS_BYTE_CODE_THIS_CALL:
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case ZS_BYTE_CODE_INSTANCEOF:
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;

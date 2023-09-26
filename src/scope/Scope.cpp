@@ -17,7 +17,7 @@ namespace zetscript{
 		script_type_owner=NULL;
 		idx_script_function=_idx_script_function;
 		zs=_zs;
-		offset_instruction_push_scope=ZS_IDX_UNDEFINED;
+		offset_instruction_push_scope=ZS_UNDEFINED_IDX;
 		scope_factory=_zs->getScopeFactory();
 		scopes=new zs_vector<Scope *>;
 		symbol_variables=new zs_vector<Symbol *>;
@@ -30,7 +30,7 @@ namespace zetscript{
 			scope_base = scope_parent->scope_base;
 			script_type_owner=scope_parent->script_type_owner; // propagate script type
 
-			if(idx_script_function==ZS_IDX_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
+			if(idx_script_function==ZS_UNDEFINED_IDX){ // May be is a block containing if-else, for, etc --> propagate current script function
 				idx_script_function=scope_parent->idx_script_function;
 			}
 
@@ -154,7 +154,7 @@ namespace zetscript{
 		// check if you register a type...
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS)==0){
-			if(zs->getScriptTypeFactory()->getIdxScriptType(symbol_name) != ZS_IDX_UNDEFINED){
+			if(zs->getScriptTypeFactory()->getIdxScriptType(symbol_name) != ZS_UNDEFINED_IDX){
 				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.c_str());
 			}
 		}

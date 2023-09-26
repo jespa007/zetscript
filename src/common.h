@@ -19,8 +19,8 @@
 //#define __ZS_LOG_CONTAINER_SLOT__
 #endif
 
-#define ZS_IDX_UNDEFINED 						-1
-#define ZS_IDX_SCRIPT_FUNCTION_EVAL				-10
+#define ZS_UNDEFINED_IDX 						-1
+#define ZS_SCRIPT_FUNCTION_EVAL_IDX				-10
 #define ZS_MAX_NATIVE_FUNCTION_ARGS				10
 
 #define ZS_GET_METAMETHOD(m)												((this->zs))->getMetamethod(m)

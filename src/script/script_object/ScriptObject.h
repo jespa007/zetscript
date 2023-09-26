@@ -26,7 +26,7 @@ namespace zetscript{
 
 		ScriptObject(
 				ZetScript 		*	_zs
-				,short _idx_script_type=ZS_IDX_UNDEFINED
+				,short _idx_script_type=ZS_UNDEFINED_IDX
 		);
 
 		Symbol 								*	getGetter();

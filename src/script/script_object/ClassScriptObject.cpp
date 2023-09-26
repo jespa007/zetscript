@@ -127,7 +127,7 @@ namespace zetscript{
 	ScriptFunction *ClassScriptObject::getConstructorFunction(){
 
 		ScriptType *script_type=getScriptType();
-		if(script_type->idx_function_member_constructor != ZS_IDX_UNDEFINED){
+		if(script_type->idx_function_member_constructor != ZS_UNDEFINED_IDX){
 			return (ScriptFunction *)script_type->scope_script_type->symbol_functions->get(script_type->idx_function_member_constructor);
 		}
 

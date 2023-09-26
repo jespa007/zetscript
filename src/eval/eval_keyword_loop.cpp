@@ -17,7 +17,7 @@ namespace zetscript{
 	//
 	// LOOPS
 	//
-	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=ZS_IDX_UNDEFINED){
+	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=ZS_UNDEFINED_IDX){
 
 		int idx_end_instruction = eval_data->current_function->eval_instructions.size();
 
@@ -28,7 +28,7 @@ namespace zetscript{
 				ins->value_op2=idx_end_instruction-i-1; // -1 is for jmp to extra POP SCOPE, due it does PUSH SCOPE ALWAYS in the loops
 			}else if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-				if(idx_post_instruction_for_start != ZS_IDX_UNDEFINED){
+				if(idx_post_instruction_for_start != ZS_UNDEFINED_IDX){
 					ins->value_op2=idx_post_instruction_for_start-i;
 				}
 				else{
@@ -318,9 +318,9 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		Keyword key_w;
 		bool is_for_in=false;
-		int idx_instruction_for_start= ZS_IDX_UNDEFINED
-			  ,idx_instruction_for_after_jnz_condition= ZS_IDX_UNDEFINED
-			,idx_post_instruction_for_start= ZS_IDX_UNDEFINED;
+		int idx_instruction_for_start= ZS_UNDEFINED_IDX
+			  ,idx_instruction_for_after_jnz_condition= ZS_UNDEFINED_IDX
+			,idx_post_instruction_for_start= ZS_UNDEFINED_IDX;
 
 		EvalInstruction *ei_jnt=NULL; // conditional to end block
 		zs_vector<EvalInstruction *> ei_post_operations
@@ -562,8 +562,8 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back(
 						ei_aux=new EvalInstruction(
 							ZS_BYTE_CODE_IT_INIT
-							, (uint8_t)(ZS_IDX_UNDEFINED)
-							,ZS_IDX_UNDEFINED
+							, (uint8_t)(ZS_UNDEFINED_IDX)
+							,ZS_UNDEFINED_IDX
 							,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 					)
 				);
@@ -580,7 +580,7 @@ namespace zetscript{
 
 				// load object end symbol
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,(uint8_t)ZS_UNDEFINED_IDX,ZS_UNDEFINED_IDX,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_end");
 
@@ -613,7 +613,7 @@ namespace zetscript{
 
 				// load _get member function
 				eval_data->current_function->eval_instructions.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM, (uint8_t)ZS_UNDEFINED_IDX,ZS_UNDEFINED_IDX,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_get");
@@ -639,7 +639,7 @@ namespace zetscript{
 					new EvalInstruction(
 							ZS_BYTE_CODE_STORE
 							,(uint8_t)ei_init_vars_for.size()
-							,ZS_IDX_UNDEFINED
+							,ZS_UNDEFINED_IDX
 							,ZS_INSTRUCTION_PROPERTY_RESET_STACK
 					)
 				);
@@ -651,7 +651,7 @@ namespace zetscript{
 
 				// load object end symbol
 				ei_post_operations.push_back(
-					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM,ZS_IDX_UNDEFINED,ZS_IDX_UNDEFINED,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
+					ei_aux=new EvalInstruction(ZS_BYTE_CODE_LOAD_OBJECT_ITEM, (uint8_t)ZS_UNDEFINED_IDX,ZS_UNDEFINED_IDX,ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)
 				);
 
 				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_next");

@@ -143,7 +143,7 @@ namespace zetscript{
 				return false;
 			}
 		}else if(i1->vm_instruction.byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE){
-			if(load_value_op2 == ZS_IDX_UNDEFINED){
+			if(load_value_op2 == ZS_UNDEFINED_IDX){
 				ScriptType *sc=NULL;
 				if(
 					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
@@ -533,7 +533,7 @@ namespace zetscript{
 					instruction=new EvalInstruction(
 							byte_code
 							,load_value_op2_2
-							,ZS_IDX_UNDEFINED
+							,ZS_UNDEFINED_IDX
 							,ZS_INSTRUCTION_PROPERTY_ILOAD_R | (
 									load_byte_code_2 == ZS_BYTE_CODE_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0

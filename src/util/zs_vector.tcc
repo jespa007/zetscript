@@ -90,7 +90,7 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::set(int _pos, const _T & _val){
-		if (_pos<0 || _pos >= this->size()) {
+		if ((size_t)_pos>=(size_t)this->_size) {
 			ZS_THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
 		}
@@ -98,8 +98,8 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	const _T &	zs_vector<_T>::get(int  _pos) const{
-		if (_pos<0 ||_pos >= this->size()) {
+	inline const _T &	zs_vector<_T>::get(int  _pos) const{
+		if ((size_t)_pos>=(size_t)this->_size) {
 			ZS_THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}
 		return this->items[_pos];
@@ -107,7 +107,7 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::erase(int  _pos){
-		if (_pos<0 ||_pos >= this->size()) {
+		if ((size_t)_pos>=(size_t)this->_size) {
 			ZS_THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
 		}
@@ -122,7 +122,7 @@ namespace zetscript{
 	template<typename _T>
 	_T zs_vector<_T>::pop_back(){
 		_T item;
-		if (this->size()==0) {
+		if (count==0) {
 			ZS_THROW_RUNTIME_ERRORF("no elements");
 			return 0;
 		}

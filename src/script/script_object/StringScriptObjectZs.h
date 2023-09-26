@@ -30,8 +30,8 @@ namespace zetscript{
 	StringScriptObject * 			StringScriptObjectZs_toUpperCase(ZetScript *_zs,StringScriptObject *so);
 	StringScriptObject * 			StringScriptObjectZs_toLowerCase(ZetScript *_zs,StringScriptObject *so);
 
-	StringScriptObject * 			StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index);
-	StringScriptObject * 			StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index);
+	StringScriptObject * 			StringScriptObjectZs_subassignring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index);
+	StringScriptObject * 			StringScriptObjectZs_subassignring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index);
 
 
 	StringIteratorScriptObject *	StringScriptObjectZs_iter(ZetScript *_zs,StringScriptObject *_str_in);
