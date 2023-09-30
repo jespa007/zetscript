@@ -124,9 +124,9 @@ int main(int argc, char * argv[]) {
 				zetscript::zs_string filename=ex.getFilename();
 				int line=ex.getLine();
 				if(filename !="" && line!=-1){
-					fprintf(stderr,"[%s:%i] %s\n", filename.c_str(),line,ex.what());
+					fprintf(stderr,ZS_FORMAT_FILE_LINE" %s\n", filename.c_str(),line,ex.what());
 				}else if(line!=-1){
-					fprintf(stderr,"[%i] %s\n",line,ex.what());
+					fprintf(stderr,ZS_FORMAT_LINE" %s\n",line,ex.what());
 				}else{
 					fprintf(stderr,"%s\n",ex.what());
 				}

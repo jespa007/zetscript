@@ -259,7 +259,9 @@ Solved issues
 - #346 ZetScript it can allow register two same C++ types 
 - #350 Extend from script from native type should be instantiable 
 - #353 Memory peak on exit for-in 
-> #352 Slow for.zs 
+- #355 Constant comparison string vs integer it throws a internal error that is not show 
+- #357 Change SET to ASSIGN to have a better concept of assignment instead of set.
+> #356 When call is not possible for incompatible binding when it prints possible candidates add TEXT if function is MEMBER or STATIC
 
 ---
 Version: 1.3.0

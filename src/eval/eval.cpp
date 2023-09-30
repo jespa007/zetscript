@@ -352,13 +352,10 @@ namespace zetscript{
 							eval_data->error_line=ex.getLine();
 							eval_data->str_error=zs_strutils::format(
 									"%s \n"
-									"[%s:%i] from import '%s'"
+									ZS_FORMAT_FILE_LINE" from import '%s'"
 									,ex.what()
 									,zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str()
 							);
-							//sprintf(eval_data->str_error,"%s\n",ex.getDescription());
-							//sprintf(eval_data->str_aux_error,"[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
-							//strcat(eval_data->str_error,eval_data->str_aux_error);//+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							return 0;
 						}
 

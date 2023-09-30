@@ -303,7 +303,7 @@ namespace zetscript{
 					// because is same references, it has to be not dereferenced
 					unref_old_stk_script_object=false;
 #ifdef __ZS_LOG_CONTAINER_SLOT__
-					printf("[%s:%i] Warning assigning same object %p type %s\n"
+					printf(ZS_FORMAT_FILE_LINE" Warning assigning same object %p type %s\n"
 							,SFI_GET_FILE(_script_function,instruction)\
 							,SFI_GET_LINE(_script_function,instruction)\
 							,(void *)so_aux

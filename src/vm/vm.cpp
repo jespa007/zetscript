@@ -422,7 +422,7 @@ namespace zetscript{
 				end="";
 
 				if(info->file != 0 && *info->file!=0){
-					created_at=zs_strutils::format(" at [%s:%i]",zs_path::get_filename(info->file).c_str(),info->line);
+					created_at=zs_strutils::format(" at " ZS_FORMAT_FILE_LINE,zs_path::get_filename(info->file).c_str(),info->line);
 				}else{
 					created_at=" at [??:??]";
 					some_registers_without_file_line=true;

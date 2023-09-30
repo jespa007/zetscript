@@ -39,7 +39,6 @@ namespace zetscript{
 		return false;
 	}
 
-
 	// eval operator expression only evaluates expression with normal operators (+,-,>>,<<,etc) respecting always its preference. Assign operators (=,+=,-=,etc) should be extracted
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
@@ -106,6 +105,10 @@ namespace zetscript{
 			,properties
 		);
 
+		//------------------------------------------------------------------------------------
+		// OPTIMIZATION PART: Try to simplify 2 ops into one op
+
+
 		// TODO: IF BOOLEAN EXPRESSION AND OP IS LOGICAL_AND OR LOGICAL_OR, INSERT JT/JMP
 		bool two_last_instructions_are_constants=eval_two_last_instruction_are_constants(eval_instructions);
 		custom_insert_instruction=false;
@@ -143,74 +146,6 @@ namespace zetscript{
 			,idx_end
 			,properties
 		);
-
-		//------------------------------------------------------------------------------------
-		// OPTIMIZATION PART: Try to simplify 2 ops into one op
-		//byte_code=convert_operator_to_byte_code(split_node->operator_type);
-
-		/*custom_insert_instruction=false;
-		if((split_node->operator_type == ZS_OPERATOR_LOGIC_AND) && (two_last_instructions_are_constants==false)){
-
-			int insert_at=-1;//eval_instructions->size()-1;
-			int consecutive_logical_operators=0;
-			for(int i=eval_instructions->size()-1; i >= idx_start_eval_instructions; i--){
-				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
-				if(IS_BYTE_BOOLEAN_OP(current_instruction->vm_instruction.byte_code)){
-
-					if(consecutive_logical_operators==1){
-						insert_at=i+1;
-						break;
-					}
-
-					consecutive_logical_operators++;
-				}
-			}
-
-			if(insert_at!=-1){
-
-				// insert JT/acording type of JNT, the jump for next or
-				eval_instructions->insert(insert_at,
-					(zs_int)(eval_instruction=new EvalInstruction(
-						ZS_BYTE_CODE_JNT
-						,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
-					))
-				);
-
-				custom_insert_instruction=true;
-
-				logical_and_jnt->push_back((zs_int)eval_instruction);
-			}
-
-
-		}else if((split_node->operator_type == ZS_OPERATOR_LOGIC_OR) && (two_last_instructions_are_constants==false)){
-
-			//search two consecutives compare byte codes from current
-			int consecutive_logical_operators=0;
-
-			for(int i=eval_instructions->size()-1; i >= idx_start_eval_instructions && consecutive_logical_operators<2; i--){
-				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
-				// reset consecutive each JNT NEXT OR found
-				if((current_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_JNT) && (current_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
-					consecutive_logical_operators=0;
-				}else if(IS_BYTE_BOOLEAN_OP(current_instruction->vm_instruction.byte_code)){
-					consecutive_logical_operators++;
-
-					if(consecutive_logical_operators==2){ // found the gap, insert JT
-						custom_insert_instruction=true;
-						eval_instructions->insert(
-							i+1
-							,(zs_int)(eval_instruction=new EvalInstruction(
-									ZS_BYTE_CODE_JT
-									,ZS_IDX_INSTRUCTION_JT_LOGIC_OK
-							))
-						);
-
-						logical_or_jt->push_back((zs_int)eval_instruction);
-
-					}
-				}
-			}
-		}*/
 
 		if(custom_insert_instruction ==false){
 			if((eval_instruction=eval_expression_optimize(eval_data,scope,split_node, eval_instructions))==NULL){

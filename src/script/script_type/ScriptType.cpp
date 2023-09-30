@@ -189,7 +189,7 @@ namespace zetscript{
 					what="it conflicts with member variable";
 				}
 			}
-			ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
+			ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Property '%s' %s at " ZS_FORMAT_FILE_LINE
 				,attrib_name.c_str()
 				,what
 				,zs_path::get_filename(symbol_member_property->file).c_str()
@@ -328,7 +328,7 @@ namespace zetscript{
 
 					// check whether the function was declared at the same class
 					if(existing_sf->scope_script_function->script_type_owner == this){
-						ZS_THROW_EXCEPTION("Member function '%s' is already defined at [%s:%i]"
+						ZS_THROW_EXCEPTION("Member function '%s' is already defined at " ZS_FORMAT_FILE_LINE
 							,_function_name.c_str()
 							//,zs_path::get_filename(_file).c_str()
 							//,_line

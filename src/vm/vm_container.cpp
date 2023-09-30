@@ -123,6 +123,21 @@ namespace zetscript{
 				data->vm_stk_current++;
 
 			}else{
+
+				if(symbol_function_member->properties & ZS_SYMBOL_PROPERTY_STATIC){
+					ZS_VM_STOP_EXECUTE(
+						"Cannot perform call function member [ ... %s.%s(...) ] because '%s' is defined as static in '%s::%s'. You need to use static call (i.e '%s::%s(...)') instead "
+						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
+						,symbol_function_member->name.c_str()
+						,symbol_function_member->name.c_str()
+						,sc_type->getTypeName()
+						,symbol_function_member->name.c_str()
+						,sc_type->getTypeName()
+						,symbol_function_member->name.c_str()
+
+					);
+				}
+
 				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)so_aux;
 				data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;

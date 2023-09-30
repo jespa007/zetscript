@@ -8,7 +8,8 @@
 #define ZS_STR_EXPAND(tok) 	#tok
 #define ZS_STR(tok) 		ZS_STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) 	(strcmp(a,b) R 0)
-#define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
+#define ZS_FORMAT_FILE_LINE	"[%s:%i]"
+#define ZS_FORMAT_LINE		"[line %i]"
 
 // Util to capture args by ...
 #define 	ZS_CAPTURE_VARIABLE_ARGS(_str_out, _str_in)\
