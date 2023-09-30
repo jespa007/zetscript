@@ -126,10 +126,11 @@ namespace zetscript{
 
 				if(symbol_function_member->properties & ZS_SYMBOL_PROPERTY_STATIC){
 					ZS_VM_STOP_EXECUTE(
-						"Cannot perform call function member [ ... %s.%s(...) ] because '%s' is defined as static in '%s::%s'. You need to use static call (i.e '%s::%s(...)') instead "
+						"Cannot call function member [ ... %s.%s(...) ] because '%s' is type '%s' and function member '%s::%s' is defined as static. You need to call as static (i.e '%s::%s(...)')"
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 						,symbol_function_member->name.c_str()
-						,symbol_function_member->name.c_str()
+						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
+						,sc_type->getTypeName()
 						,sc_type->getTypeName()
 						,symbol_function_member->name.c_str()
 						,sc_type->getTypeName()
