@@ -619,16 +619,16 @@ namespace zetscript{
 	){
 		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		zs_string current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
-							zs_strutils::format("[line %i]",_line):
-							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
+							zs_strutils::format(ZS_FORMAT_LINE,_line):
+							zs_strutils::format(ZS_FORMAT_FILE_LINE,zs_path::get_filename(_file).c_str(),_line);
 
 		if(symbol_repeat != NULL){ // symbol found
 
 			ScriptFunction *sf_repeat=NULL;
 
 			zs_string symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
-					zs_strutils::format("[line %i]",_line):
-					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_repeat->file).c_str(),_line);
+					zs_strutils::format(ZS_FORMAT_LINE,_line):
+					zs_strutils::format(ZS_FORMAT_FILE_LINE,zs_path::get_filename(symbol_repeat->file).c_str(),_line);
 
 
 			if(symbol_repeat->properties & ZS_SYMBOL_PROPERTY_FUNCTION){

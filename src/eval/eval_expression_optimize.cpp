@@ -4,8 +4,11 @@
  */
 #define ZS_MAX_REGISTER_LENGTH	128
 
+#define ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(_file,_line,_message,...) \
+	ZS_THROW_EXCEPTION(zs_strutils::format_file_line(_file,_line,_message,__VA_ARGS__).c_str())
 
-#define EVAL_OPERATION_ARITHMETIC(ARITHMETIC_OP) \
+
+#define ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
 	if(i1->byte_code == ZS_BYTE_CODE_LOAD_INT && i2->byte_code == ZS_BYTE_CODE_LOAD_INT){\
 		result_op_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
 		result_bc=ZS_BYTE_CODE_LOAD_INT;\
@@ -22,17 +25,17 @@
 		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
 		result_bc=ZS_BYTE_CODE_LOAD_FLOAT;\
 	}else{\
-		ZS_THROW_EXCEPTION_FILE_LINE(\
-				eval_data->current_parsing_file\
-				,token_operator->line\
-				,"I don't know how to perform arithmetic operation '%s %s %s'"\
-				,i1->getConstantValueOp2ToString().c_str()\
-				,ZS_STR(ARITHMETIC_OP)\
-				,i2->getConstantValueOp2ToString().c_str());\
+		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
+			eval_data->current_parsing_file\
+			,token_operator->line\
+			,"Invalid constant arithmetic operation %s %s %s"\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,ZS_STR(ARITHMETIC_OP)\
+			,i2->getConstantValueOp2ToString().c_str());\
 	}
 
 
-#define EVAL_OPERATION_COMPARE(__COMPARE_OP__) \
+#define ZS_EVAL_CONSTANT_COMPARE_OPERATION(__COMPARE_OP__) \
 	if(i1->byte_code == ZS_BYTE_CODE_LOAD_INT && i2->byte_code == ZS_BYTE_CODE_LOAD_INT){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=ZS_BYTE_CODE_LOAD_BOOL;\
@@ -52,41 +55,44 @@
 		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
 		result_bc=ZS_BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		ZS_THROW_EXCEPTION(\
+		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			eval_data->current_parsing_file\
 			,token_operator->line\
-			,"I don't know how to perform compare operation '%s %s %s'"\
+			,"Invalid constant compare operation %s %s %s"\
 			,i1->getConstantValueOp2ToString().c_str()\
 			,ZS_STR(__COMPARE_OP__)\
-			,i2->getConstantValueOp2ToString().c_str());\
+			,i2->getConstantValueOp2ToString().c_str()\
+		);\
 	}
 
-#define EVAL_OPERATION_BINARY(BINARY_OP) \
+#define ZS_EVAL_CONSTANT_BINARY_OPERATION(BINARY_OP) \
 	if(i1->byte_code == ZS_BYTE_CODE_LOAD_INT && i2->byte_code == ZS_BYTE_CODE_LOAD_INT){\
 		result_op_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
 		result_bc=ZS_BYTE_CODE_LOAD_INT;\
 	}else{\
-		ZS_THROW_EXCEPTION_FILE_LINE(\
-				 eval_data->current_parsing_file\
-				,token_operator->line\
-				,"I don't know how to perform bitwise operation '%s %s %s'"\
-				,i1->getConstantValueOp2ToString().c_str()\
-				,ZS_STR(BINARY_OP)\
-				,i2->getConstantValueOp2ToString().c_str());\
+		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
+			 eval_data->current_parsing_file\
+			,token_operator->line\
+			,"Invalid constant bitwise operation %s %s %s"\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,ZS_STR(BINARY_OP)\
+			,i2->getConstantValueOp2ToString().c_str()\
+		);\
 	}
 
-#define EVAL_OPERATION_LOGIC(LOGIC_OP) \
+#define ZS_EVAL_CONSTANT_LOGIC_OPERATION(LOGIC_OP) \
 	if(i1->byte_code == ZS_BYTE_CODE_LOAD_BOOL && i2->byte_code == ZS_BYTE_CODE_LOAD_BOOL){\
 		result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
 		result_bc=ZS_BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		ZS_THROW_EXCEPTION(\
-				eval_data->current_parsing_file\
-				,token_operator->line\
-				,"I don't know how to perform boolean operation '%s %s %s'"\
-				,i1->getConstantValueOp2ToString().c_str()\
-				,ZS_STR(LOGIC_OP)\
-				,i2->getConstantValueOp2ToString().c_str());\
+		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
+			eval_data->current_parsing_file\
+			,token_operator->line\
+			,"Invalid constant boolean operation %s %s %s"\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,ZS_STR(LOGIC_OP)\
+			,i2->getConstantValueOp2ToString().c_str()\
+		);\
 	}
 
 
@@ -214,15 +220,15 @@ namespace zetscript{
 						,i2->getConstantString().c_str());
 				result_bc=ZS_BYTE_CODE_LOAD_STRING;
 			}else{
-				EVAL_OPERATION_ARITHMETIC(+);
+				ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(+);
 			}
 
 			break;
 		case ZS_BYTE_CODE_SUB:
-			EVAL_OPERATION_ARITHMETIC(-);
+			ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(-);
 			break;
 		case ZS_BYTE_CODE_MUL:
-			EVAL_OPERATION_ARITHMETIC(*);
+			ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(*);
 			break;
 		case ZS_BYTE_CODE_DIV:
 			if(i2->value_op2==0){
@@ -249,12 +255,13 @@ namespace zetscript{
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=ZS_BYTE_CODE_LOAD_FLOAT;
 			}else{
-				ZS_THROW_EXCEPTION_FILE_LINE(
-						eval_data->current_parsing_file
-						,token_operator->line
-						,"I don't know how to perform constant operation '%s / %s'"
-						,i1->getConstantValueOp2ToString().c_str()
-						,i2->getConstantValueOp2ToString().c_str());
+				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
+					eval_data->current_parsing_file
+					,token_operator->line
+					,"Invalid constant arithmetic operation %s / %s"
+					,i1->getConstantValueOp2ToString().c_str()
+					,i2->getConstantValueOp2ToString().c_str()
+				);
 			}
 			break;
 		case ZS_BYTE_CODE_MOD:
@@ -282,56 +289,57 @@ namespace zetscript{
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
 				result_bc=ZS_BYTE_CODE_LOAD_FLOAT;
 			}else{
-				ZS_THROW_EXCEPTION_FILE_LINE(
-						eval_data->current_parsing_file
-						,token_operator->line
-						,"I don't know how to perform constant operation '%s % %s'"
-						,i1->getConstantValueOp2ToString().c_str()
-						,i2->getConstantValueOp2ToString().c_str());
+				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
+					eval_data->current_parsing_file
+					,token_operator->line
+					,"Invalid constant arithmetic operation %s % %s"
+					,i1->getConstantValueOp2ToString().c_str()
+					,i2->getConstantValueOp2ToString().c_str()
+				);
 			}
 			break;
 		// bitwise ops
 		case ZS_BYTE_CODE_BITWISE_AND:
-			EVAL_OPERATION_BINARY(&);
+			ZS_EVAL_CONSTANT_BINARY_OPERATION(&);
 			break;
 		case ZS_BYTE_CODE_BITWISE_OR:
-			EVAL_OPERATION_BINARY(|);
+			ZS_EVAL_CONSTANT_BINARY_OPERATION(|);
 			break;
 		case ZS_BYTE_CODE_BITWISE_XOR:
-			EVAL_OPERATION_BINARY(^);
+			ZS_EVAL_CONSTANT_BINARY_OPERATION(^);
 			break;
 		case ZS_BYTE_CODE_SHL:
-			EVAL_OPERATION_BINARY(<<);
+			ZS_EVAL_CONSTANT_BINARY_OPERATION(<<);
 			break;
 		case ZS_BYTE_CODE_SHR:
-			EVAL_OPERATION_BINARY(>>);
+			ZS_EVAL_CONSTANT_BINARY_OPERATION(>>);
 			break;
 
 		// logic ops
 		case ZS_BYTE_CODE_LOGIC_AND:
-			EVAL_OPERATION_LOGIC(&&);
+			ZS_EVAL_CONSTANT_LOGIC_OPERATION(&&);
 			break;
 		case ZS_BYTE_CODE_LOGIC_OR:
-			EVAL_OPERATION_LOGIC(||);
+			ZS_EVAL_CONSTANT_LOGIC_OPERATION(||);
 			break;
 		// compare op
 		case ZS_BYTE_CODE_LT:
-			EVAL_OPERATION_COMPARE(<);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(<);
 			break;
 		case ZS_BYTE_CODE_GT:
-			EVAL_OPERATION_COMPARE(>);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(>);
 			break;
 		case ZS_BYTE_CODE_GTE:
-			EVAL_OPERATION_COMPARE(>=);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(>=);
 			break;
 		case ZS_BYTE_CODE_LTE:
-			EVAL_OPERATION_COMPARE(<=);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(<=);
 			break;
 		case ZS_BYTE_CODE_EQU:
-			EVAL_OPERATION_COMPARE(==);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(==);
 			break;
 		case ZS_BYTE_CODE_NOT_EQU:
-			EVAL_OPERATION_COMPARE(!=);
+			ZS_EVAL_CONSTANT_COMPARE_OPERATION(!=);
 			break;
 		case ZS_BYTE_CODE_IN:
 			if(ZS_INSTRUCTION_IS_INT(i1) && ZS_INSTRUCTION_IS_STRING(i2)){
@@ -342,32 +350,26 @@ namespace zetscript{
 				result_bc=ZS_BYTE_CODE_LOAD_BOOL;
 			}
 			else{
-				ZS_THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
 					eval_data->current_parsing_file
 					,token_operator->line
-					,"I don't know how to perform constant operation '%s in %s'"
+					,"Invalid constant operation %s in %s"
 					,i1->getConstantValueOp2ToString().c_str()
 					,i2->getConstantValueOp2ToString().c_str()
 				);
 			}
 			break;
 		default:
-			//ZS_THROW_EXCEPTION(zs_strutils::format("cannot perform K '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
 			ZS_THROW_EXCEPTION_FILE_LINE(
 				eval_data->current_parsing_file
 				,token_operator->line
-				,"I don't know how to perform constant operation '%s %s %s'"
+				,"Invalid constant operation %s %s %s"
 				,i1->getConstantValueOp2ToString().c_str()
 				,byte_code_to_operator_str(byte_code)
 				,i2->getConstantValueOp2ToString().c_str()
 			);
 			break;
-/*			break;
-		default:
-			ZS_THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
-			break;*/
 		}
-
 
 		switch(result_bc){
 		default:

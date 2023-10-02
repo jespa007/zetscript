@@ -393,7 +393,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("Type name '%s' is already defined %s"
 						,_str_script_type.c_str()
 						,main_function_symbol->file!=NULL && strcmp(main_function_symbol->file,"")!=0 && main_function_symbol->line!=-1?
-							zs_strutils::format("at [%s:%i]"
+							zs_strutils::format("at " ZS_FORMAT_FILE_LINE
 								,zs_path::get_filename(main_function_symbol->file).c_str()
 								,main_function_symbol->line
 							).c_str():""
