@@ -71,6 +71,40 @@ zs_string(zs_string && _str);
 include::../examples/api/types/zs_string_constructor.cpp[]
 ----
 
+====== zs_string::length()
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+int length() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_length.cpp[]
+----
+
+Output,
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_length_out.txt[]
+----
+
+
 ====== zs_string::operator=()
 
 Assigns a new value to the string, replacing its current contents.
@@ -92,7 +126,6 @@ zs_string& operator=(const char* _s);
 [.underline]#Return#
 
 *this
-
 
 *Example*
 
@@ -123,6 +156,13 @@ zs_string& operator+=(char _char);
 
 *this
 
+*Example*
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_operator_add_assign.cpp[]
+----
+
 ====== zs_string::operator[]()
 
 Returns a reference to the character from a position.
@@ -142,6 +182,11 @@ const char& operator[] (int _pos) const;
 [.underline]#Return#
 
 The character at the specified position in the string.
+
+[source,javascript]
+----
+include::../examples/api/types/zs_string_operator_access.cpp[]
+----
 
 ====== zs_string::at()
 
@@ -353,25 +398,6 @@ None
 [.underline]#Return#
 
 true if the string length is 0, false otherwise.
-
-====== zs_string::length()
-
-Returns the length of the string, in terms of bytes.
-
-*Syntax*
-
-[source,cpp]
-----
-int length() const;
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-The number of bytes in the string.
 
 ====== zs_string::c_str()
 

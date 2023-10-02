@@ -2,13 +2,13 @@
 
 using zetscript::zs_string;
 
-int main(){
+int main(void){
 
 	// empty string
 	zs_string string;
 
 	// initialized string
-	zs_string string="Hello world";
-	
+	zs_string string=zs_string("Hello world");
+
 	return 0;
 }
