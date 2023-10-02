@@ -6,7 +6,6 @@
 
 #include        <stdlib.h>
 #include        <stdio.h>
-#include 		<limits.h>
 
 
 #if defined(__GNUC__)
@@ -16,7 +15,6 @@
 	#include <sys/types.h>
 	#include <unistd.h>
 	#include <memory.h>
-	#include <fcntl.h>
 	#ifdef _WIN32
 		#include <windows.h>
 		#include <stdio.h>
