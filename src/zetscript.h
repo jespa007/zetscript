@@ -40,8 +40,6 @@
 #include        <memory.h>
 #include        <memory>
 #include        <math.h>
-#include		<vector>
-#include		<map>
 #include        <new>
 #include 		<functional>
 #include 		<float.h>
