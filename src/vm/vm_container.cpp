@@ -89,6 +89,7 @@ namespace zetscript{
 		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM)){
 			symbol_function_member=(Symbol *)instruction->value_op2;
 			if(symbol_function_member->name!=str_symbol_aux1){
+				// symbol changed it has to find new symbol
 				symbol_function_member=NULL;
 			}
 		}

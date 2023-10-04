@@ -27,10 +27,10 @@ namespace zetscript{
 
 		if(json::deserialize(&deserialize_data,deserialize_data.str_start,line,&return_stack_element)==NULL){
 			vm_set_error(vm,(zs_string("Error deserialize:")+deserialize_data.str_error).c_str());
-			if(return_stack_element.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *so=(ScriptObject *)return_stack_element.value;
-				vm_unref_shared_script_object(vm,so,NULL);
-			}
+			//if(return_stack_element.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+				//ScriptObject *so=(ScriptObject *)return_stack_element.value;
+				//vm_unref_shared_script_object(vm,so,NULL);
+			//}
 			return_stack_element=k_stk_undefined;
 		}
 

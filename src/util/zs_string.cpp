@@ -463,12 +463,6 @@ namespace zetscript{
 		return count==0;
 	}
 
-
-	const char * zs_string::c_str() const
-	{
-		return buf==NULL?"":buf;
-	}
-
 	void zs_string::__cleanup__()
 	{
 		if (buf != NULL)

@@ -530,6 +530,8 @@ namespace zetscript{
 			switch(_idx_type_to_convert){
 			case IDX_TYPE_INT_C:
 			case IDX_TYPE_INT_PTR_C:
+			case IDX_TYPE_FLOAT_C:
+			case IDX_TYPE_FLOAT_PTR_C:
 				return true;
 				break;
 			}

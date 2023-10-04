@@ -475,14 +475,20 @@ execute_function:
 						// else it will use the same function symbol stored in the last call
 						ScriptFunction *sf_found=NULL;
 
-						sf_found=sf_call_script_function->getInstructionScriptFunctionLastCall(_instruction);
+						if(sf_call_script_function->name_script_function == "min"){
+							int uu=0;
+							uu++;
+						}
+
+						sf_found=_script_function->getInstructionScriptFunctionLastCall(_instruction);
 						if(sf_found != NULL){
 							// check whether the parameters matches	EXACTLY with the current ones.
 
-							// start_param at 1 because param 0 is ZetScript reference
+							// if static it starts at 1 because param 0 is ZetScript reference
 							int start_param=1;
-							if((sf_found->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)
-									&&
+							if(
+							((sf_found->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0)
+							&&
 							 ((sf_found->properties & FUNCTION_PROPERTY_STATIC)==0)
 							){
 								// it passes ZetScript ref and object
@@ -491,7 +497,7 @@ execute_function:
 
 							bool all_check=(sf_found->params_len-start_param)==sf_call_n_args;
 
-							for( unsigned k = 0; k < sf_call_n_args && all_check;k++){
+							for( int k = 0; k < sf_call_n_args && all_check;k++){
 								StackElement *current_arg=sf_call_stk_start_arg_call+k;
 								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].idx_script_type);
 							}
@@ -502,6 +508,11 @@ execute_function:
 						}
 
 						if(sf_found==NULL){
+
+#ifdef __DEBUG__
+								static int index=0;
+								printf("Have to find function %i '%s'\n",index++,sf_call_script_function->name_script_function.c_str());
+#endif
 
 
 							if((sf_found=vm_find_native_function(
@@ -515,9 +526,11 @@ execute_function:
 								,sf_call_n_args))==NULL){
 								goto lbl_exit_function;
 							}
-							sf_call_script_function=sf_found;
-							sf_call_script_function->setInstructionScriptFunctionLastCall(_instruction,sf_found);
+
+							_script_function->setInstructionScriptFunctionLastCall(_instruction,sf_found);
 						}
+
+						sf_call_script_function=sf_found;
 					}
 				}
 

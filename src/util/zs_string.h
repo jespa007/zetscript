@@ -77,7 +77,9 @@ namespace zetscript{
 			return count;
 		}
 
-		const char * c_str() const;
+		inline const char * c_str() const{
+			return buf==NULL?"":buf;
+		}
 
 		~zs_string();
 
