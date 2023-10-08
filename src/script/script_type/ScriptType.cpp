@@ -153,7 +153,7 @@ namespace zetscript{
 		,short _line
 	){
 
-		if(getSymbol(_symbol_name)!=NULL){
+		if(getSymbol(_symbol_name.c_str())!=NULL){
 			ZS_THROW_RUNTIME_ERROR("Variable '%s' already registered",_symbol_name.c_str());
 			return NULL;
 		}
@@ -178,7 +178,7 @@ namespace zetscript{
 			,short line
 	){
 		Symbol *symbol_member_property=NULL;
-		if((symbol_member_property=getSymbol(attrib_name)) != NULL){ // give an error  ...
+		if((symbol_member_property=getSymbol(attrib_name.c_str())) != NULL){ // give an error  ...
 
 			const char *what="is already defined";
 			if((symbol_member_property->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY)==0){
@@ -226,7 +226,7 @@ namespace zetscript{
 		Symbol **ptr_getter_script_function=NULL;
 		MetamethodByteCode metamethod_byte_code=MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
 
-		if((symbol_member_property=getSymbol(_property_name)) == NULL){
+		if((symbol_member_property=getSymbol(_property_name.c_str())) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
 		}
 
@@ -322,7 +322,7 @@ namespace zetscript{
 			//if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){
 				Symbol *existing_symbol=NULL;
 				// we only search repeat symbols on this type because symbol cannot be repeated in the same class
-				if((existing_symbol=getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY)) != NULL){
+				if((existing_symbol=getSymbol(_function_name.c_str(), ZS_NO_PARAMS_SYMBOL_ONLY)) != NULL){
 
 					ScriptFunction *existing_sf=(ScriptFunction *)existing_symbol->ref_ptr;
 
@@ -366,7 +366,7 @@ namespace zetscript{
 		// register num function symbols only for c symbols...
 		if(sf_current->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=this->getSymbolMemberFunction(_function_name,ZS_NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+			if((symbol_repeat=this->getSymbolMemberFunction(_function_name.c_str(),ZS_NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 				ScriptFunction *sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
 
 				sf_repeat->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
@@ -691,7 +691,7 @@ namespace zetscript{
 		return symbol_function;
 	}
 	//---------------------------------------------------------
-	Symbol *    ScriptType::getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolVariableMember(const char  *_const_symbol_name, bool include_inherited_symbols){
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
 		zs_vector<Symbol *> *list=this->scope_script_type->symbol_variables;
 
@@ -701,7 +701,7 @@ namespace zetscript{
 				; i--
 		){
 			Symbol *member_symbol=(Symbol *)list->get(i);
-			if(member_symbol->name == symbol_name){
+			if(member_symbol->name == _const_symbol_name){
 				return member_symbol;
 			}
 		}
@@ -709,16 +709,16 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, int8_t n_params, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolMemberFunction(const char * _const_symbol_name, int8_t n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
-		const char *const_symbol_name=symbol_name.c_str();
+
 		int i = (int)(symbol_functions->size()-1);
 
 		while(i >= idx_end){
 			Symbol *member_symbol=symbol_functions->data()[i];
-			if(strcmp(member_symbol->name.c_str(),const_symbol_name)==0){
+			if(strcmp(member_symbol->name.c_str(),_const_symbol_name)==0){
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
 				if(only_symbol || (n_params==(int8_t)sf->params_len)){
 					return member_symbol;
@@ -730,12 +730,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptType::getSymbol(const zs_string & symbol_name, int8_t n_params,bool include_inherited_symbols){
+	Symbol				* 	ScriptType::getSymbol(const char  * _const_symbol_name, int8_t n_params,bool include_inherited_symbols){
 
 		Symbol *symbol=NULL;
 
-		if((symbol=getSymbolVariableMember(symbol_name,include_inherited_symbols))==NULL){
-			symbol=getSymbolMemberFunction(symbol_name,n_params,include_inherited_symbols);
+		if((symbol=getSymbolVariableMember(_const_symbol_name,include_inherited_symbols))==NULL){
+			symbol=getSymbolMemberFunction(_const_symbol_name,n_params,include_inherited_symbols);
 		}
 
 		return symbol;

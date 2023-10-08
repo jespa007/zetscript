@@ -160,7 +160,7 @@ namespace zetscript{
 				}
 
 				if(sc != NULL){
-					symbol_found = sc->getSymbolVariableMember(i1->symbol_name);
+					symbol_found = sc->getSymbolVariableMember(i1->symbol_name.c_str());
 				}
 
 				if(symbol_found == NULL){

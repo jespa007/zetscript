@@ -134,7 +134,7 @@ namespace zetscript{
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
 				 if(instruction->value_op2!=ZS_UNDEFINED_IDX){
-					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name.c_str());
 					 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 					 /*if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"

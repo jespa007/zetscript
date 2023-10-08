@@ -1690,7 +1690,7 @@ namespace zetscript{
 					}
 				}
 
-				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.get(access_var.size()-1));
+				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.get(access_var.size()-1).c_str());
 				if(symbol_sfm!=NULL){
 					ScriptFunction *test_fun=NULL;
 					if(symbol_sfm->properties & ZS_SYMBOL_PROPERTY_FUNCTION){

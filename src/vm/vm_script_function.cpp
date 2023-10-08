@@ -612,7 +612,7 @@ namespace zetscript{
 					}
 					continue;
 				case ZS_BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-					symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+					symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name.c_str());
 					if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
 								,((Symbol *)instruction->value_op2)->name.c_str()

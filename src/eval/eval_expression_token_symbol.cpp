@@ -260,7 +260,7 @@ namespace zetscript{
 
 							ei_first_token_node->vm_instruction.byte_code = ZS_BYTE_CODE_FIND_VARIABLE;
 
-							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
+							member_symbol=sc->getSymbol(class_element.c_str()); // ... and member as well we can define the instruction here
 
 							if(member_symbol != NULL){
 								if(member_symbol->properties & ZS_SYMBOL_PROPERTY_STATIC){
@@ -579,7 +579,7 @@ namespace zetscript{
 
 						// set symbol name
 						ei_first_token_node->symbol_name=accessor_name;
-						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbolVariableMember(accessor_name);
+						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbolVariableMember(accessor_name.c_str());
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
 						}
