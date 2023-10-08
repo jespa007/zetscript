@@ -3,10 +3,10 @@
 using zetscript::zs_string;
 
 int main(){
-	zs_string s="The quick brown fox jumps over the lazy dog.";
+	zs_string string="the quick brown fox jumps over the lazy dog.";
 
-	printf("s.indexOf(\"fo\") =>%i\n",s.find("fo"));
-	printf("s.indexOf(\"foy\") => %i\n",s.find("foy"));
+	printf("string.find(\"the\") => %i\n",string.find("the"));
+	printf("string.find(\"fox\") => %i\n",string.find("fox"));
 
 	return 0;
 }

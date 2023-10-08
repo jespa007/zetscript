@@ -3,11 +3,10 @@
 using zetscript::zs_string;
 
 int main(){
-	zs_string s="helilo world";
+	zs_string string="Helilo World";
 
-	printf("s => '%s'\n",s.c_str());
-	s.erase(3);
-	printf("s.erase(3) => '%s'\n",s);
+	string.erase(3);
+	printf("string.erase(3) => '%s'\n",string.c_str());
 	
 	return 0;
 }
