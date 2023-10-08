@@ -475,11 +475,6 @@ execute_function:
 						// else it will use the same function symbol stored in the last call
 						ScriptFunction *sf_found=NULL;
 
-						if(sf_call_script_function->name_script_function == "min"){
-							int uu=0;
-							uu++;
-						}
-
 						sf_found=_script_function->getInstructionScriptFunctionLastCall(_instruction);
 						if(sf_found != NULL){
 							// check whether the parameters matches	EXACTLY with the current ones.
@@ -511,6 +506,7 @@ execute_function:
 
 #ifdef __DEBUG__
 								static int index=0;
+
 								printf("Have to find function %i '%s'\n",index++,sf_call_script_function->name_script_function.c_str());
 #endif
 

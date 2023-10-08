@@ -50,6 +50,7 @@ namespace zetscript{
 		eval_data->current_parsing_file=_filename;
 		ScriptFunction *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
 		sf->removeUnusuedScopes();
+		sf->clearScriptFunctionLastCalls();
 
 		if(sf != ZS_MAIN_FUNCTION(eval_data)){ // remove/reset old code
 			scope_info =sf->scope_script_function;// ZS_NEW_SCOPE(eval_data,sf->idx_script_function,ZS_MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);

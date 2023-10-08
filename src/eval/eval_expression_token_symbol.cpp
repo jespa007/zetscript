@@ -365,7 +365,7 @@ namespace zetscript{
 						,"Unexpected '%c' after type '%s' %s"
 						,*test_aux_p
 						,token_node_symbol->value.c_str()
-						,*test_aux_p=='.' ? " on trying access a static member. Static members access should be done through '::'":"."
+						,*test_aux_p=='.' ? " on trying access a static member. Static members should be access through '::'":"."
 				);
 			}
 

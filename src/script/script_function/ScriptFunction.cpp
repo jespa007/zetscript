@@ -542,6 +542,11 @@ namespace zetscript{
 		return sf;
 	}
 
+
+	void				ScriptFunction::clearScriptFunctionLastCalls(){
+		this->instruction_last_native_call.clear();
+	}
+
 	void				ScriptFunction::setInstructionScriptFunctionLastCall(Instruction * _instruction,ScriptFunction *_sf){
 		short idx= (_instruction-this->instructions);///sizeof(Instruction *);
 		this->instruction_last_native_call.set(idx,(zs_int)_sf);

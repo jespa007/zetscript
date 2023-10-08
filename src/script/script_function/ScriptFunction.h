@@ -81,6 +81,9 @@ namespace zetscript{
 		const char * 		getInstructionSymbolName(Instruction * ins);
 		const char *		getInstructionSourceFile(Instruction * ins);
 		ScriptFunction	*	getInstructionScriptFunctionLastCall(Instruction * ins);
+
+		// It has to be called when function is evaluated
+		void				clearScriptFunctionLastCalls();
 		void				setInstructionScriptFunctionLastCall(Instruction * ins,ScriptFunction *sf);
 
 		//  DEBUG
