@@ -6,7 +6,7 @@ int main(){
 	string.append(" World");
 	string.append('!');
 
-	printf("%s",string.c_str());
+	printf("%s\n",string.c_str());
 	
 	return 0;
 }

@@ -1,7 +1,36 @@
 #include "zetscript.h"
+using zetscript::zs_vector;
 int main(){
-	zetscript::zs_vector vector;
+	 zs_vector<int> vector1;
+	 zs_vector<int> vector2;
+	 zs_vector<int> vector3;
 
-	
+	 for(int i=0; i < 5; i++){
+		vector1.push_back(i);
+	 }
+
+	 for(int i=5; i < 10; i++){
+		vector2.push_back(i);
+	 }
+
+	 vector3.concat(vector1);
+	 vector3.concat(vector2);
+
+	 printf("vector3 contents : [");
+
+	 for(int i=0; i < vector3.size(); i++){
+		if(i>0){
+			printf(",");
+		}
+
+		printf("%i",vector3.get(i));
+
+	 }
+
+	 printf("]\n");
+
+
+
+
 	return 0;
 }

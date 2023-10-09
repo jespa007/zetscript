@@ -3,12 +3,15 @@
 using zetscript::zs_string;
 
 int main(){
-	
-	printf("zs_string(\"Hello world!\").empty() => '%s' \n"
-	,zs_string("Hello World").empty()?"true":"false");
 
-	printf("zs_string().empty() => '%s' \n"
-	,zs_string("Hello World").empty()?"true":"false");
+	zs_string empty_string;
+	zs_string non_empty_string="Hello World";
+	
+	printf("empty_string.empty()  => '%s' \n"
+	,empty_string.empty()?"true":"false");
+
+	printf("non_empty_string.empty() => '%s' \n"
+	,non_empty_string.empty()?"true":"false");
 
 	return 0;
 }

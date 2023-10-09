@@ -1,7 +1,12 @@
 #include "zetscript.h"
+using zetscript::zs_vector;
 int main(){
-	zetscript::zs_vector vector;
+	zs_vector<int> vector;
 
-	
-	return 0;
+	vector.push_back(10);
+	vector.push_back(100);
+	vector.push_back(1000);
+
+	printf("vector.get(1) => %i\n",vector.get(1));
+
 }
