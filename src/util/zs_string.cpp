@@ -267,6 +267,10 @@ namespace zetscript{
 			_len=count-_pos;
 		}
 
+		if(_len < 0){
+			ZS_THROW_RUNTIME_ERRORF("substring: negative _len");
+		}
+
 		if((_pos+_len) > count){
 			ZS_THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",_pos,_len,count);
 		}

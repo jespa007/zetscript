@@ -66,7 +66,7 @@ zs_string(zs_string && _str);
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_constructor.cpp[]
 ----
@@ -92,14 +92,14 @@ The number of bytes in the string.
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_length.cpp[]
 ----
 
 Output,
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_length_out.txt[]
 ----
@@ -126,14 +126,14 @@ true if the string length is 0, false otherwise.
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_empty.cpp[]
 ----
 
 Output,
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_empty_out.txt[]
 ----
@@ -159,11 +159,17 @@ A pointer of characters of the string object's value.
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_c_str.cpp[]
 ----
 
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_c_str_out.txt[]
+----
 
 ====== zs_string::operator=()
 
@@ -189,11 +195,17 @@ zs_string& operator=(const char* _s);
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_operator_assign.cpp[]
 ----
 
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_operator_assign_out.txt[]
+----
 
 ======  zs_string::operator+=()
 
@@ -219,9 +231,16 @@ zs_string& operator+=(char _char);
 
 *Example*
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_operator_add_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_operator_add_assign_out.txt[]
 ----
 
 ====== zs_string::operator[]()
@@ -244,9 +263,18 @@ const char& operator[] (int _pos) const;
 
 The character at the specified position in the string.
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_operator_access.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_operator_access_out.txt[]
 ----
 
 ====== zs_string::at()
@@ -269,9 +297,18 @@ const char& at (int _pos) const;
 
 The character at the specified position in the string.
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_at.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_at_out.txt[]
 ----
 
 
@@ -294,11 +331,19 @@ None
 
 None
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_clear.cpp[]
 ----
 
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_clear_out.txt[]
+----
 
 ====== zs_string::substr()
 
@@ -320,9 +365,18 @@ zs_string  substr (int _pos = 0, int _len = npos) const;
 
 A string with a substring of this object.
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_substr.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_substr_out.txt[]
 ----
 
 ======  zs_string::find()
@@ -347,9 +401,18 @@ int find(const char *_s, int _pos = 0) const;
 
 The position of the first character of the first match. If no matches were found, the function returns zs_string::npos
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_find.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_find_out.txt[]
 ----
 
 ====== zs_string::find_last_of()
@@ -373,9 +436,18 @@ int find_last_of(const char *_string, int _pos = npos) const;
 
 The position of the last character that matches. If no matches are found, the function returns string::npos.
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_find_last_of.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_find_last_of_out.txt[]
 ----
 
 ====== zs_string::replace()
@@ -399,10 +471,20 @@ zs_string & replace(int _pos, int _len, const zs_string & _to_replace);
 
 *this
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_replace.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_replace_out.txt[]
+----
+
 
 ====== zs_string::append()
 
@@ -429,10 +511,20 @@ void append(const char * _s);
 
 None
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_append.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_append_out.txt[]
+----
+
 
 ====== zs_string::erase()
 
@@ -446,7 +538,6 @@ void erase(int _pos, int _len);
 void erase(int _pos);
 ----
 
-
 [.underline]#Parameters#
 
 - _&#95;pos_ : Position of the first character to be erased.
@@ -456,10 +547,20 @@ void erase(int _pos);
 
 None
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_erase.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_erase_out.txt[]
+----
+
 
 ====== zs_string::insert()
 
@@ -483,10 +584,20 @@ void insert(int _pos, const zs_string & _string);
 
 None
 
-[source,javascript]
+*Example*
+
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_insert.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_insert_out.txt[]
+----
+
 
 ===== Static functions
 
@@ -517,7 +628,7 @@ friend zs_string operator+(char  _s1, const zs_string & _s2);
 
 A string whose value is the concatenation of &#95;s1 and &#95;s2.
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_operator_add.cpp[]
 ----
@@ -546,7 +657,7 @@ Where &#95;R can be *==* or *!=*
 
 true if satisfies the condition &#95;s1 _R &#95;s2 and false otherwise.
 
-[source,javascript]
+[source,cpp]
 ----
 include::../examples/api/types/zs_string_relational_operators.cpp[]
 ----
