@@ -47,11 +47,15 @@
 #define 	ZS_UNUSUED_3PARAMS(x1,x2,x3) 		((void)(x1),(void)(x2),(void)(x3))
 #define 	ZS_UNUSUED_4PARAMS(x1,x2,x3,x4)		((void)(x1),(void)(x2),(void)(x3),(void)(x4))
 
+#define 	ZS_ARRAY_SIZE(s) 				(sizeof(s)/sizeof(s[0]))
+#define 	ZS_ARRAY_LENGTH					ZS_ARRAY_SIZE
+
 #ifdef _WIN32
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
+
 
 namespace zetscript{
 	typedef intptr_t zs_int;

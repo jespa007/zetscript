@@ -601,8 +601,6 @@ include::../examples/api/types/zs_string_insert_out.txt[]
 
 ===== Static functions
 
-_zs_string_ has the following static functions,
-
 ====== zs_string::operator+()
 
 Returns a new string object with its value being the concatenation of the characters in left operand followed by those of right operand.
@@ -628,9 +626,18 @@ friend zs_string operator+(char  _s1, const zs_string & _s2);
 
 A string whose value is the concatenation of &#95;s1 and &#95;s2.
 
+*Example*
+
 [source,cpp]
 ----
 include::../examples/api/types/zs_string_operator_add.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_operator_add_out.txt[]
 ----
 
 ====== Relational operators
@@ -657,10 +664,20 @@ Where &#95;R can be *==* or *!=*
 
 true if satisfies the condition &#95;s1 _R &#95;s2 and false otherwise.
 
+*Example*
+
 [source,cpp]
 ----
 include::../examples/api/types/zs_string_relational_operators.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_relational_operators_out.txt[]
+----
+
 
 ==== zs_vector
 

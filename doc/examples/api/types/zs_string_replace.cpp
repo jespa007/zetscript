@@ -6,7 +6,7 @@ int main(){
 
 	string.replace(9,5,str2);     
 
-	printf("string.replace(9,5,str2) => '%s'\n",string.replace(9,5,str2).c_str());
+	printf("string.replace(9,5,str2) => '%s'\n",string.c_str());
 
 	return 0;
 }

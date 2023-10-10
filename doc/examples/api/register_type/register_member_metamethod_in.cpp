@@ -5,9 +5,12 @@ using zetscript::ZetScript;
 
 class Data{
 public:
-	std::vector<float> data;
+	zetscript::zs_vector<float> data;
 	Data(){
-		this->data={0,1,1,10,3,4,6};
+		float n[]={0,1,1,10,3,4,6};
+		for(int i=0; i < ZS_ARRAY_SIZE(n); i++){
+			data.push_back(n[i]);
+		}
 	} 
 };
 
@@ -18,9 +21,9 @@ Data * getData(zetscript::ZetScript *_zs){
 }
 
 bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
-	for(auto d : _this->data){
-		if(d == *_value){
-			return true;;
+	for(int i=0; i < _this->data.size(); i++){
+		if(*_value == _this->data.get(i)){
+			return true;
 		}
 	}
 	return false;
