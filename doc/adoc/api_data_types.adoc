@@ -424,13 +424,16 @@ Searches the string for the last character that matches any of the characters sp
 
 [source,cpp]
 ----
-int find_last_of(const char *_string, int _pos = npos) const;
+int find_last_of(const char *_s, int _pos = npos) const;
+int find_last_of(const zs_string & _str, int _pos = npos) const;
 ----
 
 [.underline]#Parameters#
 
+- _&#95;str_ : A zs_string object.
 - _&#95;s_ :  A pointer to an array of characters.
 - _&#95;pos_ : Position of the last character in the string to be considered in the search.
+
 
 [.underline]#Return#
 
@@ -494,18 +497,20 @@ Appends a character o string at the end of current contents.
 
 [source,cpp]
 ----
-void append(const char *_s, int _len);
 void append(char _c);
-void append(const zs_string & _str);
 void append(const char * _s);
+void append(const char *_s, int _len);
+void append(const zs_string & _str);
+
 ----
 
 [.underline]#Parameters#
 
-- _&#95;str_ : A pointer of characters.
+- _&#95;c_ : The character to append.
+- _&#95;s_ : A pointer to array of characters.
 - _&#95;len_ : The length of number of characters to copy.
 - _&#95;str_ : A zs_string object.
-- _&#95;c_ : The character to append.
+
 
 [.underline]#Return#
 
@@ -619,8 +624,8 @@ friend zs_string operator+(char  _s1, const zs_string & _s2);
 
 [.underline]#Parameters#
 
-- _&#95;s1_ : A char, pointer of character or zs_string object as left operand.
-- _&#95;s2_ : A char, pointer of character or zs_string object as right operand.
+- _&#95;s1_ : A char, pointer to array of characters or zs_string object as left operand.
+- _&#95;s2_ : A char, pointer to array of characters or zs_string object as right operand.
 
 [.underline]#Return#
 
@@ -648,17 +653,17 @@ zs_string implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operat
 
 [source,cpp]
 ----
-friend bool operator _R(const zs_string & _s1, const zs_string &_s2);
-friend bool operator _R(const zs_string & _s1, const char *_s2);
-friend bool operator _R(const char * _s1, const zs_string & _s2);
+friend bool operator _REL_OPERATOR_(const zs_string & _s1, const zs_string &_s2);
+friend bool operator _REL_OPERATOR_(const zs_string & _s1, const char *_s2);
+friend bool operator _REL_OPERATOR_(const char * _s1, const zs_string & _s2);
 ----
 
-Where &#95;R can be *==* or *!=*
+Where &#95;REL_OPERATOR&#95; can be *==* or *!=*
 
 [.underline]#Parameters#
 
-- _&#95;s1_ : A pointer of character or zs_string object as left operand.
-- _&#95;s2_ : A pointer of character or zs_string object as right operand.
+- _&#95;s1_ : A pointer to array of characters or zs_string object as left operand.
+- _&#95;s2_ : A pointer to array of characters or zs_string object as right operand.
 
 [.underline]#Return#
 
@@ -677,7 +682,6 @@ Console output:
 ----
 include::../examples/api/types/zs_string_relational_operators_out.txt[]
 ----
-
 
 ==== zs_vector
 
@@ -709,82 +713,18 @@ zs_vector();
 zs_vector(const zs_vector & _vector);
 ----
 
-[.underline]#Parameters#
-
-- _&#95;vector_ : A zs_vector object.
-
-====== zs_vector::operator=()
-
-Replaces current content by the set of elements from other vector.
-
-*Syntax*
+*Example*
 
 [source,cpp]
 ----
-zs_vector& operator=(const zs_vector& _vector);		
+include::../examples/api/types/zs_vector_constructor.cpp[]
 ----
+
 
 [.underline]#Parameters#
 
 - _&#95;vector_ : A zs_vector object.
 
-[.underline]#Return#
-
-*this
-
-====== zs_vector::set()
-
-Replaces the element from a position.
-
-*Syntax*
-
-[source,cpp]
-----
-void 		set( int  _pos_, const _T & _element);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : The integer value as the position.
-- _&#95;element_ : The element to replace.
-
-====== zs_vector::get()
-
-Returns a reference to the element from a position.
-
-*Syntax*
-
-[source,cpp]
-----
-const _T &	get( int  _pos);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : The integer value as the position.
-
-[.underline]#Return#
-
-The element at the specified position in the vector.
-
-====== zs_vector::erase()
-
-Erases an element from a position.
-
-*Syntax*
-
-[source,cpp]
-----
-void 		erase( int  _pos);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : Position of the element to be erased.
-
-[.underline]#Return#
-
-None
 
 ====== zs_vector::push_back()
 
@@ -805,6 +745,173 @@ bool 		push_back( const _T & _element);
 
 None
 
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_push_back.cpp[]
+----
+
+====== zs_vector::size()
+
+Returns the number of elements of the vector. 
+
+*Syntax*
+
+[source,cpp]
+----
+int	size() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_size.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_size_out.txt[]
+----
+
+====== zs_vector::set()
+
+Replaces the element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		set( int  _pos_, const _T & _element);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+none
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_set.cpp[]
+----
+
+====== zs_vector::get()
+
+Returns a reference to the element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+const _T &	get( int  _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The element at the specified position in the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_get_out.txt[]
+----
+
+====== zs_vector::operator=()
+
+Replaces current content by the set of elements from other vector.
+
+*Syntax*
+
+[source,cpp]
+----
+zs_vector& operator=(const zs_vector& _vector);		
+----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A zs_vector object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_operator_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_operator_assign_out.txt[]
+----
+
+
+====== zs_vector::erase()
+
+Erases an element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		erase( int  _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the element to be erased.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_erase.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_erase_out.txt[]
+----
+
 ====== zs_vector::pop_back()
 
 Returns the last element by copy and erases the last element.
@@ -822,7 +929,21 @@ None
 
 [.underline]#Return#
 
-The last element of the vector before be erased.
+A copy of the last element before be erased.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_pop_back.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_pop_back_out.txt[]
+----
 
 ====== zs_vector::concat()
 
@@ -842,6 +963,20 @@ void 		concat(const zs_vector<_T>  & _vector);
 [.underline]#Return#
 
 None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_concat.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_concat_out.txt[]
+----
 
 ====== zs_vector::insert()        
 
@@ -865,6 +1000,20 @@ void 		insert(int _pos,const zs_vector<_T>  & _vector, int _len=npos);
 
 None
 
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_insert.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_insert_out.txt[]
+----
+
 ====== zs_vector::clear()
 
 Erases the contents of the vector.
@@ -884,6 +1033,20 @@ None
 
 None
 
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_clear.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_clear_out.txt[]
+----
+
 ====== zs_vector::resize()
 
 Resizes the vector by a length.
@@ -902,6 +1065,20 @@ void    	resize(int _len);
 [.underline]#Return#
 
 None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_resize.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_resize_out.txt[]
+----
 
 
 ====== zs_vector::data()
@@ -923,24 +1100,19 @@ None
 
 A pointer of elements of the vector.
 
-====== zs_vector::size()
-
-Returns the number of elements of the vector. 
-
-*Syntax*
+*Example*
 
 [source,cpp]
 ----
-int	size() const;
+include::../examples/api/types/zs_vector_data.cpp[]
 ----
 
-[.underline]#Parameters#
+Console output:
 
-None
-
-[.underline]#Return#
-
-The number of elements in the vector.
+[source,txt]
+----
+include::../examples/api/types/zs_vector_data_out.txt[]
+----
 
 
 ==== ArrayScriptObject

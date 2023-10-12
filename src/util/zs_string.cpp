@@ -438,6 +438,10 @@ namespace zetscript{
 		return npos;
 	}
 
+	int zs_string::find_last_of(const zs_string & _str, int pos) const{
+		return find_last_of(_str.c_str(),pos);
+	}
+
 	void zs_string::append(const char *_buf, int _len){
 		int start=count;
 		inc_slots(_len);
@@ -454,7 +458,6 @@ namespace zetscript{
 		}
 		zs_string::append(_s,(int)strlen(_s));
 	}
-
 
 	void zs_string::append(char _c){
 		inc_slots(1);
