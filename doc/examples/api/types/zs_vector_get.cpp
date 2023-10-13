@@ -8,5 +8,6 @@ int main(){
 	vector.push_back(1000);
 
 	printf("vector.get(1) => %i\n",vector.get(1));
-
+	
+	return 0;
 }

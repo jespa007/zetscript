@@ -10,7 +10,6 @@ int main(){
 	vector.clear();
 
 	printf("vector.size() => %i\n",vector.size());
-
 	
 	return 0;
 }

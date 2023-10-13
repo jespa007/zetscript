@@ -120,16 +120,11 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	_T zs_vector<_T>::pop_back(){
-		_T item;
+	void zs_vector<_T>::pop_back(){
 		if (count==0) {
 			ZS_THROW_RUNTIME_ERRORF("no elements");
-			return 0;
 		}
-
-		item=this->items[this->size()-1];
 		erase(this->size()-1);
-		return item;
 	}
 
 	template<typename _T>
@@ -165,7 +160,7 @@ namespace zetscript{
 		}
 
 		this->items=new_buf;
-		this->_size=_new_size;
+		this->count=this->_size=_new_size;
 		//this->size()=_new_size;
 
 	}

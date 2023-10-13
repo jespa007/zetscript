@@ -723,7 +723,7 @@ include::../examples/api/types/zs_vector_constructor.cpp[]
 
 [.underline]#Parameters#
 
-- _&#95;vector_ : A zs_vector object.
+- _&#95;vector_ : A vector object.
 
 
 ====== zs_vector::push_back()
@@ -845,6 +845,39 @@ Console output:
 include::../examples/api/types/zs_vector_get_out.txt[]
 ----
 
+====== zs_vector::pop_back()
+
+Returns the last element by copy and erases the last element.
+
+*Syntax*
+
+[source,cpp]
+----
+void    		pop_back();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_pop_back.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_pop_back_out.txt[]
+----
+
 ====== zs_vector::operator=()
 
 Replaces current content by the set of elements from other vector.
@@ -858,7 +891,7 @@ zs_vector& operator=(const zs_vector& _vector);
 
 [.underline]#Parameters#
 
-- _&#95;vector_ : A zs_vector object.
+- _&#95;vector_ : A vector object.
 
 [.underline]#Return#
 
@@ -912,39 +945,6 @@ Console output:
 include::../examples/api/types/zs_vector_erase_out.txt[]
 ----
 
-====== zs_vector::pop_back()
-
-Returns the last element by copy and erases the last element.
-
-*Syntax*
-
-[source,cpp]
-----
-_T    		pop_back();
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-A copy of the last element before be erased.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/zs_vector_pop_back.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/zs_vector_pop_back_out.txt[]
-----
-
 ====== zs_vector::concat()
 
 Copies all elements from other vector at the end of current contents.
@@ -958,7 +958,7 @@ void 		concat(const zs_vector<_T>  & _vector);
 
 [.underline]#Parameters#
 
-- _&#95;vector_ : A zs_vector object.
+- _&#95;vector_ : A vector object.
 
 [.underline]#Return#
 

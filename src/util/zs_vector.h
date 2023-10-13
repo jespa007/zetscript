@@ -33,7 +33,7 @@ namespace zetscript{
 		void 		insert(int  _pos, const _T & _element);
 
 		void 		clear();
-		_T    		pop_back();
+		void   		pop_back();
 		void    	resize(int _len);
 
 		inline _T *data() const{

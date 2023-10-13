@@ -10,19 +10,16 @@ int main(){
 
 	vector.pop_back();
 
+	printf("vector contents  : [");
 
-	 printf("vector contents  : [");
-
-	 for(int i=0; i < vector.size(); i++){
+	for(int i=0; i < vector.size(); i++){
 		if(i>0){
 			printf(",");
 		}
-
 		printf("%i",vector.get(i));
-
-	 }
-
-	 printf("]\n");
+	}
 	
+	printf("]\n");
+
 	return 0;
 }
