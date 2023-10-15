@@ -1112,6 +1112,35 @@ Console output:
 include::../examples/api/types/zs_vector_data_out.txt[]
 ----
 
+==== StringScriptObject
+
+_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced
+
+===== Member functions
+
+_ArrayScriptObject_ member functions available for user operations are the following,
+
+====== StringScriptObject::set()
+
+Replaces current string value.
+
+void set(const zs_string & _s);
+
+====== StringScriptObject::get()
+
+const zs_string & get();
+
+====== StringScriptObject::getConstChar()
+
+		const char *getConstChar();
+
+====== StringScriptObject::length()
+
+		virtual int length();
+
+====== StringScriptObject::toString()
+
+		virtual zs_string toString();
 
 ==== ArrayScriptObject
 
@@ -1218,11 +1247,15 @@ _ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _c
 
 
 
-			ClassScriptObject(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
+			
 
 			template<typename _C>
 			_C to();
 
+
+==== ScriptFunction
+
+_ScriptFunction_ it defines a function object that contains function information. 
 
 ==== StackElement
 
@@ -1264,41 +1297,6 @@ properties
 ====== StackElement::typeOf
 
 		StackElement			typeOf();
-
-==== StringScriptObject
-
-_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced
-
-===== Member functions
-
-_ArrayScriptObject_ member functions available for user operations are the following,
-
-====== StringScriptObject::set()
-
-Replaces current string value.
-
-void set(const zs_string & _s);
-
-====== StringScriptObject::get()
-
-const zs_string & get();
-
-====== StringScriptObject::getConstChar()
-
-		const char *getConstChar();
-
-====== StringScriptObject::length()
-
-		virtual int length();
-
-====== StringScriptObject::toString()
-
-		virtual zs_string toString();
-
-==== ScriptFunction
-
-_ScriptFunction_ it defines a function object that contains function information. 
-
 
 ==== ZetScript
 
