@@ -33,7 +33,14 @@ _zs_string_ it defines a string represented a sequence of chars
 
 [source,cpp]
 ----
-zetscript::zs_string s="Hello World";
+include::../examples/api/types/zs_string_example.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/zs_string_example_out.txt[]
 ----
 
 ===== Member constants
@@ -90,21 +97,6 @@ None
 
 The number of bytes in the string.
 
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/zs_string_length.cpp[]
-----
-
-Output,
-
-[source,cpp]
-----
-include::../examples/api/types/zs_string_length_out.txt[]
-----
-
-
 ====== zs_string::empty()
 
 Returns whether the string is empty.
@@ -131,7 +123,7 @@ true if the string length is 0, false otherwise.
 include::../examples/api/types/zs_string_empty.cpp[]
 ----
 
-Output,
+Console output:
 
 [source,cpp]
 ----
@@ -691,8 +683,14 @@ _zs_vector_ it defines a unidimensional vector of elements of type defined on it
 
 [source,cpp]
 ----
-// Create a vector containing integers
-zetscript::zs_vector<int> v;
+include::../examples/api/types/zs_vector_example.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/zs_vector_example_out.txt[]
 ----
 
 ===== Member constants
