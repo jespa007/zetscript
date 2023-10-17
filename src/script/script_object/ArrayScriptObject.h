@@ -16,8 +16,8 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ArrayScriptObject * newArrayScriptObject(ZetScript *zs);
-		static ArrayScriptObject * concat(ZetScript *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
+		static ArrayScriptObject * 			newArrayScriptObject(ZetScript *zs);
+		static ArrayScriptObject * 			concat(ZetScript *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
 
 
 
@@ -40,7 +40,7 @@ namespace zetscript{
 		bool 								eraseElementAt(int idx);
 		void								eraseAllElements();
 
-		virtual int length();
+		virtual int 						length();
 		virtual zs_vector<StackElement *> * getStkListElements();
 
 		bool 								exists(StackElement  * stk);
@@ -57,10 +57,6 @@ namespace zetscript{
 		void 								pushStackElement(StackElement  stk);
 		template<typename _T>
 		void 								push(_T _value);
-		/*void 								pushInteger(zs_int _value);
-		void 								pushFloat(zs_float _value);
-		void 								pushBoolean(bool _value);
-		void 								pushString(const zs_string & _value);*/
 		void 								pop();
 		virtual 							zs_string toString();
 		virtual 							~ArrayScriptObject();

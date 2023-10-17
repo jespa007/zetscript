@@ -6,14 +6,14 @@ ZetScript can evaluate scripts from string or from file
 
 [source,cpp]
 ----
-include::../examples/the_api/eval/eval_string.cpp[]
+include::../examples/api/eval/eval_string.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/the_api/eval/eval_string_out.txt[]
+include::../examples/api/eval/eval_string_out.txt[]
 ----
 
 
@@ -22,7 +22,7 @@ include::../examples/the_api/eval/eval_string_out.txt[]
 Having the following script file called `file.zs` with the following content,
 [source,javascript]
 ----
-include::../examples/the_api/eval/file.zs[]
+include::../examples/api/eval/file.zs[]
 ----
 
 Console output:
@@ -31,14 +31,14 @@ At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as
 
 [source,cpp]
 ----
-include::../examples/the_api/eval/eval_file.cpp[]
+include::../examples/api/eval/eval_file.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/the_api/eval/eval_file_out.txt[]
+include::../examples/api/eval/eval_file_out.txt[]
 ----
 
 
@@ -50,7 +50,7 @@ In order to eval script but no execute add _ZS_EVAL_OPTION_NO_EXECUTE_ option
 
 [source,cpp]
 ----
-include::../examples/the_api/eval/eval_file_option_no_execute.cpp[]
+include::../examples/api/eval/eval_file_option_no_execute.cpp[]
 ----
 
 
@@ -60,14 +60,14 @@ In order to show byte code for a script add _ZS_EVAL_OPTION_PRINT_BYTE_CODE_ opt
 
 [source,cpp]
 ----
-include::../examples/the_api/eval/eval_file_option_print_byte_code.cpp[]
+include::../examples/api/eval/eval_file_option_print_byte_code.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/the_api/eval/eval_file_option_print_byte_code_out.txt[]
+include::../examples/api/eval/eval_file_option_print_byte_code_out.txt[]
 ----
 
 As we can see in the output _ZS_EVAL_OPTION_PRINT_BYTE_CODE_ option prints the byte code per each function. At the begin it prints summary,

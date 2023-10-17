@@ -26,8 +26,6 @@ namespace zetscript{
 
 		return so_vector;
 	}
-
-
 	//
 	// Helpers
 	//

@@ -1,7 +1,7 @@
 
 ==== Properties
 
-the ZetScript API allows to register class properties as we could see in _xref:language_class.adoc#_properties[chapter 2 class properties]_.
+the ZetScript API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
 
 
 ===== Register constant property
@@ -57,14 +57,14 @@ Finally, the following code it shows an example of a script that returns _Number
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_constant_member_property.cpp[]
+include::../examples/api/register_type/register_constant_member_property.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_constant_member_property_out.txt[]
+include::../examples/api/register_type/register_constant_member_property_out.txt[]
 ----
 
 <<<
@@ -124,14 +124,14 @@ Finally, the following code it shows an example of a script that performs a _get
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_get.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_get.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_get_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_get_out.txt[]
 ----
 
 <<<
@@ -189,14 +189,14 @@ Finally, the following code it shows an example of a script that performs a _set
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_set.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_set.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_set_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_set_out.txt[]
 ----
 
 <<<
@@ -254,14 +254,14 @@ Finally, the following code it shows an example of a script that performs a _add
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_addset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_addset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_addset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_addset_out.txt[]
 ----
 
 <<<
@@ -321,14 +321,14 @@ Finally, the following code it shows an example of a script that performs a _sub
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_subset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_subset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_subset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_subset_out.txt[]
 ----
 
 <<<
@@ -386,14 +386,14 @@ Finally, the following code it shows an example of a script that performs a _mul
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_mulset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_mulset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_mulset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_mulset_out.txt[]
 ----
 
 <<<
@@ -452,14 +452,14 @@ Finally, the following code it shows an example of a script that performs a _div
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_divset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_divset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_divset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_divset_out.txt[]
 ----
 
 <<<
@@ -516,14 +516,14 @@ Finally, the following code it shows an example of a script that performs a _mod
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_modset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_modset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_modset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_modset_out.txt[]
 ----
 
 <<<
@@ -581,14 +581,14 @@ Finally, the following code it shows an example of a script that performs a _and
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_andset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_andset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_andset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_andset_out.txt[]
 ----
 
 <<<
@@ -646,14 +646,14 @@ Finally, the following code it shows an example of a script that performs a _ors
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_orset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_orset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_orset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_orset_out.txt[]
 ----
 
 <<<
@@ -713,14 +713,14 @@ Finally, the following code it shows an example of a script that performs a _xor
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_xorset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_xorset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_xorset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_xorset_out.txt[]
 ----
 
 <<<
@@ -778,14 +778,14 @@ Finally, the following code it shows an example of a script that performs a _shr
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_shrset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_shrset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_shrset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_shrset_out.txt[]
 ----
 
 <<<
@@ -843,14 +843,14 @@ Finally, the following code it shows an example of a script that performs a _shl
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_shlset.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_shlset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_shlset_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_shlset_out.txt[]
 ----
 
 <<<
@@ -909,14 +909,14 @@ Finally, the following code it shows an example of a script that performs a _pos
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_postinc.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_postinc.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_postinc_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_postinc_out.txt[]
 ----
 
 <<<
@@ -974,14 +974,14 @@ Finally, the following code it shows an example of a script that performs a _pos
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_postdec.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_postdec.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_postdec_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_postdec_out.txt[]
 ----
 
 <<<
@@ -1037,14 +1037,14 @@ Finally, the following code it shows an example of a script that performs a _pre
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_preinc.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_preinc.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_preinc_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_preinc_out.txt[]
 ----
 
 <<<
@@ -1097,12 +1097,12 @@ Finally, the following code it shows an example of a script that performs a _pre
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_predec.cpp[]
+include::../examples/api/register_type/register_member_property_metamethod_predec.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_property_metamethod_predec_out.txt[]
+include::../examples/api/register_type/register_member_property_metamethod_predec_out.txt[]
 ----

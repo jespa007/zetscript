@@ -1,7 +1,7 @@
 <<<
 ==== Register metamethods
 
-the ZetScript API allows to register static and member metamethods in aim to define operators as we could see in _xref:language_class.adoc#_metamethods[chapter 2 class metamethods]_.
+the ZetScript API allows to register static and member metamethods in aim to define operators as we could see in xref:language_class.adoc#_metamethods[chapter 2 class metamethods].
 
 ===== Member metamethods
 
@@ -62,14 +62,14 @@ Finally, the following code it shows an example of a script that creates a type 
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_tostring.cpp[]
+include::../examples/api/register_type/register_member_metamethod_tostring.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_tostring_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_tostring_out.txt[]
 ----
 
 <<<
@@ -97,7 +97,7 @@ None.
 
 *Example*
 
-The following code defines two functions performs an assignment from _xref:language_data_types.adoc#&lowbar;float[Float]_ value or _Number_ object respectively,
+The following code defines two functions performs an assignment from xref:language_data_types.adoc#&lowbar;float[Float] value or _Number_ object respectively,
 
 [source,cpp]
 ----
@@ -134,14 +134,14 @@ Finally, the following code it shows an example of a script that assigns  values
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_set.cpp[]
+include::../examples/api/register_type/register_member_metamethod_set.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_set_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_set_out.txt[]
 ----
 
 <<<
@@ -202,14 +202,14 @@ Finally, the following code it shows an example of a script that add and assigns
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_addset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_addset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_addset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_addset_out.txt[]
 ----
 
 <<<
@@ -268,14 +268,14 @@ Finally, the following code it shows an example of a script that substracts and 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_subset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_subset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_subset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_subset_out.txt[]
 ----
 
 <<<
@@ -334,14 +334,14 @@ Finally, the following code it shows an example of a script that multiples and a
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mulset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_mulset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mulset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_mulset_out.txt[]
 ----
 
 <<<
@@ -401,14 +401,14 @@ Finally, the following code it shows an example of a script that divides and ass
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_divset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_divset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_divset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_divset_out.txt[]
 ----
 
 <<<
@@ -469,14 +469,14 @@ Finally, the following code it shows an example of a script that produces the re
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_modset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_modset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_modset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_modset_out.txt[]
 ----
 
 <<<
@@ -537,14 +537,14 @@ Finally, the following code it shows an example of a script that performs a bitw
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_andset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_andset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_andset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_andset_out.txt[]
 ----
 
 <<<
@@ -605,14 +605,14 @@ Finally, the following code it shows an example of a script that performs a bitw
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_orset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_orset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_orset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_orset_out.txt[]
 ----
 
 <<<
@@ -673,14 +673,14 @@ Finally, the following code it shows an example of a script that perform bitwise
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xorset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_xorset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xorset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_xorset_out.txt[]
 ----
 
 <<<
@@ -741,14 +741,14 @@ Finally, the following code it shows an example of a script that perform bitwise
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shrset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_shrset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shrset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_shrset_out.txt[]
 ----
 
 <<<
@@ -809,14 +809,14 @@ Finally, the following code it shows an example of a script that perform bitwise
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shlset.cpp[]
+include::../examples/api/register_type/register_member_metamethod_shlset.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shlset_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_shlset_out.txt[]
 ----
 
 <<<
@@ -874,14 +874,14 @@ Finally, the following code it shows an example of a script that evaluates not c
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_not.cpp[]
+include::../examples/api/register_type/register_member_metamethod_not.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_not_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_not_out.txt[]
 ----
 
 <<<
@@ -939,14 +939,14 @@ Finally, the following code it shows an example of a script that returns the neg
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_neg.cpp[]
+include::../examples/api/register_type/register_member_metamethod_neg.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_neg_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_neg_out.txt[]
 ----
 
 <<<
@@ -969,7 +969,7 @@ ClassScriptObject * RegisteredType_postinc(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value before perform post increment operation
+Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value before perform post increment operation
 
 
 *Example*
@@ -1005,14 +1005,14 @@ Finally, the following code it shows an example of a script that performs a post
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postinc.cpp[]
+include::../examples/api/register_type/register_member_metamethod_postinc.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postinc_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_postinc_out.txt[]
 ----
 
 <<<
@@ -1035,7 +1035,7 @@ ClassScriptObject * RegisteredType_postdec(ZetScript *_zs, RegisteredType *_this
 
 [.underline]#Returns#
 
-Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value before perform post decrement operation
+Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value before perform post decrement operation
 
 
 *Example*
@@ -1071,14 +1071,14 @@ Finally, the following code it shows an example of a script that performs a post
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postdec.cpp[]
+include::../examples/api/register_type/register_member_metamethod_postdec.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_postdec_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_postdec_out.txt[]
 ----
 
 <<<
@@ -1101,7 +1101,7 @@ ClassScriptObject *RegisteredType_preinc(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns#
 
-Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value after perform post increment operation
+Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value after perform post increment operation
 
 *Example*
 
@@ -1136,14 +1136,14 @@ Finally, the following code it shows an example of a script that performs a pre 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_preinc.cpp[]
+include::../examples/api/register_type/register_member_metamethod_preinc.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_preinc_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_preinc_out.txt[]
 ----
 
 <<<
@@ -1166,7 +1166,7 @@ ClassScriptObject * RegisteredType_predec(ZetScript *_zs, RegisteredType *_this)
 
 [.underline]#Returns#
 
-Return new type wrapped in _xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject]_ with the value after perform post increment operation
+Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value after perform post increment operation
 
 *Example*
 
@@ -1202,14 +1202,14 @@ Finally, the following code it shows an example of a script that performs a pre 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_predec.cpp[]
+include::../examples/api/register_type/register_member_metamethod_predec.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_predec_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_predec_out.txt[]
 ----
 
 <<<
@@ -1273,14 +1273,14 @@ The following code shows an example of registering functions and a script that p
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_in.cpp[]
+include::../examples/api/register_type/register_member_metamethod_in.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_in_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_in_out.txt[]
 ----
 
 <<<
@@ -1347,14 +1347,14 @@ Finally, the following code it shows an example of a script that performs _equ_ 
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_equ.cpp[]
+include::../examples/api/register_type/register_member_metamethod_equ.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_equ_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_equ_out.txt[]
 ----
 
 <<<
@@ -1422,14 +1422,14 @@ Finally, the following code it shows an example of a script that performs _nequ_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_nequ.cpp[]
+include::../examples/api/register_type/register_member_metamethod_nequ.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_nequ_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_nequ_out.txt[]
 ----
 
 <<<
@@ -1492,14 +1492,14 @@ Finally, the following code it shows an example of a script that performs _lt_ o
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lt.cpp[]
+include::../examples/api/register_type/register_member_metamethod_lt.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lt_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_lt_out.txt[]
 ----
 
 <<<
@@ -1562,14 +1562,14 @@ Finally, the following code it shows an example of a script that performs _lte_ 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lte.cpp[]
+include::../examples/api/register_type/register_member_metamethod_lte.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_lte_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_lte_out.txt[]
 ----
 
 <<<
@@ -1635,14 +1635,14 @@ Finally, the following code it shows an example of a script that performs __gt__
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gt.cpp[]
+include::../examples/api/register_type/register_member_metamethod_gt.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gt_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_gt_out.txt[]
 ----
 
 <<<
@@ -1707,14 +1707,14 @@ Finally, the following code it shows an example of a script that performs _gte_ 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gte.cpp[]
+include::../examples/api/register_type/register_member_metamethod_gte.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_gte_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_gte_out.txt[]
 ----
 
 <<<
@@ -1780,14 +1780,14 @@ Finally, the following code it shows an example of a script that performs __add_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_add.cpp[]
+include::../examples/api/register_type/register_member_metamethod_add.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_add_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_add_out.txt[]
 ----
 
 <<<
@@ -1853,14 +1853,14 @@ Finally, the following code it shows an example of a script that performs __sub_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_sub.cpp[]
+include::../examples/api/register_type/register_member_metamethod_sub.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_sub_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_sub_out.txt[]
 ----
 
 <<<
@@ -1923,14 +1923,14 @@ Finally, the following code it shows an example of a script that performs __mul_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mul.cpp[]
+include::../examples/api/register_type/register_member_metamethod_mul.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mul_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_mul_out.txt[]
 ----
 
 <<<
@@ -1993,14 +1993,14 @@ Finally, the following code it shows an example of a script that performs __div_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_div.cpp[]
+include::../examples/api/register_type/register_member_metamethod_div.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_div_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_div_out.txt[]
 ----
 
 <<<
@@ -2062,14 +2062,14 @@ Finally, the following code it shows an example of a script that performs __mod_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mod.cpp[]
+include::../examples/api/register_type/register_member_metamethod_mod.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_mod_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_mod_out.txt[]
 ----
 
 <<<
@@ -2131,14 +2131,14 @@ Finally, the following code it shows an example of a script that performs __AND_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_and.cpp[]
+include::../examples/api/register_type/register_member_metamethod_and.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_and_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_and_out.txt[]
 ----
 
 <<<
@@ -2202,14 +2202,14 @@ Finally, the following code it shows an example of a script that performs __OR_ 
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_or.cpp[]
+include::../examples/api/register_type/register_member_metamethod_or.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_or_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_or_out.txt[]
 ----
 
 <<<
@@ -2273,14 +2273,14 @@ Finally, the following code it shows an example of a script that performs __XOR_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xor.cpp[]
+include::../examples/api/register_type/register_member_metamethod_xor.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_xor_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_xor_out.txt[]
 ----
 
 <<<
@@ -2344,14 +2344,14 @@ Finally, the following code it shows an example of a script that performs __shl_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shl.cpp[]
+include::../examples/api/register_type/register_member_metamethod_shl.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shl_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_shl_out.txt[]
 ----
 
 <<<
@@ -2415,12 +2415,12 @@ Finally, the following code it shows an example of a script that performs __shr_
 
 [source,javascript]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shr.cpp[]
+include::../examples/api/register_type/register_member_metamethod_shr.cpp[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_member_metamethod_shr_out.txt[]
+include::../examples/api/register_type/register_member_metamethod_shr_out.txt[]
 ----

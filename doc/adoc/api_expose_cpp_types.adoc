@@ -40,7 +40,7 @@ Let's define a 'Number' type in the file called 'Number.h',
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/Number.h[]
+include::../examples/api/register_type/Number.h[]
 ----
 
 <<<
@@ -86,7 +86,7 @@ The only way to operate with a 'Number' object non intanciable is by a reference
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_non_instantiable_type.cpp[]
+include::../examples/api/register_type/register_non_instantiable_type.cpp[]
 ----
 
 <<<
@@ -162,13 +162,13 @@ Finally, the following code shows an example of instantiation of a _Number_ type
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_instantiable_type.cpp[]
+include::../examples/api/register_type/register_instantiable_type.cpp[]
 ----
 
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in _xref:language_class.adoc#_constructor[section 2.10.3]_.
+To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
 
 As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
@@ -213,7 +213,7 @@ void registerConstructor<_RegisteredType>( Function _function);
 
 *Example*
 
-The following code defines two functions that accepts a _xref:language_data_types.adoc#&lowbar;float[Float]_ value or _Number_ pointer type respectively,
+The following code defines two functions that accepts a xref:language_data_types.adoc#&lowbar;float[Float] value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----
@@ -253,7 +253,7 @@ Finally, the following code it shows an example of a script that creates an obje
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_instantiable_type_with_constructor.cpp[]
+include::../examples/api/register_type/register_instantiable_type_with_constructor.cpp[]
 ----
 
 <<<
@@ -314,7 +314,7 @@ void registerMemberFunction<RegisteredType>(const zs_string & __member_function_
 *Example*
 
 
-The following code defines a function that returns a _xref:language_data_types.adoc#&lowbar;integer[Integer]_ ,
+The following code defines a function that returns a xref:language_data_types.adoc#&lowbar;integer[Integer] ,
 
 [source,cpp]
 ----
@@ -345,14 +345,14 @@ Finally, the following code it shows an example of a script that calls member fu
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_member_function.cpp[]
+include::../examples/api/register_type/register_member_function.cpp[]
 ----
 
 The ouput is the following,
 
 [source,txt]
 ----
-include::../examples/the_api/register_type/register_member_function_out.txt[]
+include::../examples/api/register_type/register_member_function_out.txt[]
 ----
 
 
@@ -443,14 +443,14 @@ Finally, the following code it shows an example of a script that calls static me
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_static_member_function.cpp[]
+include::../examples/api/register_type/register_static_member_function.cpp[]
 ----
 
 The ouput is the following,
 
 [source,txt]
 ----
-include::../examples/the_api/register_type/register_static_member_function_out.txt[]
+include::../examples/api/register_type/register_static_member_function_out.txt[]
 ----
 
 ==== Inheritance
@@ -480,14 +480,14 @@ In this example it shows an example the the registered type _MyCppTypeExtend_ is
 
 [source,cpp]
 ----
-include::../examples/the_api/register_type/register_type_inheritance.cpp[]
+include::../examples/api/register_type/register_type_inheritance.cpp[]
 ----
 
 Console output,
 
 [source,txt]
 ----
-include::../examples/the_api/register_type/register_type_inheritance_out.txt[]
+include::../examples/api/register_type/register_type_inheritance_out.txt[]
 ----
 
 <<<
@@ -521,7 +521,7 @@ Console output,
 
 [source,text]
 ----
-include::../examples/the_api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
+include::../examples/api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
 ----
 
 include::api_expose_cpp_type_metamethods.adoc[]

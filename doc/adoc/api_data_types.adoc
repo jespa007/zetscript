@@ -97,6 +97,21 @@ None
 
 The number of bytes in the string.
 
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zs_string_length.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/zs_string_length_out.txt[]
+----
+
+
 ====== zs_string::empty()
 
 Returns whether the string is empty.
@@ -1114,40 +1129,160 @@ include::../examples/api/types/zs_vector_data_out.txt[]
 
 ==== StringScriptObject
 
-_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced
+_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced usually in a function C  interface.
 
+[source,cpp]
+----
+// ZetScript C++ interface function
+StringScriptObject *returnString(ZetScript *_zs){
+
+	// instance new StringScriptObject using ZetScript context
+	StringScriptObject *string=_zs->newStringScriptObject();
+
+    // set string value "Hello world (StringScriptObject)"
+    string->set("Hello world (StringScriptObject)");
+
+    return string;
+}
+----
 ===== Member functions
 
-_ArrayScriptObject_ member functions available for user operations are the following,
+====== StringScriptObject::StringScriptObject
 
-====== StringScriptObject::set()
+Creates new string script object. This function is used when it needs to return a string script object from the C function registered (see   section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+
+*Syntax*
+
+[source,cpp]
+----
+StringScriptObject(ZetScript *_zs);
+----
+
+[.underline]#Parameters#
+
+- _&#95;zs_ : ZetScript instance.
+
+*Example*
+
+[source,cpp]
+----
+StringScriptObject *returnNewStringObject(ZetScript *_zs){
+
+	// instance new StringScriptObject using ZetScript context
+	StringScriptObject *string_object=new StringScriptObject(_zs);
+
+	return string_object;
+
+}
+
+----
+
+====== StringScriptObject::set
 
 Replaces current string value.
 
-void set(const zs_string & _s);
+*Syntax*
 
-====== StringScriptObject::get()
+[source,cpp]
+----
+void set(const zs_string & _str);
+----
 
+[.underline]#Parameters#
+
+- _&#95;str_ : The string value.
+
+[.underline]#Return#
+
+None
+
+[source,cpp]
+----
+// ZetScript C++ interface function
+StringScriptObject *returnNewStringObject(ZetScript *_zs){
+
+	// instance new StringScriptObject using ZetScript context
+	StringScriptObject *string_object=_zs->newStringScriptObject();
+
+    // set string value "Hello world (StringScriptObject)"
+    string_object->set("Hello world (StringScriptObject)");
+
+    return string_object;
+}
+----
+
+====== StringScriptObject::get|getConstChar|toString
+
+Gets its current string value as zs_string or array of characters
+
+*Syntax*
+
+[source,cpp]
+----
 const zs_string & get();
+const char *getConstChar();
+virtual zs_string toString();
+----
 
-====== StringScriptObject::getConstChar()
+[.underline]#Parameters#
 
-		const char *getConstChar();
+None
 
-====== StringScriptObject::length()
+[.underline]#Return#
 
-		virtual int length();
+Its contents as string as zs_string or array of characters
 
-====== StringScriptObject::toString()
+[source,cpp]
+----
+// ZetScript C++ interface function
+void printString(ZetScript *_zs, StringScriptObject * _string_object){
 
-		virtual zs_string toString();
+	printf("String content from get: %s\n",_string_object->get().c_str());
+	printf("String content from toString: %s\n",_string_object->toString().c_str());
+	printf("String content from getConstChar: %s\n",_string_object->getConstChar());
+	
+}
+----
+
+
+
+====== StringScriptObject::length
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+virtual int length();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+		
+[source,cpp]
+----
+// ZetScript C++ interface function
+void printString(ZetScript *_zs, StringScriptObject * _string_object){
+
+	printf("String length: %i\n",_string_object->length());
+	
+}
+----
 
 ==== ArrayScriptObject
 
-_ArrayScriptObject_ it defines a array script object that acts as a array container of elements. It uses zetscript context in order to be instanced.
-
 ===== Member functions
 
+====== ArrayScriptObject::ArrayScriptObject
+
+Creates new array script object. This function is used when it needs to return a string script object from the C function registered (see   section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
 
 *Syntax*
 
@@ -1156,7 +1291,26 @@ _ArrayScriptObject_ it defines a array script object that acts as a array contai
 ArrayScriptObject(ZetScript *_zs);
 ----
 
-====== ArrayScriptObject::push()
+[.underline]#Parameters#
+
+- _&#95;zs_ : ZetScript instance.
+
+*Example*
+
+[source,cpp]
+----
+ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
+
+	// instance new StringScriptObject using ZetScript context
+	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
+
+	return array_object;
+
+}
+
+----
+
+====== ArrayScriptObject::push
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
@@ -1167,9 +1321,48 @@ Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 void push(_T _value);
 ----
 
-====== ArrayScriptObject::set()
+[.underline]#Template#
 
-Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_.
+- _&#95;T_ : ZetScript api types as bool, zs_int, zs_float, const char &#42; zs_string &#42;, ScriptScriptObject &#42;, ArrayScriptObject &#42;,ObjectScriptObject &#42; or ClassScriptObject &#42; that wraps a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;value_ : input value
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
+
+	// instance new ArrayScriptObject using ZetScript context
+	ArrayScriptObject *array_object=_zs->newArrayScriptObject();
+
+	// push first value as integer 10
+	array_object->push<zs_int>(10);
+
+	// push second value as float 5.5
+	array_object->push<zs_float>(5.5);
+
+	// push third value as boolean true
+	array_object->push<bool>(true);
+
+	// push 4rth reference string "Hello Word"
+	array_object->push<const char *>("Hello World");
+
+	// return object array
+    return array_object;
+}
+
+----
+
+====== ArrayScriptObject::set
+
+Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
 
 *Syntax*
 
@@ -1178,6 +1371,32 @@ Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T
 void set(int _idx, _T _value);
 ----
 
+*Example*
+
+[source,cpp]
+----
+ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
+
+	// instance new ArrayScriptObject using ZetScript context
+	ArrayScriptObject *array_object=_zs->newArrayScriptObject();
+
+	// push first value as integer 10
+	array_object->push<zs_int>(10);
+
+	// push second value as float 5.5
+	array_object->push<zs_float>(5.5);
+
+	// push third value as boolean true
+	array_object->push<bool>(true);
+
+	// push 4rth reference string "Hello Word"
+	array_object->push<const char *>("Hello World");
+
+	// return object array
+    return array_object;
+}
+
+----
 
 ====== ArrayScriptObject::get()
 
