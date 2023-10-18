@@ -25,7 +25,7 @@ namespace zetscript{
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}
 
-		this->setStackElementByKeyName(_idx,&stk);
+		this->setStackElementByIndex(_idx,&stk);
 	}
 
 	template<typename _T>

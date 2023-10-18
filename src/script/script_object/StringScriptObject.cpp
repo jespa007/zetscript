@@ -292,8 +292,9 @@ namespace zetscript{
 
 	StringScriptObject::StringScriptObject(
 			ZetScript *_zs
+			,const zs_string & _str
 	):ScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_STRING){
-		default_str_value = "";
+		default_str_value = _str;
 		str_ptr = &default_str_value;
 	}
 

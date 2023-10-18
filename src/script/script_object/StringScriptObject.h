@@ -41,7 +41,7 @@ namespace zetscript{
 		zs_string		*	str_ptr;	// 8
 
 
-		StringScriptObject(ZetScript *_zs);
+		StringScriptObject(ZetScript *_zs, const zs_string & _str="");
 
 		void set(const zs_string & _s);
 		const zs_string & get();

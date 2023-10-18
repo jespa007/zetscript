@@ -1330,6 +1330,8 @@ include::../examples/api/types/string_script_object_length_out.txt[]
 		
 ==== ArrayScriptObject
 
+_ArrayScriptObject_ it defines a array script object. It uses zetscript context in order to be instanced in specific C function callable from ZetScript (see section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+
 ===== Member functions
 
 ====== ArrayScriptObject::ArrayScriptObject
@@ -1389,27 +1391,45 @@ None
 
 [source,cpp]
 ----
-ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
+include::../examples/api/types/array_script_object_push.cpp[]
+----
 
-	// instance new ArrayScriptObject using ZetScript context
-	ArrayScriptObject *array_object=_zs->newArrayScriptObject();
+Console output:
 
-	// push first value as integer 10
-	array_object->push<zs_int>(10);
+[source,txt]
+----
+include::../examples/api/types/array_script_object_push_out.txt[]
+----
 
-	// push second value as float 5.5
-	array_object->push<zs_float>(5.5);
+====== ArrayScriptObject::length
 
-	// push third value as boolean true
-	array_object->push<bool>(true);
+Returns the number of the elements of the array.
 
-	// push 4rth reference string "Hello Word"
-	array_object->push<const char *>("Hello World");
+*Syntax*
 
-	// return object array
-    return array_object;
-}
+[source,cpp]
+----
+virtual int length();
+----
 
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the array.
+
+[source,cpp]
+----
+include::../examples/api/types/string_array_object_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_array_object_length_out.txt[]
 ----
 
 ====== ArrayScriptObject::set
@@ -1425,30 +1445,19 @@ void set(int _idx, _T _value);
 
 *Example*
 
+
 [source,cpp]
 ----
-ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
-
-	// instance new ArrayScriptObject using ZetScript context
-	ArrayScriptObject *array_object=_zs->newArrayScriptObject();
-
-	// push first value as integer 10
-	array_object->push<zs_int>(10);
-
-	// push second value as float 5.5
-	array_object->push<zs_float>(5.5);
-
-	// push third value as boolean true
-	array_object->push<bool>(true);
-
-	// push 4rth reference string "Hello Word"
-	array_object->push<const char *>("Hello World");
-
-	// return object array
-    return array_object;
-}
-
+include::../examples/api/types/array_script_object_set.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_set_out.txt[]
+----
+
 
 ====== ArrayScriptObject::get()
 
@@ -1459,6 +1468,18 @@ Returns a reference element of type _&#x5f;T_ at position __pos_.
 [source,cpp]
 ----
 _T 	get(int _idx);
+----
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_get_out.txt[]
 ----
 
 ====== ArrayScriptObject::toString()
