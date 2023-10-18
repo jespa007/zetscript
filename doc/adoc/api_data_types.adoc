@@ -1129,27 +1129,13 @@ include::../examples/api/types/zs_vector_data_out.txt[]
 
 ==== StringScriptObject
 
-_StringScriptObject_ it defines a string script object and encapsules _zs_string_ reference. It uses zetscript context in order to be instanced usually in a function C  interface.
+_StringScriptObject_ it defines a string script object. It uses zetscript context in order to be instanced in specific C function callable from ZetScript (see section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
 
-[source,cpp]
-----
-// ZetScript C++ interface function
-StringScriptObject *returnString(ZetScript *_zs){
-
-	// instance new StringScriptObject using ZetScript context
-	StringScriptObject *string=_zs->newStringScriptObject();
-
-    // set string value "Hello world (StringScriptObject)"
-    string->set("Hello world (StringScriptObject)");
-
-    return string;
-}
-----
 ===== Member functions
 
 ====== StringScriptObject::StringScriptObject
 
-Creates new string script object. This function is used when it needs to return a string script object from the C function registered (see   section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+Creates new string script object.
 
 *Syntax*
 
@@ -1170,6 +1156,8 @@ StringScriptObject *returnNewStringObject(ZetScript *_zs){
 
 	// instance new StringScriptObject using ZetScript context
 	StringScriptObject *string_object=new StringScriptObject(_zs);
+
+	// ...
 
 	return string_object;
 
@@ -1196,22 +1184,21 @@ void set(const zs_string & _str);
 
 None
 
+*Example*
+
 [source,cpp]
 ----
-// ZetScript C++ interface function
-StringScriptObject *returnNewStringObject(ZetScript *_zs){
-
-	// instance new StringScriptObject using ZetScript context
-	StringScriptObject *string_object=_zs->newStringScriptObject();
-
-    // set string value "Hello world (StringScriptObject)"
-    string_object->set("Hello world (StringScriptObject)");
-
-    return string_object;
-}
+include::../examples/api/types/string_script_object_set.cpp[]
 ----
 
-====== StringScriptObject::get|getConstChar|toString
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_set_out.txt[]
+----
+
+====== StringScriptObject::get
 
 Gets its current string value as zs_string or array of characters
 
@@ -1220,8 +1207,6 @@ Gets its current string value as zs_string or array of characters
 [source,cpp]
 ----
 const zs_string & get();
-const char *getConstChar();
-virtual zs_string toString();
 ----
 
 [.underline]#Parameters#
@@ -1230,21 +1215,87 @@ None
 
 [.underline]#Return#
 
-Its contents as string as zs_string or array of characters
+Its contents as string as zs_string
+
+*Example*
 
 [source,cpp]
 ----
-// ZetScript C++ interface function
-void printString(ZetScript *_zs, StringScriptObject * _string_object){
-
-	printf("String content from get: %s\n",_string_object->get().c_str());
-	printf("String content from toString: %s\n",_string_object->toString().c_str());
-	printf("String content from getConstChar: %s\n",_string_object->getConstChar());
-	
-}
+include::../examples/api/types/string_script_object_get.cpp[]
 ----
 
+Console output:
 
+[source,txt]
+----
+include::../examples/api/types/string_script_object_get_out.txt[]
+----
+
+====== StringScriptObject::getConstChar
+
+Gets its current string value as array of characters
+
+*Syntax*
+
+[source,cpp]
+----
+const char *getConstChar();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+Its contents as string as array of characters
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_get_const_char.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_get_const_char_out.txt[]
+----
+
+====== StringScriptObject::toString
+
+Gets its current string value
+
+*Syntax*
+
+[source,cpp]
+----
+zs_string toString();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+Its contents as string as zs_string
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_to_string_out.txt[]
+----
 
 ====== StringScriptObject::length
 
@@ -1265,17 +1316,18 @@ None
 
 The number of bytes in the string.
 
-		
 [source,cpp]
 ----
-// ZetScript C++ interface function
-void printString(ZetScript *_zs, StringScriptObject * _string_object){
-
-	printf("String length: %i\n",_string_object->length());
-	
-}
+include::../examples/api/types/string_script_object_length.cpp[]
 ----
 
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_length_out.txt[]
+----
+		
 ==== ArrayScriptObject
 
 ===== Member functions
