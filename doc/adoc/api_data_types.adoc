@@ -1133,7 +1133,7 @@ _StringScriptObject_ it defines a string script object. It uses zetscript contex
 
 ===== Member functions
 
-====== StringScriptObject::StringScriptObject
+====== StringScriptObject::StringScriptObject()
 
 Creates new string script object.
 
@@ -1165,7 +1165,7 @@ StringScriptObject *returnNewStringObject(ZetScript *_zs){
 
 ----
 
-====== StringScriptObject::set
+====== StringScriptObject::set()
 
 Replaces current string value.
 
@@ -1198,7 +1198,7 @@ Console output:
 include::../examples/api/types/string_script_object_set_out.txt[]
 ----
 
-====== StringScriptObject::get
+====== StringScriptObject::get()
 
 Gets its current string value as zs_string or array of characters
 
@@ -1231,7 +1231,7 @@ Console output:
 include::../examples/api/types/string_script_object_get_out.txt[]
 ----
 
-====== StringScriptObject::getConstChar
+====== StringScriptObject::getConstChar()
 
 Gets its current string value as array of characters
 
@@ -1264,7 +1264,7 @@ Console output:
 include::../examples/api/types/string_script_object_get_const_char_out.txt[]
 ----
 
-====== StringScriptObject::toString
+====== StringScriptObject::toString()
 
 Gets its current string value
 
@@ -1297,7 +1297,7 @@ Console output:
 include::../examples/api/types/string_script_object_to_string_out.txt[]
 ----
 
-====== StringScriptObject::length
+====== StringScriptObject::length()
 
 Returns the length of the string, in terms of bytes.
 
@@ -1334,7 +1334,7 @@ _ArrayScriptObject_ it defines a array script object. It uses zetscript context 
 
 ===== Member functions
 
-====== ArrayScriptObject::ArrayScriptObject
+====== ArrayScriptObject::ArrayScriptObject()
 
 Creates new array script object. This function is used when it needs to return a string script object from the C function registered (see   section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
 
@@ -1364,7 +1364,7 @@ ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
 
 ----
 
-====== ArrayScriptObject::push
+====== ArrayScriptObject::push()
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
@@ -1372,7 +1372,7 @@ Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
 [source,cpp]
 ----
-void push(_T _value);
+void push(_T _element);
 ----
 
 [.underline]#Template#
@@ -1381,7 +1381,7 @@ void push(_T _value);
 
 [.underline]#Parameters#
 
-- _&#95;value_ : input value
+- _&#95;element_ : The element to append.
 
 [.underline]#Return#
 
@@ -1401,7 +1401,7 @@ Console output:
 include::../examples/api/types/array_script_object_push_out.txt[]
 ----
 
-====== ArrayScriptObject::length
+====== ArrayScriptObject::length()
 
 Returns the number of the elements of the array.
 
@@ -1409,7 +1409,7 @@ Returns the number of the elements of the array.
 
 [source,cpp]
 ----
-virtual int length();
+int length();
 ----
 
 [.underline]#Parameters#
@@ -1432,7 +1432,7 @@ Console output:
 include::../examples/api/types/string_array_object_length_out.txt[]
 ----
 
-====== ArrayScriptObject::set
+====== ArrayScriptObject::set()
 
 Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
 
@@ -1440,8 +1440,22 @@ Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T
 
 [source,cpp]
 ----
-void set(int _idx, _T _value);
+void set(int _pos, _T _element);
 ----
+
+[.underline]#Template#
+
+- _&#95;T_ : ZetScript api types as bool, zs_int, zs_float, const char &#42; zs_string &#42;, ScriptScriptObject &#42;, ArrayScriptObject &#42;,ObjectScriptObject &#42; or a pointer of a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+None
+
 
 *Example*
 
@@ -1458,6 +1472,41 @@ Console output:
 include::../examples/api/types/array_script_object_set_out.txt[]
 ----
 
+====== ArrayScriptObject::elementExtendsFrom()
+
+Says whether the element at a position extends from builtin or registered type.
+
+*Syntax*
+
+[source,cpp]
+----
+bool 	elementExtendsFrom<_T>(int _pos);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Data type as bool, zs_int, zs_float, const char &#42; zs_string &#42;, ScriptScriptObject &#42;, ArrayScriptObject &#42;,ObjectScriptObject &#42; or a pointer of a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+Returns true if the element at position _&#95;pos_ it type or extends from type _&#95;T_
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_element_extends_from.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_element_extends_from_out.txt[]
+----
+
 
 ====== ArrayScriptObject::get()
 
@@ -1467,8 +1516,20 @@ Returns a reference element of type _&#x5f;T_ at position __pos_.
 
 [source,cpp]
 ----
-_T 	get(int _idx);
+_T 	get(int _pos);
 ----
+
+[.underline]#Template#
+
+- _&#95;T_ : Data type as bool, zs_int, zs_float, const char &#42; zs_string &#42;, ScriptScriptObject &#42;, ArrayScriptObject &#42;,ObjectScriptObject &#42; or a pointer of a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The element at the specified position in the array.
 
 [source,cpp]
 ----

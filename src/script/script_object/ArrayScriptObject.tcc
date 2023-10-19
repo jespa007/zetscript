@@ -3,21 +3,32 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
+
+
 	template<typename _T>
-	_T	ArrayScriptObject::get(int _idx){
-		if(_idx >= stk_elements.size()){
-			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
+	bool 								ArrayScriptObject::elementExtendsFrom(int _pos){
+		if(_pos >= stk_elements.size()){
+			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 
-		return this->zs->stackElementTo<_T>(stk_elements.get(_idx));
+		return this->zs->canStackElementCastTo<_T>(stk_elements.get(_pos));
 	}
 
 	template<typename _T>
-	void	ArrayScriptObject::set(int _idx, _T _value){
-		if(_idx >= stk_elements.size()){
-			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
+	_T	ArrayScriptObject::get(int _pos){
+		if(_pos >= stk_elements.size()){
+			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
-		auto stk=this->zs->toStackElement(_value);
+
+		return this->zs->stackElementTo<_T>(stk_elements.get(_pos));
+	}
+
+	template<typename _T>
+	void	ArrayScriptObject::set(int _pos, _T _element){
+		if(_pos >= stk_elements.size()){
+			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
+		}
+		auto stk=this->zs->toStackElement(_element);
 
 		// Create shared object due 'ArrayScriptObject::set' is called from user program
 		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){
@@ -25,12 +36,12 @@ namespace zetscript{
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}
 
-		this->setStackElementByIndex(_idx,&stk);
+		this->setStackElementByIndex(_pos,&stk);
 	}
 
 	template<typename _T>
-	void ArrayScriptObject::push(_T _value){
-		auto stk=this->zs->toStackElement(_value);
+	void ArrayScriptObject::push(_T _element){
+		auto stk=this->zs->toStackElement(_element);
 
 		// Create shared object due 'ArrayScriptObject::push' is called from user program
 		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){

@@ -29,12 +29,15 @@ namespace zetscript{
 		ArrayScriptObject(ZetScript *_zs);
 
 		template<typename _T>
-		void 								set(int _idx, _T _value);
+		void 								set(int _pos, _T _element);
 
 		template<typename _T>
-		_T 									get(int _idx);
+		_T 									get(int _pos);
 
-		virtual	StackElement * 				setStackElementByIndex(int _idx, StackElement *_value);
+		template<typename _T>
+		bool 								elementExtendsFrom(int _pos);
+
+		virtual	StackElement * 				setStackElementByIndex(int _idx, StackElement *_element);
 		virtual StackElement * 				getStackElementByIndex(int idx);
 
 		bool 								eraseElementAt(int idx);
@@ -56,7 +59,7 @@ namespace zetscript{
 		void 								pushStackElement(const StackElement  * stk);
 		void 								pushStackElement(StackElement  stk);
 		template<typename _T>
-		void 								push(_T _value);
+		void 								push(_T _element);
 		void 								pop();
 		virtual 							zs_string toString();
 		virtual 							~ArrayScriptObject();
