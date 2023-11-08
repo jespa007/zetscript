@@ -1,7 +1,7 @@
 
 
 Version: 2.0.0
-Date: XX-XX-2023 (Expected to finish on end of 2023)
+Date: 2023-XX-XX (Expected to finish on end of 2023)
 
 Main improvements: 
 
@@ -265,7 +265,7 @@ Solved issues
 
 ---
 Version: 1.3.0
-Date: 30-03-2018
+Date: 2018-03-30
 
 - #48 Optimize compile process.
 - #47 Implement interactive console (zs).
@@ -287,7 +287,7 @@ Added fibonacci test (fib.zs)
 
 ---
 Version: 1.2.0
-Date: 13-02-2018
+Date: 2018-02-13
 
 - #30 ASTNode.h right push/pop pragma.
 - #31 Configure output library as shared. 
@@ -321,19 +321,19 @@ Date: 13-02-2018
 
 ---
 Version: 1.1.3
-Date: 19-11-2017
+Date: 2017-11-19
 
 - Make compatible binding functions with MSVC compiler.
 
 ---
 Version: 1.1.2
-Date: 19-11-2017
+Date: 2017-11-19
 
 - Solved bug #25: Fixed error on keyword after case/default keyword
 
 ---
 Version: 1.1.1
-Date: 12-11-2017
+Date: 2017-11-12
 
 - #21 bind functions already implemented 
 - #22 cast vector from/to stk implemented
@@ -342,26 +342,26 @@ Date: 12-11-2017
 
 ---
 Version: 1.1.0
-Date: 11-11-2017
+Date: 2017-11-11
 
 - Script function calls usign std::function.
 
 ---
 Version: 1.0.2
-Date: 05-11-2017
+Date: 2017-11-05
 
 - Solved some bugs
 - print comulative errors getErrorMsg()
 
 ---
 Version: 1.0.1
-Date: 04-11-2017
+Date: 2017-11-04
 
 - Solved some bugs
 
 ---
 Version: 1.0.0
-Date: 04-11-2017
+Date: 2017-11-04
 
 - First version
  
