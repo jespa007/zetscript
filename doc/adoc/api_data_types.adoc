@@ -29,27 +29,13 @@ zetscript::zs_float f=20.5;
 
 _zs_string_ it defines a string represented a sequence of chars
 
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/zs_string_example.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/zs_string_example_out.txt[]
-----
-
 ===== Member constants
 
 ====== zs_string::n_pos
 
 npos is a static member constant value with the greatest possible value.
 
-===== Member functions
+===== Constructor
 
 ====== zs_string::zs_string()
 
@@ -77,6 +63,15 @@ zs_string(zs_string && _str);
 ----
 include::../examples/api/types/zs_string_constructor.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_string_constructor_out.txt[]
+----
+
+===== Member functions
 
 ====== zs_string::length()
 
@@ -610,7 +605,6 @@ Console output:
 include::../examples/api/types/zs_string_insert_out.txt[]
 ----
 
-
 ===== Static functions
 
 ====== zs_string::operator+()
@@ -714,7 +708,7 @@ include::../examples/api/types/zs_vector_example_out.txt[]
 
 npos is a static member constant value with the greatest possible value.
 
-===== Member functions
+===== Constructor
 
 ====== zs_vector::zs_vector()
 
@@ -733,11 +727,18 @@ zs_vector(const zs_vector & _vector);
 include::../examples/api/types/zs_vector_constructor.cpp[]
 ----
 
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zs_vector_constructor_out.txt[]
+----
 
 [.underline]#Parameters#
 
 - _&#95;vector_ : A vector object.
 
+===== Member functions
 
 ====== zs_vector::push_back()
 
@@ -1129,41 +1130,41 @@ include::../examples/api/types/zs_vector_data_out.txt[]
 
 ==== StringScriptObject
 
-_StringScriptObject_ it defines a string script object. It uses zetscript context in order to be instanced in specific C function callable from ZetScript (see section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+_StringScriptObject_ defines a string script object which instance can live in C++ or ZetScript.
 
-===== Member functions
+===== Constructor
 
 ====== StringScriptObject::StringScriptObject()
 
-Creates new string script object.
+Constructor of string script object.  It uses zetscript context in order to be instanced.
 
 *Syntax*
 
 [source,cpp]
 ----
-StringScriptObject(ZetScript *_zs);
+StringScriptObject(ZetScript *_zs, const zs_string & _str="");
 ----
 
 [.underline]#Parameters#
 
 - _&#95;zs_ : ZetScript instance.
+- _&#95;str_ : String value as a initialize value (empty by default).
 
 *Example*
 
 [source,cpp]
 ----
-StringScriptObject *returnNewStringObject(ZetScript *_zs){
-
-	// instance new StringScriptObject using ZetScript context
-	StringScriptObject *string_object=new StringScriptObject(_zs);
-
-	// ...
-
-	return string_object;
-
-}
-
+include::../examples/api/types/string_script_object_constructor.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_constructor_out.txt[]
+----
+
+===== Member functions
 
 ====== StringScriptObject::set()
 
@@ -1330,13 +1331,13 @@ include::../examples/api/types/string_script_object_length_out.txt[]
 		
 ==== ArrayScriptObject
 
-_ArrayScriptObject_ it defines a array script object. It uses zetscript context in order to be instanced in specific C function callable from ZetScript (see section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+_ArrayScriptObject_ it defines a array script object which instance can live in C++ or ZetScript.
 
-===== Member functions
+===== Contructor
 
 ====== ArrayScriptObject::ArrayScriptObject()
 
-Creates new array script object. This function is used when it needs to return a string script object from the C function registered (see   section xref:api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript] section for more information).
+Constructor of array script object. It needs ZetScript context in order to be instanced.
 
 *Syntax*
 
@@ -1353,16 +1354,17 @@ ArrayScriptObject(ZetScript *_zs);
 
 [source,cpp]
 ----
-ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
-
-	// instance new StringScriptObject using ZetScript context
-	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
-
-	return array_object;
-
-}
-
+include::../examples/api/types/array_script_object_constructor.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_constructor_out.txt[]
+----
+
+===== Member functions
 
 ====== ArrayScriptObject::push()
 

@@ -46,6 +46,9 @@ do
 	do
 		base_file="$(basename $j .cpp)"
 		echo "processing "$base_file".cpp"
+		# DEBUG
+		#g++ -std=gnu++0x -Wall -pedantic -O0 -g -D__DEBUG__ -D__MEMMANAGER__ "api/"$i"/"$base_file".cpp" "../../../memmgr/memmgr.cpp"  ../../bin/gcc/Debug/libzetscript-2-0-0-static_d.a -o "api/build/"$base_file$EXTENSION_EXE -I ../../src -I ../../../memmgr
+		# RELEASE
 		g++ -std=gnu++0x -Wall -pedantic -O2 "api/"$i"/"$base_file".cpp" ../../bin/gcc/Release/libzetscript-2-0-0-static.a -o "api/build/"$base_file$EXTENSION_EXE -I ../../src
 		if [ $? -eq 0 ] 
 		then
