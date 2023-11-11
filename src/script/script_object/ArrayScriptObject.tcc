@@ -6,12 +6,12 @@ namespace zetscript{
 
 
 	template<typename _T>
-	bool 								ArrayScriptObject::elementExtendsFrom(int _pos){
+	bool 								ArrayScriptObject::isElementConvertibleTo(int _pos){
 		if(_pos >= stk_elements.size()){
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 
-		return this->zs->canStackElementCastTo<_T>(stk_elements.get(_pos));
+		return this->zs->stackElementInstanceOf<_T>(stk_elements.get(_pos));
 	}
 
 	template<typename _T>

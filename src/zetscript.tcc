@@ -39,6 +39,51 @@ namespace zetscript{
 			return so_script;
 		}
 
+		template<typename _C>
+		_C ZetScript::stackElementTo(StackElement * _stk){
+
+			zs_string error;
+			_C ptr_var;
+			zs_string str_script_type_ptr = typeid(_C).name();
+			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+			if(script_type == NULL){
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+			}
+
+			if(this->stackElementTo(_stk, script_type->idx_script_type, (zs_int *)&ptr_var,error)==false){
+				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
+						,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
+						,error.c_str()
+				);
+			}
+			return ptr_var;
+		}
+
+		template<typename _C>
+		bool ZetScript::canStackElementCastTo(StackElement * _stack_element){
+
+			zs_string error;
+			zs_string str_script_type_ptr = typeid(_C).name();
+			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+			if(script_type == NULL){
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+			}
+
+			return this->canStackElementCastTo(
+				_stack_element
+				,script_type->idx_script_type
+			);
+		}	
+
+		template<typename _C>
+		_C ZetScript::stackElementTo(StackElement   _stk){
+			return stackElementTo<_C>(&_stk);
+		}
+
 		template<typename R>
 		R ZetScript::checkAndConvertStackElement(StackElement *_stk, int _idx_return){
 			zetscript::zs_string str_error;
@@ -65,9 +110,25 @@ namespace zetscript{
 			}
 
 
-
-
 			return ret_value;
+		}
+
+		template<typename _C>
+		StackElement	ZetScript::toStackElement( _C _val){
+			zs_string error;
+			zs_string str_script_type_ptr = typeid(_C).name();
+			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+			if(script_type == NULL){
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+			}
+
+			// particular case for zs_float
+			if(script_type->idx_script_type==IDX_TYPE_FLOAT_C){
+				return this->toStackElement((zs_int)&_val,IDX_TYPE_FLOAT_PTR_C);
+			}
+			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
 		}
 
 

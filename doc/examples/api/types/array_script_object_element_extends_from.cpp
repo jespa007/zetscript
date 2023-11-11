@@ -12,15 +12,15 @@ void printArrayElementTypes(ZetScript *_zs,ArrayScriptObject *_array_object){
 	for(int i=0; i < _array_object->length(); i++){
         printf("Position %i is type can extend from '",i);
 
-        if(_array_object->elementExtendsFrom<zs_int>(i)){
+        if(_array_object->elementInstanceOf<zs_int>(i)){
             printf(" Integer");
         }
 
-        if(_array_object->elementExtendsFrom<zs_float>(i)){
+        if(_array_object->elementInstanceOf<zs_float>(i)){
             printf(" Float");
         }
         
-        if(_array_object->elementExtendsFrom<StringScriptObject *>(i)){
+        if(_array_object->elementInstanceOf<StringScriptObject *>(i)){
             printf(" String");
         }
 

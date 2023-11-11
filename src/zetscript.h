@@ -142,49 +142,13 @@ namespace zetscript{
 		StackElement    		boolToStackElement(bool);
 
 		template<typename _C>
-		_C stackElementTo(StackElement * _stk){
-
-			zs_string error;
-			_C ptr_var;
-			zs_string str_script_type_ptr = typeid(_C).name();
-			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
-			}
-
-			if(this->stackElementTo(_stk, script_type->idx_script_type, (zs_int *)&ptr_var,error)==false){
-				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
-						,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
-						,error.c_str()
-				);
-			}
-			return ptr_var;
-		}
+		_C stackElementTo(StackElement * _stk);
 
 		template<typename _C>
-		bool canStackElementCastTo(StackElement * _stack_element){
-
-			zs_string error;
-			zs_string str_script_type_ptr = typeid(_C).name();
-			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
-			}
-
-			return this->canStackElementCastTo(
-				_stack_element
-				,script_type->idx_script_type
-			);
-		}		
+		bool canStackElementCastTo(StackElement * _stack_element);
 
 		template<typename _C>
-		_C stackElementTo(StackElement   _stk){
-			return stackElementTo<_C>(&_stk);
-		}
+		_C stackElementTo(StackElement   _stk);
 
 		zs_string		stackElementToString(StackElement *_stk,const zs_string & _format="");
 		const char		*stackElementToString(char *_str_out,int _str_out_len, StackElement *_stk,const zs_string & _format="");
@@ -196,25 +160,10 @@ namespace zetscript{
 		void			stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src);
 		StackElement 	toStackElement(zs_int ptr_var, short idx_builtin_type_var);
 		bool			stackElementTo(StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error);
-		bool			canStackElementCastTo(StackElement * _stack_element, int _idx_builtin_type);
+		bool			canStackElementCastTo(StackElement * _stack_element, int _idx_builtin_type, bool _strict = false);
 
 		template<typename _C>
-		StackElement	toStackElement( _C _val){
-			zs_string error;
-			zs_string str_script_type_ptr = typeid(_C).name();
-			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
-			}
-
-			// particular case for zs_float
-			if(script_type->idx_script_type==IDX_TYPE_FLOAT_C){
-				return this->toStackElement((zs_int)&_val,IDX_TYPE_FLOAT_PTR_C);
-			}
-			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
-		}
+		StackElement	toStackElement( _C _val);
 
 		//
 		// STACKELEMENT

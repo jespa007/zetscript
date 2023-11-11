@@ -233,8 +233,7 @@ namespace zetscript{
 			);
 	}
 
-
-	 void ZetScript::printGeneratedCode(bool show_system_code){
+	void ZetScript::printGeneratedCode(bool show_system_code){
 
 		 zs_vector<ScriptType *> *script_classes=script_type_factory->getScriptTypes();
 		 // for all classes print code...
@@ -300,8 +299,8 @@ namespace zetscript{
 
 				 }
 			 }
-		 }
-	 }
+		}
+	}
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // STACKELEMENT
@@ -493,7 +492,10 @@ namespace zetscript{
 		}
 	}
 
-	bool ZetScript::canStackElementCastTo(StackElement * _stack_element, int _idx_type_to_convert){
+	bool ZetScript::canStackElementCastTo(
+		StackElement * _stack_element
+		, int _idx_type_to_convert
+	){
 		zs_int val_ret=0;
 
 		// save return type ...

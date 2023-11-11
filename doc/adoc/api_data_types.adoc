@@ -29,17 +29,9 @@ zetscript::zs_float f=20.5;
 
 _zs_string_ it defines a string represented a sequence of chars
 
-===== Member constants
-
-====== zs_string::n_pos
-
-npos is a static member constant value with the greatest possible value.
-
 ===== Constructor
 
-====== zs_string::zs_string()
-
-Constructs a zs_string object as empty or initialized from other string.
+The zs_string constructor creates a new zs_tring as empty or initialized with other string or zs_string.
 
 *Syntax*
 
@@ -70,6 +62,12 @@ Console output:
 ----
 include::../examples/api/types/zs_string_constructor_out.txt[]
 ----
+
+===== Static constants
+
+====== zs_string::n_pos
+
+npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
@@ -702,17 +700,9 @@ Console output:
 include::../examples/api/types/zs_vector_example_out.txt[]
 ----
 
-===== Member constants
-
-====== zs_vector::n_pos
-
-npos is a static member constant value with the greatest possible value.
-
 ===== Constructor
 
-====== zs_vector::zs_vector()
-
-Constructs a zs_vector object as empty or initialized from other vector.
+The zs_vector constructor creates a new zs_vector as empty or initialized with other zs_vector.
 
 [source,cpp]
 ----
@@ -737,6 +727,12 @@ include::../examples/api/types/zs_vector_constructor_out.txt[]
 [.underline]#Parameters#
 
 - _&#95;vector_ : A vector object.
+
+===== Static constants
+
+====== zs_vector::n_pos
+
+npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
@@ -1130,13 +1126,11 @@ include::../examples/api/types/zs_vector_data_out.txt[]
 
 ==== StringScriptObject
 
-_StringScriptObject_ defines a string script object which instance can live in C++ or ZetScript.
+_StringScriptObject_ defines a string script object.
 
 ===== Constructor
 
-====== StringScriptObject::StringScriptObject()
-
-Constructor of string script object.  It uses zetscript context in order to be instanced.
+The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a ZetScript context.
 
 *Syntax*
 
@@ -1331,13 +1325,11 @@ include::../examples/api/types/string_script_object_length_out.txt[]
 		
 ==== ArrayScriptObject
 
-_ArrayScriptObject_ it defines a array script object which instance can live in C++ or ZetScript.
+_ArrayScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-====== ArrayScriptObject::ArrayScriptObject()
-
-Constructor of array script object. It needs ZetScript context in order to be instanced.
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ZetScript context.
 
 *Syntax*
 
@@ -1474,20 +1466,20 @@ Console output:
 include::../examples/api/types/array_script_object_set_out.txt[]
 ----
 
-====== ArrayScriptObject::elementExtendsFrom()
+====== ArrayScriptObject::elementInstanceOf()
 
-Says whether the element at a position extends from builtin or registered type.
+Says whether the element at a position is instance of zetscript data type or a registered type.
 
 *Syntax*
 
 [source,cpp]
 ----
-bool 	elementExtendsFrom<_T>(int _pos);
+bool 	elementInstanceOf<_T>(int _pos);
 ----
 
 [.underline]#Template#
 
-- _&#95;T_ : Data type as bool, zs_int, zs_float, const char &#42; zs_string &#42;, ScriptScriptObject &#42;, ArrayScriptObject &#42;,ObjectScriptObject &#42; or a pointer of a registered type.
+- _&#95;T_ : Zetscript data type or a registered type.
 
 [.underline]#Parameters#
 
@@ -1499,14 +1491,14 @@ Returns true if the element at position _&#95;pos_ it type or extends from type 
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_element_extends_from.cpp[]
+include::../examples/api/types/array_script_object_element_instanceof.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_element_extends_from_out.txt[]
+include::../examples/api/types/array_script_object_element_instanceof_out.txt[]
 ----
 
 
