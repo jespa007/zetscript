@@ -148,6 +148,10 @@ namespace zetscript{
 		bool canStackElementCastTo(StackElement * _stack_element);
 
 		template<typename _C>
+		bool stackElementInstanceOf(StackElement * _stack_element);
+
+
+		template<typename _C>
 		_C stackElementTo(StackElement   _stk);
 
 		zs_string		stackElementToString(StackElement *_stk,const zs_string & _format="");

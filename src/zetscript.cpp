@@ -495,6 +495,7 @@ namespace zetscript{
 	bool ZetScript::canStackElementCastTo(
 		StackElement * _stack_element
 		, int _idx_type_to_convert
+		, bool _strict
 	){
 		zs_int val_ret=0;
 
@@ -523,8 +524,9 @@ namespace zetscript{
 			switch(_idx_type_to_convert){
 			case IDX_TYPE_FLOAT_C:
 			case IDX_TYPE_FLOAT_PTR_C:
-			case IDX_TYPE_INT_C:
 				return true;
+			case IDX_TYPE_INT_C:
+				return _strict == false;
 				break;
 			}
 			break;
@@ -532,9 +534,10 @@ namespace zetscript{
 			switch(_idx_type_to_convert){
 			case IDX_TYPE_INT_C:
 			case IDX_TYPE_INT_PTR_C:
+				return true;
 			case IDX_TYPE_FLOAT_C:
 			case IDX_TYPE_FLOAT_PTR_C:
-				return true;
+				return _strict == false;
 				break;
 			}
 			break;

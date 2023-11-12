@@ -6,7 +6,7 @@ namespace zetscript{
 
 
 	template<typename _T>
-	bool 								ArrayScriptObject::isElementConvertibleTo(int _pos){
+	bool 								ArrayScriptObject::elementInstanceOf(int _pos){
 		if(_pos >= stk_elements.size()){
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}

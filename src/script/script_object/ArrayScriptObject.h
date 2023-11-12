@@ -35,7 +35,7 @@ namespace zetscript{
 		_T 									get(int _pos);
 
 		template<typename _T>
-		bool 								isElementConvertibleTo(int _pos);
+		bool 								elementInstanceOf(int _pos);
 
 		virtual	StackElement * 				setStackElementByIndex(int _idx, StackElement *_element);
 		virtual StackElement * 				getStackElementByIndex(int idx);
