@@ -8,7 +8,7 @@ using zetscript::ArrayScriptObject;
 ArrayScriptObject *returnNewArray(ZetScript *_zs){
 
 	// instance new ArrayScriptObject using ZetScript context
-	ArrayScriptObject *array_object=_zs->newArrayScriptObject();
+	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
 
 	// push first value as integer 10
 	array_object->push<zs_int>(10);

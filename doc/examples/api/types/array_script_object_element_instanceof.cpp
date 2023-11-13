@@ -8,9 +8,9 @@ using zetscript::zs_string;
 
 // Check whether the array element is type integer, float or string
 void testArrayElementInstanceOf(ZetScript *_zs,ArrayScriptObject *_array_object){
+
 	for(int i=0; i < _array_object->length(); i++){
-        
-        
+               
         printf("Element at position '%i' is type '",i);
 
         if(_array_object->elementInstanceOf<zs_int>(i)){

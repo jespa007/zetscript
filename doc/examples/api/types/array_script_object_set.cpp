@@ -8,7 +8,6 @@ using zetscript::StringScriptObject;
 
 void modifyArray(ZetScript *_zs,ArrayScriptObject *_array_object){
 
-	// instance new ArrayScriptObject using ZetScript context
 	for(int i=0; i < _array_object->length(); i++){
 		switch(i%3){
 		case 0: // set a integer

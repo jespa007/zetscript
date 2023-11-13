@@ -41,6 +41,11 @@ namespace zetscript{
 		template<typename _T>
 		void set(const zs_string &  _key_name, _T _value);
 
+
+		template<typename _T>
+		bool 								elementInstanceOf(const zs_string & _key);
+
+
 		/*StackElement * setInteger(
 				const zs_string &  _property_name
 				,zs_int _value

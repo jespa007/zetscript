@@ -3,6 +3,20 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
+
+
+	template<typename _T>
+	bool 								ObjectScriptObject::elementInstanceOf(
+		const zs_string & _key
+	){
+		StackElement *stk;
+		if((stk=getStackElementByKeyName(_key))==NULL){
+			ZS_THROW_EXCEPTION("key '%s' not exist",_key.c_str());
+		}
+
+		return this->zs->stackElementInstanceOf<_T>(stk);
+	}
+
 	template<typename _T>
 	_T	ObjectScriptObject::get(const zs_string & _key){
 		StackElement *stk;
