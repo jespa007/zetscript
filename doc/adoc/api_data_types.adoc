@@ -1696,6 +1696,7 @@ Returns element of type _&#x5f;T_ at key __key_.
 
 [source,cpp]
 ----
+_T 	get(const zs_string & _key);
 ----
 
 ====== ArrayScriptObject::get()
@@ -1770,7 +1771,7 @@ include::../examples/api/types/object_script_object_tostring_out.txt[]
 
 ====== ArrayScriptObject::getKeys()
 
-Returns a vector of string as the keys of the Object.
+Returns a vector of strings as the keys of the Object.
 
 *Syntax*
 
@@ -1785,7 +1786,7 @@ None
 
 [.underline]#Return#
 
-A string of the object contents in json format.
+A vector of strings as the keys of the Object.
 
 *Example*
 

@@ -34,7 +34,7 @@ int main(){
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyObject'
 	zs.eval(
-		"var object={"
+		"var o={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""
 		"	,\"key3\":10.0"
@@ -42,9 +42,9 @@ int main(){
 		"	,\"key5\":1"
 		"	,\"key6\":2"
 		"	,\"key7\":\"world\"}\n"
-		"Console::outln(\"Before call 'modifyObject':{0}\",v);"
-		"modifyObject(object)\n"
-		"Console::outln(\"After call 'modifyObject':{0}\",v);"
+		"Console::outln(\"Before call 'modifyObject':{0}\",o);"
+		"modifyObject(o)\n"
+		"Console::outln(\"After call 'modifyObject':{0}\",o);"
 	);
 	
 	return 0;
