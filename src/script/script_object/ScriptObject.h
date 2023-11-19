@@ -15,18 +15,18 @@ namespace zetscript{
 	class ScriptFunction;
 
 	typedef enum{
-		SCRIPT_OBJECT_PROPERTY_CONSTANT=0x1<<0
+		ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT=0x1<<0
 	}ScriptObjectProperty;
 
 	class ScriptObject{
 	public:
 		InfoSharedPointerNode 				* 	shared_pointer; // 8
-		short									idx_script_type; // 2
+		short									script_type_id; // 2
 		uint16_t 								properties; // it tells its properties
 
 		ScriptObject(
 				ZetScript 		*	_zs
-				,short _idx_script_type=ZS_UNDEFINED_IDX
+				,short _idx_type=ZS_UNDEFINED_IDX
 		);
 
 		Symbol 								*	getGetter();

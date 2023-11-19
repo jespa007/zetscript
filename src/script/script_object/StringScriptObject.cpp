@@ -119,7 +119,7 @@ namespace zetscript{
 
 		if(_stk_args->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_args->value;
-			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_ARRAY){
+			if(so->script_type_id == IDX_TYPE_SCRIPT_OBJECT_ARRAY){
 				sov=(ArrayScriptObject *)so;
 			}
 		}

@@ -93,11 +93,11 @@ namespace zetscript{
 			case ZS_STK_PROPERTY_SCRIPT_OBJECT: // compare objects?
 
 				if(
-					   ((ScriptObject *)stk_to_compare->value)->idx_script_type ==
-					   ((ScriptObject *)stk_element->value)->idx_script_type
+					   ((ScriptObject *)stk_to_compare->value)->script_type_id ==
+					   ((ScriptObject *)stk_element->value)->script_type_id
 					   ){
 					// particular case string
-					if(((ScriptObject *)stk_to_compare->value)->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){
+					if(((ScriptObject *)stk_to_compare->value)->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING){
 						found=((ScriptObject *)stk_to_compare->value)->toString()==((ScriptObject *)stk_element->value)->toString();
 					}
 				}

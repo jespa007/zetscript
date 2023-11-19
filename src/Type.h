@@ -62,7 +62,7 @@ namespace zetscript{
 		IDX_TYPE_SCRIPT_OBJECT_STRING, // "String"
 
 		// Iterator
-		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING, // "IteratorString"
+		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING, // "IteratorString"
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY, // IteratorArray []
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
 		//
@@ -82,7 +82,7 @@ namespace zetscript{
 		//
 		//--------------------------------------------------------------------------------------------------------------------->
 		IDX_TYPE_MAX
-	}Type;
+	}TypeId;
 
 	Type	is_built_in_type(const char *s);
 }

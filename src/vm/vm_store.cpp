@@ -111,7 +111,7 @@ namespace zetscript{
 
 					if(symbol_setter == NULL){\
 						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->str_script_type.c_str() \
+								,so_aux->getScriptType()->name.c_str() \
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}\
@@ -120,7 +120,7 @@ namespace zetscript{
 
 					if(stk_mp_aux->member_property->metamethod_members.setters.size()==0){
 						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->str_script_type.c_str()\
+								,so_aux->getScriptType()->name.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\
 								,__STR_SETTER_METAMETHOD__\
 						);\
@@ -136,7 +136,7 @@ namespace zetscript{
 
 				if((ptr_function_found=vm_find_native_function( \
 						_vm \
-						,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
+						,data->script_type_factory->getScriptType(so_aux->script_type_id)\
 						,_script_function\
 						,instruction\
 						,false\
@@ -145,14 +145,14 @@ namespace zetscript{
 						,1))==NULL){ \
 					if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){ \
 							data->vm_error_description=zs_strutils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
-								,so_aux->getScriptType()->str_script_type.c_str()\
+								,so_aux->getScriptType()->name.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\
 								,data->vm_error_description.c_str())
 							;\
 					}else{
 
 						data->vm_error_description=zs_strutils::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
-								,so_aux->getScriptType()->str_script_type.c_str()
+								,so_aux->getScriptType()->name.c_str()
 								,data->vm_error_description.c_str()
 							);\
 
@@ -232,7 +232,7 @@ namespace zetscript{
 			}else if(stk_src_properties & ZS_STK_PROPERTY_BOOL){
 				stk_dst->properties=ZS_STK_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;
-			}else if(stk_src_properties  &  (ZS_STK_PROPERTY_FUNCTION | ZS_STK_PROPERTY_TYPE | ZS_STK_PROPERTY_MEMBER_FUNCTION) ){
+			}else if(stk_src_properties  &  (ZS_STK_PROPERTY_FUNCTION | ZS_STK_PROPERTY_INDEX_CLASS_TYPE | ZS_STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
 				ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_src)
@@ -307,7 +307,7 @@ namespace zetscript{
 							,SFI_GET_FILE(_script_function,instruction)\
 							,SFI_GET_LINE(_script_function,instruction)\
 							,(void *)so_aux
-							,so_aux->getScriptType()->str_script_type.c_str()
+							,so_aux->getScriptType()->name.c_str()
 					);
 #endif
 				}
@@ -343,7 +343,7 @@ namespace zetscript{
 
 		// check whether dst_container_slot is not referenced
 		if(
-				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
+				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;

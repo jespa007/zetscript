@@ -16,7 +16,7 @@ namespace zetscript{
 			, ScriptObject *_so_ref
 			, ScriptFunction *_sf_ref
 	):RefObjectScriptObject(_zs, _so_ref){
-		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+		script_type_id=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 		this->sf_ref=_sf_ref;
 	}
 

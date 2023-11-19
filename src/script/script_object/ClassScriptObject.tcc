@@ -7,9 +7,9 @@ namespace zetscript{
 
 	template<typename _C>
 	_C ClassScriptObject::to(){
-		const char * str_script_type_ptr = typeid(_C).name();
-		int idx_script_type=ZS_UNDEFINED_IDX;
-		if((idx_script_type=zs->getScriptTypeFactory()->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr))==ZS_UNDEFINED_IDX){
+		const char * native_name = typeid(_C).name();
+		int id=ZS_UNDEFINED_IDX;
+		if((id=zs->getScriptTypeFactory()->getIdxScriptTypeFromTypeNamePtr(native_name))==ZS_UNDEFINED_IDX){
 			ZS_THROW_RUNTIME_ERROR(
 			"Cannot instance script object as native type '%s' because is not registered"
 			,zs_rtti::demangle(typeid(_C).name()).c_str()

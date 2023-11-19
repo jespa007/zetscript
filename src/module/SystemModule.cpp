@@ -75,13 +75,13 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		zs_string  name_script_function=zs_strutils::format("__eval@_%i__",n_eval_function++);
+		zs_string  name=zs_strutils::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	ScriptFunction(
 				_zs
 				,ZS_SCRIPT_FUNCTION_EVAL_IDX
 				,IDX_TYPE_CLASS_MAIN
 				,-1
-				,name_script_function
+				,name
 				,function_params_ptr
 				,function_params_len
 				,ZS_UNDEFINED_IDX
@@ -90,7 +90,7 @@ namespace zetscript{
 		);
 
 		Scope *main_scope=((((_zs)->getScopeFactory())))->getMainScope();
-		sf_eval->scope_script_function=(((_zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		sf_eval->scope=(((_zs)->getScopeFactory()))->newScope(sf_eval->id,main_scope,ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 
 		//--------------------------------------
 		// 2. register arg symbols
@@ -101,7 +101,7 @@ namespace zetscript{
 			for(auto it=fields->begin(); !it.end(); it.next()){
 
 				if(sf_eval->registerLocalArgument(
-						sf_eval->scope_script_function
+						sf_eval->scope
 						,__FILE__
 						,__LINE__
 						,it.key
@@ -187,8 +187,8 @@ goto_eval_exit:
 			--data->vm_current_scope_function;
 		}
 
-		 sf_eval->scope_script_function->removeChildrenBlockTypes();
-		 sf_eval->scope_script_function->markAsUnusued();
+		 sf_eval->scope->removeChildrenBlockTypes();
+		 sf_eval->scope->markAsUnusued();
 		 _zs->getScopeFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;

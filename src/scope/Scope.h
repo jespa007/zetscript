@@ -14,11 +14,11 @@
 #define ZS_MAX_INNER_SCOPES_FUNCTION								10
 
 
-#define SCOPE_PROPERTY_IS_C_OBJECT_REF							0x01
-#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION						0x02
-#define SCOPE_PROPERTY_IS_SCOPE_CLASS							0x04
-#define SCOPE_PROPERTY_IS_SCOPE_BLOCK							0x08
-#define SCOPE_PROPERTY_UNUSUED									0x10
+#define ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF							0x01
+#define ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION						0x02
+#define ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS							0x04
+#define ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK							0x08
+#define ZS_SCOPE_PROPERTY_UNUSUED									0x10
 
 
 namespace zetscript{
@@ -108,7 +108,7 @@ namespace zetscript{
 
 		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
 		ScopeFactory 			*scope_factory;
-		int 					idx_script_function;
+		int 					id;
 
 		void 	 checkPreRegisterSymbol(
 				const char * file

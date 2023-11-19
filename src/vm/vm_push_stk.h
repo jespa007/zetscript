@@ -39,7 +39,7 @@ data->vm_stk_current++;
 
 #define ZS_VM_PUSH_STK_TYPE(ref) \
 data->vm_stk_current->value=ref; \
-data->vm_stk_current->properties=ZS_STK_PROPERTY_TYPE; \
+data->vm_stk_current->properties=ZS_STK_PROPERTY_INDEX_CLASS_TYPE; \
 data->vm_stk_current++;
 
 

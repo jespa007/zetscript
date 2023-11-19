@@ -53,7 +53,7 @@ namespace zetscript{
 		sf->clearScriptFunctionLastCalls();
 
 		if(sf != ZS_MAIN_FUNCTION(eval_data)){ // remove/reset old code
-			scope_info =sf->scope_script_function;// ZS_NEW_SCOPE(eval_data,sf->idx_script_function,ZS_MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+			scope_info =sf->scope;// ZS_NEW_SCOPE(eval_data,sf->id,ZS_MAIN_SCOPE(eval_data),ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 		}
 
 		if(_eval_data_from == NULL){
@@ -78,7 +78,7 @@ namespace zetscript{
 
 		if(_eval_data_from == NULL){
 
-			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != ZS_SCRIPT_FUNCTION_EVAL_IDX){ // is anonyomuse function
+			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->id != ZS_SCRIPT_FUNCTION_EVAL_IDX){ // is anonyomuse function
 				if(scope_info->symbol_variables->size() == 0){ // remove scope
 					scope_info->markAsUnusued();
 				}
@@ -102,9 +102,9 @@ namespace zetscript{
 	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent){
 		Scope *new_scope = ZS_NEW_SCOPE(
 				eval_data
-				,eval_data->current_function->script_function->idx_script_function
+				,eval_data->current_function->script_function->id
 				,scope_parent
-				,SCOPE_PROPERTY_IS_SCOPE_FUNCTION
+				,ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION
 		);
 
 		new_scope->offset_instruction_push_scope=0;
@@ -115,9 +115,9 @@ namespace zetscript{
 	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent){
 		Scope *new_scope = ZS_NEW_SCOPE(
 				eval_data
-				,eval_data->current_function->script_function->idx_script_function
+				,eval_data->current_function->script_function->id
 				,scope_parent
-				,SCOPE_PROPERTY_IS_SCOPE_BLOCK
+				,ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK
 		);
 
 		new_scope->offset_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
@@ -231,7 +231,7 @@ namespace zetscript{
 
 
 		// set scope to the function
-		sf->scope_script_function=new_scope;
+		sf->scope=new_scope;
 
 		// register args as part of stack...
 		for(int i=0; i < params_len; i++){
@@ -447,7 +447,7 @@ namespace zetscript{
 		auto scopes=current_scope->getScopes();
 		for(int i=0; i < scopes->size(); i++){
 			Scope *scope=(Scope *)scopes->get(i);
-			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+			if((scope->properties & (ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION | ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
 
 				if(ok == false){
@@ -470,7 +470,7 @@ namespace zetscript{
 
 		for(int i=0; i < scopes->size(); i++){
 			Scope *scope=(Scope *)scopes->get(i);
-			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+			if((scope->properties & (ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION | ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
 			}
 		}
@@ -481,12 +481,12 @@ namespace zetscript{
 		ScriptFunction *sf = eval_data->current_function->script_function;
 
 		int n_local_variable=0;
-		if(eval_all_local_variables_in_scopes_already_sorted(sf->scope_script_function,n_local_variable) == true){
+		if(eval_all_local_variables_in_scopes_already_sorted(sf->scope,n_local_variable) == true){
 			return NULL;
 		}
 
 		int n_var_fun=sf->local_variables->size();
-		int n_var_scope=sf->scope_script_function->countVariables(true);
+		int n_var_scope=sf->scope->countVariables(true);
 
 		if(n_var_fun != n_var_scope){
 
@@ -498,7 +498,7 @@ namespace zetscript{
 		}
 
 		short *lookup_linear_stk=(short *)ZS_MALLOC(sizeof(short)*n_var_fun);
-		Scope *current_scope=sf->scope_script_function;
+		Scope *current_scope=sf->scope;
 		n_local_variable=0;
 
 		eval_fill_lookup_local_variable(current_scope,lookup_linear_stk,n_local_variable,order_local_vars);
@@ -510,7 +510,7 @@ namespace zetscript{
 
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data->script_type_factory,sf->idx_script_type_owner);
+		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data->script_type_factory,sf->owner_script_type_id);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
@@ -561,9 +561,9 @@ namespace zetscript{
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->get(j);
+					Symbol *symbol_member = (Symbol *)sc_sf->scope->symbol_functions->get(j);
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-					bool match_names=sf_member->name_script_function == sf->name_script_function;
+					bool match_names=sf_member->name == sf->name;
 					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
 					if(
 							(match_names)
@@ -575,13 +575,13 @@ namespace zetscript{
 
 				// ok get the super function...
 				if(symbol_sf_foundf == NULL){
-					if(sf->name_script_function != sf->name_script_function){
+					if(sf->name != sf->name){
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
 							eval_data->current_parsing_file
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->str_script_type.c_str()
+							,sc_sf->name.c_str()
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -589,8 +589,8 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function of '%s::%s'"
-							,sc_sf->str_script_type.c_str()
-							,sf->name_script_function.c_str()
+							,sc_sf->name.c_str()
+							,sf->name.c_str()
 						);
 					}
 				}
@@ -598,7 +598,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								symbol_sf_foundf->scope->script_type_owner->str_script_type)+"::"+symbol_sf_foundf->name);
+								symbol_sf_foundf->scope->script_type_owner->name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case ZS_BYTE_CODE_CALL:

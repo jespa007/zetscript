@@ -40,7 +40,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN
+			if(scope_var->script_type_owner->id != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
@@ -83,7 +83,7 @@ namespace zetscript{
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
 					scope_var = ZS_MAIN_SCOPE(eval_data);
-					pre_variable_name=zs_string(sc_var_member_extension->str_script_type)+"::";
+					pre_variable_name=zs_string(sc_var_member_extension->name)+"::";
 				}
 
 				if(end_var==NULL){
@@ -215,7 +215,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->name.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 

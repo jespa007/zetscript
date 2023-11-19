@@ -120,7 +120,7 @@ namespace zetscript{
 		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
 			if((ptr_function_found = vm_find_native_function(
 				_vm
-				,data->script_type_factory->getScriptType(script_object->idx_script_type)
+				,data->script_type_factory->getScriptType(script_object->script_type_id)
 				,_script_function
 				,instruction
 				,false
@@ -351,7 +351,7 @@ namespace zetscript{
 			}
 			if((ptr_function_found=vm_find_native_function( \
 				_vm \
-				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
+				,data->script_type_factory->getScriptType(so_aux->script_type_id)\
 				,_script_function\
 				,_instruction\
 				,false\
@@ -361,14 +361,14 @@ namespace zetscript{
 			){ \
 				if(member_property!=NULL){ \
 					ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s' or doesn't match its parameter argument types. \nDetail : %s\n"\
-							,so_aux->getScriptType()->str_script_type.c_str()\
+							,so_aux->getScriptType()->name.c_str()\
 							,member_property->property_name.c_str()\
 							,str_set_metamethod\
 							,data->vm_error_description.c_str()\
 					);\
 				}else{\
 					ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod  or doesn't match its parameter argument types. \nDetail : %s" \
-							,so_aux->getScriptType()->str_script_type.c_str() \
+							,so_aux->getScriptType()->name.c_str() \
 							,str_set_metamethod\
 							,data->vm_error_description.c_str()\
 					);\

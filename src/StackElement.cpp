@@ -24,7 +24,7 @@ namespace zetscript{
 
 	StackElement	StackElement::typeOf(){
 		StackElement *stk= this;
-		StackElement result={-1,ZS_STK_PROPERTY_TYPE};
+		StackElement result={-1,ZS_STK_PROPERTY_INDEX_CLASS_TYPE};
 
 		if(stk->properties & ZS_STK_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;
@@ -45,9 +45,9 @@ namespace zetscript{
 		}else if(ZS_STK_VALUE_IS_TYPE(stk)){
 			result=*stk;
 		}else if(ZS_STK_VALUE_IS_CONTAINER_SLOT(stk)){
-			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->idx_script_type;;
+			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->id;;
 		}else if(ZS_STK_VALUE_IS_SCRIPT_OBJECT(stk)){
-			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->idx_script_type;
+			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->id;
 		}
 
 		return result;

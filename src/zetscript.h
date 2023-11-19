@@ -204,15 +204,15 @@ namespace zetscript{
 		 */
 		template<typename T>
 		ScriptType * registerType(
-				const zs_string & str_script_type
+				const zs_string & name
 				, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
 				, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
 		){
 			try{
-				return script_type_factory->registerType<T>(str_script_type, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
+				return script_type_factory->registerType<T>(name, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
-				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(T).name()).c_str(),str_script_type.c_str(),_ex.what());
+				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(T).name()).c_str(),name.c_str(),_ex.what());
 				return NULL;
 			}
 		}

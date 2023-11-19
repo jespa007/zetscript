@@ -34,13 +34,14 @@ namespace zetscript{
 	public:
 
 		// script function properties
-		zs_string			name_script_function;
-		Scope				*scope_script_function;
-		int 				idx_script_function;	// idx_script_function from factory
+		int 				id;	// id from factory
+		zs_string			name;
+		Scope				*scope;
+
 
 		// script type
-		int 				idx_script_type_return; 		// idx return type
-		int					idx_script_type_owner; 				// which type belongs to...
+		int 				return_script_type_id; 		// idx return type
+		int					owner_script_type_id; 				// which type belongs to...
 
 		uint16_t			properties;
 
@@ -63,12 +64,12 @@ namespace zetscript{
 		ScriptFunction(
 				ZetScript *_zs
 				,int _idx_script_function
-				,int _idx_script_type
+				,int _idx_type
 				,int _idx_position
-				,const zs_string & name_script_function
+				,const zs_string & name
 				, ScriptFunctionParam **_params
 				, int _params_len
-				,int  idx_script_type_return
+				,int  return_script_type_id
 				, zs_int _ref_native_function_ptr
 				, uint16_t _properties
 		);
@@ -126,10 +127,10 @@ namespace zetscript{
 				  Scope * scope_block
 				, const char * file
 				, short line
-				, const zs_string & name_script_function
+				, const zs_string & name
 				, ScriptFunctionParam **_params=NULL
 				,int8_t _params_len=0
-				, int idx_script_type_return=ZS_UNDEFINED_IDX
+				, int return_script_type_id=ZS_UNDEFINED_IDX
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);

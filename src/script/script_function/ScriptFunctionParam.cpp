@@ -7,7 +7,7 @@
 namespace zetscript{
 
 	void ScriptFunctionParam::init(){
-		idx_script_type=ZS_UNDEFINED_IDX;
+		id=ZS_UNDEFINED_IDX;
 		name="";
 		line=ZS_UNDEFINED_IDX;
 		properties=0;
@@ -19,15 +19,15 @@ namespace zetscript{
 	}
 
 	ScriptFunctionParam::ScriptFunctionParam(const zs_string & _name){
-		idx_script_type=ZS_UNDEFINED_IDX;
+		id=ZS_UNDEFINED_IDX;
 		name=_name;
 		line=ZS_UNDEFINED_IDX;
 		properties=0;
 		default_param_value=k_stk_undefined;
 	}
 
-	ScriptFunctionParam::ScriptFunctionParam(int _idx_script_type, const zs_string & _name){
-		idx_script_type=_idx_script_type;
+	ScriptFunctionParam::ScriptFunctionParam(int _idx_type, const zs_string & _name){
+		id=_idx_type;
 		name=_name;
 		line=ZS_UNDEFINED_IDX;
 		properties=0;
@@ -40,7 +40,7 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionParam::copy( const ScriptFunctionParam & _function_param){
-		idx_script_type=_function_param.idx_script_type;
+		id=_function_param.id;
 		name = _function_param.name;
 		line=_function_param.line;
 		properties=_function_param.properties;

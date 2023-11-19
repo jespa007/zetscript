@@ -41,7 +41,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// Math mod
-		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		ScriptType *cl=script_type_factory->registerScriptType("Math","",ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
 		cl->registerConstMemberProperty("PI",MathModule_PI);
 		cl->registerStaticMemberFunction("sin",MathModule_sin);
@@ -58,7 +58,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("round",MathModule_round);
 
 		// Console mod
-		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_type_factory->registerScriptType("Console","",ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("readChar",ConsoleModule_readChar);
 		cl->registerStaticMemberFunction("outNative",ConsoleModule_out);
 		cl->registerStaticMemberFunction("outlnNative",ConsoleModule_outln);
@@ -66,7 +66,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
-		cl=script_type_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_type_factory->registerScriptType("System","",ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
@@ -74,7 +74,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
-		cl=script_type_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_type_factory->registerScriptType("Json","",ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
@@ -240,7 +240,7 @@ namespace zetscript{
 		 ScriptFunction *sf_main=ZS_MAIN_FUNCTION(this);
 
 		 // list functions
-		 zs_vector<Symbol *> *symbol_functions=sf_main->scope_script_function->symbol_functions;
+		 zs_vector<Symbol *> *symbol_functions=sf_main->scope->symbol_functions;
 
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
@@ -254,7 +254,7 @@ namespace zetscript{
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
-						 zs_strutils::starts_with(local_sf->name_script_function,"@_afun_defval")
+						 zs_strutils::starts_with(local_sf->name,"@_afun_defval")
 				)){
 					 show_function=false;
 				 }
@@ -273,22 +273,22 @@ namespace zetscript{
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					   sc->str_script_type == "System"
-					|| sc->str_script_type == "String"
-					|| sc->str_script_type == "IteratorString"
-					|| sc->str_script_type == "Object"
-					|| sc->str_script_type == "IteratorObject"
-					|| sc->str_script_type == "Console"
-					|| sc->str_script_type == "DateTime"
-					|| sc->str_script_type == "Array"
-					|| sc->str_script_type == "IteratorArray"
-					|| sc->str_script_type == "Json"
+					   sc->name == "System"
+					|| sc->name == "String"
+					|| sc->name == "IteratorString"
+					|| sc->name == "Object"
+					|| sc->name == "IteratorObject"
+					|| sc->name == "Console"
+					|| sc->name == "DateTime"
+					|| sc->name == "Array"
+					|| sc->name == "IteratorArray"
+					|| sc->name == "Json"
 				)){
 				 show_class=false;
 			 }
 
 			 if(show_class){
-				 symbol_functions=sc->scope_script_type->symbol_functions;
+				 symbol_functions=sc->scope->symbol_functions;
 				 for(int f = 0; f < symbol_functions->size(); f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->get(f);
@@ -334,16 +334,16 @@ namespace zetscript{
 		else if(ZS_STK_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(ZS_STK_VALUE_IS_FUNCTION(stk))
-			result=zs_string("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name_script_function;
+			result=zs_string("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name;
 		else if(ZS_STK_VALUE_IS_TYPE(stk)) // is a type
 			result=zs_string("type@")+this->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(ZS_STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk->value;
-			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
+			result="prop@"+zs_string(ma->member_property->script_type->name)+"::"+zs_string(ma->member_property->property_name);
 		}else if(ZS_STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+zs_string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+sf->name_script_function;
+			result="fun@"+zs_string(sf->scope->script_type_owner->name)+"::"+sf->name;
 		}else{
 			if(stk->properties & ZS_STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -401,11 +401,11 @@ namespace zetscript{
 			result= stk.value?"true":"false";
 		}else if(ZS_STK_VALUE_IS_MEMBER_PROPERTY(&stk)){
 			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk.value;
-			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
+			result="prop@"+zs_string(ma->member_property->script_type->name)+"::"+zs_string(ma->member_property->property_name);
 		}else if(ZS_STK_VALUE_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
-			if(st->idx_script_type==IDX_TYPE_CLASS_MAIN){
+			if(st->id==IDX_TYPE_CLASS_MAIN){
 				result= zs_string("fun@")+symbol->name;
 			}else{
 				zs_string s="";
@@ -415,17 +415,17 @@ namespace zetscript{
 				}else{
 					s=zs_string("member_function<");
 				}
-				result=s+st->str_script_type+"::"+symbol->name;
+				result=s+st->name+"::"+symbol->name;
 			}
 		}else if(ZS_STK_VALUE_IS_TYPE(&stk)){
 			result= zs_string("type")+"@"+this->getScriptTypeFactory()->getScriptTypeName(stk.value);
 		}else{
 			if(stk.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
-				if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+				if(so->script_type_id==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
-					result= zs_string("member_function<")+st->str_script_type+"::"+somf->sf_ref->name_script_function+">";
+					result= zs_string("member_function<")+st->name+"::"+somf->sf_ref->name+">";
 				}else{
 					result=so->toString();
 				}
@@ -443,7 +443,7 @@ namespace zetscript{
 		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 		if(stk.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)stk.value;
-			if(so->idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+			if(so->script_type_id!=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 				result="Object::"+zs_string(so->getTypeName());
 			}
 		}
@@ -474,7 +474,7 @@ namespace zetscript{
 			VirtualMachine *vm=this->getVirtualMachine();
 
 			// create new if constant
-			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+			if(so->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING && (so->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
 				vm_create_shared_script_object(
 						vm
@@ -555,11 +555,11 @@ namespace zetscript{
 					script_object=(ScriptObject *)_stack_element->value;
 				}
 
-				if(_idx_type_to_convert==script_object->idx_script_type){
+				if(_idx_type_to_convert==script_object->script_type_id){
 					return true;
 				}
 
-				if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+				if(script_object->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 
 					switch(_idx_type_to_convert){
 					case IDX_TYPE_ZS_STRING_PTR_C:
@@ -568,7 +568,7 @@ namespace zetscript{
 						return true;
 					}
 
-				}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+				}else if(script_object->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 					ClassScriptObject *script_object_class = NULL;
 					ScriptType *c_class=NULL;
 					// trivial case
@@ -692,11 +692,11 @@ namespace zetscript{
 					return false;
 				}
 
-				if(_idx_type_to_convert==script_object->idx_script_type){
+				if(_idx_type_to_convert==script_object->script_type_id){
 					val_ret=(zs_int)script_object->getNativeObject();
 				}else{
 
-					if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+					if(script_object->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 						if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_PTR_C){
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->str_ptr);
 						}else if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_C){
@@ -712,7 +712,7 @@ namespace zetscript{
 									+"'";
 							return false;
 						}
-					}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+					}else if(script_object->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						ClassScriptObject *script_object_class = NULL;
 						// trivial case
 						if(
@@ -726,9 +726,9 @@ namespace zetscript{
 							if((val_ret=c_class->extendsFrom(
 									_idx_type_to_convert
 								))==0
-							){//c_class->idx_script_type==idx_builtin_type){
+							){//c_class->id==idx_builtin_type){
 								_error="cannot convert '"
-										+zs_rtti::demangle(c_class->str_script_type_ptr.c_str())
+										+zs_rtti::demangle(c_class->native_name.c_str())
 										+"' to '"
 										+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this->getScriptTypeFactory(),_idx_type_to_convert))
 										+"'";
@@ -835,7 +835,7 @@ namespace zetscript{
 			 case IDX_TYPE_SCRIPT_OBJECT_CLASS:
 			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:
 			 case IDX_TYPE_SCRIPT_OBJECT_STRING:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING:
+			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING:
 				 if(ptr_var==0) return stk_result;
 				stk_result = {
 					 (intptr_t)ptr_var
@@ -996,7 +996,7 @@ namespace zetscript{
 		stk_constants->set(_key.c_str(),(zs_int)stk);
 
 		so=ZS_NEW_STRING_OBJECT(this);
-		so->properties=SCRIPT_OBJECT_PROPERTY_CONSTANT;
+		so->properties=ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT;
 
 		// swap values stk_ref/value
 		so->set(_value.c_str());

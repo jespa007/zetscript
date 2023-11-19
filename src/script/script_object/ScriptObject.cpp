@@ -6,8 +6,8 @@
 
 namespace zetscript{
 
-	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_script_type){
-		idx_script_type=_idx_script_type;
+	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_type){
+		script_type_id=_idx_type;
 		shared_pointer=NULL;
 		properties=0;
 
@@ -22,9 +22,9 @@ namespace zetscript{
 		vm=_zs->getVirtualMachine();
 
 		// init builtin
-		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
+		if(script_type_id >= IDX_TYPE_SCRIPT_OBJECT_STRING && script_type_id<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
-			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
+			zs_vector<Symbol *> *symbol_vars=script_type->scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for(int i = 0; i < symbol_vars->size(); i++){
@@ -105,23 +105,23 @@ namespace zetscript{
 	}
 
 	const char  * ScriptObject::getTypeName(){
-		return getScriptType()->str_script_type.c_str();
+		return getScriptType()->name.c_str();
 	}
 
 	const char * ClassScriptObject::getTypeNamePtr(){
-		return getScriptType()->str_script_type_ptr.c_str();
+		return getScriptType()->native_name.c_str();
 	}
 
 	bool ScriptObject::isNativeObject(){
-		 return (getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0;
+		 return (getScriptType()->properties & ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0;
 	}
 
 	ScriptType * ScriptObject::getScriptType(){
-		return this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
+		return this->zs->getScriptTypeFactory()->getScriptType(script_type_id);
 	}
 
 	Symbol *ScriptObject::getGetter(){
-		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -131,7 +131,7 @@ namespace zetscript{
 	}
 
 	zs_vector<StackElement *> *ScriptObject::getSetterList(MetamethodByteCode _metamethod_byte_code){
-		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -160,7 +160,7 @@ namespace zetscript{
 
 	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
 		ScriptType *script_type=getScriptType();
-		zs_vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
+		zs_vector<Symbol *> *s=script_type->scope->symbol_functions;
 		for(int i=((int)s->size())-1;i>=0;i--){
 			Symbol *symbol=(Symbol *)s->get(i);
 			if(symbol->name == _function_member_name){

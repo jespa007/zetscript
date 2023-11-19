@@ -119,7 +119,7 @@ namespace zetscript{
 
 							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
 
-							if(ptr_function!=NULL && _obj->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
+							if(ptr_function!=NULL && _obj->script_type_id>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;
 
@@ -143,7 +143,7 @@ namespace zetscript{
 									zs_string str_aux="";
 									void *c_object = ((ClassScriptObject *)_obj)->getNativeObject();
 
-									switch(ptr_function->idx_script_type_return){
+									switch(ptr_function->return_script_type_id){
 									case  IDX_TYPE_ZS_STRING_C:
 										str_aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
@@ -157,7 +157,7 @@ namespace zetscript{
 									}
 									stk_getter_result=_zs->toStackElement(
 										result
-										,ptr_function->idx_script_type_return
+										,ptr_function->return_script_type_id
 									);
 								}
 
@@ -242,7 +242,7 @@ namespace zetscript{
 			case ZS_STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
 				obj=((ScriptObject *)stk.value);
-				switch(obj->idx_script_type){
+				switch(obj->script_type_id){
 				case IDX_TYPE_SCRIPT_OBJECT_STRING:
 					_str_result.append(zs_string("\"") + ((StringScriptObject *)obj)->toString() + "\"");
 					break;
@@ -251,7 +251,7 @@ namespace zetscript{
 					break;
 				default:
 					if(
-						obj->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
+						obj->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					){
 						if(_this_object != obj){ // avoid recursivity
 							serialize_object(_zs,_this_object,_str_result,(ObjectScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
@@ -271,7 +271,7 @@ namespace zetscript{
 
 			if(
 					(_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)
-				&& (((ScriptObject *)(_stk->value))->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
+				&& (((ScriptObject *)(_stk->value))->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
 			){
 				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(ObjectScriptObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{

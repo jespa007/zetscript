@@ -15,7 +15,7 @@ namespace zetscript{
 		scope_parent = _scope_parent;
 		properties = _properties;
 		script_type_owner=NULL;
-		idx_script_function=_idx_script_function;
+		id=_idx_script_function;
 		zs=_zs;
 		offset_instruction_push_scope=ZS_UNDEFINED_IDX;
 		scope_factory=_zs->getScopeFactory();
@@ -30,8 +30,8 @@ namespace zetscript{
 			scope_base = scope_parent->scope_base;
 			script_type_owner=scope_parent->script_type_owner; // propagate script type
 
-			if(idx_script_function==ZS_UNDEFINED_IDX){ // May be is a block containing if-else, for, etc --> propagate current script function
-				idx_script_function=scope_parent->idx_script_function;
+			if(id==ZS_UNDEFINED_IDX){ // May be is a block containing if-else, for, etc --> propagate current script function
+				id=scope_parent->id;
 			}
 
 			// parent owns this scope
@@ -52,7 +52,7 @@ namespace zetscript{
 	}
 
 	int Scope::getIdxScriptFunction(){
-		return idx_script_function;
+		return id;
 	}
 
 	int Scope::numInnerScopesRecursive(Scope *sc, int _n){
@@ -79,13 +79,13 @@ namespace zetscript{
 		}
 
 		// if scope is block the consecutive are blocks check node
-		if(_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK){
-			_sc->properties|=SCOPE_PROPERTY_UNUSUED;
+		if(_sc->properties & ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK){
+			_sc->properties|=ZS_SCOPE_PROPERTY_UNUSUED;
 
 			// check its
 			for(int i=0; i < _sc->scopes->size();i++){
 				Scope *_child=(Scope *)_sc->scopes->get(i);
-				if((_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
+				if((_sc->properties & ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
 					throw std::runtime_error("expected scope as block type");
 				}
 				markBlockScopeAsUnusuedScopesRecursive(_child);
@@ -100,7 +100,7 @@ namespace zetscript{
 
 	int Scope::countVariables(bool _recursive){
 		if(_recursive){
-			return Scope::countVariablesRecursive(this,this->idx_script_function);
+			return Scope::countVariablesRecursive(this,this->id);
 		}
 
 		return this->symbol_variables->size();
@@ -109,7 +109,7 @@ namespace zetscript{
 
 	int Scope::countVariablesRecursive(Scope *_sc, int idx_script_function_reference){
 		int n_total=0;
-		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
+		if(_sc->id==idx_script_function_reference){ // only count variables in the scope of the function
 			n_total=_sc->symbol_variables->size();
 
 			for(int i=0; i < _sc->scopes->size(); i++){
@@ -135,7 +135,7 @@ namespace zetscript{
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
-		this->properties|=SCOPE_PROPERTY_UNUSUED;
+		this->properties|=ZS_SCOPE_PROPERTY_UNUSUED;
 	}
 
 	zs_vector<Scope *>	*Scope::getScopes(){
@@ -278,7 +278,7 @@ namespace zetscript{
 		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
-					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
+					&& this->scope_parent->getIdxScriptFunction() == id // Only check repeated symbols in the same function scope context.
 			){
 				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
 				return this->scope_parent->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
@@ -289,7 +289,7 @@ namespace zetscript{
 			for(int i = 0; i < scopes->size(); i++){
 				Scope *s=(Scope *)scopes->get(i);
 
-				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
+				if(s->getIdxScriptFunction() == id){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
 
 					if(sv != NULL) {

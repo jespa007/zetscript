@@ -9,13 +9,13 @@
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, short _idx_script_type,void *_c_object){
-		return new ClassScriptObject(_zs, _idx_script_type,_c_object);
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, short _idx_type,void *_c_object){
+		return new ClassScriptObject(_zs, _idx_type,_c_object);
 	}
 
 	ClassScriptObject::ClassScriptObject(
 			ZetScript *_zs
-			, short _idx_script_type
+			, short _idx_type
 			,void *_c_object
 	):ObjectScriptObject(_zs){
 		was_created_by_constructor=false;
@@ -25,7 +25,7 @@ namespace zetscript{
 	//	script_type = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		idx_script_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
+		script_type_id = IDX_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 
@@ -35,9 +35,9 @@ namespace zetscript{
 
 		vm=zs->getVirtualMachine();
 
-		idx_script_type=_idx_script_type;
+		script_type_id=_idx_type;
 		ScriptType *script_type=getScriptType();
-		zs_vector<Symbol *> *member_vars=script_type->scope_script_type->symbol_variables;
+		zs_vector<Symbol *> *member_vars=script_type->scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
 		for(int i = 0; i < member_vars->size(); i++){
@@ -93,10 +93,10 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR(
 						"Cannot instantiate object '%s' because it extends from native type '%s' as not instantiable. "
 						"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-						,script_type->str_script_type.c_str()
-						,script_class_native->str_script_type.c_str()
-						,script_class_native->str_script_type.c_str()
-						,script_class_native->str_script_type.c_str()
+						,script_type->name.c_str()
+						,script_class_native->name.c_str()
+						,script_class_native->name.c_str()
+						,script_class_native->name.c_str()
 				);
 			}
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
@@ -128,7 +128,7 @@ namespace zetscript{
 
 		ScriptType *script_type=getScriptType();
 		if(script_type->idx_function_member_constructor != ZS_UNDEFINED_IDX){
-			return (ScriptFunction *)script_type->scope_script_type->symbol_functions->get(script_type->idx_function_member_constructor);
+			return (ScriptFunction *)script_type->scope->symbol_functions->get(script_type->idx_function_member_constructor);
 		}
 
 		return NULL;
@@ -140,7 +140,7 @@ namespace zetscript{
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
 
-		if(this->idx_script_type<Type::IDX_TYPE_MAX){
+		if(this->script_type_id<Type::IDX_TYPE_MAX){
 			return;
 		}
 
@@ -192,7 +192,7 @@ namespace zetscript{
 					}
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;
-					switch(ptr_function->idx_script_type_return){
+					switch(ptr_function->return_script_type_id){
 					case IDX_TYPE_ZS_STRING_C:
 							aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
@@ -222,9 +222,9 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR(
 						"Cannot delete variable as type '%s' because it was defined as not instantiable but created through 'newClassScriptObject'. "
 						"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-						,script_class_native->str_script_type.c_str()
-						,script_class_native->str_script_type.c_str()
-						,script_class_native->str_script_type.c_str()
+						,script_class_native->name.c_str()
+						,script_class_native->name.c_str()
+						,script_class_native->name.c_str()
 				);
 			}
 			 // only erases pointer if basic type or user/auto delete is required ...

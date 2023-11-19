@@ -139,7 +139,7 @@ namespace zetscript{
 					 /*if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,_this_object->getScriptType()->str_script_type.c_str()
+								,_this_object->getScriptType()->name.c_str()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					 }*/
@@ -150,7 +150,7 @@ namespace zetscript{
 					 if(sf_call_stk_function_ref==NULL){
 						 ZS_VM_STOP_EXECUTE("Error calling 'this.%s': member variable or function '%s::%s' not exist"
 							, SFI_GET_SYMBOL_NAME(_script_function,instruction)
-							,_this_object->getScriptType()->str_script_type.c_str()
+							,_this_object->getScriptType()->name.c_str()
 							, SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					 }
@@ -232,7 +232,7 @@ load_function:
 			  if(sofm_object==NULL){
 				  ZS_VM_STOP_EXECUTE(
 					  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
-					  ,sofm->sf_ref->name_script_function.c_str()
+					  ,sofm->sf_ref->name.c_str()
 					  , SFI_GET_SYMBOL_NAME(_script_function,instruction)
 				  );
 			  }
@@ -317,7 +317,7 @@ execute_function:
 
 								if((stk_arg->properties & ZS_STK_PROPERTY_PTR_STK) != ZS_STK_PROPERTY_PTR_STK){
 									ZS_VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
-											,sf_call_script_function->name_script_function.c_str(),i+1);
+											,sf_call_script_function->name.c_str(),i+1);
 								}
 
 								VarRefScriptObject *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
@@ -345,7 +345,7 @@ execute_function:
 
 							if((stk_arg->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
-								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_param->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+								if(so_param->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_param->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 									StringScriptObject *sc=ZS_NEW_STRING_OBJECT(data->zs);
 									vm_create_shared_script_object(_vm,sc);
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
@@ -461,11 +461,11 @@ execute_function:
 						sf_call_is_member_function
 					){
 						ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
-						sc=data->script_type_factory->getScriptType(sf_call_calling_object->idx_script_type);
-					}else if(sf_call_script_function->idx_script_type_owner != IDX_TYPE_CLASS_MAIN
+						sc=data->script_type_factory->getScriptType(sf_call_calling_object->script_type_id);
+					}else if(sf_call_script_function->owner_script_type_id != IDX_TYPE_CLASS_MAIN
 							&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 					){
-						sc=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner);
+						sc=data->script_type_factory->getScriptType(sf_call_script_function->owner_script_type_id);
 					}
 
 					if(ignore_call == false)
@@ -494,7 +494,7 @@ execute_function:
 
 							for( int k = 0; k < sf_call_n_args && all_check;k++){
 								StackElement *current_arg=sf_call_stk_start_arg_call+k;
-								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].idx_script_type);
+								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].id);
 							}
 
 							if(all_check==false){
@@ -507,7 +507,7 @@ execute_function:
 #ifdef __DEBUG__
 								static int index=0;
 
-								printf("Have to find function %i '%s'\n",index++,sf_call_script_function->name_script_function.c_str());
+								printf("Have to find function %i '%s'\n",index++,sf_call_script_function->name.c_str());
 #endif
 
 
@@ -517,7 +517,7 @@ execute_function:
 								,_script_function
 								,instruction
 								,sf_call_is_constructor
-								,sf_call_script_function->name_script_function // symbol to find
+								,sf_call_script_function->name // symbol to find
 								,sf_call_stk_start_arg_call
 								,sf_call_n_args))==NULL){
 								goto lbl_exit_function;
@@ -556,21 +556,21 @@ execute_function:
 					(
 						(
 							(
-								_script_function->name_script_function=="assert"
-							||  _script_function->name_script_function=="error"
-							||  _script_function->name_script_function=="outln"
+								_script_function->name=="assert"
+							||  _script_function->name=="error"
+							||  _script_function->name=="outln"
 							)
 							&&
 							(
-								sf_call_script_function->name_script_function=="errorNative"
-							 || sf_call_script_function->name_script_function=="outlnNative"
+								sf_call_script_function->name=="errorNative"
+							 || sf_call_script_function->name=="outlnNative"
 							)
 						)
 						||
 						(
 							(
-								_script_function->name_script_function=="eval"
-							&&  sf_call_script_function->name_script_function=="evalNative"
+								_script_function->name=="eval"
+							&&  sf_call_script_function->name=="evalNative"
 							)
 						)
 					)==false)
@@ -583,14 +583,14 @@ execute_function:
 							||
 						(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 					){
-						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
+						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->owner_script_type_id)->name.c_str();
 					}
 					const char * file_src_call=SFI_GET_FILE(_script_function,instruction);
 					data->vm_error_callstack_str+=zs_strutils::format(
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
-						,sf_call_script_function->name_script_function.c_str()
+						,sf_call_script_function->name.c_str()
 						,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
 						,SFI_GET_LINE(_script_function,instruction)
 					);

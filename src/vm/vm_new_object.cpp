@@ -33,7 +33,7 @@ namespace zetscript{
 			data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
 			data->vm_stk_current++;
 
-			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
+			if(so_aux->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
 
 				so_class_aux1=(ClassScriptObject *)so_aux;
 

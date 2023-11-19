@@ -23,7 +23,7 @@ namespace zetscript{
 		Symbol *symbol_member_property=NULL;
 
 
-		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+		int return_script_type_id=getNativeFunctionRetArgsTypes(
 			this->script_type_factory
 			,NULL
 			,_ptr_function
@@ -44,14 +44,14 @@ namespace zetscript{
 				,&params
 				,params_len
 				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
-				, idx_script_type_return
+				, return_script_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
 				,_registered_line
 
 		);
 
-		ZS_LOG_DEBUG("Registered const 'getter' property '%s::%s'",this->str_script_type.c_str(), _property_name.c_str());
+		ZS_LOG_DEBUG("Registered const 'getter' property '%s::%s'",this->name.c_str(), _property_name.c_str());
 	}
 
 	/**
@@ -71,7 +71,7 @@ namespace zetscript{
 		int params_len=0;
 		const char *return_type;
 
-		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+		int return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,NULL
 				,_ptr_function
@@ -87,14 +87,14 @@ namespace zetscript{
 				,&params
 				,params_len
 				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				, idx_script_type_return
+				, return_script_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
 				,_registered_line
 
 		);
 
-		ZS_LOG_DEBUG("Registered metamethod '%s' for property '%s::%s'",_metamethod_name.c_str(),this->str_script_type.c_str(), _property_name.c_str());
+		ZS_LOG_DEBUG("Registered metamethod '%s' for property '%s::%s'",_metamethod_name.c_str(),this->name.c_str(), _property_name.c_str());
 	}
 
 
@@ -115,7 +115,7 @@ namespace zetscript{
 		int params_len=0;
 		const char *return_type;
 
-		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+		int return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,NULL
 				,_ptr_function
@@ -130,14 +130,14 @@ namespace zetscript{
 				,&params
 				,params_len
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
-				, idx_script_type_return
+				, return_script_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
 				,_registered_line
 
 		);
 
-		ZS_LOG_DEBUG("Registered member function name %s::%s",this->str_script_type.c_str(), _function_name.c_str());
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), _function_name.c_str());
 	}
 
 	/*
@@ -157,7 +157,7 @@ namespace zetscript{
 		zs_string error;
 
 		// 1. check all parameters ok.
-		int idx_script_type_return=getNativeFunctionRetArgsTypes(
+		int return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,this
 				,_ptr_function
@@ -171,7 +171,7 @@ namespace zetscript{
 				, &params
 				, params_len
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				, idx_script_type_return
+				, return_script_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
 				, _registered_line
@@ -180,7 +180,7 @@ namespace zetscript{
 
 		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s::%s'"
 				,_function_name.c_str()
-				,this->str_script_type.c_str()
+				,this->name.c_str()
 				,_function_name.c_str()
 		);
 	}

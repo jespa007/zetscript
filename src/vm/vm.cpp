@@ -271,7 +271,7 @@ namespace zetscript{
 
 		// calling main funcion
 		if(
-			_script_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN
+			_script_function->id==ZS_IDX_SCRIPT_FUNCTION_MAIN
 		){ // set stack and Init vars for first call...
 
 
@@ -461,15 +461,15 @@ namespace zetscript{
 		zs_int dst_container_slot_id = _container_slot->getIdSlot();
 
 		// More tests would be needed see issue #336
-		if (dst_container_ref->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_ARRAY) {
+		if (dst_container_ref->script_type_id == IDX_TYPE_SCRIPT_OBJECT_ARRAY) {
 			stk_obj = ((ArrayScriptObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
 
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getScriptType()->str_script_type.c_str()
+				, _src_container_ref->getScriptType()->name.c_str()
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
-				, dst_container_ref->getScriptType()->str_script_type.c_str()
+				, dst_container_ref->getScriptType()->name.c_str()
 				, data->zs->stackElementToStringTypeOf( stk_obj).c_str()
 
 			);
@@ -480,10 +480,10 @@ namespace zetscript{
 			stk_obj = dst_container_ref->getStackElementByKeyName((const char*)dst_container_slot_id);
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getScriptType()->str_script_type.c_str()
+				, _src_container_ref->getScriptType()->name.c_str()
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
-				, dst_container_ref->getScriptType()->str_script_type.c_str()
+				, dst_container_ref->getScriptType()->name.c_str()
 				, data->zs->stackElementToStringTypeOf( stk_obj).c_str()
 
 			);

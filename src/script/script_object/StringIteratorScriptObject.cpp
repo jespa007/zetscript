@@ -18,7 +18,7 @@ namespace zetscript{
 			ZetScript *_zs
 			, StringScriptObject *_so_ref
 	):RefObjectScriptObject(_zs,_so_ref){
-		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING;
+		script_type_id=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING;
 		idx=0;
 		stk_key.properties=ZS_STK_PROPERTY_INT;
 		stk_value.properties=ZS_STK_PROPERTY_INT;

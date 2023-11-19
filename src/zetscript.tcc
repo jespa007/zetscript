@@ -16,17 +16,17 @@ namespace zetscript{
 		template<typename T>
 		ClassScriptObject * ZetScript::newClassScriptObject(T *_instance){
 			//return ClassScriptObject::newShareableClassScriptObject<>(this);
-			const char * str_script_type_ptr = typeid(T *).name();
-			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
+			const char * native_name = typeid(T *).name();
+			int id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(native_name);
 
-			if(idx_script_type<IDX_TYPE_MAX){
+			if(id<IDX_TYPE_MAX){
 				ZS_THROW_RUNTIME_ERROR(
 				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
 				,zs_rtti::demangle(typeid(T *).name()).c_str()
 				);
 			}
 
-			if(idx_script_type==ZS_UNDEFINED_IDX){
+			if(id==ZS_UNDEFINED_IDX){
 				ZS_THROW_RUNTIME_ERROR(
 				"Cannot instance script object as native type '%s' because is not registered"
 				,zs_rtti::demangle(typeid(T *).name()).c_str()
@@ -34,7 +34,7 @@ namespace zetscript{
 			}
 
 
-			auto so_script=ClassScriptObject::newClassScriptObject(this,idx_script_type,(void *)_instance);
+			auto so_script=ClassScriptObject::newClassScriptObject(this,id,(void *)_instance);
 			so_script->deleteNativeObjectOnDestroy(true); // <-- this destroy the native pointer on destroy script class
 			return so_script;
 		}
@@ -44,17 +44,17 @@ namespace zetscript{
 
 			zs_string error;
 			_C ptr_var;
-			zs_string str_script_type_ptr = typeid(_C).name();
+			zs_string native_name = typeid(_C).name();
 			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(native_name);
 
 			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(native_name.c_str()).c_str());
 			}
 
-			if(this->stackElementTo(_stk, script_type->idx_script_type, (zs_int *)&ptr_var,error)==false){
+			if(this->stackElementTo(_stk, script_type->id, (zs_int *)&ptr_var,error)==false){
 				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
-						,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
+						,zs_rtti::demangle(native_name.c_str()).c_str()
 						,error.c_str()
 				);
 			}
@@ -67,17 +67,17 @@ namespace zetscript{
 		){
 
 			zs_string error;
-			zs_string str_script_type_ptr = typeid(_C).name();
+			zs_string native_name = typeid(_C).name();
 			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(native_name);
 
 			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(native_name.c_str()).c_str());
 			}
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,script_type->idx_script_type
+				,script_type->id
 			);
 		}	
 
@@ -87,17 +87,17 @@ namespace zetscript{
 		){
 
 			zs_string error;
-			zs_string str_script_type_ptr = typeid(_C).name();
+			zs_string native_name = typeid(_C).name();
 			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(native_name);
 
 			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(native_name.c_str()).c_str());
 			}
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,script_type->idx_script_type
+				,script_type->id
 				,true
 			);
 		}			
@@ -117,7 +117,7 @@ namespace zetscript{
 				ClassScriptObject *class_script_object=(ClassScriptObject *)_stk->value;
 				if(class_script_object->was_created_by_constructor == true){
 					ZS_THROW_RUNTIME_ERROR("run-time converting result value to '%s'. Returning registered class type objects, return type from bind function signature should be set as 'Class ScriptObject * to be dereferenced after its use. (i.e bindScriptFunction<ClassScriptObject *(_type1, _type2, ...)> )"
-						,zetscript::zs_rtti::demangle(class_script_object->getScriptType()->str_script_type_ptr.c_str()).c_str()
+						,zetscript::zs_rtti::demangle(class_script_object->getScriptType()->native_name.c_str()).c_str()
 					);
 				}
 			}
@@ -139,19 +139,19 @@ namespace zetscript{
 		template<typename _C>
 		StackElement	ZetScript::toStackElement( _C _val){
 			zs_string error;
-			zs_string str_script_type_ptr = typeid(_C).name();
+			zs_string native_name = typeid(_C).name();
 			ScriptTypeFactory *_script_factory=this->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
+			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(native_name);
 
 			if(script_type == NULL){
-				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
+				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(native_name.c_str()).c_str());
 			}
 
 			// particular case for zs_float
-			if(script_type->idx_script_type==IDX_TYPE_FLOAT_C){
+			if(script_type->id==IDX_TYPE_FLOAT_C){
 				return this->toStackElement((zs_int)&_val,IDX_TYPE_FLOAT_PTR_C);
 			}
-			return this->toStackElement((zs_int)_val,script_type->idx_script_type);
+			return this->toStackElement((zs_int)_val,script_type->id);
 		}
 
 
@@ -1628,7 +1628,7 @@ namespace zetscript{
 
 			const char *return_type;
 			zs_vector<zs_int> params;
-			int idx_script_type_return=-1;
+			int return_script_type_id=-1;
 			void *ptr=NULL;
 
 
@@ -1637,14 +1637,14 @@ namespace zetscript{
 			getParamsFunction<Traits3>(&return_type, params, MakeIndexSequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
-			if((idx_script_type_return=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
+			if((return_script_type_id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
 
 			if(
-					idx_script_type_return == IDX_TYPE_ZS_STRING_PTR_C
-					|| idx_script_type_return == IDX_TYPE_CONST_CHAR_PTR_C
+					return_script_type_id == IDX_TYPE_ZS_STRING_PTR_C
+					|| return_script_type_id == IDX_TYPE_CONST_CHAR_PTR_C
 			){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",zs_rtti::demangle(return_type).c_str());
 				return NULL;
@@ -1652,13 +1652,13 @@ namespace zetscript{
 
 			for(int i = 0; i < params.size(); i++){
 				char *str_param=(char *)params.get(i);
-				zs_int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
+				zs_int id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(
-						idx_script_type==IDX_TYPE_FLOAT_C
-						|| idx_script_type==IDX_TYPE_BOOL_C
-						|| idx_script_type == IDX_TYPE_ZS_STRING_C
+						id==IDX_TYPE_FLOAT_C
+						|| id==IDX_TYPE_BOOL_C
+						|| id == IDX_TYPE_ZS_STRING_C
 				){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
@@ -1667,7 +1667,7 @@ namespace zetscript{
 					return NULL;
 				}
 
-				if(idx_script_type==-1){
+				if(id==-1){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
 							,zs_rtti::demangle(str_param).c_str());
@@ -1714,7 +1714,7 @@ namespace zetscript{
 				for(int i=0; i < access_var.size()-1; i++){
 					const char *symbol_to_find=access_var.get(i).c_str();
 					if(i==0){ // get variable through main_class.main_function (global element)
-						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
+						zs_vector<Symbol *> *list_variables=main_function->scope->symbol_variables;
 						for(int j = 0; j < list_variables->size() && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->get(j);
 							if(registered_symbol->name==symbol_to_find
@@ -1796,12 +1796,12 @@ namespace zetscript{
 
 			}else{ // some function in main function
 				zs_string symbol_to_find=access_var.get(0);
-				zs_vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
+				zs_vector<Symbol *> *list_functions=main_function->scope->symbol_functions;
 
 				for(int i = 0; i < list_functions->size() && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->get(i);
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(	aux_fun_obj->name_script_function == symbol_to_find){
+					if(	aux_fun_obj->name == symbol_to_find){
 						fun_obj=aux_fun_obj;
 					}
 

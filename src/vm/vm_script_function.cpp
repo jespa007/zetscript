@@ -80,7 +80,7 @@ namespace zetscript{
 		}
 
 #ifdef __DEBUG__
-		ZS_LOG_DEBUG("Executing function %s ...",_script_function->name_script_function.c_str());
+		ZS_LOG_DEBUG("Executing function %s ...",_script_function->name.c_str());
 #endif
 
 		// Init local vars ...
@@ -90,8 +90,8 @@ namespace zetscript{
 
 
 		// init local variables symbols (except arguments) as undefined
-		if((_script_function->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
-			ZS_VM_PUSH_SCOPE(_script_function->scope_script_function);
+		if((_script_function->id != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
+			ZS_VM_PUSH_SCOPE(_script_function->scope);
 			for(int i=_script_function->params_len; i <(int)_script_function->local_variables->size(); i++){
 				ZS_STK_SET_UNDEFINED(_stk_local_var+ i);
 			}
@@ -266,7 +266,7 @@ namespace zetscript{
 				default:
 					if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 						ZS_VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
-								((ObjectScriptObject *)(stk_result_op1->value))->idx_script_type // A
+								((ObjectScriptObject *)(stk_result_op1->value))->script_type_id // A
 								, instruction->value_op2		// B
 						));
 					}else{
@@ -501,7 +501,7 @@ namespace zetscript{
 
 					vm_create_shared_script_object(_vm,so_aux);
 
-					if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+					if(so_aux->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						so_class_aux1=(ClassScriptObject *)so_aux;
 						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
@@ -616,7 +616,7 @@ namespace zetscript{
 					if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
 								,((Symbol *)instruction->value_op2)->name.c_str()
-								,_this_object->getScriptType()->str_script_type.c_str()
+								,_this_object->getScriptType()->name.c_str()
 								,((Symbol *)instruction->value_op2)->name.c_str()
 						);
 					 }
@@ -633,7 +633,7 @@ namespace zetscript{
 					if(instruction->value_op2 == ZS_UNDEFINED_IDX){
 						ZS_VM_PUSH_STK_UNDEFINED;
 					}else{
-						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->get(instruction->value_op2);
+						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope->symbol_functions->get(instruction->value_op2);
 						data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
 						data->vm_stk_current++;
 					}
@@ -803,18 +803,18 @@ namespace zetscript{
 				const char *__STR_PTR_END_CLASS__=NULL;
 
 				if((__STR_PTR_END_CLASS__=strstr(__STR_PTR_SYMBOL_TO_FIND__,"::"))!=NULL){ // static access
-					char str_script_type[512]={0};
+					char name[512]={0};
 
-					strncpy(str_script_type,__STR_PTR_SYMBOL_TO_FIND__,__STR_PTR_END_CLASS__-__STR_PTR_SYMBOL_TO_FIND__);
+					strncpy(name,__STR_PTR_SYMBOL_TO_FIND__,__STR_PTR_END_CLASS__-__STR_PTR_SYMBOL_TO_FIND__);
 
 
-					if(data->zs->getScriptTypeFactory()->getScriptType(str_script_type) == NULL){
+					if(data->zs->getScriptTypeFactory()->getScriptType(name) == NULL){
 						vm_set_file_line_error(\
 								_vm \
 								,SFI_GET_FILE(_script_function,instruction)\
 								,SFI_GET_LINE(_script_function,instruction)\
 								,"type '%s' not exist"
-								,str_script_type
+								,name
 						);
 					}else{
 						vm_set_file_line_error(\
@@ -822,7 +822,7 @@ namespace zetscript{
 								,SFI_GET_FILE(_script_function,instruction)\
 								,SFI_GET_LINE(_script_function,instruction)\
 								,"static symbol '%s::%s' not exist"
-								,str_script_type
+								,name
 								,__STR_PTR_END_CLASS__+2
 						);
 					}
@@ -862,7 +862,7 @@ namespace zetscript{
 		ScriptObject *so_aux=(ScriptObject *)stk_var->value;
 
 		//special case for constant string object (they don't are shared elements)
-		if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_aux->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+		if(so_aux->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_aux->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
 			so_aux=ZS_NEW_STRING_OBJECT(data->zs,so_aux->toString());
 			stk_var->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
@@ -908,7 +908,7 @@ namespace zetscript{
 
 			vm_unref_shared_script_object(_vm,so_aux,NULL);
 
-			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
+			if(so_aux->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
 			{ // max ...
 				so_class_aux1=(ClassScriptObject *)so_aux;
 

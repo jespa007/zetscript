@@ -5,8 +5,8 @@
 #pragma once
 
 
-#define	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		0x1
-#define SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	0x2	// cannot be instanced
+#define	ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		0x1
+#define ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	0x2	// cannot be instanced
 
 
 namespace zetscript{
@@ -20,10 +20,10 @@ namespace zetscript{
 
 	public:
 
-		int 								idx_script_type; 	// registered type idx
-		zs_string							str_script_type;		// info symbol type
-		Scope							*	scope_script_type;
-		zs_string 							str_script_type_ptr; // type_id().name();
+		int 								id; 	// registered type idx
+		zs_string							name;		// info symbol type
+		Scope							*	scope;
+		zs_string 							native_name; // type_id().name();
 		uint16_t							properties;
 
 		zs_vector<MemberProperty *>		*	allocated_member_properties;
@@ -41,14 +41,14 @@ namespace zetscript{
 		zs_vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
-				 ,short _idx_script_type
+				 ,short _idx_type
 				 , const zs_string & _name
 				 , Scope *_scope
-				 ,const char *  str_script_type_ptr=ZS_TYPE_NAME_SCRIPT_OBJECT
+				 ,const char *  native_name=ZS_TYPE_NAME_SCRIPT_OBJECT
 				 ,uint16_t _properties=0
 		);
 
-		 bool extendsFrom(short idx_script_type);
+		 bool extendsFrom(short id);
 
 		//---------------------------------------------------
 		//
@@ -107,7 +107,7 @@ namespace zetscript{
 		//
 		// FUNCTIONS
 		//
-		unsigned 	getNumNativeFunctions(const zs_string & name_script_function);
+		unsigned 	getNumNativeFunctions(const zs_string & name);
 
 		Symbol				* 	registerMemberFunction(
 			 const zs_string & _function_name
@@ -157,7 +157,7 @@ namespace zetscript{
 		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
-		ScriptType * 					getScriptType(short idx_script_type);
+		ScriptType * 					getScriptType(short id);
 		short							getIdxScriptTypeFromTypeNamePtr(const char  * s);
 	};
 }

@@ -11,7 +11,7 @@
 #define SCRIPT_TYPE_MAIN(script_type_factory)							((script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main type
 
 #define SCRIPT_OBJECT_STRING(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_ITERATOR_ASSIGNRING(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ASSIGNRING))
+#define SCRIPT_OBJECT_ITERATOR_ASSIGNRING(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
 //#define SCRIPT_CLASS_DICTIONARY(script_type_factory)					((script_type_factory->script_type_factory)->getScriptType(IDX_TYPE_DICTIONARY))
 #define SCRIPT_OBJECT_ARRAY(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ARRAY))
 #define SCRIPT_OBJECT_ITERATOR_ARRAY(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY))
@@ -20,7 +20,7 @@
 #define SCRIPT_OBJECT_ITERATOR_OBJECT(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(script_type_factory)						((script_type_factory->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
-#define GET_IDX_2_CLASS_C_STR(script_type_factory,idx) 					((script_type_factory)->getScriptType(idx)->str_script_type_ptr.c_str())
+#define GET_IDX_2_CLASS_C_STR(script_type_factory,idx) 					((script_type_factory)->getScriptType(idx)->native_name.c_str())
 
 
 namespace zetscript{
@@ -61,23 +61,23 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerScriptType(
-											 const zs_string & str_script_type
+											 const zs_string & name
 											,const zs_string & base_class_name=""
 											,uint16_t _properties=0
 											,const char * file=""
 											, short line=-1
 										);
 
-		ScriptType * 					getScriptType(short _idx_script_type);
+		ScriptType * 					getScriptType(short _idx_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
 		short							getIdxScriptType(const zs_string & _type_name);
 		short		 					getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
-		const char 	* 					getScriptTypeName(short _idx_script_type);
+		const char 	* 					getScriptTypeName(short _idx_type);
 		bool							scriptTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
-		bool							isScriptTypeInstanceable(short _idx_script_type);
+		bool							isScriptTypeInstanceable(short _idx_type);
 
 		zs_vector<ScriptType *>	*		getScriptTypes();
 
@@ -89,8 +89,8 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & str_script_type);
-		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_script_type, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & name);
+		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  id, void * value_object = NULL);
 
 
 		/**
@@ -98,7 +98,7 @@ namespace zetscript{
 		 */
 		 template <typename F>
 		 void registerFunction(
-			const zs_string &  name_script_function
+			const zs_string &  name
 			 ,F function_ptr
 			 , const char *registered_file=""
 			,short registered_line=-1
@@ -109,7 +109,7 @@ namespace zetscript{
 		 */
 		template<typename T>
 		ScriptType * registerType(
-			const zs_string & str_script_type
+			const zs_string & name
 			, T * (*_new_native_instance)(ZetScript *_zs)=NULL
 			, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 			, const char *registered_file=""
@@ -176,7 +176,7 @@ namespace zetscript{
 		 */
 		template <typename T,typename F>
 		void	registerMemberFunction(
-			const zs_string & name_script_function
+			const zs_string & name
 			,F ptr_function
 			 , const char *registered_file=""
 			,short registered_line=-1
@@ -205,7 +205,7 @@ namespace zetscript{
 
 		int 							idx_clear_checkpoint;
 
-		void							checkScriptTypeName(const zs_string & str_script_type);
+		void							checkScriptTypeName(const zs_string & name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
 
 

@@ -105,7 +105,7 @@ namespace zetscript{
 
 	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
 
-		zs_string name_script_function=eval_anonymous_function_name("","defval");
+		zs_string name=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
@@ -114,13 +114,13 @@ namespace zetscript{
 			 ZS_MAIN_SCOPE(eval_data)
 			, eval_data->current_parsing_file
 			, -1
-			, name_script_function
+			, name
 		);
 
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
 		Scope *new_scope_info = eval_new_scope_function(eval_data,ZS_MAIN_SCOPE(eval_data));
-		sf->scope_script_function=new_scope_info;
+		sf->scope=new_scope_info;
 
 		// fill all instructions
 		start_ptr=sf->instructions=(Instruction *)ZS_MALLOC(instructions_total_bytes); // +1 is for return
@@ -192,7 +192,7 @@ namespace zetscript{
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN
+		if(scope_info->script_type_owner->id != IDX_TYPE_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -227,7 +227,7 @@ namespace zetscript{
 			zs_vector<ScriptFunctionParam *> script_function_params;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
-			zs_string name_script_function="";
+			zs_string name="";
 			ScriptFunction *sf = NULL;
 
 			// advance keyword...
@@ -244,7 +244,7 @@ namespace zetscript{
 						,aux_p
 						,line
 						,&sc
-						,name_script_function
+						,name
 				   );
 
 				   if(eval_data->error){
@@ -253,7 +253,7 @@ namespace zetscript{
 
 
 				   if(sc!=NULL){ // scope is the type
-					   scope_info=sc->scope_script_type;
+					   scope_info=sc->scope;
 				   }
 				}
 
@@ -264,7 +264,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							,line
-							,name_script_function
+							,name
 					);
 
 					if(end_var == NULL){
@@ -290,8 +290,8 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 							"declaring function member '%s::%s'"
-							,scope_info->script_type_owner->str_script_type.c_str()
-							,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
+							,scope_info->script_type_owner->name.c_str()
+							,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
 							).c_str():"declaring function"
 							,*aux_p
 
@@ -301,8 +301,8 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
 							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 									"declaring function member '%s::%s'"
-									,scope_info->script_type_owner->str_script_type.c_str()
-									,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
+									,scope_info->script_type_owner->name.c_str()
+									,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
 									).c_str():"declaring function"
 
 					);
@@ -483,9 +483,9 @@ namespace zetscript{
 			// register function ...
 			if(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
 				if(custom_symbol_name != ""){
-					name_script_function=custom_symbol_name;
+					name=custom_symbol_name;
 				}else{
-					name_script_function=eval_anonymous_function_name();//sc!=NULL?sc->str_script_type:"");
+					name=eval_anonymous_function_name();//sc!=NULL?sc->name:"");
 				}
 			}
 
@@ -511,7 +511,7 @@ namespace zetscript{
 			if(sc!=NULL){ // register as variable member...
 				try{
 					symbol_sf=sc->registerMemberFunction(
-							name_script_function
+							name
 							,&params
 							,params_len
 							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
@@ -534,7 +534,7 @@ namespace zetscript{
 						 scope_info
 						, eval_data->current_parsing_file
 						, line
-						, name_script_function
+						, name
 						, &params
 						, params_len
 					);

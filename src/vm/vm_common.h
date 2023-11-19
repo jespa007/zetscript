@@ -137,11 +137,11 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 
 #define ZS_VM_CHECK_CONTAINER_FOR_SLOT(_container) \
 	(\
-		(_container->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_ARRAY) \
+		(_container->script_type_id==IDX_TYPE_SCRIPT_OBJECT_ARRAY) \
 				   || \
-		(_container->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT) \
+		(_container->script_type_id==IDX_TYPE_SCRIPT_OBJECT_OBJECT) \
 					|| \
-		(((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
+		(((_container->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
 	)
 
 #define ZS_VM_STR_AUX_MAX_LENGTH	100

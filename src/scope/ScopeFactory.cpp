@@ -16,7 +16,7 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::init(){
-		main_scope=newScope(ZS_IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
+		main_scope=newScope(ZS_IDX_SCRIPT_FUNCTION_MAIN,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
 		idx_clear_checkpoint=scopes->size();
 	}
 
@@ -37,7 +37,7 @@ namespace zetscript{
 
 			if(scope!=NULL  // scope can be NULL due it was erased before by the removing parent
 					&&
-			(scope->properties & SCOPE_PROPERTY_UNUSUED)){
+			(scope->properties & ZS_SCOPE_PROPERTY_UNUSUED)){
 				// search parent element
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
@@ -69,7 +69,7 @@ namespace zetscript{
 			v--
 		){
 			Scope * info_scope = (Scope *)scopes->get(v);//(Scope *)scopes->get(v);
-			info_scope->properties |= SCOPE_PROPERTY_UNUSUED;
+			info_scope->properties |= ZS_SCOPE_PROPERTY_UNUSUED;
 		}
 
 		clearUnusuedScopes();

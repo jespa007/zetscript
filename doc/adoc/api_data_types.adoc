@@ -1,7 +1,7 @@
 
 === Data types
 
-This section wil describe the data types used in the library in order to interop data native/script and the ZetScript class, the core the most operations in the library. Some of the types have methods and properties that are used internally for ZetScript but this section will describe ONLY methods or propierties that user can use.
+This section will describe the data types used in the ZetScript API that  interops within both native and script environments. Some of the types described has methods and properties that usually are used internally by the ZetScript API and in order to simply the documentation won't be described.
 
 ==== zs_int
 
@@ -310,7 +310,6 @@ Console output:
 ----
 include::../examples/api/types/zs_string_at_out.txt[]
 ----
-
 
 ====== zs_string::clear()
 
@@ -686,19 +685,6 @@ include::../examples/api/types/zs_string_relational_operators_out.txt[]
 
 _zs_vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
 
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/zs_vector_example.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/zs_vector_example_out.txt[]
-----
 
 ===== Constructor
 
@@ -1123,6 +1109,199 @@ Console output:
 ----
 include::../examples/api/types/zs_vector_data_out.txt[]
 ----
+
+==== ScriptType
+
+ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
+
+- id: id script type
+- name: Name script type
+- scope: Scope of script type
+- native_name: Native name of script type
+- properties: A integer value composed of the following mask values,  
+
+[cols="1d,2m,2d"]
+|====
+|Name |Mask value|Description
+
+|ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		
+|0x1
+|It tells script type is native
+
+|ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
+|0x2
+|it tells script type is static or not instantiable
+
+|====
+
+==== Scope
+
+Scope is an type managed internally by ZetScript that defines the variables, types or functions in a scope. Symbol type has the following fields.
+
+- script_type_owner: Script type owner
+- scope_parent: Scope parent
+- scope_base: Scope root
+- symbol_variables: List of symbols as the variables defined in the scope.
+- symbol_functions: List of symbols as the functions defined in the scope.
+- symbol_types: List of symbols as the types defined in the scope.
+- properties: A integer value composed of the following mask values,  
+
+[cols="1d,2m,2d"]
+|====
+|Name |Mask value|Description
+
+|ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF
+|0x01
+|Tells that scope is native
+
+|ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION
+|0x02
+|Tells that scopes references a function
+
+|ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS
+|0x04
+|Tells that scope references a class
+
+|ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK|
+|0x08
+|Tells that scope references a block 
+
+|ZS_SCOPE_PROPERTY_UNUSUED
+|0x10
+|Tells that scope is unused
+
+|====
+
+
+==== Symbol
+
+_Symbol_ is a type managed internally by ZetScript that defines a symbol. The _Symbol_ type has the following fields:
+
+- scope : scope where symbol was registered
+- name: symbol name
+- ref_ptr: Pointer reference that holds information about the instance of symbol type.
+- n_params; Number of parameters in case the symbol is refers a function.
+- properties: A integer value composed of the following mask values,  
+
+[cols="1d,2m,2d"]
+|====
+|Name |Mask value|Description
+|ZS_SYMBOL_PROPERTY_C_OBJECT_REF
+|0x0001
+|ref_ptr holds C object
+
+|ZS_SYMBOL_PROPERTY_STATIC
+|0x0002
+|C function or C++ static functions
+
+|ZS_SYMBOL_PROPERTY_TYPE
+|0x0004
+|symbol is type
+
+|ZS_SYMBOL_PROPERTY_FUNCTION
+|0x0008
+|ref_ptr holds script function ptr
+
+|ZS_SYMBOL_PROPERTY_CONST
+|0x0010
+|This symbol is not assignable
+	
+|ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY
+|0x0020
+|Member attrib
+
+|ZS_SYMBOL_PROPERTY_ARG_BY_REF
+|0x0040
+|Is a reference
+
+|ZS_SYMBOL_PROPERTY_ALLOCATED_STK
+|0x0080
+|Is a reference
+
+|====
+
+==== StackElement
+
+StackElement is the data used by the VirtualMachine.  StackElement contents _value and _properties_ fields that defines the type of StackElement and how to fetch its contents in function of its properties.
+
+[cols="1d,2m,2d"]
+|====
+|Name |Mask value|Description
+
+|ZS_STK_PROPERTY_UNDEFINED
+|0x0000
+|Its value is 0 defined as *Undefined* type
+
+|ZS_STK_PROPERTY_NULL
+|0x0001
+|Its value is 0 defined as *Null* type
+
+|ZS_STK_PROPERTY_CHAR_PTR
+|0x0002
+|Its value is a *const char &#42;* type
+
+|ZS_STK_PROPERTY_INT
+|0x0004
+|Its value is a *zs_int* type
+		
+|ZS_STK_PROPERTY_FLOAT
+|0x0008
+|Its value is a *zs_float &#42;* type 
+
+|ZS_STK_PROPERTY_BOOL
+|0x0010
+|Its value is a *bool* type 
+
+|ZS_STK_PROPERTY_INDEX_CLASS_TYPE
+|0x0020
+|Its value a zs_int as the index of a defined or registered Class
+
+|ZS_STK_PROPERTY_FUNCTION
+|0x0040
+|Its value is *Symbol &#42;* as the symbol that refers a *ScriptFunction &#42;* of a function in _ref_ptr_ field
+
+|ZS_STK_PROPERTY_MEMBER_FUNCTION
+|0x0080
+|Its value is *Symbol &#42;* as the symbol that refererences a *ScriptFunction &#42;* of a member function in _ref_ptr_ field
+
+|ZS_STK_PROPERTY_MEMBER_PROPERTY
+|0x0100
+|Its value is a *StackElementMemberProperty &#42;*
+
+|ZS_STK_PROPERTY_SCRIPT_OBJECT
+|0x0200
+|Its value is a *ScriptObject &#42;*
+
+|ZS_STK_PROPERTY_CONTAINER_SLOT
+|0x0400
+|Its value is a *ContainerSlot &#42;*
+
+|ZS_STK_PROPERTY_PTR_STK
+|0x0800
+|Its value is a *StackElement &#42;*
+		
+|ZS_STK_PROPERTY_READ_ONLY
+|0x1000
+|StackElement is defined as read only
+
+|====
+
+
+==== ScriptObject
+
+_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
+
+- script_type_id: The script type representated by the instance of script object.
+- properties: A integer value composed of the following mask values,  
+
+[cols="1d,2m,2d"]
+|====
+|Name |Mask value|Description
+|ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT
+|0x1
+|Tells if ScriptObject represents a constant object
+
+|====
 
 ==== StringScriptObject
 
@@ -1808,56 +1987,32 @@ _ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _c
 
 
 
-			
-
-			template<typename _C>
-			_C to();
+template<typename _C>
+_C to();
 
 
 ==== ScriptFunction
 
 _ScriptFunction_ it defines a function object that contains function information. 
 
-==== StackElement
-
-===== Propeties
-
-value
-
-bla,bla,bla
-
-properties
-
-	
-		
-- ZS_STK_PROPERTY_UNDEFINED:
-- ZS_STK_PROPERTY_NULL:
-- ZS_STK_PROPERTY_CHAR_PTR:
-- ZS_STK_PROPERTY_INT:
-- ZS_STK_PROPERTY_FLOAT:
-- ZS_STK_PROPERTY_BOOL:	
-- ZS_STK_PROPERTY_TYPE:
-	
-- ZS_STK_PROPERTY_FUNCTION:
-- ZS_STK_PROPERTY_MEMBER_FUNCTION:
-- ZS_STK_PROPERTY_MEMBER_PROPERTY:
-- ZS_STK_PROPERTY_SCRIPT_OBJECT:
-- ZS_STK_PROPERTY_CONTAINER_SLOT:
-- ZS_STK_PROPERTY_PTR_STK:
-- ZS_STK_PROPERTY_READ_ONLY:
-
-	
+- id: id from factory
+- name: function name
+- scope: funcio
 
 
-===== Member functions
+		// script type
+		int 				return_script_type_id; 		// idx return type
+		int					owner_script_type_id; 				// which type belongs to...
 
-====== StackElement::setUndefined
+		uint16_t			properties;
 
-		void 					setUndefined();
 
-====== StackElement::typeOf
-
-		StackElement			typeOf();
+typedef enum{
+	FUNCTION_PROPERTY_C_OBJECT_REF			= 0x0001, // function is C
+	FUNCTION_PROPERTY_STATIC				= 0x0002,
+	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0004,// Member function
+	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
+}FunctionProperty;
 
 ==== ZetScript
 
@@ -1934,7 +2089,7 @@ properties
 
 		template<typename T>
 		ScriptType * registerType(
-				const zs_string & str_script_type
+				const zs_string & name
 				, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
 				, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1

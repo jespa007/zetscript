@@ -11,7 +11,7 @@
 :"Local"\
 
 #define ZS_GET_ILOAD_R_STR(properties,value) \
-	((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->get(value))->name.c_str()\
+	((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope->symbol_variables->get(value))->name.c_str()\
 	:((Symbol *)sfo->local_variables->get(value))->name.c_str()\
 
 namespace zetscript{
@@ -19,7 +19,7 @@ namespace zetscript{
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
 			,int _idx_script_function
-			,int _idx_script_type_owner
+			,int _idx_type_owner
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
@@ -30,14 +30,14 @@ namespace zetscript{
 		) {
 
 		// function data...
-		idx_script_type_owner=_idx_script_type_owner;
-		name_script_function=_function_name;
-		idx_script_function=_idx_script_function;
+		owner_script_type_id=_idx_type_owner;
+		name=_function_name;
+		id=_idx_script_function;
 		idx_position = _idx_position;
-		idx_script_type_return = _idx_return_type;
+		return_script_type_id = _idx_return_type;
 		ref_native_function_ptr=_ref_native_function_ptr;
 		properties = _properties;
-		scope_script_function = NULL;
+		scope = NULL;
 		instructions=NULL;
 		instructions_len = 0;
 
@@ -93,10 +93,10 @@ namespace zetscript{
 		zs_string iload_info="";
 
 		if(sc==NULL){ // no type is a function on a global scope
-			symbol_ref=sfo->name_script_function;
+			symbol_ref=sfo->name;
 		}else{ // is a type
-			symbol_ref=sfo->name_script_function;//+zs_string("::")+zs_string("????");
-			class_str=zs_string(sc->str_script_type)+"::";
+			symbol_ref=sfo->name;//+zs_string("::")+zs_string("????");
+			class_str=zs_string(sc->name)+"::";
 		}
 
 
@@ -106,7 +106,7 @@ namespace zetscript{
 		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
 		printf(" Stack local vars: %i                                         \n",sfo->local_variables->size());
 		printf(" Total stack required: %i                                     \n",sfo->local_variables->size()+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n\n",sfo->scope_script_function->getScopes()->size());
+		printf(" Scopes: %i                                                   \n\n",sfo->scope->getScopes()->size());
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
@@ -494,9 +494,9 @@ namespace zetscript{
 
 				if(same_signature){
 					ZS_THROW_EXCEPTION_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
-						,function_member->scope_script_function!=NULL?
+						,function_member->scope!=NULL?
 								zs_strutils::format("%s::%s"
-										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
+										,function_member->scope->script_type_owner->name.c_str()
 										,_function_name.c_str()).c_str()
 								:_function_name.c_str()
 
@@ -652,7 +652,7 @@ namespace zetscript{
 			{
 				// if exist override, but should be in the same scope
 				ZS_THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
-					,name_script_function.c_str()
+					,name.c_str()
 					,current_file_line.c_str()
 					,_line
 					,symbol_file_line.c_str()
@@ -682,7 +682,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_script_type_owner 				// idx type is the same which this function belongs to...
+				,owner_script_type_id 				// idx type is the same which this function belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -758,10 +758,10 @@ namespace zetscript{
 	void ScriptFunction::removeUnusuedScopes(){
 
 		// remove children scopes type block
-		scope_script_function->removeChildrenBlockTypes();
+		scope->removeChildrenBlockTypes();
 
 		// count number vars at the top most
-		int n_var_scope=scope_script_function->countVariables(true);
+		int n_var_scope=scope->countVariables(true);
 
 		// remove last symbols
 		local_variables->resize(n_var_scope);
@@ -828,9 +828,9 @@ namespace zetscript{
 				}else{
 					if(unresolved_instruction->byte_code==ZS_BYTE_CODE_THIS_CALL){
 
-						ScriptType *sc_sf=this->scope_script_function->getScriptTypeOwner();
-						for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->size(); j++){
-							Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->get(j);
+						ScriptType *sc_sf=this->scope->getScriptTypeOwner();
+						for(int j = 0; j < sc_sf->scope->symbol_functions->size(); j++){
+							Symbol *sv=(Symbol *)sc_sf->scope->symbol_functions->get(j);
 							if(
 								   sv->name==ptr_str_symbol_to_find
 							){

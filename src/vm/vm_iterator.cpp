@@ -153,7 +153,7 @@ namespace zetscript{
 		if(stk_result_op2_aux.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2_aux.value;
 
-			switch(so_aux->idx_script_type){
+			switch(so_aux->script_type_id){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){
 				ZS_VM_PUSH_STK_BOOLEAN(
