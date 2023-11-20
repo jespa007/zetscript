@@ -64,6 +64,7 @@ namespace zetscript{
 	// properties shared by compiler + VM
 	enum :uint16_t {
 		//---------- BEGIN PRIMITIVE TYPES HERE--------------------
+		//ZS_MSK_STACK_ELEMENT_PROPERTY
 		ZS_STK_PROPERTY_UNDEFINED			=0x0000,
 		ZS_STK_PROPERTY_NULL				=0x0001,
 		ZS_STK_PROPERTY_CHAR_PTR			=0x0002,
