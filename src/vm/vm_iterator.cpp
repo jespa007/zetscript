@@ -154,7 +154,7 @@ namespace zetscript{
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2_aux.value;
 
 			switch(so_aux->script_type_id){
-			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
+			case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){
 				ZS_VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
@@ -175,7 +175,7 @@ namespace zetscript{
 				error="operand is not 'zs_int' or 'StringScriptObject' type";
 			}
 			break;
-			case IDX_TYPE_SCRIPT_OBJECT_ARRAY: // check whether value exists...
+			case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY: // check whether value exists...
 			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				ZS_VM_PUSH_STK_BOOLEAN(
 				ArrayScriptObjectZs_contains(
@@ -183,7 +183,7 @@ namespace zetscript{
 				)
 			);
 			break;
-			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
+			case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
@@ -200,7 +200,7 @@ namespace zetscript{
 						_vm,
 						_script_function,
 						_instruction,
-						ZS_METAMETHOD_BYTE_CODE_IN,
+						Metamethod::MetamethodId::METAMETHOD_ID_IN,
 						&stk_result_op2_aux,
 						&stk_result_op1_aux,
 						false

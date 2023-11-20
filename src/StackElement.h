@@ -12,16 +12,16 @@
 #define ZS_STK_PROPERTY_TYPES								(ZS_STK_PROPERTY_MAX-1)
 #define ZS_GET_STK_PROPERTY_TYPES(prop)						((prop)&ZS_STK_PROPERTY_TYPES)
 
-#define ZS_STK_IS_OBJECT_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_OBJECT))
-#define ZS_STK_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk)		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
-#define ZS_STK_IS_STRING_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define ZS_STK_IS_ITERATOR_ASSIGNRING_SCRIPT_OBJECT(stk)	(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
-#define ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk) 					(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_ARRAY))
-#define ZS_STK_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk)			(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY))
-#define ZS_STK_IS_CLASS_SCRIPT_OBJECT(stk) 					(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id>=zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS))
-#define ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_VAR_REF))
-#define ZS_STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(stk)		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
-#define ZS_STK_IS_ZETSCRIPT_OBJECT_SCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT))
+#define ZS_STK_IS_OBJECT_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT))
+#define ZS_STK_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk)		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_OBJECT))
+#define ZS_STK_IS_STRING_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING))
+#define ZS_STK_IS_ITERATOR_ASSIGNRING_SCRIPT_OBJECT(stk)	(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_STRING))
+#define ZS_STK_IS_ARRAY_SCRIPT_OBJECT(stk) 					(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY))
+#define ZS_STK_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk)			(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_ARRAY))
+#define ZS_STK_IS_CLASS_SCRIPT_OBJECT(stk) 					(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id>=zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS))
+#define ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk) 				(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_VAR_REF))
+#define ZS_STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(stk)		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER))
+#define ZS_STK_IS_ZETSCRIPT_OBJECT_SCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::ZS_STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->script_type_id==zetscript::ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ZETSCRIPT))
 
 #define ZS_GET_STK_VAR_REF(stk)  							(((VarRefScriptObject *)((stk))->value)->getStackElementPtr())
 
@@ -62,7 +62,7 @@ namespace zetscript{
 	class ZetScript;
 
 	// properties shared by compiler + VM
-	enum:unsigned short {
+	enum :uint16_t {
 		//---------- BEGIN PRIMITIVE TYPES HERE--------------------
 		ZS_STK_PROPERTY_UNDEFINED			=0x0000,
 		ZS_STK_PROPERTY_NULL				=0x0001,

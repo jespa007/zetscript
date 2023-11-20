@@ -32,6 +32,7 @@
 #include "script_function/ScriptFunction.h"
 #include "script_function/ScriptFunctionFactory.h"
 
+#include "script_type/ScriptTypeId.h"
 #include "script_type/ScriptType.h"
 #include "script_type/ScriptTypeFactory.h"
 

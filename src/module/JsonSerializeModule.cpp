@@ -119,7 +119,7 @@ namespace zetscript{
 
 							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
 
-							if(ptr_function!=NULL && _obj->script_type_id>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
+							if(ptr_function!=NULL && _obj->script_type_id>ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;
 
@@ -144,11 +144,11 @@ namespace zetscript{
 									void *c_object = ((ClassScriptObject *)_obj)->getNativeObject();
 
 									switch(ptr_function->return_script_type_id){
-									case  IDX_TYPE_ZS_STRING_C:
+									case  ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
 										str_aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;
-									case  IDX_TYPE_FLOAT_C:
+									case  ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
 										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
@@ -243,15 +243,15 @@ namespace zetscript{
 
 				obj=((ScriptObject *)stk.value);
 				switch(obj->script_type_id){
-				case IDX_TYPE_SCRIPT_OBJECT_STRING:
+				case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING:
 					_str_result.append(zs_string("\"") + ((StringScriptObject *)obj)->toString() + "\"");
 					break;
-				case IDX_TYPE_SCRIPT_OBJECT_ARRAY:
+				case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY:
 					serialize_array(_zs, _this_object, _str_result,(ArrayScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
 					break;
 				default:
 					if(
-						obj->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
+						obj->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
 					){
 						if(_this_object != obj){ // avoid recursivity
 							serialize_object(_zs,_this_object,_str_result,(ObjectScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
@@ -271,7 +271,7 @@ namespace zetscript{
 
 			if(
 					(_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)
-				&& (((ScriptObject *)(_stk->value))->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
+				&& (((ScriptObject *)(_stk->value))->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT)
 			){
 				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(ObjectScriptObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{

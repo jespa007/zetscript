@@ -17,9 +17,9 @@ namespace zetscript{
 		ClassScriptObject * ZetScript::newClassScriptObject(T *_instance){
 			//return ClassScriptObject::newShareableClassScriptObject<>(this);
 			const char * native_name = typeid(T *).name();
-			int id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(native_name);
+			int id=script_type_factory->getScriptTypeIdFromTypeNamePtr(native_name);
 
-			if(id<IDX_TYPE_MAX){
+			if(id<ScriptTypeId::SCRIPT_TYPE_ID_MAX){
 				ZS_THROW_RUNTIME_ERROR(
 				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
 				,zs_rtti::demangle(typeid(T *).name()).c_str()
@@ -113,7 +113,7 @@ namespace zetscript{
 			R ret_value;
 
 			// returning instanced types it cannot be C++ types due it can become memory leaks
-			if((_idx_return >= IDX_TYPE_MAX) && (_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
+			if((_idx_return >= ScriptTypeId::SCRIPT_TYPE_ID_MAX) && (_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){
 				ClassScriptObject *class_script_object=(ClassScriptObject *)_stk->value;
 				if(class_script_object->was_created_by_constructor == true){
 					ZS_THROW_RUNTIME_ERROR("run-time converting result value to '%s'. Returning registered class type objects, return type from bind function signature should be set as 'Class ScriptObject * to be dereferenced after its use. (i.e bindScriptFunction<ClassScriptObject *(_type1, _type2, ...)> )"
@@ -127,7 +127,7 @@ namespace zetscript{
 			}
 
 			// particular case return type is string and stk is string script object
-			if(_idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(_stk)){
+			if(_idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(_stk)){
 				ScriptObject *so_string=(ScriptObject *)_stk->value;
 				this->unrefLifetimeObject(so_string);
 			}
@@ -148,8 +148,8 @@ namespace zetscript{
 			}
 
 			// particular case for zs_float
-			if(script_type->id==IDX_TYPE_FLOAT_C){
-				return this->toStackElement((zs_int)&_val,IDX_TYPE_FLOAT_PTR_C);
+			if(script_type->id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C){
+				return this->toStackElement((zs_int)&_val,ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C);
 			}
 			return this->toStackElement((zs_int)_val,script_type->id);
 		}
@@ -186,7 +186,7 @@ namespace zetscript{
 		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
 
 			*ptr_fun=((void *)(new std::function<R ()>(
 				[&,file,line,calling_obj,fun_obj,idx_return](){
@@ -209,7 +209,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -233,7 +233,7 @@ namespace zetscript{
 			//return NULL;
 
 			using Param1 = typename T::template Argument<0>::type;
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
 
 			*ptr_fun=((void *)(new std::function<void (Param1)>(
 				[&,file,line,calling_obj,fun_obj, idx_param1](Param1 p1){
@@ -261,8 +261,8 @@ namespace zetscript{
 		{
 			using Param1 = typename T::template Argument<0>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
 
 
 			*ptr_fun=((void *)(new std::function<R (Param1)>(
@@ -290,7 +290,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -315,8 +315,8 @@ namespace zetscript{
 			using Param2 = typename T::template Argument<1>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
 
 			*ptr_fun=((void *)(new std::function<void (Param1,Param2)>(
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2](Param1 p1,Param2 p2){
@@ -351,9 +351,9 @@ namespace zetscript{
 			using Param2 = typename T::template Argument<1>::type;
 
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](Param1 p1,Param2 p2){
@@ -383,7 +383,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -411,9 +411,9 @@ namespace zetscript{
 			using Param3 = typename T::template Argument<2>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
 
 
 			*ptr_fun=((void *)(new std::function<void (Param1,Param2,Param3)>(
@@ -450,10 +450,10 @@ namespace zetscript{
 			using Param2 = typename T::template Argument<1>::type;
 			using Param3 = typename T::template Argument<2>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](Param1 p1,Param2 p2,Param3 p3){
@@ -482,7 +482,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+					if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -509,10 +509,10 @@ namespace zetscript{
 			using Param3 = typename T::template Argument<2>::type;
 			using Param4 = typename T::template Argument<3>::type;
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
 
 
 			*ptr_fun=((void *)(new std::function<void (Param1,Param2,Param3,Param4)>(
@@ -551,11 +551,11 @@ namespace zetscript{
 			using Param3 = typename T::template Argument<2>::type;
 			using Param4 = typename T::template Argument<3>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
@@ -585,7 +585,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -615,11 +615,11 @@ namespace zetscript{
 
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
 
 
 			*ptr_fun=((void *)(new std::function<void (Param1,Param2,Param3,Param4,Param5)>(
@@ -660,12 +660,12 @@ namespace zetscript{
 			using Param4 = typename T::template Argument<3>::type;
 			using Param5 = typename T::template Argument<4>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4,Param5)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
@@ -697,7 +697,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+					if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 						ScriptObject *so_string=(ScriptObject *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -727,12 +727,12 @@ namespace zetscript{
 			using Param6 = typename T::template Argument<5>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
 
 
 
@@ -774,13 +774,13 @@ namespace zetscript{
 			using Param5 = typename T::template Argument<4>::type;
 			using Param6 = typename T::template Argument<5>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
 
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4,Param5,Param6)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
@@ -812,7 +812,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -843,13 +843,13 @@ namespace zetscript{
 			using Param7 = typename T::template Argument<6>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
 
 			*ptr_fun=((void *)(new std::function<void (
 					Param1
@@ -919,14 +919,14 @@ namespace zetscript{
 			using Param6 = typename T::template Argument<5>::type;
 			using Param7 = typename T::template Argument<6>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
 
 			*ptr_fun=((void *)(new std::function<R (
 					Param1
@@ -989,7 +989,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1020,14 +1020,14 @@ namespace zetscript{
 			using Param8 = typename T::template Argument<7>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
 
 			*ptr_fun=((void *)(new std::function<void (
 					Param1
@@ -1102,15 +1102,15 @@ namespace zetscript{
 			using Param7 = typename T::template Argument<6>::type;
 			using Param8 = typename T::template Argument<7>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
 
 			*ptr_fun=((void *)(new std::function<R (
 					Param1
@@ -1177,7 +1177,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1210,15 +1210,15 @@ namespace zetscript{
 			using Param9 = typename T::template Argument<8>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
-			int idx_param9 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param9).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
+			int idx_param9 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param9).name());
 
 			*ptr_fun=((void *)(new std::function<void (
 					Param1
@@ -1298,16 +1298,16 @@ namespace zetscript{
 			using Param8 = typename T::template Argument<7>::type;
 			using Param9 = typename T::template Argument<8>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
-			int idx_param9 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param9).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
+			int idx_param9 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param9).name());
 
 			*ptr_fun=((void *)(new std::function<R (
 					Param1
@@ -1378,7 +1378,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1412,16 +1412,16 @@ namespace zetscript{
 			using Param10 = typename T::template Argument<9>::type;
 
 
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
-			int idx_param9 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param9).name());
-			int idx_param10 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param10).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
+			int idx_param9 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param9).name());
+			int idx_param10 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param10).name());
 
 			*ptr_fun=((void *)(new std::function<void (
 					Param1
@@ -1506,17 +1506,17 @@ namespace zetscript{
 			using Param9 = typename T::template Argument<8>::type;
 			using Param10 = typename T::template Argument<9>::type;
 
-			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
-			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
-			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
-			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
-			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
-			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
-			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
-			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
-			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
-			int idx_param9 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param9).name());
-			int idx_param10 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param10).name());
+			int idx_return = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param8).name());
+			int idx_param9 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param9).name());
+			int idx_param10 = script_type_factory->getScriptTypeIdFromTypeNamePtr(typeid(Param10).name());
 
 			*ptr_fun=((void *)(new std::function<R (
 					Param1
@@ -1591,7 +1591,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(idx_return==IDX_TYPE_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+						if(idx_return==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C && ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
 							ScriptObject *so_string=(ScriptObject *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1637,14 +1637,14 @@ namespace zetscript{
 			getParamsFunction<Traits3>(&return_type, params, MakeIndexSequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
-			if((return_script_type_id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
+			if((return_script_type_id=script_type_factory->getScriptTypeIdFromTypeNamePtr(return_type)) == -1){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
 
 			if(
-					return_script_type_id == IDX_TYPE_ZS_STRING_PTR_C
-					|| return_script_type_id == IDX_TYPE_CONST_CHAR_PTR_C
+					return_script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C
+					|| return_script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C
 			){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",zs_rtti::demangle(return_type).c_str());
 				return NULL;
@@ -1652,13 +1652,13 @@ namespace zetscript{
 
 			for(int i = 0; i < params.size(); i++){
 				char *str_param=(char *)params.get(i);
-				zs_int id=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
+				zs_int id=script_type_factory->getScriptTypeIdFromTypeNamePtr(str_param);
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(
-						id==IDX_TYPE_FLOAT_C
-						|| id==IDX_TYPE_BOOL_C
-						|| id == IDX_TYPE_ZS_STRING_C
+						id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C
+						|| id==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C
+						|| id == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C
 				){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1

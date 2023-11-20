@@ -121,14 +121,14 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_STR_AUX_PARAM_0					(data->vm_str_aux[0])
 #define ZS_VM_STR_AUX_PARAM_1					(data->vm_str_aux[1])
 
-#define ZS_VM_MAIN_ERROR(_error,_stk, _metamethod) \
+#define ZS_VM_MAIN_ERROR(_error,_stk, _metamethod_id) \
 		vm_print_main_error(\
 				_vm\
 				,_script_function\
 				,instruction\
 				,_error\
 				,_stk\
-				,_metamethod\
+				,_metamethod_id\
 		);\
 		goto lbl_exit_function;
 
@@ -137,11 +137,11 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 
 #define ZS_VM_CHECK_CONTAINER_FOR_SLOT(_container) \
 	(\
-		(_container->script_type_id==IDX_TYPE_SCRIPT_OBJECT_ARRAY) \
+		(_container->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY) \
 				   || \
-		(_container->script_type_id==IDX_TYPE_SCRIPT_OBJECT_OBJECT) \
+		(_container->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT) \
 					|| \
-		(((_container->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
+		(((_container->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
 	)
 
 #define ZS_VM_STR_AUX_MAX_LENGTH	100
@@ -217,14 +217,14 @@ namespace zetscript{
 	};
 
 	bool vm_call_metamethod(
-		VirtualMachine			*	_vm
-		,ScriptFunction 		*	_script_function
-		,Instruction 			*	_instruction
-		,MetamethodByteCode 		_metamethod_byte_code
-		,StackElement 			*	_stk_result_op1
-		,StackElement 			*	_stk_result_op2
-		, bool 						_is_static=true
-		, bool 						_is_je_case=false
+		VirtualMachine			*		_vm
+		,ScriptFunction 		*		_script_function
+		,Instruction 			*		_instruction
+		,Metamethod::MetamethodId 		_metamethod_id
+		,StackElement 			*		_stk_result_op1
+		,StackElement 			*		_stk_result_op2
+		, bool 							_is_static=true
+		, bool 							_is_je_case=false
 	);
 
 	bool vm_inner_call(
@@ -249,14 +249,14 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
-		,MetamethodByteCode 		_metamethod_byte_code=ZS_METAMETHOD_BYTE_CODE_INVALID
+		,Metamethod::MetamethodId	_metamethod_id=Metamethod::MetamethodId::METAMETHOD_ID_INVALID
 	);
 
 	void vm_push_stk_boolean_equal_strings(
-		VirtualMachine			*	_vm
-		, StackElement 			*	_stk1
-		, StackElement 			*	_stk2
-		, MetamethodByteCode 		_metamethod_byte_code
+		VirtualMachine			*		_vm
+		, StackElement 			*		_stk1
+		, StackElement 			*		_stk2
+		, Metamethod::MetamethodId 		_metamethod_id
 	);
 
 	ScriptFunction * vm_find_native_function(

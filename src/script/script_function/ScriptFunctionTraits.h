@@ -185,7 +185,7 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((return_script_type_id=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
+		if((return_script_type_id=_script_class_factory->getScriptTypeIdFromTypeNamePtr(return_type)) == -1){
 			ZS_THROW_RUNTIME_ERROR(
 				"Return type '%s' not registered"
 				,zs_rtti::demangle(return_type).c_str()
@@ -212,10 +212,10 @@ namespace zetscript{
 
 			for(int i = 0; i < args.size(); i++){
 				const char *str_param=(const char *)args.get(i);
-				int id = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
+				int id = _script_class_factory->getScriptTypeIdFromTypeNamePtr(str_param);
 
 				if(i==0){
-					if(id!=IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT){
+					if(id!=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ZETSCRIPT){
 						ZS_THROW_RUNTIME_ERROR(
 							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
 							,zs_rtti::demangle(str_param).c_str()
@@ -235,7 +235,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(id==IDX_TYPE_FLOAT_C || id==IDX_TYPE_BOOL_C || id == IDX_TYPE_ZS_STRING_C){
+				if(id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C || id==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C || id == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){
 					error=zs_strutils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,zs_rtti::demangle(str_param).c_str()

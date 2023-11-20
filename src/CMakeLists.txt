@@ -208,10 +208,6 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	# Modules
 	module/zs_module.cpp
 	
-	# ByteCode
-	byte_code/zs_byte_code.cpp
-	
-	
 	# VM
 	vm/vm.cpp
 	
@@ -402,11 +398,7 @@ SET(
 	util/zs_list.h
 	util/zs_exception.h
 	
-	#byte_code
-	byte_code/zs_byte_code.h
-	byte_code/ByteCode.h
-	byte_code/MetamethodByteCode.h	
-	
+
 	#eval
 	eval/eval_keyword.h
 	eval/eval_operator.h
@@ -436,6 +428,7 @@ SET(
 	
 	# script/type
 	script/script_type/ScriptType.h
+	script/script_type/ScriptTypeId.h
 	script/script_type/ScriptType.tcc
 	script/script_type/ScriptTypeFactory.h
 	script/script_type/ScriptTypeFactory.tcc
@@ -486,10 +479,13 @@ SET(
 	# main
 	common.h
 	config.h
+	ByteCode::ByteCodeId.h
+	Metamethod.h	
+	
 	Instruction.h
 	StackElement.h
 	Symbol.h
-	Type.h
+	
 	zetscript.h
 	zetscript.tcc
 )

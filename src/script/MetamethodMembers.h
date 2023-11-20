@@ -8,12 +8,12 @@ namespace zetscript{
 
 
 	struct MetamethodMemberSetterInfo {
-		MetamethodByteCode metamethod_byte_code;
+		Metamethod::MetamethodId metamethod_id;
 		zs_vector<StackElement *> *setters;
 		const char *metamethod_name;
 
 		MetamethodMemberSetterInfo() {
-			metamethod_byte_code = MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
+			metamethod_id = Metamethod::MetamethodId::METAMETHOD_ID_INVALID;
 			setters = NULL;
 			metamethod_name = NULL;
 
@@ -21,23 +21,23 @@ namespace zetscript{
 	};
 
 	struct MetamethodMemberGetterInfo {
-		MetamethodByteCode metamethod_byte_code;
+		Metamethod::MetamethodId metamethod_id;
 		Symbol **getter;
 		const char *metamethod_name;
 
 		MetamethodMemberGetterInfo() {
-			metamethod_byte_code = MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
+			metamethod_id = Metamethod::MetamethodId::METAMETHOD_ID_INVALID;
 			getter = NULL;
 			metamethod_name = NULL;
 
 		}
 
 		MetamethodMemberGetterInfo(
-				MetamethodByteCode _metamethod_byte_code
+				Metamethod::MetamethodId _metamethod_id
 				,Symbol **_getter
 				,const char *_metamethod_name
 		) {
-			metamethod_byte_code = _metamethod_byte_code;
+			metamethod_id = _metamethod_id;
 			getter = _getter;
 			metamethod_name = _metamethod_name;
 
@@ -59,28 +59,28 @@ namespace zetscript{
 		zs_vector<StackElement *> shr_setters; // >>=
 		Symbol *getter,*postinc,*postdec,*preinc,*predec,*neg,*bwc; // getter
 
-		const static MetamethodByteCode 	metamethod_byte_code_member_setter_list[];
-		const static MetamethodByteCode 	metamethod_byte_code_member_list[];
+		const static Metamethod::MetamethodId 	member_setter_list[];
+		const static Metamethod::MetamethodId 	member_list[];
 
-		//const static zs_string & 			metamethod_byte_code_to_symbol_str(MetamethodByteCode _byte_code, const zs_string & _property_name);
-		//bool static 						isMetamethodMember(MetamethodByteCode _metamethod_byte_code);
-	//	bool static 						isMetamethodMember(const zs_string & _metamethod_byte_code);
-		static 	MetamethodByteCode 			symbolNameToSetterMetamethod(const zs_string & _metamethod_name);
-		bool 								isSetter(MetamethodByteCode _metamethod_byte_code);
+		//const static zs_string & 			Metamethod::toSymbolString(Metamethod _byte_code, const zs_string & _property_name);
+		//bool static 						isMetamethodMember(Metamethod _metamethod_id);
+	//	bool static 						isMetamethodMember(const zs_string & _metamethod_id);
+		static 	Metamethod 			symbolNameToSetterMetamethod(const zs_string & _metamethod_name);
+		bool 								isSetter(Metamethod::MetamethodId _metamethod_id);
 		bool 								isSetter(const zs_string & _metamethod_name);
-		bool 								isGetter(MetamethodByteCode _metamethod_byte_code);
+		bool 								isGetter(Metamethod::MetamethodId _metamethod_id);
 		bool 								isGetter(const zs_string & _metamethod_name);
 
 
 		MetamethodMembers();
-		MetamethodMemberSetterInfo 			getSetterInfo(MetamethodByteCode _metamethod_byte_code);
+		MetamethodMemberSetterInfo 			getSetterInfo(Metamethod::MetamethodId _metamethod_id);
 		MetamethodMemberSetterInfo 			getSetterInfo(const zs_string & _metamethod_name);
 
-		MetamethodMemberGetterInfo 			getGetterInfo(MetamethodByteCode _metamethod_byte_code);
+		MetamethodMemberGetterInfo 			getGetterInfo(Metamethod::MetamethodId _metamethod_id);
 		MetamethodMemberGetterInfo 			getGetterInfo(const zs_string & _metamethod_name);
 
-		void								addSetter(MetamethodByteCode _metamethod_byte_code,Symbol *f);
-		zs_vector<StackElement *> * 		getArraySetter(MetamethodByteCode _metamethod_byte_code);
+		void								addSetter(Metamethod::MetamethodId _metamethod_id,Symbol *f);
+		zs_vector<StackElement *> * 		getArraySetter(Metamethod _metamethod_id);
 
 
 

@@ -233,7 +233,7 @@ eval_error_sub_expression:
 		// is load or find variable
 		for(int i=0;i < eval_instructions->size(); i++){
 			Instruction *ei=&((EvalInstruction *)eval_instructions->get(i))->vm_instruction;
-			if(((byte_code_is_load_var_type(ei->byte_code) || ei->byte_code == ZS_BYTE_CODE_FIND_VARIABLE))==false){
+			if(((ByteCode::isLoadVarType(ei->byte_code) || ei->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE))==false){
 				return false;
 			}
 		}
@@ -371,7 +371,7 @@ eval_error_sub_expression:
 				}else{
 					dst_instructions->push_back(
 						new EvalInstruction(
-							ZS_BYTE_CODE_LOAD_UNDEFINED
+							ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_UNDEFINED
 						)
 					);
 
@@ -384,19 +384,19 @@ eval_error_sub_expression:
 				zs_vector<EvalInstruction *> *ei_left_sub_expressions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(l);
 				Instruction *last_load_instruction=&((EvalInstruction *)ei_left_sub_expressions->get(ei_left_sub_expressions->size()-1))->vm_instruction;
 
-				if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
-					last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
+				if(ByteCode::isLoadVarType(last_load_instruction->byte_code)){
+					last_load_instruction->byte_code=ByteCode::loadVarTypeToPushStk(last_load_instruction->byte_code);
 
 					if(
-							last_load_instruction->byte_code==ZS_BYTE_CODE_PUSH_STK_ARRAY_ITEM
-						|| last_load_instruction->byte_code==ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
-						|| last_load_instruction->byte_code==ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
+							last_load_instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM
+						|| last_load_instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
+						|| last_load_instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM
 
 					){
 						last_load_instruction->properties|=ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
 					}
 
-				}else if(last_load_instruction->byte_code == ZS_BYTE_CODE_FIND_VARIABLE){
+				}else if(last_load_instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE){
 					last_load_instruction->properties=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}
 
@@ -409,7 +409,7 @@ eval_error_sub_expression:
 			// add final store instruction...
 			dst_instructions->push_back(
 				new EvalInstruction(
-					ZS_BYTE_CODE_STORE
+					ByteCode::ByteCodeId::BYTE_CODE_ID_STORE
 					,left_size
 				)
 			);
@@ -419,7 +419,7 @@ eval_error_sub_expression:
 				zs_vector<EvalInstruction *> *left_sub_expression=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(l);
 				EvalInstruction *instruction = (EvalInstruction *)left_sub_expression->get(left_sub_expression->size()-1);
 
-				if(ZS_IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
+				if(ZS_IS_BYTE_CODE_ID_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name;
 					EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
@@ -448,12 +448,12 @@ eval_error_sub_expression:
 				if(left_instructions->size()>0){
 					ei_last=(EvalInstruction *)left_instructions->get(left_instructions->size()-1);
 
-					if(ei_last->vm_instruction.byte_code==ZS_BYTE_CODE_STORE){
+					if(ei_last->vm_instruction.byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_STORE){
 						EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->get(left_instructions->size()-1-1));
 						if(
-							eval_store_target->vm_instruction.byte_code==ZS_BYTE_CODE_PUSH_STK_ARRAY_ITEM
-							|| eval_store_target->vm_instruction.byte_code==ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
-							|| eval_store_target->vm_instruction.byte_code==ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
+							eval_store_target->vm_instruction.byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM
+							|| eval_store_target->vm_instruction.byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
+							|| eval_store_target->vm_instruction.byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM
 
 						){
 							eval_store_target->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
@@ -467,18 +467,18 @@ eval_error_sub_expression:
 		if(dst_instructions->size()>0){
 			ei_last=(EvalInstruction *)dst_instructions->get(dst_instructions->size()-1);
 			if(
-					ZS_IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
+					ZS_IS_BYTE_CODE_ID_CALL(ei_last->vm_instruction.byte_code)
 			){
 				ei_last->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_RESET_STACK;
 				//ei_last->vm_instruction.value_op1&=0xf; // if last op, no return parameters needed
-			}else if(  ZS_IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)
-					|| ZS_IS_BYTE_CODE_PRE_POST(ei_last->vm_instruction.byte_code)
+			}else if(  ZS_IS_BYTE_CODE_ID_STORE(ei_last->vm_instruction.byte_code)
+					|| ZS_IS_BYTE_CODE_ID_PRE_POST(ei_last->vm_instruction.byte_code)
 			){
 				ei_last->vm_instruction.properties|=ZS_INSTRUCTION_PROPERTY_RESET_STACK;
-			}else if(/*ZS_IS_BYTE_CODE_LOAD(ei_last->vm_instruction.byte_code) &&*/ (_properties &EVAL_EXPRESSION_RESET_STACK_LAST_LOAD)){
+			}else if(/*ZS_IS_BYTE_CODE_ID_LOAD(ei_last->vm_instruction.byte_code) &&*/ (_properties &EVAL_EXPRESSION_RESET_STACK_LAST_LOAD)){
 				dst_instructions->push_back(
 					new EvalInstruction(
-						ZS_BYTE_CODE_RESET_STACK
+						ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK
 					)
 				);
 			}

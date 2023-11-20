@@ -14,13 +14,13 @@
 
 #define ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO				(uint8_t)(-10)
 
-#define	ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED				1024
+#define	ZS_NUM_REQUIRED_BYTE_CODE_ID_NOT_MANAGED				1024
 
 #define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(ZS_UNDEFINED_IDX)
 
 
-#define ZS_INSTRUCTION_IS_STRING(ins)							((ins)->byte_code==ZS_BYTE_CODE_LOAD_STRING || ((ins)->properties & ZS_INSTRUCTION_PROPERTY_STRING))
-#define ZS_INSTRUCTION_IS_INT(ins)							((ins)->byte_code==ZS_BYTE_CODE_LOAD_INT || ((ins)->properties & ZS_INSTRUCTION_PROPERTY_INT))
+#define ZS_INSTRUCTION_IS_STRING(ins)							((ins)->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING || ((ins)->properties & ZS_INSTRUCTION_PROPERTY_STRING))
+#define ZS_INSTRUCTION_IS_INT(ins)							((ins)->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT || ((ins)->properties & ZS_INSTRUCTION_PROPERTY_INT))
 
 
 // properties shared by compiler + instruction ..
@@ -94,14 +94,14 @@ namespace zetscript{
 
 	struct Instruction {
 
-		ByteCode byte_code;
+		ByteCode::ByteCodeId byte_code;
 		uint8_t  value_op1;
 		zs_int 	value_op2;
 		uint16_t properties;
 
 		Instruction();
 
-		Instruction(ByteCode _byte_code
+		Instruction(ByteCode::ByteCodeId _byte_code
 		 ,uint8_t _value_op1=ZS_UNDEFINED_IDX
 		 ,zs_int _value_op2=ZS_UNDEFINED_IDX
 		 ,uint16_t _properties=0

@@ -31,17 +31,17 @@ namespace zetscript{
 		}
 
 		if(ZS_STK_VALUE_IS_UNDEFINED(stk)){
-			result.value=IDX_TYPE_UNDEFINED;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_UNDEFINED;
 		}else if(ZS_STK_VALUE_IS_NULL(stk)){
-			result.value=IDX_TYPE_NULL;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_NULL;
 		}else if(ZS_STK_VALUE_IS_INT(stk)){
-			result.value=IDX_TYPE_INT_C;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_INT_C;
 		}else if(ZS_STK_VALUE_IS_FLOAT(stk)){
-			result.value=IDX_TYPE_FLOAT_C;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C;
 		}else if(ZS_STK_VALUE_IS_BOOLEAN(stk)){
-			result.value=IDX_TYPE_BOOL_C;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C;
 		}else if(ZS_STK_VALUE_IS_FUNCTION(stk)){
-			result.value=IDX_TYPE_FUNCTION;
+			result.value=ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION;
 		}else if(ZS_STK_VALUE_IS_TYPE(stk)){
 			result=*stk;
 		}else if(ZS_STK_VALUE_IS_CONTAINER_SLOT(stk)){

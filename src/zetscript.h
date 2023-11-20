@@ -64,9 +64,9 @@
 #include "common.h"
 #include "util/zs_util.h"
 
-#include "Type.h"
 #include "StackElement.h"
-#include "byte_code/zs_byte_code.h"
+#include "ByteCode.h"
+#include "Metamethod.h"
 #include "Instruction.h"
 #include "Symbol.h"
 
@@ -89,13 +89,12 @@
 
 namespace zetscript{
 
-	typedef enum{
-
+	enum:uint16_t{
 		 ZS_EVAL_OPTION_NO_EXECUTE					=0x1
 		,ZS_EVAL_OPTION_PRINT_BYTE_CODE			=0x2
 		,ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
 
-	}EvalOption;
+	};
 
 	struct VirtualMachine;
 	class ScriptEval;
@@ -125,7 +124,7 @@ namespace zetscript{
 
 		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	eval(const zs_string & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	evalFile(const zs_string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	evalFile(const zs_string & _filename,uint16_t _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
 
 		inline zs_map * getCompiledSymbolName(){

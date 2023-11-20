@@ -22,7 +22,7 @@ namespace zetscript{
 		vm=_zs->getVirtualMachine();
 
 		// init builtin
-		if(script_type_id >= IDX_TYPE_SCRIPT_OBJECT_STRING && script_type_id<IDX_TYPE_SCRIPT_OBJECT_CLASS){
+		if(script_type_id >= ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && script_type_id<ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
 			zs_vector<Symbol *> *symbol_vars=script_type->scope->symbol_variables;
 			//------------------------------------------------------------------------------
@@ -130,12 +130,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector<StackElement *> *ScriptObject::getSetterList(MetamethodByteCode _metamethod_byte_code){
+	zs_vector<StackElement *> *ScriptObject::getSetterList(Metamethod::MetamethodId _metamethod_id){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
-			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod_byte_code);
+			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod_id);
 			return info.setters;
 		}
 		return NULL;

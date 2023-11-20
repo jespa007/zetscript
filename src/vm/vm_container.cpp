@@ -23,8 +23,8 @@ namespace zetscript{
 		bool 							instruction_store=false;
 
 		if(
-				instruction->byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE
-				|| instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
+				instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE
+				|| instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
 		){
 				so_aux=_this_object; // take this as default
 				goto find_element_object;
@@ -35,12 +35,12 @@ namespace zetscript{
 		instruction=(*_instruction_it)-1;
 
 		instruction_store = (instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN)
-			||    instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
-			||  instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+			||    instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM
+			||  instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE;
 
 
 		if(
-			(instruction-1)->byte_code == ZS_BYTE_CODE_NEW_OBJECT_BY_TYPE
+			(instruction-1)->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_TYPE
 		){
 			stk_result_op1=(data->vm_stk_current-1);
 		}
@@ -49,7 +49,7 @@ namespace zetscript{
 		}
 
 		if((stk_result_op1->properties & (ZS_STK_PROPERTY_SCRIPT_OBJECT | ZS_STK_PROPERTY_CONTAINER_SLOT)) == 0){
-			if((instruction-1)->byte_code==ZS_BYTE_CODE_LOAD_OBJECT_ITEM){
+			if((instruction-1)->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
@@ -85,8 +85,8 @@ namespace zetscript{
 
 		//
 		sc_type=so_aux->getScriptType();
-		// Because ZS_BYTE_CODE_LOAD_OBJECT_ITEM it does not use the valueop2, it's used as a cache of the script type of the object
-		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM)){
+		// Because ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM it does not use the valueop2, it's used as a cache of the script type of the object
+		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM)){
 			symbol_function_member=(Symbol *)instruction->value_op2;
 			if(symbol_function_member->name!=str_symbol_aux1){
 				// symbol changed it has to find new symbol
@@ -101,7 +101,7 @@ namespace zetscript{
 
 		if(symbol_function_member !=NULL){
 			if(
-				   ((instruction+1)->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM))
+				   ((instruction+1)->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM))
 				&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access operation [ ... %s.%s ], because '%s' is a function. It should call function with '()' before '.'"
@@ -176,12 +176,12 @@ namespace zetscript{
 
 			//------------------------------------------------------------------
 			// pack object+member stk info for store information...
-			if(   instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM
-			  ||  instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE
+			if(   instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM
+			  ||  instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
 			 ){
 				// if object is C
 				// exceptions
-				if(sc_type->id<IDX_TYPE_SCRIPT_OBJECT_OBJECT || sc_type->id>IDX_TYPE_SCRIPT_OBJECT_OBJECT){
+				if(sc_type->id<ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || sc_type->id>ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
@@ -189,7 +189,7 @@ namespace zetscript{
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-							,sc_type->id>IDX_TYPE_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
+							,sc_type->id>ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
 							,str_symbol_aux1
 						);
@@ -258,8 +258,8 @@ namespace zetscript{
 						||(
 								// ... or return value itself if the next instruction is not for store
 								(
-									(instruction->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM)
-								||	(instruction->byte_code == ZS_BYTE_CODE_LOAD_THIS_VARIABLE)
+									(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM)
+								||	(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE)
 								)
 								&& ((instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN)==0)
 						  )
@@ -284,7 +284,7 @@ namespace zetscript{
 
 
 
-		if((instruction+1)->byte_code == ZS_BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
+		if((instruction+1)->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
 			*data->vm_stk_current++=*stk_var;
 			instruction++; // we have to inc current instruction...
 			(*_instruction_it)++; //... and instruction iterator
@@ -294,7 +294,7 @@ namespace zetscript{
 		// load its value for write
 		if(
 			// instruction indicates that stk_var will be a target to store
-			(instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE)
+			(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM || instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE)
 								&&
 			// Check if stk_var is NOT a ZS_STK_PROPERTY_CONTAINER_SLOT because it has already a container slot that contains all information for storage
 			((stk_var->properties & (ZS_STK_PROPERTY_CONTAINER_SLOT))!=ZS_STK_PROPERTY_CONTAINER_SLOT
@@ -551,12 +551,12 @@ lbl_exit_function:
 			}
 
 
-			if(		   so_aux->script_type_id==IDX_TYPE_SCRIPT_OBJECT_ARRAY
-					|| so_aux->script_type_id==IDX_TYPE_SCRIPT_OBJECT_OBJECT
-					|| so_aux->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS
+			if(		   so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
+					|| so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
+					|| so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
 			){
 
-				if(so_aux->script_type_id==IDX_TYPE_SCRIPT_OBJECT_ARRAY){
+				if(so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
 					index_aux1=0;
 
 					if(ZS_STK_VALUE_IS_INT(stk_result_op2)){ \
@@ -580,12 +580,12 @@ lbl_exit_function:
 					if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)==0){ \
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
-					// Save ZS_STK_PROPERTY_SLOT if not ZS_BYTE_CODE_LOAD_ARRAY_ITEM
+					// Save ZS_STK_PROPERTY_SLOT if not ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM
 					stk_var = ((ObjectScriptObject *)so_aux)->getStackElementByKeyName(
 							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
-						if(instruction->byte_code == ZS_BYTE_CODE_PUSH_STK_ARRAY_ITEM){
+						if(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM){
 							if((stk_var =((ObjectScriptObject *)so_aux)->setStackElementByKeyName(
 									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
@@ -598,7 +598,7 @@ lbl_exit_function:
 					}
 				}
 
-				if(instruction->byte_code == ZS_BYTE_CODE_LOAD_ARRAY_ITEM){
+				if(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM){
 					*data->vm_stk_current++=*stk_var;
 				}else{
 					// dest to write
@@ -619,13 +619,13 @@ lbl_exit_function:
 
 				}
 				goto lbl_exit_ok;
-			}else if(so_aux->script_type_id==IDX_TYPE_SCRIPT_OBJECT_STRING){
+			}else if(so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
 				if(ZS_STK_VALUE_IS_INT(stk_result_op2)==false){ \
 					ZS_VM_STOP_EXECUTEF("Expected integer index for String access");
 				}
 
 				zs_char *ptr_char=(zs_char *)&((StringScriptObject *)so_aux)->str_ptr->c_str()[stk_result_op2->value];
-				if(instruction->byte_code == ZS_BYTE_CODE_LOAD_ARRAY_ITEM){
+				if(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM){
 					data->vm_stk_current->value=((zs_int)(*ptr_char));
 					data->vm_stk_current->properties=ZS_STK_PROPERTY_INT;
 				}else{ // push stk

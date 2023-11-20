@@ -119,7 +119,7 @@ namespace zetscript{
 
 		if(_stk_args->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_args->value;
-			if(so->script_type_id == IDX_TYPE_SCRIPT_OBJECT_ARRAY){
+			if(so->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
 				sov=(ArrayScriptObject *)so;
 			}
 		}
@@ -293,7 +293,7 @@ namespace zetscript{
 	StringScriptObject::StringScriptObject(
 			ZetScript *_zs
 			,const zs_string & _str
-	):ScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_STRING){
+	):ScriptObject(_zs,ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
 		default_str_value = _str;
 		str_ptr = &default_str_value;
 	}

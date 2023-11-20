@@ -40,7 +40,7 @@ namespace zetscript{
 		// register member function...
 		this->registerMemberPropertyMetamethod(
 				_property_name
-				,ZS_METAMETHOD_BYTE_CODE_SYMBOL_NAME_GETTER
+				,ZS_METAMETHOD_ID_SYMBOL_NAME_GETTER
 				,&params
 				,params_len
 				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC

@@ -40,7 +40,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->script_type_owner->id != IDX_TYPE_CLASS_MAIN
+			if(scope_var->script_type_owner->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
@@ -190,7 +190,7 @@ namespace zetscript{
 							// add instruction push
 							eval_data->current_function->eval_instructions.push_back(
 									eval_instruction=new EvalInstruction(
-											is_static?ZS_BYTE_CODE_PUSH_STK_GLOBAL:ZS_BYTE_CODE_PUSH_STK_LOCAL
+											is_static?ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL:ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL
 									)
 							);
 
@@ -201,7 +201,7 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
-										ZS_BYTE_CODE_STORE_CONST
+										ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST
 										,1
 										,ZS_UNDEFINED_IDX
 										,ZS_INSTRUCTION_PROPERTY_RESET_STACK

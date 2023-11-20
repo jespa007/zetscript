@@ -131,13 +131,13 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.insert(
 						scope->offset_instruction_push_scope
 						,
-								new EvalInstruction(ZS_BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
+								new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_SCOPE,0,(zs_int)scope)
 
 				);
 
 				// and finally insert pop scope
 				eval_data->current_function->eval_instructions.push_back(
-						new EvalInstruction(ZS_BYTE_CODE_POP_SCOPE,0)
+						new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_POP_SCOPE,0)
 				);
 			}
 		}
@@ -346,7 +346,7 @@ namespace zetscript{
 
 						try{
 							// compile but not execute, it will execute the last eval
-							eval_data->zs->evalFile(str_symbol,EvalOption::ZS_EVAL_OPTION_NO_EXECUTE,eval_data);
+							eval_data->zs->evalFile(str_symbol,ZS_EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
 							eval_data->error_file=ex.getFilename();
@@ -528,7 +528,7 @@ namespace zetscript{
 
 		sf->instruction_source_infos.clear();
 
-		// get total size op + 1 ends with 0 (INVALID ZS_BYTE_CODE)
+		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
 		int count =eval_data->current_function->eval_instructions.size();
 		int len=count + 1; // +1 for end instruction
 		int total_size_bytes = (len) * sizeof(Instruction);
@@ -546,7 +546,7 @@ namespace zetscript{
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.get(i);
 
 			int req_stk=instruction_num_required_stack(&eval_instruction->vm_instruction);
-			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
+			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_ID_NOT_MANAGED){
 				ZS_THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", eval_instruction->vm_instruction.byte_code);
 			}
 
@@ -557,7 +557,7 @@ namespace zetscript{
 			switch(eval_instruction->vm_instruction.byte_code){
 			default:
 				break;
-			case ZS_BYTE_CODE_SUPER_CALL:
+			case ByteCode::ByteCodeId::BYTE_CODE_ID_SUPER_CALL:
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
@@ -601,30 +601,30 @@ namespace zetscript{
 								symbol_sf_foundf->scope->script_type_owner->name)+"::"+symbol_sf_foundf->name);
 
 				break;
-			case ZS_BYTE_CODE_CALL:
+			case ByteCode::ByteCodeId::BYTE_CODE_ID_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
-					eval_instruction->vm_instruction.byte_code=ZS_BYTE_CODE_UNRESOLVED_CALL;
+					eval_instruction->vm_instruction.byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_UNRESOLVED_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
-			case ZS_BYTE_CODE_THIS_CALL:
-				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
-					eval_data->zs->addUnresolvedSymbol(sf,i);
-				}
-				break;
-			case ZS_BYTE_CODE_INSTANCEOF:
+			case ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
-			case ZS_BYTE_CODE_FIND_VARIABLE:
+			case ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF:
+				if(eval_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
+					eval_data->zs->addUnresolvedSymbol(sf,i);
+				}
+				break;
+			case ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE:
 				// add instruction reference to solve later
 				eval_data->zs->addUnresolvedSymbol(sf,i);
 				break;
 			}
 
-			if(eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_RESET_STACK
-				|| eval_instruction->vm_instruction.byte_code == ZS_BYTE_CODE_RET
+			if(eval_instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK
+				|| eval_instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_RET
 				|| (eval_instruction->vm_instruction.properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK)
 			){
 				// <-- reset stack
@@ -640,15 +640,15 @@ namespace zetscript{
 				((eval_instruction->vm_instruction.properties & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) == 0)
 			){
 				// add any instruction that references global instruction
-				ByteCode byte_code=eval_instruction->vm_instruction.byte_code;
+				ByteCode::ByteCodeId byte_code=eval_instruction->vm_instruction.byte_code;
 				uint16_t properties_1=eval_instruction->vm_instruction.properties;
 				uint16_t properties_2=(uint16_t)(eval_instruction->vm_instruction.value_op2 & 0xffff);
 
 				switch(byte_code){ // reallocate instructions
-				case ZS_BYTE_CODE_INDIRECT_LOCAL_CALL:
-				case ZS_BYTE_CODE_LOAD_LOCAL:
-				case ZS_BYTE_CODE_LOAD_REF:
-				case ZS_BYTE_CODE_PUSH_STK_LOCAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_LOCAL_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_LOCAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_REF:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL:
 					eval_instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2];
 					break;
 				default:

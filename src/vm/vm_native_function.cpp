@@ -105,7 +105,7 @@ namespace zetscript{
 						StackElement *current_arg=&_stk_arg[k];
 						arg_idx_type=irfs->params[k+start_param].id;
 
-						if(arg_idx_type!=IDX_TYPE_STACK_ELEMENT){
+						if(arg_idx_type!=ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT){
 							//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
 							if(current_arg->properties & ZS_STK_PROPERTY_PTR_STK){
 								current_arg=(StackElement *)current_arg->value;
@@ -118,24 +118,24 @@ namespace zetscript{
 									break;
 								case ZS_STK_PROPERTY_INT:
 									all_check=
-											arg_idx_type==IDX_TYPE_INT_PTR_C
-										  ||arg_idx_type==IDX_TYPE_INT_C
-										  ||arg_idx_type==IDX_TYPE_FLOAT_PTR_C;
+											arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
+										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C
+										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C;
 									break;
 								case ZS_STK_PROPERTY_FLOAT:
-									all_check=arg_idx_type==IDX_TYPE_FLOAT_PTR_C
-											||arg_idx_type==IDX_TYPE_FLOAT_C
-											||arg_idx_type==IDX_TYPE_INT_PTR_C
-											||arg_idx_type==IDX_TYPE_INT_C;
+									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C
+											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C
+											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
+											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C;
 									break;
 								case ZS_STK_PROPERTY_BOOL:
-									all_check=arg_idx_type==IDX_TYPE_BOOL_PTR_C;
+									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C;
 									break;
 								case ZS_STK_PROPERTY_FUNCTION|ZS_STK_PROPERTY_MEMBER_FUNCTION:
-									all_check=arg_idx_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER;
 									break;
 								case ZS_STK_PROPERTY_FUNCTION:
-									all_check=arg_idx_type==IDX_TYPE_FUNCTION;
+									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION;
 									break;
 								// decoment to not allow nulls
 								/*case ZS_STK_PROPERTY_NULL:
@@ -144,12 +144,12 @@ namespace zetscript{
 								case ZS_STK_PROPERTY_SCRIPT_OBJECT:
 
 									if(ZS_STK_IS_STRING_SCRIPT_OBJECT(current_arg)){
-										all_check=arg_idx_type==IDX_TYPE_SCRIPT_OBJECT_STRING; // if string object --> direct
+										all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_idx_type==IDX_TYPE_ZS_STRING_PTR_C && current_arg->value!=0)
-											  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
+												(	arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C && current_arg->value!=0)
+											  ||	arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
@@ -171,7 +171,7 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			zs_string class_str=_class_obj==NULL?"":_class_obj->id!=IDX_TYPE_CLASS_MAIN?_class_obj->name:"";
+			zs_string class_str=_class_obj==NULL?"":_class_obj->id!=ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj->name:"";
 			int n_candidates=0;
 			zs_string str_candidates="";
 			zs_string function_name_not_found=
@@ -245,7 +245,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// type if not main
-					if(_class_obj!=NULL && _class_obj->id!=IDX_TYPE_CLASS_MAIN){
+					if(_class_obj!=NULL && _class_obj->id!=ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
 						str_candidates.append(_class_obj->name);
 						str_candidates.append("::");
 					}
@@ -361,7 +361,7 @@ namespace zetscript{
 				idx_arg_start++;
 				n_args++;
 				converted_param[1]=(zs_int)_this_object->getNativeObject();
-			}else if(_this_object->script_type_id != IDX_TYPE_CLASS_MAIN){
+			}else if(_this_object->script_type_id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
 				ZS_VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
 						,_c_function->name.c_str()
 						,_this_object->getScriptType()->name.c_str()
@@ -404,7 +404,7 @@ namespace zetscript{
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & ZS_STK_PROPERTY_INT) && (_c_function->params[i].id == IDX_TYPE_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & ZS_STK_PROPERTY_INT) && (_c_function->params[i].id == ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(
@@ -422,7 +422,7 @@ namespace zetscript{
 			}
 		}
 
-		if(_c_function->return_script_type_id == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(_c_function->return_script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 1:
@@ -522,7 +522,7 @@ namespace zetscript{
 					break;
 			}
 
-		}else if(_c_function->return_script_type_id==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -620,7 +620,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(_c_function->return_script_type_id==IDX_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -722,7 +722,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(_c_function->return_script_type_id==IDX_TYPE_ZS_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:

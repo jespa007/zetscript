@@ -7,6 +7,8 @@
 #include "Instruction.cpp"
 #include "StackElement.cpp"
 #include "Symbol.cpp"
+#include "ByteCode.cpp"
+#include "Metamethod.cpp"
 
 
 namespace zetscript{
@@ -405,7 +407,7 @@ namespace zetscript{
 		}else if(ZS_STK_VALUE_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
-			if(st->id==IDX_TYPE_CLASS_MAIN){
+			if(st->id==ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
 				result= zs_string("fun@")+symbol->name;
 			}else{
 				zs_string s="";
@@ -422,7 +424,7 @@ namespace zetscript{
 		}else{
 			if(stk.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
-				if(so->script_type_id==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+				if(so->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->name+"::"+somf->sf_ref->name+">";
@@ -443,7 +445,7 @@ namespace zetscript{
 		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 		if(stk.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)stk.value;
-			if(so->script_type_id!=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+			if(so->script_type_id!=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER){
 				result="Object::"+zs_string(so->getTypeName());
 			}
 		}
@@ -474,7 +476,7 @@ namespace zetscript{
 			VirtualMachine *vm=this->getVirtualMachine();
 
 			// create new if constant
-			if(so->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING && (so->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+			if(so->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
 				vm_create_shared_script_object(
 						vm
@@ -504,7 +506,7 @@ namespace zetscript{
 			_stack_element=((StackElement *)_stack_element->value);
 		}
 
-		if(_idx_type_to_convert == IDX_TYPE_STACK_ELEMENT){
+		if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT){
 			return true;
 		}
 
@@ -514,29 +516,29 @@ namespace zetscript{
 			break;
 		case ZS_STK_PROPERTY_BOOL:
 			switch(_idx_type_to_convert){
-			case IDX_TYPE_BOOL_C:
-			case IDX_TYPE_BOOL_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C:
 				return true;
 				break;
 			}
 			break;
 		case ZS_STK_PROPERTY_FLOAT:
 			switch(_idx_type_to_convert){
-			case IDX_TYPE_FLOAT_C:
-			case IDX_TYPE_FLOAT_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				return true;
-			case IDX_TYPE_INT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
 				return _strict == false;
 				break;
 			}
 			break;
 		case ZS_STK_PROPERTY_INT:
 			switch(_idx_type_to_convert){
-			case IDX_TYPE_INT_C:
-			case IDX_TYPE_INT_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C:
 				return true;
-			case IDX_TYPE_FLOAT_C:
-			case IDX_TYPE_FLOAT_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				return _strict == false;
 				break;
 			}
@@ -559,21 +561,21 @@ namespace zetscript{
 					return true;
 				}
 
-				if(script_object->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+				if(script_object->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){ // string
 
 					switch(_idx_type_to_convert){
-					case IDX_TYPE_ZS_STRING_PTR_C:
-					case IDX_TYPE_ZS_STRING_C:
-					case IDX_TYPE_CONST_CHAR_PTR_C:
+					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C:
+					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
+					case ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
 						return true;
 					}
 
-				}else if(script_object->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+				}else if(script_object->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 					ClassScriptObject *script_object_class = NULL;
 					ScriptType *c_class=NULL;
 					// trivial case
 					if(
-						_idx_type_to_convert != IDX_TYPE_SCRIPT_OBJECT_CLASS
+						_idx_type_to_convert != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
 					){
 						script_object_class = (ClassScriptObject *)script_object;
 						c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
@@ -608,7 +610,7 @@ namespace zetscript{
 			_stack_element=((StackElement *)_stack_element->value);
 		}
 
-		if(_idx_type_to_convert == IDX_TYPE_STACK_ELEMENT){
+		if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT){
 			*_ptr_var=(zs_int)_stack_element;
 			return true;
 		}
@@ -617,9 +619,9 @@ namespace zetscript{
 		case ZS_STK_PROPERTY_NULL:
 			break;
 		case ZS_STK_PROPERTY_BOOL:
-			if(_idx_type_to_convert == IDX_TYPE_BOOL_C){// *ScriptType::k_str_bool_type){
+			if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){// *ScriptType::k_str_bool_type){
 				val_ret=(zs_int)(_stack_element->value);
-			}else if(_idx_type_to_convert == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
+			}else if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
 				val_ret=(zs_int)(&_stack_element->value);
 			}else{
 				_error="cannot convert '"
@@ -633,13 +635,13 @@ namespace zetscript{
 			break;
 		case ZS_STK_PROPERTY_FLOAT:
 			switch(_idx_type_to_convert){
-			case IDX_TYPE_FLOAT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
 				ZS_FLOAT_COPY(&val_ret,&_stack_element->value);
 				break;
-			case IDX_TYPE_FLOAT_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
-			case IDX_TYPE_INT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
 				{
 					zs_int *aux_dst = ((zs_int *)&val_ret);
 					zs_float *aux_src=(zs_float *)&_stack_element->value;
@@ -657,10 +659,10 @@ namespace zetscript{
 			break;
 		case ZS_STK_PROPERTY_INT:
 			switch(_idx_type_to_convert){
-			case IDX_TYPE_INT_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
 				val_ret=(zs_int)(_stack_element->value);
 				break;
-			case IDX_TYPE_INT_PTR_C:
+			case ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
 			default:
@@ -696,13 +698,13 @@ namespace zetscript{
 					val_ret=(zs_int)script_object->getNativeObject();
 				}else{
 
-					if(script_object->script_type_id == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
-						if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_PTR_C){
+					if(script_object->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){ // string
+						if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C){
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->str_ptr);
-						}else if(_idx_type_to_convert == IDX_TYPE_ZS_STRING_C){
+						}else if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){
 							*((zs_string *)_ptr_var)=*(((StringScriptObject *)script_object)->str_ptr);
 							return true;
-						}else if (_idx_type_to_convert == IDX_TYPE_CONST_CHAR_PTR_C){
+						}else if (_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C){
 							val_ret=(zs_int)(((StringScriptObject *)script_object)->getConstChar());
 						}else{
 							_error="cannot convert '"
@@ -712,11 +714,11 @@ namespace zetscript{
 									+"'";
 							return false;
 						}
-					}else if(script_object->script_type_id>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+					}else if(script_object->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 						ClassScriptObject *script_object_class = NULL;
 						// trivial case
 						if(
-							_idx_type_to_convert != IDX_TYPE_SCRIPT_OBJECT_CLASS
+							_idx_type_to_convert != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
 						){
 							script_object_class = (ClassScriptObject *)script_object;
 							c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
@@ -762,7 +764,7 @@ namespace zetscript{
 		}
 
 		// prevent to
-		if(_idx_type_to_convert == IDX_TYPE_BOOL_C){
+		if(_idx_type_to_convert == ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){
 			*((bool *)_ptr_var) = val_ret;
 		}else{
 			*_ptr_var = val_ret;
@@ -778,45 +780,45 @@ namespace zetscript{
 			StackElement stk_result=k_stk_undefined;
 			StringScriptObject *so=NULL;
 
-			//int idx_builtin_type=getIdxScriptTypeFromTypeNamePtr(typeid(T).name());
+			//int idx_builtin_type=getScriptTypeIdFromTypeNamePtr(typeid(T).name());
 			// save return type ...
 			switch(idx_builtin_type_var){
-			 case IDX_TYPE_VOID_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_VOID_C:
 				break;
-			 case IDX_TYPE_INT_PTR_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((zs_int *)ptr_var)),ZS_STK_PROPERTY_INT};
 				 break;
-			 case IDX_TYPE_INT_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
 				 stk_result={(((zs_int)ptr_var)),ZS_STK_PROPERTY_INT};
 				 break;
-			 case IDX_TYPE_FLOAT_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
 				 stk_result.properties=ZS_STK_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
 				 break;
-			 case IDX_TYPE_FLOAT_PTR_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result.properties=ZS_STK_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
 				 break;
-			 case IDX_TYPE_BOOL_PTR_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((bool *)ptr_var)),ZS_STK_PROPERTY_BOOL};
 				 break;
-			 case IDX_TYPE_BOOL_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C:
 				 stk_result={(((bool)ptr_var)),ZS_STK_PROPERTY_BOOL};
 				 break;
-			 case IDX_TYPE_CONST_CHAR_PTR_C:
-			 case IDX_TYPE_ZS_STRING_PTR_C:
-			 case IDX_TYPE_ZS_STRING_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
 
 
 				 so=ZS_NEW_STRING_OBJECT(this);
 				 if(ptr_var!=0) { // not null
-					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){
+					 if(idx_builtin_type_var==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C){
 						// assing zs_string reference
 						so->str_ptr=(zs_string *)ptr_var;
-					 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
+					 }else if(idx_builtin_type_var==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){ // zs_string passed as pointer
 						 so->set(*((zs_string *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
@@ -825,17 +827,17 @@ namespace zetscript{
 
 				 stk_result={(intptr_t)so,ZS_STK_PROPERTY_SCRIPT_OBJECT};
 				 break;
-			 case IDX_TYPE_STACK_ELEMENT:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT:
 				 if(ptr_var==0) return stk_result;
 				 stk_result=*((StackElement *)ptr_var);
 				 break;
-			 case IDX_TYPE_SCRIPT_OBJECT_ARRAY:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_ARRAY:
-			 case IDX_TYPE_SCRIPT_OBJECT_OBJECT:
-			 case IDX_TYPE_SCRIPT_OBJECT_CLASS:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:
-			 case IDX_TYPE_SCRIPT_OBJECT_STRING:
-			 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_ARRAY:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_OBJECT:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING:
+			 case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_STRING:
 				 if(ptr_var==0) return stk_result;
 				stk_result = {
 					 (intptr_t)ptr_var
@@ -876,11 +878,11 @@ namespace zetscript{
 		eval_parse_and_compile(this,_code,_eval_data_from,_filename);
 		link();
 
-		if(_eval_options & EvalOption::ZS_EVAL_OPTION_PRINT_BYTE_CODE){
-			printGeneratedCode(_eval_options & EvalOption::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
+		if(_eval_options & ZS_EVAL_OPTION_PRINT_BYTE_CODE){
+			printGeneratedCode(_eval_options & ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
 		}
 
-		if((_eval_options & EvalOption::ZS_EVAL_OPTION_NO_EXECUTE)==0){
+		if((_eval_options & ZS_EVAL_OPTION_NO_EXECUTE)==0){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
 			stk_ret=vm_execute(
 					virtual_machine
@@ -1039,7 +1041,7 @@ namespace zetscript{
 		return evalInternal(_expresion.c_str(), 0, NULL,NULL,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const zs_string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
+	StackElement ZetScript::evalFile(const zs_string &  _filename, uint16_t _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		zs_buffer *buf_tmp=NULL;

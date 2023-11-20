@@ -25,7 +25,7 @@ namespace zetscript{
 	//	script_type = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		script_type_id = IDX_TYPE_SCRIPT_OBJECT_CLASS;
+		script_type_id = ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 
@@ -135,12 +135,12 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getStackElementByKeyName(metamethod_byte_code_to_symbol_str(ZS_METAMETHOD_BYTE_CODE_SET)) != NULL;
+		return getStackElementByKeyName(Metamethod::toSymbolString(Metamethod::MetamethodId::METAMETHOD_ID_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
 
-		if(this->script_type_id<Type::IDX_TYPE_MAX){
+		if(this->script_type_id<ScriptTypeId::SCRIPT_TYPE_ID_MAX){
 			return;
 		}
 
@@ -164,7 +164,7 @@ namespace zetscript{
 
 	zs_string ClassScriptObject::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(metamethod_byte_code_to_symbol_str(ZS_METAMETHOD_BYTE_CODE_TO_STRING));
+		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(Metamethod::toSymbolString(Metamethod::MetamethodId::METAMETHOD_ID_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
@@ -193,10 +193,10 @@ namespace zetscript{
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;
 					switch(ptr_function->return_script_type_id){
-					case IDX_TYPE_ZS_STRING_C:
+					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
 							aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
-					case IDX_TYPE_ZS_STRING_PTR_C:
+					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C:
 							str=((zs_string * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");

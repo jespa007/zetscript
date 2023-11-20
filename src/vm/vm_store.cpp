@@ -69,7 +69,7 @@ namespace zetscript{
 		store_lst_setter_functions=NULL;
 
 		if(ZS_STK_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
-			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(ZS_METAMETHOD_BYTE_CODE_SET))!=NULL){
+			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(Metamethod::MetamethodId::METAMETHOD_ID_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
@@ -92,8 +92,8 @@ namespace zetscript{
 
 			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
-			const char *__STR_SETTER_METAMETHOD__=metamethod_byte_code_to_symbol_str(ZS_METAMETHOD_BYTE_CODE_SET);\
-			const char *__STR_AKA_SETTER_METAMETHOD__=metamethod_byte_code_to_operator_str(ZS_METAMETHOD_BYTE_CODE_SET);\
+			const char *__STR_SETTER_METAMETHOD__=Metamethod::toSymbolString(Metamethod::MetamethodId::METAMETHOD_ID_SET);\
+			const char *__STR_AKA_SETTER_METAMETHOD__=Metamethod::toOperatorString(Metamethod::MetamethodId::METAMETHOD_ID_SET);\
 			*stk_arg=*stk_src;\
 			if(stk_dst->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
@@ -127,10 +127,10 @@ namespace zetscript{
 					}
 
 
-					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BYTE_CODE(
+					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
 						data->vm_str_metamethod_aux
 						,stk_mp_aux->member_property->property_name.c_str()
-						,ZS_METAMETHOD_BYTE_CODE_SET
+						,Metamethod::MetamethodId::METAMETHOD_ID_SET
 					); // symbol to find"
 				}
 
@@ -313,7 +313,7 @@ namespace zetscript{
 				}
 
 			}else{
-				ZS_VM_STOP_EXECUTE("ZS_BYTE_CODE_STORE: (internal) cannot determine var type %s"
+				ZS_VM_STOP_EXECUTE("ByteCode::ByteCodeId::BYTE_CODE_ID_STORE: (internal) cannot determine var type %s"
 					,data->zs->stackElementToStringTypeOf(stk_src).c_str()
 				);
 			}
@@ -343,13 +343,13 @@ namespace zetscript{
 
 		// check whether dst_container_slot is not referenced
 		if(
-				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
+				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;
 		}
 
-		if(_instruction->byte_code ==ZS_BYTE_CODE_STORE_CONST){
+		if(_instruction->byte_code ==ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST){
 			stk_dst->properties |= ZS_STK_PROPERTY_READ_ONLY;
 		}
 

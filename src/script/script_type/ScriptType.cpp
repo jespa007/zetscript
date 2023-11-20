@@ -138,8 +138,8 @@ namespace zetscript{
 		return script_type_factory->getScriptType(idx);
 	}
 
-	short					ScriptType::getIdxScriptTypeFromTypeNamePtr(const char * s){
-		return script_type_factory->getIdxScriptTypeFromTypeNamePtr(s);
+	short					ScriptType::getScriptTypeIdFromTypeNamePtr(const char * s){
+		return script_type_factory->getScriptTypeIdFromTypeNamePtr(s);
 	}
 
 	//---------------------------------------------------
@@ -224,7 +224,7 @@ namespace zetscript{
 		Symbol *symbol_function=NULL;
 		char symbol_metamethod_function[100];
 		Symbol **ptr_getter_script_function=NULL;
-		MetamethodByteCode metamethod_byte_code=MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID;
+		Metamethod::MetamethodId metamethod_id=Metamethod::MetamethodId::METAMETHOD_ID_INVALID;
 
 		if((symbol_member_property=getSymbol(_property_name.c_str())) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
@@ -233,21 +233,21 @@ namespace zetscript{
 		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
-		//zs_string member_property_metamethod_name=metamethod_byte_code_to_symbol_str(_metamethod)+"@"+_property_name;
+		//zs_string member_property_metamethod_name=Metamethod::toSymbolString(_metamethod)+"@"+_property_name;
 		mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
-		if(mp_setter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID){
+		if(mp_setter_info.metamethod_id != Metamethod::MetamethodId::METAMETHOD_ID_INVALID){
 			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
 				symbol_metamethod_function
 				, _property_name.c_str()
 				,_metamethod_name.c_str()
 			);
 			mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
-			metamethod_byte_code=mp_setter_info.metamethod_byte_code;
+			metamethod_id=mp_setter_info.metamethod_id;
 		}
 		else{
 
 			MetamethodMemberGetterInfo mp_getter_info=mp->metamethod_members.getGetterInfo(_metamethod_name);
-			if(mp_getter_info.metamethod_byte_code != MetamethodByteCode::ZS_METAMETHOD_BYTE_CODE_INVALID){
+			if(mp_getter_info.metamethod_id != Metamethod::MetamethodId::METAMETHOD_ID_INVALID){
 
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
 					symbol_metamethod_function
@@ -265,7 +265,7 @@ namespace zetscript{
 					);
 				}
 
-				metamethod_byte_code=mp_getter_info.metamethod_byte_code;
+				metamethod_id=mp_getter_info.metamethod_id;
 
 				ptr_getter_script_function=mp_getter_info.getter;
 
@@ -293,7 +293,7 @@ namespace zetscript{
 		if(ptr_getter_script_function!=NULL){ // getter
 			*ptr_getter_script_function=symbol_function;
 		}else{ // setter
-			mp->metamethod_members.addSetter(metamethod_byte_code,symbol_function);
+			mp->metamethod_members.addSetter(metamethod_id,symbol_function);
 			//mp_setter_info.setters->push_back(symbol_function->ref_ptr);
 		}
 
@@ -380,24 +380,24 @@ namespace zetscript{
 		}
 		else{
 			// check metamethod function (not property metamethod)...
-			for(int i = 0; i < ZS_MAX_METAMETHOD_BYTE_CODES; i++){
-				if(ZS_STRCMP(metamethod_byte_code_to_symbol_str((MetamethodByteCode)i),==,_function_name.c_str())){
+			for(int i = 0; i < Metamethod::MetamethodId::MAX_METAMETHOD_IDS; i++){
+				if(ZS_STRCMP(Metamethod::toSymbolString((Metamethod::MetamethodId)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
 					MetamethodMemberSetterInfo info_mp;
-					MetamethodByteCode op=(MetamethodByteCode)i;
-					const char *metamethod_byte_code_operator_str=metamethod_byte_code_to_operator_str(op);
-					const char *str_symbol_metamethod=metamethod_byte_code_to_symbol_str(op);
-					int n_args_static_metamethod=metamethod_byte_code_get_num_arguments(op); // expected params for static function, n_args -1 else
+					Metamethod::MetamethodId op=(Metamethod::MetamethodId)i;
+					const char *operator_str=Metamethod::toOperatorString(op);
+					const char *str_symbol_metamethod=Metamethod::toSymbolString(op);
+					int n_args_static_metamethod=Metamethod::getNumberArguments(op); // expected params for static function, n_args -1 else
 					int this_arg=0;
 
 					// can be one parameter or 0 params...
-					if(metamethod_byte_code_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
+					if(Metamethod::shouldBeStatic(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
 							,name.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
-					}else if((metamethod_byte_code_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
+					}else if((Metamethod::shouldBeStatic(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
 							,name.c_str()
 							,_function_name.c_str()
@@ -409,11 +409,11 @@ namespace zetscript{
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
 
 						/*switch(_idx_return_type){
-						case IDX_TYPE_SCRIPT_OBJECT_CLASS:
-						case IDX_TYPE_ZS_STRING_C:
-						case IDX_TYPE_INT_C:
-						case IDX_TYPE_FLOAT_C:
-						case IDX_TYPE_BOOL_C:
+						case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS:
+						case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
+						case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
+						case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
+						case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C:
 							break;
 
 						default:
@@ -434,24 +434,24 @@ namespace zetscript{
 
 							// ensure logic metamethods returns bool type
 							switch(i){
-							case ZS_METAMETHOD_BYTE_CODE_EQU:
-							case ZS_METAMETHOD_BYTE_CODE_NEQU:
-							case ZS_METAMETHOD_BYTE_CODE_LT:
-							case ZS_METAMETHOD_BYTE_CODE_LTE:
-							case ZS_METAMETHOD_BYTE_CODE_GT:
-							case ZS_METAMETHOD_BYTE_CODE_GTE:
+							case Metamethod::MetamethodId::METAMETHOD_ID_EQU:
+							case Metamethod::MetamethodId::METAMETHOD_ID_NEQU:
+							case Metamethod::MetamethodId::METAMETHOD_ID_LT:
+							case Metamethod::MetamethodId::METAMETHOD_ID_LTE:
+							case Metamethod::MetamethodId::METAMETHOD_ID_GT:
+							case Metamethod::MetamethodId::METAMETHOD_ID_GTE:
 								break;
-							case ZS_METAMETHOD_BYTE_CODE_ADD: // +
-							case ZS_METAMETHOD_BYTE_CODE_SUB: // -
-							case ZS_METAMETHOD_BYTE_CODE_DIV: // /
-							case ZS_METAMETHOD_BYTE_CODE_MUL: // *
-							case ZS_METAMETHOD_BYTE_CODE_MOD: // %
-							case ZS_METAMETHOD_BYTE_CODE_AND: // & bitwise logic and
-							case ZS_METAMETHOD_BYTE_CODE_OR:  // | bitwise logic or
-							case ZS_METAMETHOD_BYTE_CODE_XOR: // ^ logic xor
-							case ZS_METAMETHOD_BYTE_CODE_SHL: // << shift left
-							case ZS_METAMETHOD_BYTE_CODE_SHR: // >> shift right
-								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
+							case Metamethod::MetamethodId::METAMETHOD_ID_ADD: // +
+							case Metamethod::MetamethodId::METAMETHOD_ID_SUB: // -
+							case Metamethod::MetamethodId::METAMETHOD_ID_DIV: // /
+							case Metamethod::MetamethodId::METAMETHOD_ID_MUL: // *
+							case Metamethod::MetamethodId::METAMETHOD_ID_MOD: // %
+							case Metamethod::MetamethodId::METAMETHOD_ID_AND: // & bitwise logic and
+							case Metamethod::MetamethodId::METAMETHOD_ID_OR:  // | bitwise logic or
+							case Metamethod::MetamethodId::METAMETHOD_ID_XOR: // ^ logic xor
+							case Metamethod::MetamethodId::METAMETHOD_ID_SHL: // << shift left
+							case Metamethod::MetamethodId::METAMETHOD_ID_SHR: // >> shift right
+								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 									ZS_THROW_RUNTIME_ERROR("Error registering static metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
@@ -491,8 +491,8 @@ namespace zetscript{
 						}else{
 							// member metamethod
 							switch(i){
-							case ZS_METAMETHOD_BYTE_CODE_TO_STRING:
-								if(_idx_return_type != IDX_TYPE_ZS_STRING_C){
+							case Metamethod::MetamethodId::METAMETHOD_ID_TO_STRING:
+								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'zs_string' but it was '%s'",
 											this->name.c_str(),
 											_function_name.c_str(),
@@ -501,10 +501,10 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
-							case ZS_METAMETHOD_BYTE_CODE_NOT:
-							case ZS_METAMETHOD_BYTE_CODE_IN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_NOT:
+							case Metamethod::MetamethodId::METAMETHOD_ID_IN:
 
-								if(_idx_return_type != IDX_TYPE_BOOL_C){
+								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
 											this->name.c_str(),
 											_function_name.c_str(),
@@ -513,10 +513,10 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
-							case ZS_METAMETHOD_BYTE_CODE_NEG:
-							case ZS_METAMETHOD_BYTE_CODE_BWC:
+							case Metamethod::MetamethodId::METAMETHOD_ID_NEG:
+							case Metamethod::MetamethodId::METAMETHOD_ID_BWC:
 
-								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS){
+								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
@@ -526,9 +526,9 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
-							case ZS_METAMETHOD_BYTE_CODE_POST_INC: // i++
-							case ZS_METAMETHOD_BYTE_CODE_POST_DEC: // i--
-								if(_idx_return_type != IDX_TYPE_SCRIPT_OBJECT_CLASS /*&& _idx_return_type != IDX_TYPE_VOID_C*/){
+							case Metamethod::MetamethodId::METAMETHOD_ID_POST_INC: // i++
+							case Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC: // i--
+								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS /*&& _idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_VOID_C*/){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
@@ -538,19 +538,19 @@ namespace zetscript{
 									return NULL;
 								}
 								break;
-							case ZS_METAMETHOD_BYTE_CODE_SET:
-							case ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:
-							case ZS_METAMETHOD_BYTE_CODE_PRE_INC: // ++i
-							case ZS_METAMETHOD_BYTE_CODE_PRE_DEC: // --i
+							case Metamethod::MetamethodId::METAMETHOD_ID_SET:
+							case Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_MUL_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_DIV_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_MOD_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_AND_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_OR_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_XOR_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_SHL_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_SHR_ASSIGN:
+							case Metamethod::MetamethodId::METAMETHOD_ID_PRE_INC: // ++i
+							case Metamethod::MetamethodId::METAMETHOD_ID_PRE_DEC: // --i
 								// ok do not return nothing
 								break;
 							default:
@@ -575,7 +575,7 @@ namespace zetscript{
 						ZS_THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
 							,(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
 							,str_symbol_metamethod
-							,metamethod_byte_code_operator_str
+							,operator_str
 							,n_args_static_metamethod
 						);
 						return NULL;
@@ -585,40 +585,40 @@ namespace zetscript{
 					// in the type only setters are registered in member property variable (getter is ignored)
 					switch(op){
 
-					case ZS_METAMETHOD_BYTE_CODE_EQU:
-					case ZS_METAMETHOD_BYTE_CODE_NEQU:
-					case ZS_METAMETHOD_BYTE_CODE_LT:
-					case ZS_METAMETHOD_BYTE_CODE_LTE:
-					case ZS_METAMETHOD_BYTE_CODE_GT:
-					case ZS_METAMETHOD_BYTE_CODE_GTE:
-					case ZS_METAMETHOD_BYTE_CODE_NOT:
-					case ZS_METAMETHOD_BYTE_CODE_IN:
-					case ZS_METAMETHOD_BYTE_CODE_ADD:
-					case ZS_METAMETHOD_BYTE_CODE_SUB:
-					case ZS_METAMETHOD_BYTE_CODE_DIV:
-					case ZS_METAMETHOD_BYTE_CODE_MUL:
-					case ZS_METAMETHOD_BYTE_CODE_MOD:
-					case ZS_METAMETHOD_BYTE_CODE_AND:
-					case ZS_METAMETHOD_BYTE_CODE_OR:
-					case ZS_METAMETHOD_BYTE_CODE_XOR:
-					case ZS_METAMETHOD_BYTE_CODE_SHL:
-					case ZS_METAMETHOD_BYTE_CODE_SHR:
-					case ZS_METAMETHOD_BYTE_CODE_TO_STRING:
+					case Metamethod::MetamethodId::METAMETHOD_ID_EQU:
+					case Metamethod::MetamethodId::METAMETHOD_ID_NEQU:
+					case Metamethod::MetamethodId::METAMETHOD_ID_LT:
+					case Metamethod::MetamethodId::METAMETHOD_ID_LTE:
+					case Metamethod::MetamethodId::METAMETHOD_ID_GT:
+					case Metamethod::MetamethodId::METAMETHOD_ID_GTE:
+					case Metamethod::MetamethodId::METAMETHOD_ID_NOT:
+					case Metamethod::MetamethodId::METAMETHOD_ID_IN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_ADD:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SUB:
+					case Metamethod::MetamethodId::METAMETHOD_ID_DIV:
+					case Metamethod::MetamethodId::METAMETHOD_ID_MUL:
+					case Metamethod::MetamethodId::METAMETHOD_ID_MOD:
+					case Metamethod::MetamethodId::METAMETHOD_ID_AND:
+					case Metamethod::MetamethodId::METAMETHOD_ID_OR:
+					case Metamethod::MetamethodId::METAMETHOD_ID_XOR:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SHL:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SHR:
+					case Metamethod::MetamethodId::METAMETHOD_ID_TO_STRING:
 						// do nothing
 						break;
 
 
-					case ZS_METAMETHOD_BYTE_CODE_SET:
-					case ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN:
-					case ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SET:
+					case Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_MUL_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_DIV_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_MOD_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_AND_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_OR_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_XOR_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SHL_ASSIGN:
+					case Metamethod::MetamethodId::METAMETHOD_ID_SHR_ASSIGN:
 
 						info_mp=metamethod_members.getSetterInfo(op);
 

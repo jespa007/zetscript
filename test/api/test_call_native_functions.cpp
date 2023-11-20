@@ -346,7 +346,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					,_show_print?"true":"false"
 					,_show_print?"true":"false"
 			)
-		//,zetscript::EvalOption::ZS_EVAL_OPTION_PRINT_BYTE_CODE
+		//,ZS_EVAL_OPTION_PRINT_BYTE_CODE
 
 		);
 

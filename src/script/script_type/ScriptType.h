@@ -158,7 +158,7 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		ScriptType * 					getScriptType(short id);
-		short							getIdxScriptTypeFromTypeNamePtr(const char  * s);
+		short							getScriptTypeIdFromTypeNamePtr(const char  * s);
 	};
 }
 

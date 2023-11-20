@@ -42,7 +42,7 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
-			, ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN\
+			, Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN\
 		)){\
 			goto lbl_exit_function;\
 		}\
@@ -128,7 +128,7 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
-			, ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN\
+			, Metamethod::MetamethodId::METAMETHOD_ID_DIV_ASSIGN\
 		)){\
 			goto lbl_exit_function;\
 		}\
@@ -177,7 +177,7 @@ if(ZS_STK_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
-			, ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN\
+			, Metamethod::MetamethodId::METAMETHOD_ID_MOD_ASSIGN\
 		)){\
 			goto lbl_exit_function;\
 		}\

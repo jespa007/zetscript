@@ -67,7 +67,7 @@ namespace zetscript{
 
 		checkScriptTypeName(name);
 
-		if(getIdxScriptTypeFromTypeNamePtr(native_name)!=ZS_UNDEFINED_IDX){
+		if(getScriptTypeIdFromTypeNamePtr(native_name)!=ZS_UNDEFINED_IDX){
 			ZS_THROW_RUNTIME_ERROR(
 			"Native type '%s' is already registered"
 			,zs_rtti::demangle(typeid( T).name()).c_str()
@@ -113,13 +113,13 @@ namespace zetscript{
 		const char * class_name_ptr=typeid(T *).name();
 		zs_string error;
 
-		int idx_base_type = getIdxScriptTypeFromTypeNamePtr(base_class_name_ptr);
+		int idx_base_type = getScriptTypeIdFromTypeNamePtr(base_class_name_ptr);
 		if(idx_base_type == -1) {
 			ZS_THROW_RUNTIME_ERROR("base native type '%s' not registered",base_class_name_ptr);
 		}
 
 
-		int idx_register_class = getIdxScriptTypeFromTypeNamePtr(class_name_ptr);
+		int idx_register_class = getScriptTypeIdFromTypeNamePtr(class_name_ptr);
 		if(idx_register_class == ZS_UNDEFINED_IDX) {
 			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
 		}
@@ -288,7 +288,7 @@ namespace zetscript{
 					it++;
 				}
 
-				const MetamethodByteCode *it_setter=MetamethodMembers::metamethod_byte_code_member_setter_list;
+				const Metamethod::MetamethodId *it_setter=MetamethodMembers::member_setter_list;
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
@@ -472,7 +472,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SET
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_SET
 			 ,&params
 			,params_len
 			,return_script_type_id
@@ -631,7 +631,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_POST_INC
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_POST_INC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -671,7 +671,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_POST_DEC
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -714,7 +714,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_PRE_INC
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_PRE_INC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -757,7 +757,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_PRE_DEC
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_PRE_DEC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -798,7 +798,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_ADD_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -839,7 +839,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SUB_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -880,7 +880,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MUL_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_MUL_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -921,7 +921,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_DIV_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_DIV_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -962,7 +962,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_MOD_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_MOD_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1003,7 +1003,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_AND_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_AND_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1044,7 +1044,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_OR_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_OR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1085,7 +1085,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_XOR_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_XOR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1126,7 +1126,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHL_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_SHL_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1167,7 +1167,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,ZS_METAMETHOD_BYTE_CODE_SHR_ASSIGN
+			 ,Metamethod::MetamethodId::METAMETHOD_ID_SHR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id

@@ -20,10 +20,10 @@ namespace zetscript{
 		}
 
 		EvalInstruction(
-			ByteCode _byte_code
+			ByteCode::ByteCodeId _byte_code
 			,uint8_t _index_op1=ZS_UNDEFINED_IDX
 			,zs_int _index_op2=ZS_UNDEFINED_IDX
-			,unsigned short _properties=0
+			,uint16_t _properties=0
 		 ){
 			vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
 			symbol_scope=NULL;

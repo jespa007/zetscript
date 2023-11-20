@@ -6,13 +6,13 @@
 
 namespace zetscript{
 		Instruction::Instruction(){
-			byte_code=ZS_BYTE_CODE_INVALID;
+			byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_INVALID;
 			value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 			value_op2=ZS_UNDEFINED_IDX;
 			properties=0;
 		}
 
-		Instruction::Instruction(ByteCode _byte_code
+		Instruction::Instruction(ByteCode::ByteCodeId _byte_code
 		 ,uint8_t _value_op1
 		 ,zs_int _value_op2
 		 ,unsigned short _properties
@@ -28,9 +28,9 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
-			if((this->byte_code == ZS_BYTE_CODE_LOAD_STRING)
+			if((this->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING)
 					|| (this->properties & ZS_INSTRUCTION_PROPERTY_STRING)
-					|| (byte_code == ZS_BYTE_CODE_INSTANCEOF)
+					|| (byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF)
 			){
 
 				stk=(StackElement *)this->value_op2;
@@ -45,7 +45,7 @@ namespace zetscript{
 
 		zs_float Instruction::getConstantFloat(){
 
-			if(((this->byte_code == ZS_BYTE_CODE_LOAD_FLOAT) || (this->properties & ZS_INSTRUCTION_PROPERTY_FLOAT))==false){
+			if(((this->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT) || (this->properties & ZS_INSTRUCTION_PROPERTY_FLOAT))==false){
 				ZS_THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
 			}
 
@@ -55,7 +55,7 @@ namespace zetscript{
 
 		zs_int Instruction::getConstantInt(){
 
-			if(((this->byte_code == ZS_BYTE_CODE_LOAD_INT) || (this->properties & ZS_INSTRUCTION_PROPERTY_INT))==false){
+			if(((this->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT) || (this->properties & ZS_INSTRUCTION_PROPERTY_INT))==false){
 				ZS_THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_int));
 			}
 
@@ -64,19 +64,19 @@ namespace zetscript{
 		}
 
 		bool Instruction::isConstant(){
-			return ZS_IS_BYTE_CODE_LOAD_CONSTANT(byte_code);
+			return ZS_IS_BYTE_CODE_ID_LOAD_CONSTANT(byte_code);
 		}
 
 		zs_string Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
 			zs_string value_op2_string="unknow-value";
 
-			if(byte_code ==ZS_BYTE_CODE_LOAD_BOOL || (this->properties & ZS_INSTRUCTION_PROPERTY_BOOL) ){
+			if(byte_code ==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL || (this->properties & ZS_INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
-			}else if(byte_code==ZS_BYTE_CODE_LOAD_INT || (this->properties & ZS_INSTRUCTION_PROPERTY_INT)){
+			}else if(byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT || (this->properties & ZS_INSTRUCTION_PROPERTY_INT)){
 				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
-			}else if(byte_code==ZS_BYTE_CODE_LOAD_FLOAT|| (this->properties & ZS_INSTRUCTION_PROPERTY_FLOAT)){
+			}else if(byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT|| (this->properties & ZS_INSTRUCTION_PROPERTY_FLOAT)){
 				value_op2_string=zs_strutils::zs_float_to_str(this->getConstantFloat());
-			}else if(byte_code==ZS_BYTE_CODE_LOAD_STRING || (this->properties & ZS_INSTRUCTION_PROPERTY_STRING)){
+			}else if(byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING || (this->properties & ZS_INSTRUCTION_PROPERTY_STRING)){
 				if(_str_with_quotes){
 					value_op2_string="\""+this->getConstantString()+"\"";
 				}else{
@@ -114,123 +114,123 @@ namespace zetscript{
 			else{
 				switch(_instruction->byte_code){
 				// 2 ops
-				case ZS_BYTE_CODE_STORE_CONST:
-				case ZS_BYTE_CODE_PUSH_OBJECT_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_OBJECT_ITEM:
 					return -2;
 				// pop -2 and push stk +1 = 0
-				case ZS_BYTE_CODE_EQU:
-				case ZS_BYTE_CODE_NOT_EQU:
-				case ZS_BYTE_CODE_LT:
-				case ZS_BYTE_CODE_LTE:
-				case ZS_BYTE_CODE_GT:
-				case ZS_BYTE_CODE_GTE:
-				case ZS_BYTE_CODE_ADD:
-				case ZS_BYTE_CODE_SUB:
-				case ZS_BYTE_CODE_LOGIC_AND:
-				case ZS_BYTE_CODE_LOGIC_OR:
-				case ZS_BYTE_CODE_DIV:
-				case ZS_BYTE_CODE_MUL:
-				case ZS_BYTE_CODE_MOD:
-				case ZS_BYTE_CODE_BITWISE_AND:
-				case ZS_BYTE_CODE_BITWISE_OR:
-				case ZS_BYTE_CODE_BITWISE_XOR:
-				case ZS_BYTE_CODE_SHL:
-				case ZS_BYTE_CODE_SHR:
-				case ZS_BYTE_CODE_PUSH_ARRAY_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_EQU:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NOT_EQU:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LTE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_GT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_GTE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_AND:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_OR:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_ARRAY_ITEM:
 				// byte_code_XXX_store, it pops -2 and push +1 = -1
-				case ZS_BYTE_CODE_ADD_ASSIGN:
-				case ZS_BYTE_CODE_SUB_ASSIGN:
-				case ZS_BYTE_CODE_MUL_ASSIGN:
-				case ZS_BYTE_CODE_DIV_ASSIGN:
-				case ZS_BYTE_CODE_MOD_ASSIGN:
-				case ZS_BYTE_CODE_BITWISE_AND_ASSIGN:
-				case ZS_BYTE_CODE_BITWISE_OR_ASSIGN:
-				case ZS_BYTE_CODE_BITWISE_XOR_ASSIGN:
-				case ZS_BYTE_CODE_SHL_ASSIGN:
-				case ZS_BYTE_CODE_SHR_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL_ASSIGN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR_ASSIGN:
 					return -1;
 				// pop -1 and push stk +0 = -1
-				case ZS_BYTE_CODE_JNT:
-				case ZS_BYTE_CODE_JT:
-				case ZS_BYTE_CODE_JE_CASE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_JNT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_JT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_JE_CASE:
 					return -1;
 				// pop -1 and push stk +1 = 0
-				case ZS_BYTE_CODE_NEG:
-				case ZS_BYTE_CODE_BWC:
-				case ZS_BYTE_CODE_NOT:			// pop -1 and push stk +1 = 0
-				case ZS_BYTE_CODE_RET:
-				case ZS_BYTE_CODE_JMP:
-				case ZS_BYTE_CODE_JMP_CASE:
-				case ZS_BYTE_CODE_DELETE:
-				case ZS_BYTE_CODE_POP_SCOPE:
-				case ZS_BYTE_CODE_PUSH_SCOPE:
-				case ZS_BYTE_CODE_IT_INIT:
-				case ZS_BYTE_CODE_PRE_INC:			// pop -1 and stk +1 = 0
-				case ZS_BYTE_CODE_PRE_DEC:			// pop -1 and stk +1 = 0
-				case ZS_BYTE_CODE_POST_INC:		// pop -1 and stk +1 = 0
-				//case ZS_BYTE_CODE_NEG_POST_INC: 	// pop -1 and stk +1 = 0
-				//case ZS_BYTE_CODE_BWC_POST_INC: 	// pop -1 and stk +1 = 0
-				case ZS_BYTE_CODE_POST_DEC:		// pop -1 and stk +1 = 0
-				//case ZS_BYTE_CODE_NEG_POST_DEC:	// pop -1 and stk +1 = 0
-				//case ZS_BYTE_CODE_BWC_POST_DEC:	// pop -1 and stk +1 = 0
-				case ZS_BYTE_CODE_RESET_STACK:		// pop -1 and stk +1 = 0
-				//case ZS_BYTE_CODE_CLEAR_ZERO_POINTERS:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NOT:			// pop -1 and push stk +1 = 0
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_RET:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP_CASE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_DELETE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_POP_SCOPE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_SCOPE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_IT_INIT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_INC:			// pop -1 and stk +1 = 0
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_DEC:			// pop -1 and stk +1 = 0
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_INC:		// pop -1 and stk +1 = 0
+				//case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_INC: 	// pop -1 and stk +1 = 0
+				//case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_INC: 	// pop -1 and stk +1 = 0
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_DEC:		// pop -1 and stk +1 = 0
+				//case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_DEC:	// pop -1 and stk +1 = 0
+				//case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_DEC:	// pop -1 and stk +1 = 0
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK:		// pop -1 and stk +1 = 0
+				//case ByteCode::ByteCodeId::BYTE_CODE_ID_CLEAR_ZERO_POINTERS:
 					return 0;
-				case ZS_BYTE_CODE_LOAD_OBJECT_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM:
 					// If load item is for a calling member it does pop-1 and push+2 due it needs to push function + object
 					if((_instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION)!=0){
 						return 1;
 					}
 					// else it will create object function member
 					return 0;
-				case ZS_BYTE_CODE_STORE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE:
 					return -_instruction->value_op1;
-				case ZS_BYTE_CODE_FIND_VARIABLE:
-				case ZS_BYTE_CODE_INSTANCEOF:
-				case ZS_BYTE_CODE_PUSH_STK_GLOBAL:
-				case ZS_BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
-				case ZS_BYTE_CODE_PUSH_STK_LOCAL:
-				case ZS_BYTE_CODE_PUSH_STK_THIS:
-				case ZS_BYTE_CODE_PUSH_STK_ARRAY_ITEM:
-				case ZS_BYTE_CODE_PUSH_STK_OBJECT_ITEM:
-				case ZS_BYTE_CODE_PUSH_STK_THIS_VARIABLE:
-				case ZS_BYTE_CODE_LOAD_GLOBAL:
-				case ZS_BYTE_CODE_LOAD_LOCAL:
-				case ZS_BYTE_CODE_LOAD_REF:
-				case ZS_BYTE_CODE_LOAD_THIS:
-				case ZS_BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-				case ZS_BYTE_CODE_LOAD_THIS_VARIABLE:
-				case ZS_BYTE_CODE_LOAD_ARRAY_ITEM:
-				case ZS_BYTE_CODE_LOAD_FUNCTION:
-				case ZS_BYTE_CODE_LOAD_UNDEFINED:
-				case ZS_BYTE_CODE_LOAD_NULL:
-				case ZS_BYTE_CODE_LOAD_STACK_ELEMENT:
-				case ZS_BYTE_CODE_LOAD_STRING:
-				case ZS_BYTE_CODE_LOAD_FLOAT:
-				case ZS_BYTE_CODE_LOAD_BOOL:
-				case ZS_BYTE_CODE_LOAD_INT:
-				case ZS_BYTE_CODE_LOAD_TYPE:
-				case ZS_BYTE_CODE_NEW_ARRAY:
-				case ZS_BYTE_CODE_NEW_OBJECT_BY_TYPE:
-				case ZS_BYTE_CODE_NEW_OBJECT_BY_VALUE:
-				case ZS_BYTE_CODE_NEW_OBJECT:
-				case ZS_BYTE_CODE_NEW_STRING:
-				case ZS_BYTE_CODE_TYPEOF:
-				case ZS_BYTE_CODE_IN:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL_IRGO:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_GLOBAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_LOCAL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_REF:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_CONSTRUCTOR_FUNCT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FUNCTION:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_UNDEFINED:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_NULL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STACK_ELEMENT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_TYPE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_ARRAY:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_TYPE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_VALUE:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_STRING:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_TYPEOF:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_IN:
 					return 1;
-				case ZS_BYTE_CODE_LOAD_THIS_FUNCTION:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_FUNCTION:
 					return 2;
-				case ZS_BYTE_CODE_STACK_CALL:
-				case ZS_BYTE_CODE_INDIRECT_LOCAL_CALL:
-				case ZS_BYTE_CODE_INDIRECT_GLOBAL_CALL:
-				case ZS_BYTE_CODE_THIS_CALL:
-				case ZS_BYTE_CODE_SUPER_CALL:
-				case ZS_BYTE_CODE_INDIRECT_THIS_CALL:
-				case ZS_BYTE_CODE_CALL:
-				case ZS_BYTE_CODE_UNRESOLVED_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_STACK_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_LOCAL_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_GLOBAL_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_SUPER_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_THIS_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_CALL:
+				case ByteCode::ByteCodeId::BYTE_CODE_ID_UNRESOLVED_CALL:
 					return ZS_INSTRUCTION_GET_RETURN_COUNT(_instruction)-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+0);
-				 case  ZS_BYTE_CODE_CONSTRUCTOR_CALL:
-				 case  ZS_BYTE_CODE_MEMBER_CALL:
+				 case  ByteCode::ByteCodeId::BYTE_CODE_ID_CONSTRUCTOR_CALL:
+				 case  ByteCode::ByteCodeId::BYTE_CODE_ID_MEMBER_CALL:
 					 // +1 to pop MemberFunctionScriptObject or MemberFunction for CONSTRUCTOR
 					return ZS_INSTRUCTION_GET_RETURN_COUNT(_instruction)-(ZS_INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:
@@ -239,7 +239,7 @@ namespace zetscript{
 				}
 			}
 
-			return ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED;
+			return ZS_NUM_REQUIRED_BYTE_CODE_ID_NOT_MANAGED;
 		}
 
 
