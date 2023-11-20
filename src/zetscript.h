@@ -90,7 +90,7 @@
 namespace zetscript{
 
 	enum:uint16_t{
-		 ZS_EVAL_OPTION_NO_EXECUTE					=0x1
+		 ZS_EVAL_OPTION_NO_EXECUTE				=0x1
 		,ZS_EVAL_OPTION_PRINT_BYTE_CODE			=0x2
 		,ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
 

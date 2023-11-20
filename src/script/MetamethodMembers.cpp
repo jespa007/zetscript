@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const  Metamethod::MetamethodId  member_setter_list[]={
+	const  Metamethod::MetamethodId  MetamethodMembers::member_setter_list[]={
 			Metamethod::MetamethodId::METAMETHOD_ID_SET
 			,Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN
 			,Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN
@@ -21,7 +21,7 @@ namespace zetscript{
 			,Metamethod::MetamethodId::METAMETHOD_ID_EQU //--> Metamethod::MetamethodId::METAMETHOD_ID_EQU is special mark defined as 0 (end of elements)
 	};
 
-	const Metamethod::MetamethodId member_list[]={
+	const Metamethod::MetamethodId MetamethodMembers::member_list[]={
 
 			Metamethod::MetamethodId::METAMETHOD_ID_SET
 			,Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN

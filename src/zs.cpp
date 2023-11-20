@@ -41,7 +41,7 @@ int main(int argc, char * argv[]) {
 				}else if(strcmp(argv[idx_arg],"--print-byte-code")==0){
 					eval_options|=zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-all")==0){
-					eval_options|=(zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE|ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
+					eval_options|=(zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE|zetscript::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-system")==0){
 					eval_options|=zetscript::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--no-execution-time")==0){
