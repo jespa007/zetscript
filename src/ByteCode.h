@@ -12,10 +12,10 @@ namespace zetscript{
 
 	class ByteCodeHelper{
 	public:
-		static const char * getName(ByteCode  _byte_code);
-		static const char * getNameOperator(ByteCode _byte_code);
-		static ByteCode		loadVarTypeToPushStk(ByteCode _byte_code);
-		static bool		 	isLoadVarType(ByteCode _byte_code);
+		static const char * getByteCodeName(ByteCode  _byte_code);
+		static const char * getByteCodeOperatorName(ByteCode _byte_code);
+		static ByteCode		byteCodeLoadVarTypeToPushStk(ByteCode _byte_code);
+		static bool		 	isByteCodeLoadVarType(ByteCode _byte_code);
 	};
 
 

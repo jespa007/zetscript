@@ -12,10 +12,10 @@ namespace zetscript{
 	class MetamethodHelper{
 	public:
 
-		static const char * getOperatorName(Metamethod _metamethod);
-		static const char * getSymbolName(Metamethod _metamethod);
-		static int			getNumberArguments(Metamethod _metamethod);
-		static bool		 	shouldBeStatic(Metamethod _metamethod);
+		static const char * getMetamethodOperatorName(Metamethod _metamethod);
+		static const char * getMetamethodSymbolName(Metamethod _metamethod);
+		static int			getMetamethodNumberArguments(Metamethod _metamethod);
+		static bool		 	isMetamethodStatic(Metamethod _metamethod);
 	};
 
 }

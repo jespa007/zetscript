@@ -121,7 +121,7 @@ namespace zetscript{
 		return "unknow_op";
 	}
 
-	const char * ByteCodeHelper::getByteCodeOperator(ByteCode _byte_code){
+	const char * ByteCodeHelper::getByteCodeOperatorName(ByteCode _byte_code){
 		switch(_byte_code){
 			case BYTE_CODE_EQU:        				return "==";  // ==
 			case BYTE_CODE_INSTANCEOF:  			return "instanceof";  // ==
