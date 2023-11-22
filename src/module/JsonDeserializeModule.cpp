@@ -225,16 +225,16 @@ namespace zetscript{
 					vm_share_script_object(data->zs->getVirtualMachine(),so);
 				}
 				stk_json_element->value=(intptr_t)so;
-				stk_json_element->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 
 			}
 			else if (strncmp(str_current, "true", 4)==0) { // true detected ...
-				stk_json_element->properties=ZS_STK_PROPERTY_BOOL;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_BOOL;
 				stk_json_element->value=true;
 				str_current+=4;
 			}
 			else if (strncmp(str_current, "false", 5) == 0) {// boolean detected
-				stk_json_element->properties=ZS_STK_PROPERTY_BOOL;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_BOOL;
 				stk_json_element->value=false;
 				str_current+=5;
 			}
@@ -256,7 +256,7 @@ namespace zetscript{
 					zs_float *number_value = 0;
 					if((number_value=zs_strutils::parse_float(default_str_value)) != NULL){
 						ZS_FLOAT_COPY(&stk_json_element->value,number_value);
-						stk_json_element->properties=ZS_STK_PROPERTY_FLOAT;
+						stk_json_element->properties=STACK_ELEMENT_PROPERTY_FLOAT;
 						delete number_value;
 					}
 				}else{
@@ -295,7 +295,7 @@ namespace zetscript{
 					vm_share_script_object(data->zs->getVirtualMachine(),vo);
 				}
 
-				stk_json_element->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=(intptr_t)vo;
 			}else{
 				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");
@@ -356,7 +356,7 @@ namespace zetscript{
 					vm_share_script_object(data->zs->getVirtualMachine(),so);
 				}
 
-				stk_json_element->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=(intptr_t)so;
 			}else{
 				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");

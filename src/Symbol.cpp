@@ -27,19 +27,19 @@ namespace zetscript{
 
 			return {
 				(zs_int)(s),
-				ZS_STK_PROPERTY_SCRIPT_OBJECT
+				STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
 			};
 		}
 		/*else if (k_str_bool_type_ptr == symbol->str_native_type) {
 			return {
 					(zs_int)ptr_variable,
-					ZS_STK_PROPERTY_BOOL_PTR
+					STACK_ELEMENT_PROPERTY_BOOL_PTR
 			};
 		}
 		else if (k_str_const_bool_type_ptr == symbol->str_native_type) {
 			return {
 					(zs_int)ptr_variable,
-					ZS_STK_PROPERTY_BOOL_PTR | ZS_STK_PROPERTY_READ_ONLY
+					STACK_ELEMENT_PROPERTY_BOOL_PTR | STACK_ELEMENT_PROPERTY_READ_ONLY
 			};
 		}*/
 		
@@ -58,7 +58,7 @@ namespace zetscript{
 
 		return{
 				(zs_int)var,
-				ZS_STK_PROPERTY_SCRIPT_OBJECT
+				STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
 		};
 	}
 

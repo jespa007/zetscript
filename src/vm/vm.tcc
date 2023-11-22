@@ -17,13 +17,13 @@ namespace zetscript{
 		if(count > 0 ){
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->data()[0]->idx_position;\
 			while(count--){\
-				if((stk_local_var->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)){\
+				if((stk_local_var->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)){\
 					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 					if(so != NULL && so->shared_pointer!=NULL){\
 						 vm_unref_shared_script_object(vm,so,NULL);\
 					}\
 				}\
-				ZS_STK_SET_UNDEFINED(stk_local_var);\
+				STACK_ELEMENT_SET_UNDEFINED(stk_local_var);\
 				stk_local_var++;\
 			}\
 		}\

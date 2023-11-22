@@ -38,19 +38,19 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
-		ByteCode::ByteCodeId byte_code = ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FUNCTION;
+		ByteCode byte_code = BYTE_CODE_LOAD_FUNCTION;
 		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
 
 		/*if(scope_info->scope_parent!=NULL){// is within function ?
 
 			if(scope_info->script_type->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){ // function object as function member because it will use this inside
-				byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_FUNCTION;
+				byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
 		}*/
 
 		eval_instructions->push_back(eval_instruction=new EvalInstruction(
 				byte_code
-				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+				, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 				,ZS_UNDEFINED_IDX
 				,instruction_properties
 		));
@@ -163,7 +163,7 @@ namespace zetscript{
 		}
 
 		// instance object ...
-		eval_instructions->push_back(new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT));
+		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 		// this solve problem void structs...
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -202,8 +202,8 @@ namespace zetscript{
 			// add instruction...
 			eval_instructions->push_back(
 					new EvalInstruction(
-					ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					BYTE_CODE_LOAD_STRING
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,(zs_int)stk_key_object
 			));
 
@@ -232,7 +232,7 @@ namespace zetscript{
 			 }
 
 			 // push attr (push a element pair)
-			 eval_instructions->push_back(new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_OBJECT_ITEM));
+			 eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ITEM));
 
 			 v_elements++;
 		}
@@ -254,7 +254,7 @@ namespace zetscript{
 		}
 
 		// declare vector ...
-		eval_instructions->push_back(new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_ARRAY));
+		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_ARRAY));
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		unsigned v_elements=0;
@@ -287,7 +287,7 @@ namespace zetscript{
 			}
 
 			// vpush
-			eval_instructions->push_back(new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_ARRAY_ITEM));
+			eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_ARRAY_ITEM));
 
 			v_elements++;
 		}
@@ -373,7 +373,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					eval_instructions->push_back(eval_instruction_new_object_by_value=new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_VALUE));
+					eval_instructions->push_back(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE));
 					eval_instruction_new_object_by_value->instruction_source_info=eval_instruction_source_info(
 							  eval_data
 							 ,eval_data->current_parsing_file
@@ -396,7 +396,7 @@ namespace zetscript{
 								);
 					}
 
-					eval_instructions->push_back(eval_instruction=new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_TYPE));
+					eval_instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
 					eval_instruction->vm_instruction.value_op1=sc->id;
 				}
 
@@ -412,7 +412,7 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 eval_instructions->push_back(
 						ei_load_function_constructor=new EvalInstruction(
-							 ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_CONSTRUCTOR_FUNCT
+							 BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 						)
 					 );
 
@@ -460,9 +460,9 @@ namespace zetscript{
 				 // if constructor function found insert call function...
 				 eval_instructions->push_back(
 							 eval_instruction=new EvalInstruction(
-							  ByteCode::ByteCodeId::BYTE_CODE_ID_CONSTRUCTOR_CALL
+							  BYTE_CODE_CONSTRUCTOR_CALL
 
-							 ,ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(
+							 ,INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(
 									 0   // <-- CONSTRUCTOR ALWAYS RETURNS 0! the object is created at begin of expression byte code
 									 ,n_args
 							)
@@ -497,13 +497,13 @@ namespace zetscript{
 								 // override idx
 								 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 								 constructor_function->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
-								 ei_load_function_constructor->vm_instruction.value_op1=ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args+1);
+								 ei_load_function_constructor->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args+1);
 							 }
 						 }
 
 					 }
 				 }else{
-					 eval_instruction_new_object_by_value->vm_instruction.value_op1=ZS_INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args);
+					 eval_instruction_new_object_by_value->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args);
 				 }
 
 

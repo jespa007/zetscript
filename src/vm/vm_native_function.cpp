@@ -107,43 +107,43 @@ namespace zetscript{
 
 						if(arg_idx_type!=ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT){
 							//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
-							if(current_arg->properties & ZS_STK_PROPERTY_PTR_STK){
+							if(current_arg->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 								current_arg=(StackElement *)current_arg->value;
 							}
 
-							switch(current_arg->properties & ZS_STK_PROPERTY_TYPES){
+							switch(current_arg->properties & STACK_ELEMENT_PROPERTY_TYPES){
 								default:
 									aux_string="unknow";
 									all_check=false;
 									break;
-								case ZS_STK_PROPERTY_INT:
+								case STACK_ELEMENT_PROPERTY_INT:
 									all_check=
 											arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
 										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C
 										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C;
 									break;
-								case ZS_STK_PROPERTY_FLOAT:
+								case STACK_ELEMENT_PROPERTY_FLOAT:
 									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C
 											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C
 											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
 											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C;
 									break;
-								case ZS_STK_PROPERTY_BOOL:
+								case STACK_ELEMENT_PROPERTY_BOOL:
 									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C;
 									break;
-								case ZS_STK_PROPERTY_FUNCTION|ZS_STK_PROPERTY_MEMBER_FUNCTION:
+								case STACK_ELEMENT_PROPERTY_FUNCTION|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION:
 									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER;
 									break;
-								case ZS_STK_PROPERTY_FUNCTION:
+								case STACK_ELEMENT_PROPERTY_FUNCTION:
 									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION;
 									break;
 								// decoment to not allow nulls
-								/*case ZS_STK_PROPERTY_NULL:
+								/*case STACK_ELEMENT_PROPERTY_NULL:
 									all_check=false;
 									break;*/
-								case ZS_STK_PROPERTY_SCRIPT_OBJECT:
+								case STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT:
 
-									if(ZS_STK_IS_STRING_SCRIPT_OBJECT(current_arg)){
+									if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(current_arg)){
 										all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
@@ -191,41 +191,41 @@ namespace zetscript{
 				}
 
 				//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
-				if(current_arg->properties & ZS_STK_PROPERTY_PTR_STK){
+				if(current_arg->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 					current_arg=(StackElement *)current_arg->value;
 				}
 
 
-				switch(current_arg->properties & ZS_STK_PROPERTY_TYPES){
+				switch(current_arg->properties & STACK_ELEMENT_PROPERTY_TYPES){
 
 				default:
 					aux_string=data->zs->stackElementToStringTypeOf(current_arg);
 					break;
-				case ZS_STK_PROPERTY_INT:
+				case STACK_ELEMENT_PROPERTY_INT:
 					aux_string=k_str_int_type;
 					break;
-				case ZS_STK_PROPERTY_FLOAT:
+				case STACK_ELEMENT_PROPERTY_FLOAT:
 					aux_string=k_str_float_type;
 					break;
-				case ZS_STK_PROPERTY_BOOL:
+				case STACK_ELEMENT_PROPERTY_BOOL:
 					aux_string=k_str_bool_type;
 					break;
-				case ZS_STK_PROPERTY_UNDEFINED:
+				case STACK_ELEMENT_PROPERTY_UNDEFINED:
 					aux_string="undefined";
 					break;
-				case ZS_STK_PROPERTY_NULL:
+				case STACK_ELEMENT_PROPERTY_NULL:
 					aux_string="null";
 					break;
-				case ZS_STK_PROPERTY_SCRIPT_OBJECT:
+				case STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT:
 					aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->native_name;
 					break;
 				}
 
 				args_str.append(zs_rtti::demangle(aux_string.c_str()));
 
-				if(current_arg->properties == ZS_STK_PROPERTY_INT
-				||current_arg->properties == ZS_STK_PROPERTY_FLOAT
-				||current_arg->properties == ZS_STK_PROPERTY_BOOL
+				if(current_arg->properties == STACK_ELEMENT_PROPERTY_INT
+				||current_arg->properties == STACK_ELEMENT_PROPERTY_FLOAT
+				||current_arg->properties == STACK_ELEMENT_PROPERTY_BOOL
 				){
 					args_str.append(" [*] ");
 				}
@@ -399,12 +399,12 @@ namespace zetscript{
 			for(uint8_t  i = idx_arg_start; i < n_args;i++){
 
 				stk_arg_current=&_stk_arg_c_function[i-idx_arg_start];
-				if(stk_arg_current->properties & ZS_STK_PROPERTY_PTR_STK){
+				if(stk_arg_current->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 					stk_arg_current=((StackElement *)stk_arg_current->value);
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & ZS_STK_PROPERTY_INT) && (_c_function->params[i].id == ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].id == ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(

@@ -14,7 +14,7 @@ namespace zetscript{
 		map_builtin_fields=new zs_map;
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
-		stk_this.properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+		stk_this.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 
 		ref_objects=NULL;//new zs_list<RefObject *>();
 
@@ -36,7 +36,7 @@ namespace zetscript{
 									this
 									,(MemberProperty *)symbol->ref_ptr)
 							)
-							,ZS_STK_PROPERTY_MEMBER_PROPERTY}
+							,STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY}
 					);
 				}
 			}
@@ -48,20 +48,20 @@ namespace zetscript{
 
 		switch(var_type){
 
-			case ZS_STK_PROPERTY_BOOL:
-			case ZS_STK_PROPERTY_INT:
-			case ZS_STK_PROPERTY_UNDEFINED:
-			case ZS_STK_PROPERTY_NULL:
-			case ZS_STK_PROPERTY_FLOAT:
+			case STACK_ELEMENT_PROPERTY_BOOL:
+			case STACK_ELEMENT_PROPERTY_INT:
+			case STACK_ELEMENT_PROPERTY_UNDEFINED:
+			case STACK_ELEMENT_PROPERTY_NULL:
+			case STACK_ELEMENT_PROPERTY_FLOAT:
 				break;
-			case ZS_STK_PROPERTY_CONTAINER_SLOT:
+			case STACK_ELEMENT_PROPERTY_CONTAINER_SLOT:
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)si->value);
 				break;
-			case ZS_STK_PROPERTY_FUNCTION:
+			case STACK_ELEMENT_PROPERTY_FUNCTION:
 				break;
 			default: // properties ...
 
-				if( (var_type & ZS_STK_PROPERTY_SCRIPT_OBJECT)
+				if( (var_type & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)
 					&&(si->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (si->value != 0)
 				 ){ // deallocate but not if is c or this ref
@@ -130,12 +130,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector<StackElement *> *ScriptObject::getSetterList(Metamethod::MetamethodId _metamethod_id){
+	zs_vector<StackElement *> *ScriptObject::getSetterList(Metamethod _metamethod){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
-			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod_id);
+			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod);
 			return info.setters;
 		}
 		return NULL;
@@ -239,9 +239,9 @@ namespace zetscript{
 		for(int i=0; i< stk_builtin_elements.size(); i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.get(i);
 
-			if(stk->properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
+			if(stk->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){
 				delete (StackElementMemberProperty *)stk->value;
-			}else if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
+			}else if(stk->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (stk->value != 0)
 				  ){ // deallocate but not if is c or this ref

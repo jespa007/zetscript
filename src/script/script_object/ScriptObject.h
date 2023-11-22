@@ -30,7 +30,7 @@ namespace zetscript{
 		);
 
 		Symbol 								*	getGetter();
-		zs_vector<StackElement *> 			*	getSetterList(Metamethod::MetamethodId _metamethod_id);
+		zs_vector<StackElement *> 			*	getSetterList(Metamethod _metamethod);
 
 		virtual	int 							length();
 

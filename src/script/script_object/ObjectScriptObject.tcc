@@ -32,7 +32,7 @@ namespace zetscript{
 		StackElement stk=this->zs->toStackElement<_T>(_value);
 
 		// Create shared object due 'ObjectScriptObject::set' is called from user program
-		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk.properties == STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *obj = (ScriptObject *)stk.value;
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}

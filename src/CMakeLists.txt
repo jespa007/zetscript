@@ -479,8 +479,9 @@ SET(
 	# main
 	common.h
 	config.h
-	ByteCode::ByteCodeId.h
-	Metamethod.h	
+	ByteCode.h
+	MetamethodHelper.h	
+	Metamethod.h
 	
 	Instruction.h
 	StackElement.h

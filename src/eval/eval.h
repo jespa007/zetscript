@@ -20,7 +20,7 @@ namespace zetscript{
 		}
 
 		EvalInstruction(
-			ByteCode::ByteCodeId _byte_code
+			ByteCode _byte_code
 			,uint8_t _index_op1=ZS_UNDEFINED_IDX
 			,zs_int _index_op2=ZS_UNDEFINED_IDX
 			,uint16_t _properties=0

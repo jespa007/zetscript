@@ -306,7 +306,7 @@ namespace zetscript{
 
 			StackElement *stk_it=stk_start;
 			for(int i = 0; i < n_stk_params; i++){
-				if(_stk_params[i].properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+				if(_stk_params[i].properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
@@ -367,7 +367,7 @@ namespace zetscript{
 				stk_return = ptr_stk_return[0];
 
 				// if object add into lifetime till user delete it
-				if(stk_return.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_return.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 					// add generated
 					vm_insert_lifetime_object(
 						_vm
@@ -383,7 +383,7 @@ namespace zetscript{
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					/*StackElement stk_ret=ptr_stk_return[i];
-					if(stk_ret.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+					if(stk_ret.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 						delete (ScriptObject *)stk_ret.value;
 					}*/
 					// deinit vm variable...
@@ -510,7 +510,7 @@ namespace zetscript{
 
 		// do the assigment
 		stk_dst->value=(zs_int)_container_slot;
-		stk_dst->properties=ZS_STK_PROPERTY_CONTAINER_SLOT;
+		stk_dst->properties=STACK_ELEMENT_PROPERTY_CONTAINER_SLOT;
 
 		// add ref into map of pointers
 		data->cyclic_container_instances.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
@@ -581,7 +581,7 @@ namespace zetscript{
 						// delete container slot
 						auto stk=slots.get(i)->data->getPtrStackElement();
 
-						if((stk->properties & ZS_STK_PROPERTY_CONTAINER_SLOT)==0){
+						if((stk->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)==0){
 							ZS_THROW_RUNTIME_ERRORF("stk container is not container slot");
 						}
 

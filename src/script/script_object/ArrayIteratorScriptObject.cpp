@@ -22,8 +22,8 @@ namespace zetscript{
 	{
 		script_type_id=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_ARRAY;
 		idx=0;
-		stk_key.properties=ZS_STK_PROPERTY_INT;
-		stk_value.properties=ZS_STK_PROPERTY_INT;
+		stk_key.properties=STACK_ELEMENT_PROPERTY_INT;
+		stk_value.properties=STACK_ELEMENT_PROPERTY_INT;
 	}
 
 	void ArrayIteratorScriptObject::get(){

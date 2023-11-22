@@ -76,10 +76,10 @@ namespace zetscript{
 
 		// 4. add load/store/reset stack
 		*start_ptr++=Instruction(
-				ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
+				BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			,(uint8_t)ZS_UNDEFINED_IDX
 			,ZS_UNDEFINED_IDX
-			,ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
+			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
 		_sf->instruction_source_infos.push_back(new InstructionSourceInfo(
 			eval_instruction_source_info(
@@ -90,7 +90,7 @@ namespace zetscript{
 		)));
 
 
-		*start_ptr++=Instruction(ByteCode::ByteCodeId::BYTE_CODE_ID_STORE,1);
+		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
 		_sf->instruction_source_infos.push_back(NULL);
 
 		if(_sf->instructions != NULL){
@@ -134,9 +134,9 @@ namespace zetscript{
 			// save instruction ...
 			*start_ptr=instruction->vm_instruction;
 
-			if(instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING){
-				start_ptr->byte_code = ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_STRING;
-				start_ptr->properties=ZS_INSTRUCTION_PROPERTY_STRING;
+			if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD_STRING){
+				start_ptr->byte_code = BYTE_CODE_NEW_STRING;
+				start_ptr->properties=INSTRUCTION_PROPERTY_STRING;
 			}
 
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
@@ -152,8 +152,8 @@ namespace zetscript{
 		}
 
 		// add return in the end...
-		start_ptr->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_RET;
-		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
+		start_ptr->byte_code=BYTE_CODE_RET;
+		start_ptr->value_op1= INSTRUCTION_VALUE_OP1_NOT_DEFINED;
 		start_ptr->value_op2=ZS_UNDEFINED_IDX;
 		sf->instruction_source_infos.push_back(NULL);
 
@@ -440,20 +440,20 @@ namespace zetscript{
 						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.get(0))->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
-						case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_UNDEFINED:
+						case BYTE_CODE_LOAD_UNDEFINED:
 							param_info.default_param_value=k_stk_undefined;
 							break;
-						case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_NULL:
-							param_info.default_param_value={0,ZS_STK_PROPERTY_NULL};
+						case BYTE_CODE_LOAD_NULL:
+							param_info.default_param_value={0,STACK_ELEMENT_PROPERTY_NULL};
 							break;
-						case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
-							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_INT};
+						case BYTE_CODE_LOAD_INT:
+							param_info.default_param_value={instruction->value_op2,STACK_ELEMENT_PROPERTY_INT};
 							break;
-						case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
-							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_FLOAT};
+						case BYTE_CODE_LOAD_FLOAT:
+							param_info.default_param_value={instruction->value_op2,STACK_ELEMENT_PROPERTY_FLOAT};
 							break;
-						case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
-							param_info.default_param_value={instruction->value_op2,ZS_STK_PROPERTY_BOOL};
+						case BYTE_CODE_LOAD_BOOL:
+							param_info.default_param_value={instruction->value_op2,STACK_ELEMENT_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
 							create_anonymous_function_return_expression=true;
@@ -465,7 +465,7 @@ namespace zetscript{
 
 					if(create_anonymous_function_return_expression==true){
 						Symbol *sf_aux=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
-						param_info.default_param_value={(zs_int)sf_aux,ZS_STK_PROPERTY_FUNCTION};
+						param_info.default_param_value={(zs_int)sf_aux,STACK_ELEMENT_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code
@@ -643,14 +643,14 @@ namespace zetscript{
 			// calling functions
 			if(partial_ex.size()==1){
 				EvalInstruction *ei_arg=partial_ex.get(0);
-				ByteCode::ByteCodeId byte_code_aux=ei_arg->vm_instruction.byte_code;
+				ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
 				// If byte code is a global var load (find var is also global) set as push stk to
 				// avoid deref global objects
-				if(byte_code_aux ==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_GLOBAL){
-					ei_arg->vm_instruction.byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL_IRGO;
-				}else if(byte_code_aux ==ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE){
-					ei_arg->vm_instruction.value_op1=ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO;
+				if(byte_code_aux ==BYTE_CODE_LOAD_GLOBAL){
+					ei_arg->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
+				}else if(byte_code_aux ==BYTE_CODE_FIND_VARIABLE){
+					ei_arg->vm_instruction.value_op1=INSTRUCTION_VALUE_OP1_PUSH_STK_GLOBAL_IRGO;
 				}
 			}
 
@@ -665,7 +665,7 @@ namespace zetscript{
 		}while(!end);
 
 		eval_data->current_function->eval_instructions.push_back(
-			new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_RET)
+			new EvalInstruction(BYTE_CODE_RET)
 		);
 
 		return aux_p;

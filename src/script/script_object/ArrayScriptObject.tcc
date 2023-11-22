@@ -31,7 +31,7 @@ namespace zetscript{
 		auto stk=this->zs->toStackElement(_element);
 
 		// Create shared object due 'ArrayScriptObject::set' is called from user program
-		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk.properties == STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *obj = (ScriptObject *)stk.value;
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}
@@ -44,7 +44,7 @@ namespace zetscript{
 		auto stk=this->zs->toStackElement(_element);
 
 		// Create shared object due 'ArrayScriptObject::push' is called from user program
-		if(stk.properties == ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk.properties == STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *obj = (ScriptObject *)stk.value;
 			vm_create_shared_script_object(this->zs->getVirtualMachine(),obj);
 		}

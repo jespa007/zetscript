@@ -93,7 +93,7 @@ namespace zetscript{
 		if((_script_function->id != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
 			ZS_VM_PUSH_SCOPE(_script_function->scope);
 			for(int i=_script_function->params_len; i <(int)_script_function->local_variables->size(); i++){
-				ZS_STK_SET_UNDEFINED(_stk_local_var+ i);
+				STACK_ELEMENT_SET_UNDEFINED(_stk_local_var+ i);
 			}
 		}
 
@@ -107,98 +107,98 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 			// load
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_GLOBAL: // load variable ...
+			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
 				*data->vm_stk_current++=*(data->vm_stack+instruction->value_op2);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_LOCAL: // load variable ...
+			case BYTE_CODE_LOAD_LOCAL: // load variable ...
 				*data->vm_stk_current++=*(_stk_local_var+instruction->value_op2);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_EQU:  // ==
+			case BYTE_CODE_EQU:  // ==
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(==, Metamethod::MetamethodId::METAMETHOD_ID_EQU,false);
+				ZS_VM_OPERATION_COMPARE(==, METAMETHOD_EQU,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_NOT_EQU:  // !=
+			case BYTE_CODE_NOT_EQU:  // !=
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(!=, Metamethod::MetamethodId::METAMETHOD_ID_NEQU,false);
+				ZS_VM_OPERATION_COMPARE(!=, METAMETHOD_NEQU,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LT:  // <
+			case BYTE_CODE_LT:  // <
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(<, Metamethod::MetamethodId::METAMETHOD_ID_LT,false);
+				ZS_VM_OPERATION_COMPARE(<, METAMETHOD_LT,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LTE:  // <=
+			case BYTE_CODE_LTE:  // <=
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(<=, Metamethod::MetamethodId::METAMETHOD_ID_LTE,false);
+				ZS_VM_OPERATION_COMPARE(<=, METAMETHOD_LTE,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_GT:  // >
+			case BYTE_CODE_GT:  // >
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(>,Metamethod::MetamethodId::METAMETHOD_ID_GT,false);
+				ZS_VM_OPERATION_COMPARE(>,METAMETHOD_GT,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_GTE:  // >=
+			case BYTE_CODE_GTE:  // >=
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_COMPARE(>=,Metamethod::MetamethodId::METAMETHOD_ID_GTE,false);
+				ZS_VM_OPERATION_COMPARE(>=,METAMETHOD_GTE,false);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_AND:  // &&
+			case BYTE_CODE_LOGIC_AND:  // &&
 				VM_POP_STK_TWO;
 				ZS_VM_OPERATION_LOGIC(&&);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_OR:  // ||
+			case BYTE_CODE_LOGIC_OR:  // ||
 				VM_POP_STK_TWO;
 				ZS_VM_OPERATION_LOGIC(||);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_TYPEOF:
+			case BYTE_CODE_TYPEOF:
 				VM_POP_STK_ONE;
 				*data->vm_stk_current++ = stk_result_op1->typeOf();
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD: // +
+			case BYTE_CODE_ADD: // +
 				VM_POP_STK_TWO;
 				ZS_VM_OPERATION_ADD;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB: // -
+			case BYTE_CODE_SUB: // -
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_ARITHMETIC(-, Metamethod::MetamethodId::METAMETHOD_ID_SUB);
+				ZS_VM_OPERATION_ARITHMETIC(-, METAMETHOD_SUB);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL: // *
+			case BYTE_CODE_MUL: // *
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_ARITHMETIC(*, Metamethod::MetamethodId::METAMETHOD_ID_MUL);
+				ZS_VM_OPERATION_ARITHMETIC(*, METAMETHOD_MUL);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV: // /
+			case BYTE_CODE_DIV: // /
 				VM_POP_STK_TWO;
 				ZS_VM_OPERATION_DIV;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD: // /
+			case BYTE_CODE_MOD: // /
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_MOD(Metamethod::MetamethodId::METAMETHOD_ID_MOD);
+				ZS_VM_OPERATION_MOD(METAMETHOD_MOD);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND: // &
+			case BYTE_CODE_BITWISE_AND: // &
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_BINARY(&, Metamethod::MetamethodId::METAMETHOD_ID_AND);
+				ZS_VM_OPERATION_BINARY(&, METAMETHOD_AND);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR: // *
+			case BYTE_CODE_BITWISE_OR: // *
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_BINARY(| , Metamethod::MetamethodId::METAMETHOD_ID_OR);
+				ZS_VM_OPERATION_BINARY(| , METAMETHOD_OR);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR: // ^
+			case BYTE_CODE_BITWISE_XOR: // ^
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_BINARY(^, Metamethod::MetamethodId::METAMETHOD_ID_XOR);
+				ZS_VM_OPERATION_BINARY(^, METAMETHOD_XOR);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR: // >>
+			case BYTE_CODE_SHR: // >>
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_BINARY(>> , Metamethod::MetamethodId::METAMETHOD_ID_SHR);
+				ZS_VM_OPERATION_BINARY(>> , METAMETHOD_SHR);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL: // <<
+			case BYTE_CODE_SHL: // <<
 				VM_POP_STK_TWO;
-				ZS_VM_OPERATION_BINARY(<< , Metamethod::MetamethodId::METAMETHOD_ID_SHL);
+				ZS_VM_OPERATION_BINARY(<< , METAMETHOD_SHL);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_NOT: // !
+			case BYTE_CODE_NOT: // !
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & ZS_STK_PROPERTY_BOOL){ // boolean operation
+				if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL){ // boolean operation
 					ZS_VM_PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
 				}else{
 					if(vm_call_metamethod(
 						_vm
 						,_script_function
 						,instruction
-						,Metamethod::MetamethodId::METAMETHOD_ID_NOT
+						,METAMETHOD_NOT
 						,stk_result_op1
 						,NULL
 						,false
@@ -207,18 +207,18 @@ namespace zetscript{
 					}
 				}
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG: // -
+			case BYTE_CODE_NEG: // -
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){ // arithmetic operation
+				if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT){ // arithmetic operation
 					ZS_VM_PUSH_STK_INT((-((zs_int)(stk_result_op1->value))));
-				}else if(stk_result_op1->properties & ZS_STK_PROPERTY_FLOAT){
+				}else if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FLOAT){
 					ZS_VM_PUSH_STK_FLOAT(-ZS_READ_INTPTR_FLOAT(stk_result_op1->value));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
 						_vm
 						,_script_function
 						,instruction
-						,Metamethod::MetamethodId::METAMETHOD_ID_NEG
+						,METAMETHOD_NEG
 						,stk_result_op1
 						,NULL
 						,false
@@ -227,16 +227,16 @@ namespace zetscript{
 					}
 				}
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC: // ~
+			case BYTE_CODE_BWC: // ~
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & ZS_STK_PROPERTY_INT){ // arithmetic operation
+				if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT){ // arithmetic operation
 					ZS_VM_PUSH_STK_INT((~((zs_int)(stk_result_op1->value))));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
 							_vm
 							,_script_function
 							,instruction
-							,Metamethod::MetamethodId::METAMETHOD_ID_BWC
+							,METAMETHOD_BWC
 							,stk_result_op1
 							,NULL
 							,false
@@ -245,26 +245,26 @@ namespace zetscript{
 					}
 				}
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF: // check instance of ...
+			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 VM_POP_STK_ONE;
 				switch(instruction->value_op2){
 				case ZS_UNDEFINED_IDX:
 					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
 				case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
-					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_INT)!=0);
+					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT)!=0);
 					break;
 				case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
-					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_FLOAT)!=0);
+					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FLOAT)!=0);
 					break;
 				case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C:
-					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)!=0);
+					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)!=0);
 					break;
 				case ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION:
-					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & ZS_STK_PROPERTY_FUNCTION)!=0);
+					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
-					if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+					if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 						ZS_VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
 								((ObjectScriptObject *)(stk_result_op1->value))->script_type_id // A
 								, instruction->value_op2		// B
@@ -275,12 +275,12 @@ namespace zetscript{
 					break;
 				}
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP:
+			 case BYTE_CODE_JMP:
 				instruction_it=instruction+instruction->value_op2;
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_JNT: // goto if not true ... goes end to conditional.
+			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				VM_POP_STK_ONE;
-				if((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)==0){
+				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
 						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
@@ -290,9 +290,9 @@ namespace zetscript{
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_JT: // goto if true ... goes end to conditional.
+			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				VM_POP_STK_ONE;
-				if((stk_result_op1->properties & ZS_STK_PROPERTY_BOOL)==0){
+				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
 						,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
@@ -302,9 +302,9 @@ namespace zetscript{
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_JE_CASE:  // especial j for switch
+			 case BYTE_CODE_JE_CASE:  // especial j for switch
 				VM_POP_STK_ONE_LOAD2; // reads switch value and case value
-				ZS_VM_OPERATION_COMPARE(==, Metamethod::MetamethodId::METAMETHOD_ID_EQU,true);
+				ZS_VM_OPERATION_COMPARE(==, METAMETHOD_EQU,true);
 				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					// reset stack
@@ -314,42 +314,42 @@ namespace zetscript{
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP_CASE:
+			case BYTE_CODE_JMP_CASE:
   			    data->vm_stk_current=stk_start;
 				instruction_it=instruction+instruction->value_op2;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_UNDEFINED:
+			case BYTE_CODE_LOAD_UNDEFINED:
 				ZS_VM_PUSH_STK_UNDEFINED;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_NULL:
+			case BYTE_CODE_LOAD_NULL:
 				ZS_VM_PUSH_STK_NULL;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FUNCTION: // expect constant and function has the same behaviour...
+			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
 				ZS_VM_PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
+			case BYTE_CODE_LOAD_INT:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=ZS_STK_PROPERTY_INT;
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_INT;
 				data->vm_stk_current++;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
+			case BYTE_CODE_LOAD_FLOAT:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=ZS_STK_PROPERTY_FLOAT;
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_FLOAT;
 				data->vm_stk_current++;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
+			case BYTE_CODE_LOAD_BOOL:
 				data->vm_stk_current->value=instruction->value_op2;
-				data->vm_stk_current->properties=ZS_STK_PROPERTY_BOOL;
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_BOOL;
 				data->vm_stk_current++;
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STACK_ELEMENT:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING:
+			case BYTE_CODE_LOAD_STACK_ELEMENT:
+			case BYTE_CODE_LOAD_STRING:
 				*data->vm_stk_current++=*((StackElement *)instruction->value_op2);
 				continue;
 				// to avoid deref global objects from returning functions
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL_IRGO:
+			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
 
-				if((data->vm_stack+instruction->value_op2)->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+				if((data->vm_stack+instruction->value_op2)->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 					// push load
 					ZS_VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				}else{
@@ -357,13 +357,13 @@ namespace zetscript{
 					*data->vm_stk_current++=*(data->vm_stack+instruction->value_op2);
 				}
 				continue;
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_RET:
+			 case  BYTE_CODE_RET:
 				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
 					stk_result_op1=stk_var;
 
 					// if global var...
 					// else if object ...
-					if((stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)==ZS_STK_PROPERTY_SCRIPT_OBJECT){
+					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)==STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 						// ... deref
 						if(vm_unref_script_object_for_ret(_vm, stk_result_op1)==false){
 							return;
@@ -371,84 +371,84 @@ namespace zetscript{
 					}
 				}
 				goto lbl_return_function;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL: // load variable ...
+			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				ZS_VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL: // load variable ...
+			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
 				ZS_VM_PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_SCOPE:
+			 case BYTE_CODE_PUSH_SCOPE:
 				ZS_VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_POP_SCOPE:
+			 case BYTE_CODE_POP_SCOPE:
 				 vm_pop_scope(_vm);
 				 continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_INC:
-				 VM_POST_OPERATION(++,Metamethod::MetamethodId::METAMETHOD_ID_POST_INC);
+			 case BYTE_CODE_POST_INC:
+				 VM_POST_OPERATION(++,METAMETHOD_POST_INC);
 				 continue;
-			 /*case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_INC:
-				 ZS_VM_OPERATION_NEG_POST(++,Metamethod::MetamethodId::METAMETHOD_ID_POST_INC);
+			 /*case BYTE_CODE_NEG_POST_INC:
+				 ZS_VM_OPERATION_NEG_POST(++,METAMETHOD_POST_INC);
 				 continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_INC:
-				 ZS_VM_OPERATION_BWC_POST(++,Metamethod::MetamethodId::METAMETHOD_ID_POST_INC);
+			 case BYTE_CODE_BWC_POST_INC:
+				 ZS_VM_OPERATION_BWC_POST(++,METAMETHOD_POST_INC);
 				 continue;*/
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_DEC:
-				 VM_POST_OPERATION(--,Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC);
+			 case BYTE_CODE_POST_DEC:
+				 VM_POST_OPERATION(--,METAMETHOD_POST_DEC);
 				 continue;
-			 /*case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_DEC:
-				 ZS_VM_OPERATION_NEG_POST(--,Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC);
+			 /*case BYTE_CODE_NEG_POST_DEC:
+				 ZS_VM_OPERATION_NEG_POST(--,METAMETHOD_POST_DEC);
 				 continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_DEC:
-				 ZS_VM_OPERATION_BWC_POST(--,Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC);
+			 case BYTE_CODE_BWC_POST_DEC:
+				 ZS_VM_OPERATION_BWC_POST(--,METAMETHOD_POST_DEC);
 				 continue;*/
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_INC:
-				 VM_PRE_OPERATION(++,Metamethod::MetamethodId::METAMETHOD_ID_PRE_INC);
+			 case BYTE_CODE_PRE_INC:
+				 VM_PRE_OPERATION(++,METAMETHOD_PRE_INC);
 				 continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_DEC:
-				 VM_PRE_OPERATION(--,Metamethod::MetamethodId::METAMETHOD_ID_PRE_DEC);
+			 case BYTE_CODE_PRE_DEC:
+				 VM_PRE_OPERATION(--,METAMETHOD_PRE_DEC);
 				 continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD_ASSIGN:
+			case BYTE_CODE_ADD_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
 				ZS_VM_OPERATION_ADD_ASSIGN();
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB_ASSIGN:
+			case BYTE_CODE_SUB_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_ARITHMETIC_ASSIGN(-=,Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN);
+				ZS_VM_OPERATION_ARITHMETIC_ASSIGN(-=,METAMETHOD_SUB_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL_ASSIGN:
+			case BYTE_CODE_MUL_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_ARITHMETIC_ASSIGN(*=,Metamethod::MetamethodId::METAMETHOD_ID_MUL_ASSIGN);
+				ZS_VM_OPERATION_ARITHMETIC_ASSIGN(*=,METAMETHOD_MUL_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV_ASSIGN:
+			case BYTE_CODE_DIV_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
 				ZS_VM_OPERATION_DIV_ASSIGN();
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD_ASSIGN:
+			case BYTE_CODE_MOD_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
 				ZS_VM_OPERATION_MOD_ASSIGN();
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND_ASSIGN:
+			case BYTE_CODE_BITWISE_AND_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_BINARY_ASSIGN(&=,Metamethod::MetamethodId::METAMETHOD_ID_AND_ASSIGN);
+				ZS_VM_OPERATION_BINARY_ASSIGN(&=,METAMETHOD_AND_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR_ASSIGN:
+			case BYTE_CODE_BITWISE_OR_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_BINARY_ASSIGN(|=,Metamethod::MetamethodId::METAMETHOD_ID_OR_ASSIGN);
+				ZS_VM_OPERATION_BINARY_ASSIGN(|=,METAMETHOD_OR_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR_ASSIGN:
+			case BYTE_CODE_BITWISE_XOR_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_BINARY_ASSIGN(^=,Metamethod::MetamethodId::METAMETHOD_ID_XOR_ASSIGN);
+				ZS_VM_OPERATION_BINARY_ASSIGN(^=,METAMETHOD_XOR_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL_ASSIGN:
+			case BYTE_CODE_SHL_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_BINARY_ASSIGN(<<=,Metamethod::MetamethodId::METAMETHOD_ID_SHL_ASSIGN);
+				ZS_VM_OPERATION_BINARY_ASSIGN(<<=,METAMETHOD_SHL_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR_ASSIGN:
+			case BYTE_CODE_SHR_ASSIGN:
 				ZS_LOAD_OPERANDS_ASSIGN_OPERATION;
-				ZS_VM_OPERATION_BINARY_ASSIGN(>>=,Metamethod::MetamethodId::METAMETHOD_ID_SHR_ASSIGN);
+				ZS_VM_OPERATION_BINARY_ASSIGN(>>=,METAMETHOD_SHR_ASSIGN);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE:
+			case BYTE_CODE_STORE_CONST:
+			case BYTE_CODE_STORE:
 				if(vm_store(
 					_vm
 					,_script_function
@@ -456,21 +456,21 @@ namespace zetscript{
 				)==false){
 					return;
 				}
-				if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){
+				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					//data->vm_stk_current=stk_start;
 					vm_reset_stack(_vm,stk_start);
 				}
 				continue;
 			//----- immediate call
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_CALL: // immediate call this
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_SUPER_CALL:
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL: // immediate call this
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_THIS_CALL:
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_LOCAL_CALL: // call from idx var
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_GLOBAL_CALL: // call from idx var
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_STACK_CALL: // stack call
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_CONSTRUCTOR_CALL:
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_MEMBER_CALL: // calling function after all of args are processed...
+			case  BYTE_CODE_CALL: // immediate call this
+			case  BYTE_CODE_SUPER_CALL:
+			case  BYTE_CODE_THIS_CALL: // immediate call this
+			case  BYTE_CODE_INDIRECT_THIS_CALL:
+			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
+			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
+			case  BYTE_CODE_STACK_CALL: // stack call
+			case  BYTE_CODE_CONSTRUCTOR_CALL:
+			case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 				if(vm_call(
 						_vm
 						,_this_object
@@ -481,21 +481,21 @@ namespace zetscript{
 					return;\
 				}
 
-				if(instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK){
+				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					//data->vm_stk_current=stk_start;
 					vm_reset_stack(_vm,stk_start);\
 				}
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS: // load variable ...
+			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
 				ZS_VM_PUSH_STK_PTR(_this_object->getThis());
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_REF:
+			case BYTE_CODE_LOAD_REF:
 				*data->vm_stk_current++=*ZS_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2);
 				continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS: // load variable ...
+			case BYTE_CODE_LOAD_THIS: // load variable ...
 				*data->vm_stk_current++=*_this_object->getThis();
 				continue;
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_TYPE:
+			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
 				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,instruction->value_op1);
 
@@ -506,9 +506,9 @@ namespace zetscript{
 						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
 					}
-					(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT};
 					continue;
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_VALUE:
+			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 if(vm_new_object_by_value(
 							_vm
 							,_script_function
@@ -517,37 +517,37 @@ namespace zetscript{
 						return;
 				 	 }
 				 	 continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_ARRAY: // Create new vector...
+			 case BYTE_CODE_NEW_ARRAY: // Create new vector...
 					so_aux=ZS_NEW_ARRAY_OBJECT(data->zs);
 					vm_create_shared_script_object(_vm,so_aux);
 					data->vm_stk_current->value=(zs_int)so_aux;
-					data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+					data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 					data->vm_stk_current++;
 					continue;
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT: // Create new object...
+			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					vm_create_shared_script_object(_vm,so_aux);
-					(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_STRING: // Create new string...
+			 case  BYTE_CODE_NEW_STRING: // Create new string...
 				 vm_new_string_object(
 					 _vm
 					 ,instruction
 				);
 				continue;
-			 case  ByteCode::ByteCodeId::BYTE_CODE_ID_DELETE:
+			 case  BYTE_CODE_DELETE:
 				 vm_delete_object(
 						_vm
 				);
 				continue;
-			/* case ByteCode::ByteCodeId::BYTE_CODE_ID_CLEAR_ZERO_POINTERS:
+			/* case BYTE_CODE_CLEAR_ZERO_POINTERS:
 				 vm_remove_empty_shared_pointers(_vm,ZS_VM_CURRENT_SCOPE_BLOCK);
 				 continue;*/
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK:
+			 case BYTE_CODE_RESET_STACK:
 				 data->vm_stk_current=stk_start;
 				 continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_IT_INIT:
+			case BYTE_CODE_IT_INIT:
 				if(vm_iterator_init(
 						_vm
 						,_this_object
@@ -560,7 +560,7 @@ namespace zetscript{
 				// always it does a reset
 				data->vm_stk_current=stk_start;
 				continue;
-			 case ByteCode::ByteCodeId::BYTE_CODE_ID_IN:
+			 case BYTE_CODE_IN:
 				 if(vm_perform_in_operator(
 						 _vm
 						 ,_this_object
@@ -571,10 +571,10 @@ namespace zetscript{
 					return;
 				 }
 				 continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_TYPE:
+				case BYTE_CODE_LOAD_TYPE:
 					ZS_VM_PUSH_STK_TYPE(instruction->value_op2);
 					continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_ARRAY_ITEM:
+				case BYTE_CODE_PUSH_ARRAY_ITEM:
 					if(vm_push_container_item(
 							 _vm
 							 ,_this_object
@@ -586,7 +586,7 @@ namespace zetscript{
 						return;
 					 }
 					continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_OBJECT_ITEM:
+				case BYTE_CODE_PUSH_OBJECT_ITEM:
 					if(vm_push_container_item(
 							 _vm
 							 ,_this_object
@@ -599,8 +599,8 @@ namespace zetscript{
 					 }
 					continue;
 				// access vector (i.e vec[1]) or access object (i.e obj["aa"])
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM:
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM:
+				case BYTE_CODE_PUSH_STK_ARRAY_ITEM:
+				case BYTE_CODE_LOAD_ARRAY_ITEM:
 					if(vm_load_vector_item(
 						 _vm
 						 ,_this_object
@@ -611,7 +611,7 @@ namespace zetscript{
 						return;
 					}
 					continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_FUNCTION:// direct load
+				case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
 					symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name.c_str());
 					if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
@@ -625,23 +625,23 @@ namespace zetscript{
 
 					 vm_create_shared_script_object(_vm,so_aux);
 					 data->vm_stk_current->value=(zs_int)so_aux;
-					 data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+					 data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 					 data->vm_stk_current++;
 					continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_CONSTRUCTOR_FUNCT:
+				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 					so_aux=(ClassScriptObject *)((data->vm_stk_current-1)->value);
 					if(instruction->value_op2 == ZS_UNDEFINED_IDX){
 						ZS_VM_PUSH_STK_UNDEFINED;
 					}else{
 						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope->symbol_functions->get(instruction->value_op2);
-						data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
+						data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION;
 						data->vm_stk_current++;
 					}
 					continue;
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE:
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE:
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM:
-				case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM:
+				case BYTE_CODE_LOAD_THIS_VARIABLE:
+				case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
+				case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
+				case BYTE_CODE_LOAD_OBJECT_ITEM:
 					if(vm_load_field(
 							_vm
 							,_this_object
@@ -651,8 +651,8 @@ namespace zetscript{
 						return;
 					}
 					continue;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_UNRESOLVED_CALL:
+			case BYTE_CODE_FIND_VARIABLE:
+			case BYTE_CODE_UNRESOLVED_CALL:
 				vm_print_main_error(\
 						_vm\
 						,_script_function\
@@ -660,7 +660,7 @@ namespace zetscript{
 						,ZS_VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
 				);
 				return;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_END_FUNCTION:
+			case BYTE_CODE_END_FUNCTION:
 			default:
 				goto lbl_exit_function;
 			}
@@ -669,7 +669,7 @@ namespace zetscript{
 
 	lbl_exit_function:
 		// default return null
-		 ZS_STK_SET_UNDEFINED(data->vm_stk_current);
+		 STACK_ELEMENT_SET_UNDEFINED(data->vm_stk_current);
 		// reset stack and set last stk return null;
 		data->vm_stk_current=_stk_local_var;
 
@@ -696,13 +696,13 @@ namespace zetscript{
 		VirtualMachine			*	_vm
 		, StackElement 			*	_stk1
 		, StackElement 			*	_stk2
-		, Metamethod::MetamethodId 		_metamethod_id
+		, Metamethod 		_metamethod
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		zs_string str1="@@@STR1_NOT_INIT@@@@";
 		zs_string str2="@@@STR2_NOT_INIT@@@@";
 
-		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(_stk1)){
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
 			str1=data->zs->stackElementToString(_stk1);
@@ -710,7 +710,7 @@ namespace zetscript{
 
 
 
-		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(_stk2)){
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk2)){
 			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
 			str2=data->zs->stackElementToString( _stk2);
@@ -718,27 +718,27 @@ namespace zetscript{
 
 		bool result=false;
 
-		switch(_metamethod_id){
-		case Metamethod::MetamethodId::METAMETHOD_ID_NEQU:
+		switch(_metamethod){
+		case METAMETHOD_NEQU:
 			result= ZS_STRCMP(str1.c_str(),!=,str2.c_str());
 			break;
-		case Metamethod::MetamethodId::METAMETHOD_ID_EQU:
+		case METAMETHOD_EQU:
 			result= ZS_STRCMP(str1.c_str(),==,str2.c_str());
 			break;
-		case Metamethod::MetamethodId::METAMETHOD_ID_LT:
+		case METAMETHOD_LT:
 			result= ZS_STRCMP(str1.c_str(),<,str2.c_str());
 			break;
-		case Metamethod::MetamethodId::METAMETHOD_ID_GT:
+		case METAMETHOD_GT:
 			result= ZS_STRCMP(str1.c_str(),>,str2.c_str());
 			break;
-		case Metamethod::MetamethodId::METAMETHOD_ID_LTE:
+		case METAMETHOD_LTE:
 			result= ZS_STRCMP(str1.c_str(),<=,str2.c_str());
 			break;
-		case Metamethod::MetamethodId::METAMETHOD_ID_GTE:
+		case METAMETHOD_GTE:
 			result= ZS_STRCMP(str1.c_str(),>=,str2.c_str());
 			break;
 		default:
-			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected metamethod_id comparer");
+			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected metamethod comparer");
 			return;
 			break;
 		}
@@ -752,7 +752,7 @@ namespace zetscript{
 		,Instruction 			*		_instruction
 		,VM_MainError 					_error
 		,StackElement 			*		_stk
-		,Metamethod::MetamethodId 		_metamethod_id
+		,Metamethod 		_metamethod
 	){
 
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
@@ -767,9 +767,9 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,Metamethod::toOperatorString(_metamethod_id)
+				,MetamethodHelper::getOperatorName(_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,Metamethod::toOperatorString(_metamethod_id)
+				,MetamethodHelper::getOperatorName(_metamethod)
 				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
@@ -780,8 +780,8 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Member property '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,Metamethod::toSymbolString(_metamethod_id)\
-				,Metamethod::toOperatorString(_metamethod_id)\
+				,MetamethodHelper::getSymbolName(_metamethod)\
+				,MetamethodHelper::getOperatorName(_metamethod)\
 			);\
 			break;
 		case ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED:
@@ -792,8 +792,8 @@ namespace zetscript{
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 				,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
-				,Metamethod::toSymbolString(_metamethod_id)\
-				,Metamethod::toOperatorString(_metamethod_id)\
+				,MetamethodHelper::getSymbolName(_metamethod)\
+				,MetamethodHelper::getOperatorName(_metamethod)\
 			);\
 			break;
 		case ZS_VM_MAIN_ERROR_CANNOT_FIND_SYMBOL:
@@ -847,8 +847,8 @@ namespace zetscript{
 					,"Symbol '%s' as type '%s' the metamethod '%s' (aka '%s') doesn't returns value to perform negate operation" \
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
-					,Metamethod::toSymbolString(_metamethod_id)\
-					,Metamethod::toOperatorString(_metamethod_id)\
+					,MetamethodHelper::getSymbolName(_metamethod)\
+					,MetamethodHelper::getOperatorName(_metamethod)\
 				);\
 			break;
 		}
@@ -865,7 +865,7 @@ namespace zetscript{
 		if(so_aux->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so_aux->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
 			so_aux=ZS_NEW_STRING_OBJECT(data->zs,so_aux->toString());
-			stk_var->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+			stk_var->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
 			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here... remove share data
@@ -897,11 +897,11 @@ namespace zetscript{
 
 		VM_POP_STK_ONE;
 		//script_var
-		if(stk_result_op1->properties & ZS_STK_PROPERTY_PTR_STK){
+		if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 			stk_result_op1=(StackElement *)stk_result_op1->value;
 		}
 
-		if(stk_result_op1->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			so_class_aux1=NULL;
 
 			so_aux = (ScriptObject *)(stk_result_op1)->value;
@@ -916,7 +916,7 @@ namespace zetscript{
 					so_class_aux1->deleteNativeObjectOnDestroy(true);
 				}
 			}
-			ZS_STK_SET_UNDEFINED(stk_result_op1);
+			STACK_ELEMENT_SET_UNDEFINED(stk_result_op1);
 		}
 	}
 
@@ -930,7 +930,7 @@ namespace zetscript{
 
 		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
 		vm_create_shared_script_object(_vm,so_aux);
-		(*data->vm_stk_current++)={(zs_int)so_aux,ZS_STK_PROPERTY_SCRIPT_OBJECT};
+		(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT};
 	}
 }
 

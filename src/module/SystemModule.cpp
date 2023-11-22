@@ -61,7 +61,7 @@ namespace zetscript{
 						function_params[i]=ScriptFunctionParam(it.key);
 						stk_params.push_back(stk);
 
-						if(stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+						if(stk->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 							// inc number of ref as standard in pass object args
 							((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
 						}
@@ -135,8 +135,8 @@ namespace zetscript{
 
 		// check if there's a reset stack at the end and set as end function in order to ensure it gets last value stk ...
 		if(sf_eval->instructions_len>2){
-			if(sf_eval->instructions[sf_eval->instructions_len-2].byte_code != ByteCode::ByteCodeId::BYTE_CODE_ID_RET){
-				int offset_rst_stack=sf_eval->instructions[sf_eval->instructions_len-2].byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK ? 1:0;
+			if(sf_eval->instructions[sf_eval->instructions_len-2].byte_code != BYTE_CODE_RET){
+				int offset_rst_stack=sf_eval->instructions[sf_eval->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
 				size_t new_buf_len=sf_eval->instructions_len+2;
 				Instruction *new_buf=(Instruction *)ZS_MALLOC(new_buf_len*sizeof(Instruction));
 				memcpy(new_buf,sf_eval->instructions,sf_eval->instructions_len*sizeof(Instruction));
@@ -144,8 +144,8 @@ namespace zetscript{
 				free(sf_eval->instructions);
 
 				// assign ret null
-				new_buf[new_buf_len-3-offset_rst_stack].byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_UNDEFINED;
-				new_buf[new_buf_len-2-offset_rst_stack].byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_RET;
+				new_buf[new_buf_len-3-offset_rst_stack].byte_code=BYTE_CODE_LOAD_UNDEFINED;
+				new_buf[new_buf_len-2-offset_rst_stack].byte_code=BYTE_CODE_RET;
 
 				sf_eval->instructions=new_buf;
 				sf_eval->instructions_len=new_buf_len;

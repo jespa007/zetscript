@@ -117,8 +117,8 @@ namespace zetscript{
 			// insert JT/acording type of JNT, the jump for next or
 						eval_instructions->push_back(
 							eval_instruction=new EvalInstruction(
-								ByteCode::ByteCodeId::BYTE_CODE_ID_JNT
-								,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
+								BYTE_CODE_JNT
+								,INSTRUCTION_VALUE_OP1_JNT_LOGIC_NEXT_OR
 							)
 						);
 						logical_and_jnt->push_back(eval_instruction);
@@ -126,8 +126,8 @@ namespace zetscript{
 			custom_insert_instruction=true;
 			eval_instructions->push_back(
 				eval_instruction=new EvalInstruction(
-						ByteCode::ByteCodeId::BYTE_CODE_ID_JT
-						,ZS_IDX_INSTRUCTION_JT_LOGIC_OK
+						BYTE_CODE_JT
+						,INSTRUCTION_VALUE_OP1_JT_LOGIC_OK
 				)
 			);
 			logical_or_jt->push_back(eval_instruction);
@@ -253,7 +253,7 @@ namespace zetscript{
 
 			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1));
 
-			if(ZS_IS_BYTE_CODE_ID_CALL(
+			if(BYTE_CODE_IS_CALL(
 					ei_load_assign_instruction->vm_instruction.byte_code
 			)){
 				EVAL_ERROR_FILE_LINE_GOTOF(
@@ -275,9 +275,9 @@ namespace zetscript{
 			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->get(ei_assign_loader_instructions_post_expression->size()-1);
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
-			if(ByteCode::isLoadVarType(last_load_instruction->byte_code)){
+			if(ByteCodeHelper::isLoadVarType(last_load_instruction->byte_code)){
 
-				if(last_load_instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS){
+				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,ei_last_load_instruction->instruction_source_info.line
@@ -285,9 +285,9 @@ namespace zetscript{
 						,"'this' is not assignable");
 				}
 
-				last_load_instruction->byte_code=ByteCode::loadVarTypeToPushStk(last_load_instruction->byte_code);
-			}else if(last_load_instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE){
-				last_load_instruction->properties=ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				last_load_instruction->byte_code=ByteCodeHelper::loadVarTypeToPushStk(last_load_instruction->byte_code);
+			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
 
 			// ... add assign operations to the list to add later after eval all instructions
@@ -334,7 +334,7 @@ namespace zetscript{
 			dst_instructions->push_back(
 
 				new EvalInstruction(
-					ByteCode::ByteCodeId::BYTE_CODE_ID_JMP
+					BYTE_CODE_JMP
 					,(uint8_t)ZS_UNDEFINED_IDX
 					,2 // +2 jmp instructions by default
 				)
@@ -346,7 +346,7 @@ namespace zetscript{
 				idx_jmp_load_true_value=dst_instructions->size();
 				dst_instructions->push_back(
 					new EvalInstruction(
-						ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL
+						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_UNDEFINED_IDX
 						,1
 					)
@@ -362,7 +362,7 @@ namespace zetscript{
 					// to jmp true value space
 					dst_instructions->push_back(
 						new EvalInstruction(
-							ByteCode::ByteCodeId::BYTE_CODE_ID_JMP
+							BYTE_CODE_JMP
 							, (uint8_t)ZS_UNDEFINED_IDX
 							,2
 						)
@@ -373,7 +373,7 @@ namespace zetscript{
 
 				dst_instructions->push_back(
 					new EvalInstruction(
-						ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL
+						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_UNDEFINED_IDX
 						,0
 					)
@@ -382,13 +382,13 @@ namespace zetscript{
 
 			for(int i=idx_start_instructions; i < dst_instructions->size(); i++){
 				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->get(i);
-				if((eval_instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
+				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== INSTRUCTION_VALUE_OP1_JNT_LOGIC_NEXT_OR)){
 					//logical_and_jnt.push_back((intptr_t)eval_instruction);
 					// go to next logic or
 					int idx_next_or_found=-1;
 					for(int j=i; j < dst_instructions->size(); j++){
 						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->get(j);
-						if((eval_instruction_post_instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+						if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== INSTRUCTION_VALUE_OP1_JT_LOGIC_OK)){
 							idx_next_or_found=j;
 							break;
 						}
@@ -402,7 +402,7 @@ namespace zetscript{
 
 					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_UNDEFINED_IDX; // mark as undefined due the jmp offset it was assigned
 				}
-				else if((eval_instruction->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+				else if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== INSTRUCTION_VALUE_OP1_JT_LOGIC_OK)){
 
 					eval_instruction->vm_instruction.value_op2=idx_jmp_load_true_value-i;
 
@@ -421,7 +421,7 @@ namespace zetscript{
 
 			// insert JNT
 			int jnt_instructions_start=dst_instructions->size();
-			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_JNT));
+			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 			ei_ternary_if_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_ternary_if_jnt->instruction_source_info.line=line;
 			int jmp_instructions_start=0;
@@ -445,7 +445,7 @@ namespace zetscript{
 
 			if(unique_call_instructions != NULL){
 				last_instruction=&(((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction);
-				if(ZS_IS_BYTE_CODE_ID_CALL(last_instruction->byte_code) && token_nodes->size()==1){
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}
@@ -462,7 +462,7 @@ namespace zetscript{
 
 
 			jmp_instructions_start=dst_instructions->size();
-			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_JMP));
+			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 			body_size_if=dst_instructions->size()-jnt_instructions_start; // size body "if" takes jmp as part of it
 
 
@@ -486,7 +486,7 @@ namespace zetscript{
 
 			if(unique_call_instructions != NULL){
 				last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
-				if(ZS_IS_BYTE_CODE_ID_CALL(last_instruction->byte_code) && token_nodes->size()==1){
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}
@@ -498,7 +498,7 @@ namespace zetscript{
 		}else{
 			if(unique_call_instructions != NULL){
 				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
-				if(ZS_IS_BYTE_CODE_ID_CALL(last_instruction->byte_code) && token_nodes->size()==1){
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}

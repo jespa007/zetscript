@@ -146,7 +146,7 @@ namespace zetscript{
 	}
 
 	zs_string ObjectScriptObject::toString(){
-		StackElement stk={(zs_int)this,ZS_STK_PROPERTY_SCRIPT_OBJECT};
+		StackElement stk={(zs_int)this,STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT};
 		return json::serialize(zs,&stk,false,false);
 	}
 

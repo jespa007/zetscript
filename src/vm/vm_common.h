@@ -22,7 +22,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return) \
 	for(int i=0; i < _n_return; i++){\
 		StackElement *stk_ret = _stk_return+i;\
-		if(stk_ret->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){\
+		if(stk_ret->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
 			if(sv->shared_pointer == NULL){\
 				vm_create_shared_script_object(_vm,sv);\
@@ -121,18 +121,18 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_STR_AUX_PARAM_0					(data->vm_str_aux[0])
 #define ZS_VM_STR_AUX_PARAM_1					(data->vm_str_aux[1])
 
-#define ZS_VM_MAIN_ERROR(_error,_stk, _metamethod_id) \
+#define ZS_VM_MAIN_ERROR(_error,_stk, _metamethod) \
 		vm_print_main_error(\
 				_vm\
 				,_script_function\
 				,instruction\
 				,_error\
 				,_stk\
-				,_metamethod_id\
+				,_metamethod\
 		);\
 		goto lbl_exit_function;
 
-#define ZS_VM_ZS_STK_IS_GLOBAL(stk_var) \
+#define ZS_VM_STACK_ELEMENT_IS_GLOBAL(stk_var) \
 		((stk_var - data->vm_stack)< data->main_function_object->local_variables->size())
 
 #define ZS_VM_CHECK_CONTAINER_FOR_SLOT(_container) \
@@ -220,7 +220,7 @@ namespace zetscript{
 		VirtualMachine			*		_vm
 		,ScriptFunction 		*		_script_function
 		,Instruction 			*		_instruction
-		,Metamethod::MetamethodId 		_metamethod_id
+		,Metamethod 		_metamethod
 		,StackElement 			*		_stk_result_op1
 		,StackElement 			*		_stk_result_op2
 		, bool 							_is_static=true
@@ -249,14 +249,14 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
-		,Metamethod::MetamethodId	_metamethod_id=Metamethod::MetamethodId::METAMETHOD_ID_INVALID
+		,Metamethod	_metamethod=METAMETHOD_INVALID
 	);
 
 	void vm_push_stk_boolean_equal_strings(
 		VirtualMachine			*		_vm
 		, StackElement 			*		_stk1
 		, StackElement 			*		_stk2
-		, Metamethod::MetamethodId 		_metamethod_id
+		, Metamethod 		_metamethod
 	);
 
 	ScriptFunction * vm_find_native_function(

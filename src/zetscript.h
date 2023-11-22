@@ -65,8 +65,8 @@
 #include "util/zs_util.h"
 
 #include "StackElement.h"
-#include "ByteCode.h"
-#include "Metamethod.h"
+#include "ByteCodeHelper.h"
+#include "MetamethodHelper.h"
 #include "Instruction.h"
 #include "Symbol.h"
 

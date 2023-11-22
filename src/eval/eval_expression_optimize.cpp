@@ -9,21 +9,21 @@
 
 
 #define ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
-	if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){\
+	if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_INT){\
 		result_op_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){\
+		result_bc=BYTE_CODE_LOAD_INT;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 		result_op_float=(i1->value_op2) ARITHMETIC_OP (ZS_READ_INTPTR_FLOAT(i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){\
+		result_bc=BYTE_CODE_LOAD_FLOAT;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_INT){\
 		result_op_float=(ZS_READ_INTPTR_FLOAT(i1->value_op2)) ARITHMETIC_OP (i2->value_op2);\
 		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){\
+		result_bc=BYTE_CODE_LOAD_FLOAT;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 		result_op_float=(ZS_READ_INTPTR_FLOAT(i1->value_op2)) ARITHMETIC_OP (ZS_READ_INTPTR_FLOAT(i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_int,&result_op_float);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;\
+		result_bc=BYTE_CODE_LOAD_FLOAT;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			eval_data->current_parsing_file\
@@ -36,24 +36,24 @@
 
 
 #define ZS_EVAL_CONSTANT_COMPARE_OPERATION(__COMPARE_OP__) \
-	if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){\
+	if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_INT){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL){\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 		result_op_float=(i1->value_op2)__COMPARE_OP__ ZS_READ_INTPTR_FLOAT(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_INT){\
 		result_op_bool=ZS_READ_INTPTR_FLOAT(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
-	}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 		result_op_bool=ZS_READ_INTPTR_FLOAT(i1->value_op2)__COMPARE_OP__ ZS_READ_INTPTR_FLOAT(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
-	}else if( i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING && i2->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING){\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
+	}else if( i1->byte_code == BYTE_CODE_LOAD_STRING && i2->byte_code==BYTE_CODE_LOAD_STRING){\
 		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			eval_data->current_parsing_file\
@@ -66,9 +66,9 @@
 	}
 
 #define ZS_EVAL_CONSTANT_BINARY_OPERATION(BINARY_OP) \
-	if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){\
+	if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_INT){\
 		result_op_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT;\
+		result_bc=BYTE_CODE_LOAD_INT;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			 eval_data->current_parsing_file\
@@ -81,9 +81,9 @@
 	}
 
 #define ZS_EVAL_CONSTANT_LOGIC_OPERATION(LOGIC_OP) \
-	if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL){\
+	if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL){\
 		result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
-		result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;\
+		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			eval_data->current_parsing_file\
@@ -100,32 +100,32 @@ namespace zetscript{
 
 
 
-	unsigned short eval_expression_load_const_byte_code_to_instruction_property(ByteCode::ByteCodeId byte_code){
+	unsigned short eval_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
 
 		switch(byte_code){
 		default:
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
-			return ZS_INSTRUCTION_PROPERTY_INT;
+		case BYTE_CODE_LOAD_INT:
+			return INSTRUCTION_PROPERTY_INT;
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
-			return ZS_INSTRUCTION_PROPERTY_BOOL;
+		case BYTE_CODE_LOAD_BOOL:
+			return INSTRUCTION_PROPERTY_BOOL;
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
-			return ZS_INSTRUCTION_PROPERTY_FLOAT;
+		case BYTE_CODE_LOAD_FLOAT:
+			return INSTRUCTION_PROPERTY_FLOAT;
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING:
-			return ZS_INSTRUCTION_PROPERTY_STRING;
+		case BYTE_CODE_LOAD_STRING:
+			return INSTRUCTION_PROPERTY_STRING;
 			break;
 		}
 
 		return 0;
 	}
 
-	bool eval_expression_get_register(EvalData *eval_data, Scope *scope,EvalInstruction *i1, ByteCode::ByteCodeId & load_byte_code, zs_int & load_value_op2){
+	bool eval_expression_get_register(EvalData *eval_data, Scope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
 		Symbol *symbol_found=NULL;
 
-		 if(!ZS_IS_BYTE_CODE_ID_LOAD_VARIABLE_IMMEDIATE(i1->vm_instruction.byte_code)){
+		 if(!BYTE_CODE_IS_LOAD_VARIABLE_IMMEDIATE(i1->vm_instruction.byte_code)){
 			 return false;
 		 }
 
@@ -137,18 +137,18 @@ namespace zetscript{
 		 load_value_op2=i1->vm_instruction.value_op2;
 		 load_byte_code=i1->vm_instruction.byte_code;
 
-		if(i1->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE){
+		if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 
 			if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol_name)) != NULL){
-				load_byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_LOCAL;
+				load_byte_code=BYTE_CODE_LOAD_LOCAL;
 				load_value_op2=symbol_found->idx_position;
 				if((symbol_found->properties & (ZS_SYMBOL_PROPERTY_ARG_BY_REF)) == ZS_SYMBOL_PROPERTY_ARG_BY_REF){
-					load_byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_REF;
+					load_byte_code=BYTE_CODE_LOAD_REF;
 				}
 			}else { // if global or not found cannot be optimized
 				return false;
 			}
-		}else if(i1->vm_instruction.byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE){
+		}else if(i1->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
 			if(load_value_op2 == ZS_UNDEFINED_IDX){
 				ScriptType *sc=NULL;
 				if(
@@ -194,10 +194,10 @@ namespace zetscript{
 		zs_string result_op_str="";
 		zs_string str_constant_key="";
 		EvalInstruction *result_instruction=NULL;
-		ByteCode::ByteCodeId result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_INVALID;
+		ByteCode result_bc=BYTE_CODE_INVALID;
 		Instruction *i1=&ei1->vm_instruction;
 		Instruction *i2=&ei2->vm_instruction;
-		ByteCode::ByteCodeId byte_code=eval_operator_to_byte_code(token_operator->operator_type);
+		ByteCode byte_code=eval_operator_to_byte_code(token_operator->operator_type);
 
 		// check last two instructions stk op1 and stk op2 are bool/int/float or string
 		if(!(i1->isConstant() && i2->isConstant())){
@@ -206,31 +206,31 @@ namespace zetscript{
 
 		// which operation ?
 		switch(byte_code){
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD: // int & int/int & float/float&float
+		case BYTE_CODE_ADD: // int & int/int & float/float&float
 
-			if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING && i2->isConstant()){
+			if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
 				result_op_str=zs_strutils::format("%s%s"
 						,i1->getConstantString().c_str()
-						,i2->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING?i2->getConstantString().c_str():i2->getConstantValueOp2ToString().c_str());
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING;
+						,i2->byte_code==BYTE_CODE_LOAD_STRING?i2->getConstantString().c_str():i2->getConstantValueOp2ToString().c_str());
+				result_bc=BYTE_CODE_LOAD_STRING;
 			}
-			else if(i1->isConstant() && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING){
+			else if(i1->isConstant() && i2->byte_code == BYTE_CODE_LOAD_STRING){
 				result_op_str=zs_strutils::format("%s%s"
-						,i1->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING?i1->getConstantString().c_str():i1->getConstantValueOp2ToString().c_str()
+						,i1->byte_code==BYTE_CODE_LOAD_STRING?i1->getConstantString().c_str():i1->getConstantValueOp2ToString().c_str()
 						,i2->getConstantString().c_str());
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING;
+				result_bc=BYTE_CODE_LOAD_STRING;
 			}else{
 				ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(+);
 			}
 
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB:
+		case BYTE_CODE_SUB:
 			ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(-);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL:
+		case BYTE_CODE_MUL:
 			ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(*);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV:
+		case BYTE_CODE_DIV:
 			if(i2->value_op2==0){
 				ZS_THROW_EXCEPTION_FILE_LINE(
 						 eval_data->current_parsing_file
@@ -238,22 +238,22 @@ namespace zetscript{
 						,"constant divide operation by 0"
 				);
 			}
-			if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){
+			if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_INT){
 				result_op_float=((zs_float)(i1->value_op2))/((zs_float)(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_INT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/(i2->value_op2);
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/(i2->value_op2);
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 				result_op_float=ZS_READ_INTPTR_FLOAT(i1->value_op2)/ ZS_READ_INTPTR_FLOAT(i2->value_op2);
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
+				result_bc=BYTE_CODE_LOAD_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
 					eval_data->current_parsing_file
@@ -264,7 +264,7 @@ namespace zetscript{
 				);
 			}
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD:
+		case BYTE_CODE_MOD:
 			if(i2->value_op2==0){
 				ZS_THROW_EXCEPTION_FILE_LINE(
 					eval_data->current_parsing_file
@@ -272,22 +272,22 @@ namespace zetscript{
 					,"constant module operation by 0"
 				);
 			}
-			if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){
+			if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_INT){
 				result_op_float=fmod((i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_INT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
-			}else if(i1->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT && i2->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 				result_op_float=fmod(ZS_READ_INTPTR_FLOAT(i1->value_op2), ZS_READ_INTPTR_FLOAT(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_int,&result_op_float);
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT;
+				result_bc=BYTE_CODE_LOAD_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
 					eval_data->current_parsing_file
@@ -299,55 +299,55 @@ namespace zetscript{
 			}
 			break;
 		// bitwise ops
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND:
+		case BYTE_CODE_BITWISE_AND:
 			ZS_EVAL_CONSTANT_BINARY_OPERATION(&);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR:
+		case BYTE_CODE_BITWISE_OR:
 			ZS_EVAL_CONSTANT_BINARY_OPERATION(|);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR:
+		case BYTE_CODE_BITWISE_XOR:
 			ZS_EVAL_CONSTANT_BINARY_OPERATION(^);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL:
+		case BYTE_CODE_SHL:
 			ZS_EVAL_CONSTANT_BINARY_OPERATION(<<);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR:
+		case BYTE_CODE_SHR:
 			ZS_EVAL_CONSTANT_BINARY_OPERATION(>>);
 			break;
 
 		// logic ops
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_AND:
+		case BYTE_CODE_LOGIC_AND:
 			ZS_EVAL_CONSTANT_LOGIC_OPERATION(&&);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_OR:
+		case BYTE_CODE_LOGIC_OR:
 			ZS_EVAL_CONSTANT_LOGIC_OPERATION(||);
 			break;
 		// compare op
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LT:
+		case BYTE_CODE_LT:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(<);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_GT:
+		case BYTE_CODE_GT:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(>);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_GTE:
+		case BYTE_CODE_GTE:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(>=);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LTE:
+		case BYTE_CODE_LTE:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(<=);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_EQU:
+		case BYTE_CODE_EQU:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(==);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_NOT_EQU:
+		case BYTE_CODE_NOT_EQU:
 			ZS_EVAL_CONSTANT_COMPARE_OPERATION(!=);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_IN:
-			if(ZS_INSTRUCTION_IS_INT(i1) && ZS_INSTRUCTION_IS_STRING(i2)){
+		case BYTE_CODE_IN:
+			if(INSTRUCTION_BYTE_CODE_IS_LOAD_INT(i1) && INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i2)){
 				result_op_bool=strchr(i2->getConstantString().c_str(),i1->getConstantInt()) != NULL;
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;
-			}else if(ZS_INSTRUCTION_IS_STRING(i1) && ZS_INSTRUCTION_IS_STRING(i2)){
+				result_bc=BYTE_CODE_LOAD_BOOL;
+			}else if(INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i1) && INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i2)){
 				result_op_bool=zs_strutils::contains(i2->getConstantString().c_str(),i1->getConstantString().c_str());
-				result_bc=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL;
+				result_bc=BYTE_CODE_LOAD_BOOL;
 			}
 			else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
@@ -365,7 +365,7 @@ namespace zetscript{
 				,token_operator->line
 				,"Invalid constant operation %s %s %s"
 				,i1->getConstantValueOp2ToString().c_str()
-				,ByteCode::toOperatorString(byte_code)
+				,ByteCodeHelper::getNameOperator(byte_code)
 				,i2->getConstantValueOp2ToString().c_str()
 			);
 			break;
@@ -374,32 +374,32 @@ namespace zetscript{
 		switch(result_bc){
 		default:
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
+		case BYTE_CODE_LOAD_INT:
 			result_instruction=new EvalInstruction(
 					result_bc
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_int
 			);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
+		case BYTE_CODE_LOAD_FLOAT:
 			result_instruction=new EvalInstruction(
 					result_bc
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_int
 			);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING:
+		case BYTE_CODE_LOAD_STRING:
 			str_constant_key=zs_string("\"")+result_op_str+"\"";
 			result_instruction=new EvalInstruction(
 					result_bc
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,(zs_int)eval_data->zs->registerStkConstantStringObject(str_constant_key,result_op_str)
 			);
 			break;
-		case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
+		case BYTE_CODE_LOAD_BOOL:
 			result_instruction=new EvalInstruction(
 					result_bc
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_bool
 			);
 			break;
@@ -436,8 +436,8 @@ namespace zetscript{
 		// can be reduce the number of bytes codes down to 2, yeah!
 		if(token_operation->operator_type == ZS_OPERATOR_INSTANCEOF){
 			instruction=new EvalInstruction(
-					ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					BYTE_CODE_INSTANCEOF
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,i2->vm_instruction.value_op2
 			);
 
@@ -454,12 +454,12 @@ namespace zetscript{
 			instruction=eval_expression_perform_KK_operation(eval_data,token_operation,i1,i2);
 			n_eval_ops=2;
 		}else{ // try KR/RK/RR/k or R
-			ByteCode::ByteCodeId load_byte_code_1= i1->vm_instruction.byte_code;
+			ByteCode load_byte_code_1= i1->vm_instruction.byte_code;
 			zs_int	 load_value_op2_1= i1->vm_instruction.value_op2;
-			ByteCode::ByteCodeId load_byte_code_2= i2->vm_instruction.byte_code;
+			ByteCode load_byte_code_2= i2->vm_instruction.byte_code;
 			zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
 
-			ByteCode::ByteCodeId byte_code=eval_operator_to_byte_code(token_operation->operator_type);
+			ByteCode byte_code=eval_operator_to_byte_code(token_operation->operator_type);
 			unsigned short k_properties=0;
 			n_eval_ops=2;
 
@@ -472,12 +472,12 @@ namespace zetscript{
 						,load_value_op2_1
 						,((load_value_op2_2 & 0xff) << 16) // pack value + properties
 						  | (
-								load_byte_code_2 == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 							)
-						,ZS_INSTRUCTION_PROPERTY_ILOAD_RR
+						,INSTRUCTION_PROPERTY_ILOAD_RR
 						| (
-								load_byte_code_1 == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 				);
@@ -491,10 +491,10 @@ namespace zetscript{
 						byte_code
 						,load_value_op2_1
 						,load_value_op2_2
-						,ZS_INSTRUCTION_PROPERTY_ILOAD_RK
+						,INSTRUCTION_PROPERTY_ILOAD_RK
 						| (
 
-								load_byte_code_1 == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -508,9 +508,9 @@ namespace zetscript{
 						byte_code
 						,load_value_op2_2
 						,load_value_op2_1
-						,ZS_INSTRUCTION_PROPERTY_ILOAD_KR
+						,INSTRUCTION_PROPERTY_ILOAD_KR
 						| (
-								load_byte_code_2 == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -525,9 +525,9 @@ namespace zetscript{
 
 					instruction=new EvalInstruction(
 							byte_code
-							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							, load_value_op2_2
-							, ZS_INSTRUCTION_PROPERTY_ILOAD_K |k_properties
+							, INSTRUCTION_PROPERTY_ILOAD_K |k_properties
 					);
 
 				}else if(is_i2_R){ // is R
@@ -536,8 +536,8 @@ namespace zetscript{
 							byte_code
 							,load_value_op2_2
 							,ZS_UNDEFINED_IDX
-							,ZS_INSTRUCTION_PROPERTY_ILOAD_R | (
-									load_byte_code_2 == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE ? ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+							,INSTRUCTION_PROPERTY_ILOAD_R | (
+									load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0
 							)
 					);

@@ -58,10 +58,10 @@ namespace zetscript{
 				*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 			}else if(symbol->properties & (ZS_SYMBOL_PROPERTY_CONST)){ // stack element
 				se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
-				se->properties=ZS_STK_PROPERTY_PTR_STK;
+				se->properties=StackElementProperty::STACK_ELEMENT_PROPERTY_PTR_STK;
 			}else if(symbol->properties & ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY){
 				se->value=(zs_int)(new StackElementMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
-				se->properties=ZS_STK_PROPERTY_MEMBER_PROPERTY;
+				se->properties=STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY;
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getStackElementByKeyName(Metamethod::toSymbolString(Metamethod::MetamethodId::METAMETHOD_ID_SET)) != NULL;
+		return getStackElementByKeyName(MetamethodHelper::getSymbolName(METAMETHOD_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -164,7 +164,7 @@ namespace zetscript{
 
 	zs_string ClassScriptObject::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(Metamethod::toSymbolString(Metamethod::MetamethodId::METAMETHOD_ID_TO_STRING));
+		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(MetamethodHelper::getSymbolName(METAMETHOD_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
@@ -180,7 +180,7 @@ namespace zetscript{
 							,0
 					);
 
-					if(ZS_STK_IS_STRING_SCRIPT_OBJECT(&result)){
+					if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&result)){
 						StringScriptObject *so=(StringScriptObject *)result.value;
 						// capture string...
 						aux=so->toString();

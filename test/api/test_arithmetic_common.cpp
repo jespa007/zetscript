@@ -57,7 +57,7 @@ void test_arithmetic_int_expression(
 ){ \
 	try{\
 		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return Integer::parse(")+str_expr+")");\
-		if(stk.properties & zetscript::ZS_STK_PROPERTY_INT){\
+		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_INT){\
 			if((zetscript::zs_int)stk.value != expr){ \
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zetscript::zs_int)stk.value))).c_str()); \
 			} \
@@ -82,7 +82,7 @@ void test_constant_int_expression(
 ) {
 	try{\
 		zetscript::StackElement stk=_zs->eval(str_expr);\
-		if(stk.properties & zetscript::ZS_STK_PROPERTY_INT){\
+		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_INT){\
 			if((zetscript::zs_int)stk.value  != (expected_value)){ \
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zetscript::zs_int)stk.value)).c_str()); \
 			} \
@@ -520,7 +520,7 @@ void _complete_test_arithmetic_float_op_assign(
 void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_expr, bool expected_value){
 	try{
 		zetscript::StackElement stk = _zs->eval(str_expr);
-		if(stk.properties & zetscript::ZS_STK_PROPERTY_BOOL){
+		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %s but it was %s!\n", str_expr,expected_value?"true":"false",(bool)stk.value?"true":"false").c_str());
 			}
@@ -542,7 +542,7 @@ void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const 
 
 	try{
 		zetscript::StackElement stk = _zs->eval(zetscript::zs_string("return ")+str_expr);
-		if(stk.properties & zetscript::ZS_STK_PROPERTY_BOOL){
+		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_BOOL){
 			if((bool)stk.value  != (expr)){
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false").c_str());
 			}
@@ -572,7 +572,7 @@ void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expe
 
 	try{
 		zetscript::StackElement stk = _zs->eval(zetscript::zs_string("return ")+str_expr);
-		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
 			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::zs_string(expected_value)) {
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected '%s' but it was '%s'!\n", str_expr, expected_value, so->toString().c_str()).c_str());
@@ -596,7 +596,7 @@ void test_arithmetic_string_expression(zetscript::ZetScript *_zs,const zetscript
 
 	try{\
 		zetscript::StackElement stk = _zs->eval(zetscript::zs_string("return ")+str_expr,__FILE__,__LINE__);
-		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(&stk)){
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
 			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::zs_string(expected_value)) {
 				fprintf(stderr,"error test '%s' expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \

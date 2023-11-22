@@ -17,7 +17,7 @@ namespace zetscript{
 		Instruction *instruction=_instruction;
 
 		VM_POP_STK_ONE;
-		 if(ZS_STK_VALUE_IS_TYPE(stk_result_op1)){
+		 if(STACK_ELEMENT_IS_TYPE(stk_result_op1)){
 			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
 			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
 				ZS_VM_STOP_EXECUTE("'%s' type is not instantiable",sc_aux1->getTypeName());
@@ -30,7 +30,7 @@ namespace zetscript{
 			vm_create_shared_script_object(_vm,so_aux);
 
 			data->vm_stk_current->value=(zs_int)so_aux;
-			data->vm_stk_current->properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+			data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 			data->vm_stk_current++;
 
 			if(so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // custom object by user
@@ -45,7 +45,7 @@ namespace zetscript{
 
 				 if(symbol_aux != NULL){
 					 data->vm_stk_current->value=(zs_int)symbol_aux;
-					 data->vm_stk_current->properties=ZS_STK_PROPERTY_MEMBER_FUNCTION;
+					 data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION;
 					 data->vm_stk_current++;
 				 }
 			}

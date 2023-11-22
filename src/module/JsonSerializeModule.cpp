@@ -76,14 +76,14 @@ namespace zetscript{
 					StackElement stk_se=*((StackElement *)mi->value);
 
 					// depack container slot
-					if(stk_se.properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
+					if(stk_se.properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 						stk_se.value=(zs_int)((ContainerSlot *)(stk_se.value))->getSrcContainerRef();
-						stk_se.properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+						stk_se.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 					}
 
 					StackElementMemberProperty *smp=NULL;
 
-					if(stk_se.properties & ZS_STK_PROPERTY_MEMBER_PROPERTY){
+					if(stk_se.properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){
 						smp=(StackElementMemberProperty *)stk_se.value;
 						if(smp->member_property->metamethod_members.getter == NULL){ // ignore value due it doesn't has getter
 							continue;
@@ -92,9 +92,9 @@ namespace zetscript{
 
 					// Serialize values as primitives or objects and ignore functions or script object memeber functions
 					if(
-						((stk_se.properties & ZS_STK_PROPERTY_FUNCTION) == 0)
+						((stk_se.properties & STACK_ELEMENT_PROPERTY_FUNCTION) == 0)
 							&&
-						ZS_STK_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
+						STACK_ELEMENT_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
 					){
 						bool getter_found=false;
 						bool value_from_vm_execute=false;
@@ -178,7 +178,7 @@ namespace zetscript{
 							,_is_formatted
 							,_strict_json_format);
 
-						if(stk_getter_result.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+						if(stk_getter_result.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 							if(value_from_vm_execute==true){
 								vm_unref_lifetime_object(
 									_zs->getVirtualMachine()
@@ -224,22 +224,22 @@ namespace zetscript{
 			switch(var_type){
 			default:
 				break;
-			case ZS_STK_PROPERTY_FLOAT:
-			case ZS_STK_PROPERTY_BOOL:
-			case ZS_STK_PROPERTY_INT:
+			case STACK_ELEMENT_PROPERTY_FLOAT:
+			case STACK_ELEMENT_PROPERTY_BOOL:
+			case STACK_ELEMENT_PROPERTY_INT:
 				_str_result.append(_zs->stackElementToString(&stk));
 				break;
-			case ZS_STK_PROPERTY_NULL:
+			case STACK_ELEMENT_PROPERTY_NULL:
 				_str_result.append("null");
 				break;
-			case ZS_STK_PROPERTY_UNDEFINED:
+			case STACK_ELEMENT_PROPERTY_UNDEFINED:
 				if(_strict_json_format==true){
 					_str_result.append("null");
 				}else{
 					_str_result.append("undefined");
 				}
 				break;
-			case ZS_STK_PROPERTY_SCRIPT_OBJECT: // vector or object
+			case STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT: // vector or object
 
 				obj=((ScriptObject *)stk.value);
 				switch(obj->script_type_id){
@@ -270,7 +270,7 @@ namespace zetscript{
 			zs_string serialized_stk="";
 
 			if(
-					(_stk->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT)
+					(_stk->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)
 				&& (((ScriptObject *)(_stk->value))->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT)
 			){
 				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(ObjectScriptObject *)(_stk->value),0,_is_formatted,_strict_json_format);

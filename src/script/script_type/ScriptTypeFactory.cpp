@@ -188,7 +188,7 @@ namespace zetscript{
 
 	bool isNumber(ZetScript *_zs,StackElement *_stk){
 		ZS_UNUSUED_PARAM(_zs);
-		return (_stk->properties & (ZS_STK_PROPERTY_INT | ZS_STK_PROPERTY_FLOAT)) != 0;
+		return (_stk->properties & (STACK_ELEMENT_PROPERTY_INT | STACK_ELEMENT_PROPERTY_FLOAT)) != 0;
 	}
 
 	void ScriptTypeFactory::setup(){
@@ -428,7 +428,7 @@ namespace zetscript{
 			){
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
-			// ByteCode::ByteCodeId::BYTE_CODE_ID_NEW SCOPE C and register ...
+			// BYTE_CODE_NEW SCOPE C and register ...
 			Scope * scope_class = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL, ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
@@ -512,7 +512,7 @@ namespace zetscript{
 						mp_dst->metamethod_members.neg=mp_src->metamethod_members.neg;
 						mp_dst->metamethod_members.bwc=mp_src->metamethod_members.bwc;
 
-						const Metamethod::MetamethodId *it_setters=MetamethodMembers::member_setter_list;
+						const Metamethod *it_setters=MetamethodMembers::member_setter_list;
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);

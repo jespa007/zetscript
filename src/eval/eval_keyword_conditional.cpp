@@ -55,7 +55,7 @@ namespace zetscript{
 
 
 				// insert instruction if evaluated expression
-				eval_data->current_function->eval_instructions.push_back(ei_aux=new EvalInstruction(ByteCode::ByteCodeId::BYTE_CODE_ID_JNT));
+				eval_data->current_function->eval_instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 				ei_aux->instruction_source_info.file=eval_data->current_parsing_file;
 				ei_aux->instruction_source_info.line=line;
 
@@ -92,8 +92,8 @@ namespace zetscript{
 
 					// we should insert jmp to end conditional chain if/else...
 					eval_data->current_function->eval_instructions.push_back(ei_aux=new EvalInstruction(
-							ByteCode::ByteCodeId::BYTE_CODE_ID_JMP
-							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+							BYTE_CODE_JMP
+							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							,eval_data->current_function->eval_instructions.size()
 							));
 					ei_if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
@@ -268,8 +268,8 @@ namespace zetscript{
 
 					// insert a pair of instructions...
 					eval_instruction_case->ei_je_instruction=new EvalInstruction(
-							ByteCode::ByteCodeId::BYTE_CODE_ID_JE_CASE
-							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+							BYTE_CODE_JE_CASE
+							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.size()))-idx_start_instruction	 // offset
 					);
 
@@ -294,10 +294,10 @@ namespace zetscript{
 					}
 
 					ei_jmp_default=new EvalInstruction(
-							ByteCode::ByteCodeId::BYTE_CODE_ID_JMP_CASE
-							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+							BYTE_CODE_JMP_CASE
+							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.size()))-idx_start_instruction+1	 // offset
-							,ZS_INSTRUCTION_PROPERTY_RESET_STACK
+							,INSTRUCTION_PROPERTY_RESET_STACK
 					);
 
 					is_default=true;
@@ -357,8 +357,8 @@ namespace zetscript{
 					if(*aux_p != '}'){ // not end insert jmp
 
 						EvalInstruction *ei_break_jmp=new EvalInstruction(
-								ByteCode::ByteCodeId::BYTE_CODE_ID_JMP
-								,ZS_IDX_INSTRUCTION_JMP_BREAK
+								BYTE_CODE_JMP
+								,INSTRUCTION_VALUE_OP1_JMP_BREAK
 								,0
 						);
 						eval_data->current_function->eval_instructions.push_back(ei_break_jmp);
@@ -404,8 +404,8 @@ namespace zetscript{
 
 				if(ei_jmp_default == NULL){ // no default found so, we insert a default jmp to the end
 					ei_jmp_default=new EvalInstruction(
-					ByteCode::ByteCodeId::BYTE_CODE_ID_JMP
-					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+					BYTE_CODE_JMP
+					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,total_instructions_switch-size_ei_cases-size_ei_switch_condition
 					);
 				}
@@ -448,8 +448,8 @@ namespace zetscript{
 				offset_end_instruction=eval_data->current_function->eval_instructions.size();
 				for(int i=idx_start_instruction; i < eval_data->current_function->eval_instructions.size();i++){
 					Instruction *ins=&((EvalInstruction *)eval_data->current_function->eval_instructions.get(i))->vm_instruction;
-					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
-						ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
+					if(ins->value_op1==INSTRUCTION_VALUE_OP1_JMP_BREAK){
+						ins->value_op1= INSTRUCTION_VALUE_OP1_NOT_DEFINED;
 						ins->value_op2=offset_end_instruction-i;
 					}
 				}

@@ -21,7 +21,7 @@ namespace zetscript{
 			vm_share_script_object(vm,so);
 
 			stk->value=(zs_int)so;
-			stk->properties = ZS_STK_PROPERTY_SCRIPT_OBJECT;
+			stk->properties = STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 		}
 
 		return sv;

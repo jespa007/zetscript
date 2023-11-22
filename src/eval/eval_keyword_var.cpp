@@ -185,12 +185,12 @@ namespace zetscript{
 
 							// unset last reset stack
 							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.size()-1);
-							eval_instruction->vm_instruction.properties&=~ZS_INSTRUCTION_PROPERTY_RESET_STACK;
+							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
 							eval_data->current_function->eval_instructions.push_back(
 									eval_instruction=new EvalInstruction(
-											is_static?ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL:ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL
+											is_static?BYTE_CODE_PUSH_STK_GLOBAL:BYTE_CODE_PUSH_STK_LOCAL
 									)
 							);
 
@@ -201,10 +201,10 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
-										ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST
+										BYTE_CODE_STORE_CONST
 										,1
 										,ZS_UNDEFINED_IDX
-										,ZS_INSTRUCTION_PROPERTY_RESET_STACK
+										,INSTRUCTION_PROPERTY_RESET_STACK
 									)
 							);
 						}

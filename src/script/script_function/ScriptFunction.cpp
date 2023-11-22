@@ -7,11 +7,11 @@
 #define ZS_HEADER_FORMAT_INSTRUCTION "%04i|%2i|%02i"
 
 #define ZS_GET_ILOAD_ACCESS_TYPE_STR(properties) \
-((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
+((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
 :"Local"\
 
 #define ZS_GET_ILOAD_R_STR(properties,value) \
-	((properties) & ZS_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope->symbol_variables->get(value))->name.c_str()\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope->symbol_variables->get(value))->name.c_str()\
 	:((Symbol *)sfo->local_variables->get(value))->name.c_str()\
 
 namespace zetscript{
@@ -83,7 +83,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(sfo->instructions->byte_code== ByteCode::ByteCodeId::BYTE_CODE_ID_END_FUNCTION){
+		if(sfo->instructions->byte_code== BYTE_CODE_END_FUNCTION){
 			return;
 		}
 
@@ -111,7 +111,7 @@ namespace zetscript{
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
-		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= ByteCode::ByteCodeId::BYTE_CODE_ID_END_FUNCTION; instruction++){
+		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
 
 			int n_ops=0;
 			unsigned char value_op1 = instruction->value_op1;
@@ -131,20 +131,20 @@ namespace zetscript{
 			 }
 
 			 if((
-					   instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE
-					|| instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_FUNCTION
-					|| instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL
-					|| instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE
+					   instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
+					|| instruction->byte_code==BYTE_CODE_LOAD_THIS_FUNCTION
+					|| instruction->byte_code==BYTE_CODE_THIS_CALL
+					|| instruction->byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			)){
 
 				// ... we create new instruction
 				 symbol_value="this."+symbol_value;
-			 }else if(   instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_GLOBAL_CALL
-					 || instruction->byte_code== ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_LOCAL_CALL
+			 }else if(   instruction->byte_code==BYTE_CODE_INDIRECT_GLOBAL_CALL
+					 || instruction->byte_code== BYTE_CODE_INDIRECT_LOCAL_CALL
 
 			 ){
 				 symbol_value="@"+symbol_value;
-			 }else if(instruction->byte_code== ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_THIS_CALL){
+			 }else if(instruction->byte_code== BYTE_CODE_INDIRECT_THIS_CALL){
 				 symbol_value="@this."+symbol_value;
 			 }
 
@@ -157,41 +157,41 @@ namespace zetscript{
 			 sum_stk_load_stk+=req_stk;
 
 			 max_acc_stk_load=ZS_MAX(max_acc_stk_load,sum_stk_load_stk);
-			 if(instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_RESET_STACK
-				|| instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_RET
-				|| (instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK)
+			 if(instruction->byte_code == BYTE_CODE_RESET_STACK
+				|| instruction->byte_code == BYTE_CODE_RET
+				|| (instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)
 			 ){
 				// <-- reset stack
 				sum_stk_load_stk=0; // and reset stack
 			 }
 
-			switch(instruction->properties & ZS_INSTRUCTION_PROPERTY_ILOAD){
+			switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 			default:
 				break;
-			case ZS_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
+			case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 				 iload_info=zs_strutils::format("%s", instruction->getConstantValueOp2ToString().c_str());
 				 break;
-			case ZS_INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
+			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
 				 iload_info=zs_strutils::format("%s['%s']"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
-			case ZS_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
+			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
 			 	 iload_info=zs_strutils::format("%s,%s['%s']"
 					 ,instruction->getConstantValueOp2ToString().c_str()
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
-			case ZS_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
+			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
 				 iload_info=zs_strutils::format("%s['%s'],%s"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().c_str()
 				 );
 				break;
-		   case ZS_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
+		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
 		   	   iload_info=zs_strutils::format(
 		   			 "%s['%s'],%s['%s']"
 		  			 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
@@ -204,44 +204,44 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 
-			case  ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_TYPE:
+			case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 					,(int8_t)instruction->value_op1!=ZS_UNDEFINED_IDX?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_BOOL:
+			case BYTE_CODE_LOAD_BOOL:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,instruction->value_op2==0?"false":"true");
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FLOAT:
+			case BYTE_CODE_LOAD_FLOAT:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,ZS_READ_INTPTR_FLOAT(instruction->value_op2));
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_INT:
+			case BYTE_CODE_LOAD_INT:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_INT\t\t%i\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,(int)(instruction->value_op2));
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_STRING:
+			case BYTE_CODE_LOAD_STRING:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,instruction->getConstantValueOp2ToString().c_str());
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_STRING:
+			case BYTE_CODE_NEW_STRING:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tNEW_STRING\t\t%s\n"
 						,idx_instruction
 						,req_stk
@@ -249,47 +249,47 @@ namespace zetscript{
 						,instruction->getConstantValueOp2ToString().c_str());
 				break;
 
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL_IRGO:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_LOCAL:
-			//case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_REF:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_FUNCTION:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_CONSTRUCTOR_FUNCT:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FUNCTION:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_FIND_VARIABLE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_REF:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_LOCAL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_GLOBAL:
+			case BYTE_CODE_PUSH_STK_GLOBAL:
+			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
+			case BYTE_CODE_PUSH_STK_LOCAL:
+			//case BYTE_CODE_PUSH_STK_REF:
+			case BYTE_CODE_PUSH_STK_THIS:
+			case BYTE_CODE_LOAD_THIS_FUNCTION:
+			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
+			case BYTE_CODE_LOAD_FUNCTION:
+			case BYTE_CODE_FIND_VARIABLE:
+			case BYTE_CODE_LOAD_REF:
+			case BYTE_CODE_LOAD_LOCAL:
+			case BYTE_CODE_LOAD_THIS:
+			case BYTE_CODE_LOAD_GLOBAL:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
-					,instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_CONSTRUCTOR_FUNCT
+					,ByteCodeHelper::getName(instruction->byte_code)
+					,instruction->byte_code == BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 					? "\t" : "\t\t"
 					,symbol_value.c_str()
 				);
 				break;
 
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_ARRAY_ITEM:
+			case BYTE_CODE_LOAD_ARRAY_ITEM:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%s {vector}\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_THIS_VARIABLE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_OBJECT_ITEM:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_ARRAY_ITEM:
+			case BYTE_CODE_LOAD_OBJECT_ITEM:
+			case BYTE_CODE_LOAD_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
+			case BYTE_CODE_PUSH_STK_ARRAY_ITEM:
 				//instruction_aux=instruction;
 
-				while((instruction+1)->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM){
+				while((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){
 					instruction++;
 					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
@@ -298,140 +298,140 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
-					,instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_THIS_VARIABLE
-					|| instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_OBJECT_ITEM
+					,ByteCodeHelper::getName(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
+					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
 					?"\t\t":"\t"
 					,symbol_value.c_str()
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":
-					instruction->properties & ZS_INSTRUCTION_PROPERTY_FOR_ASSIGN? "[STORE]":
-					instruction->properties & ZS_INSTRUCTION_PROPERTY_CALLING_FUNCTION?	"[CALL]":""
+					,instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":
+					instruction->properties & INSTRUCTION_PROPERTY_FOR_ASSIGN? "[STORE]":
+					instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION?	"[CALL]":""
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JNT:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JT:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JE_CASE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_JMP_CASE:
+			case BYTE_CODE_JNT:
+			case BYTE_CODE_JT:
+			case BYTE_CODE_JMP:
+			case BYTE_CODE_JE_CASE:
+			case BYTE_CODE_JMP_CASE:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i) %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
 					,(int)(instruction->value_op2)>=0?"+":""
 					,(int)(instruction->value_op2)
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 
 				);
 				break;
 			// just the name of op
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_SCOPE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_POP_SCOPE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_NEW_OBJECT_BY_VALUE:
+			case BYTE_CODE_PUSH_SCOPE:
+			case BYTE_CODE_POP_SCOPE:
+			case BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF:
+			case BYTE_CODE_INSTANCEOF:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_GLOBAL_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_LOCAL_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_THIS_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SUPER_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_UNRESOLVED_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_STACK_CALL:
+			case BYTE_CODE_CALL:
+			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
+			case BYTE_CODE_INDIRECT_LOCAL_CALL:
+			case BYTE_CODE_THIS_CALL:
+			case BYTE_CODE_INDIRECT_THIS_CALL:
+			case BYTE_CODE_SUPER_CALL:
+			case BYTE_CODE_UNRESOLVED_CALL:
+			case BYTE_CODE_STACK_CALL:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
-					,instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_STACK_CALL?"\t\t":"\t\t\t"
-					,instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL && instruction->value_op2== ZS_UNDEFINED_IDX?"??":""
+					,ByteCodeHelper::getName(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_STACK_CALL?"\t\t":"\t\t\t"
+					,instruction->byte_code==BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_UNDEFINED_IDX?"??":""
 					,symbol_value.c_str()
-					,ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)
-					,ZS_INSTRUCTION_GET_RETURN_COUNT(instruction)
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
+					,INSTRUCTION_GET_RETURN_COUNT(instruction)
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MEMBER_CALL:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_CONSTRUCTOR_CALL:
+			case BYTE_CODE_MEMBER_CALL:
+			case BYTE_CODE_CONSTRUCTOR_CALL:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%sarg:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
-					,instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_MEMBER_CALL?"\t\t":"\t"
-					,ZS_INSTRUCTION_GET_PARAMETER_COUNT(instruction)
-					,ZS_INSTRUCTION_GET_RETURN_COUNT(instruction)
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+					,ByteCodeHelper::getName(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_MEMBER_CALL?"\t\t":"\t"
+					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
+					,INSTRUCTION_GET_RETURN_COUNT(instruction)
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_TYPE:
+			case BYTE_CODE_LOAD_TYPE:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_TYPE\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,zs->getScriptTypeFactory()->getScriptTypeName(instruction->value_op2));
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST:
+			case BYTE_CODE_STORE:
+			case BYTE_CODE_STORE_CONST:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%sn:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
-					,instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_STORE_CONST
+					,ByteCodeHelper::getName(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_STORE_CONST
 					?"\t\t":"\t\t\t"
 					,(int)instruction->value_op1
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_ADD_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SUB_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MUL_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_DIV_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_MOD_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHL_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_SHR_ASSIGN:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_INC:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_PRE_DEC:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_INC:
-			//case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_INC:
-			//case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_INC:
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_POST_DEC:
-			//case ByteCode::ByteCodeId::BYTE_CODE_ID_NEG_POST_DEC:
-			//case ByteCode::ByteCodeId::BYTE_CODE_ID_BWC_POST_DEC:
+			case BYTE_CODE_ADD_ASSIGN:
+			case BYTE_CODE_SUB_ASSIGN:
+			case BYTE_CODE_MUL_ASSIGN:
+			case BYTE_CODE_DIV_ASSIGN:
+			case BYTE_CODE_MOD_ASSIGN:
+			case BYTE_CODE_BITWISE_AND_ASSIGN:
+			case BYTE_CODE_BITWISE_OR_ASSIGN:
+			case BYTE_CODE_BITWISE_XOR_ASSIGN:
+			case BYTE_CODE_SHL_ASSIGN:
+			case BYTE_CODE_SHR_ASSIGN:
+			case BYTE_CODE_PRE_INC:
+			case BYTE_CODE_PRE_DEC:
+			case BYTE_CODE_POST_INC:
+			//case BYTE_CODE_NEG_POST_INC:
+			//case BYTE_CODE_BWC_POST_INC:
+			case BYTE_CODE_POST_DEC:
+			//case BYTE_CODE_NEG_POST_DEC:
+			//case BYTE_CODE_BWC_POST_DEC:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 					,"\t\t"
-					,instruction->properties & ZS_INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
-			case ByteCode::ByteCodeId::BYTE_CODE_ID_IT_INIT:
+			case BYTE_CODE_IT_INIT:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t[RST]\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCode::toString(instruction->byte_code)
+					,ByteCodeHelper::getName(instruction->byte_code)
 				);
 				break;
 			default:
@@ -441,7 +441,7 @@ namespace zetscript{
 						idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,ByteCode::toString(instruction->byte_code)
+						,ByteCodeHelper::getName(instruction->byte_code)
 						,iload_info.c_str()
 					);
 				}else{
@@ -450,14 +450,14 @@ namespace zetscript{
 							idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCode::toString(instruction->byte_code)
+							,ByteCodeHelper::getName(instruction->byte_code)
 						);
 					}else if(n_ops==1){
 						printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%i\n"
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCode::toString(instruction->byte_code)
+							,ByteCodeHelper::getName(instruction->byte_code)
 							,instruction->value_op1
 						);
 					}else{ //2 ops
@@ -465,7 +465,7 @@ namespace zetscript{
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCode::toString(instruction->byte_code)
+							,ByteCodeHelper::getName(instruction->byte_code)
 							,instruction->value_op1
 							,(int)instruction->value_op2
 						);
@@ -800,11 +800,11 @@ namespace zetscript{
 					unresolved_instruction->value_op2=idx_sc_found;
 
 					switch(unresolved_instruction->byte_code){
-					case ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF:
+					case BYTE_CODE_INSTANCEOF:
 						break;
 					default:
 						// cheange type
-						unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_TYPE;
+						unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 						break;
 					}
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
@@ -826,7 +826,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else{
-					if(unresolved_instruction->byte_code==ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL){
+					if(unresolved_instruction->byte_code==BYTE_CODE_THIS_CALL){
 
 						ScriptType *sc_sf=this->scope->getScriptTypeOwner();
 						for(int j = 0; j < sc_sf->scope->symbol_functions->size(); j++){
@@ -853,28 +853,28 @@ namespace zetscript{
 						// if symbol is function, then there's two possible actions:
 						// 1. call function
 						// 2. load function
-						if(unresolved_instruction->byte_code!=ByteCode::ByteCodeId::BYTE_CODE_ID_THIS_CALL){
+						if(unresolved_instruction->byte_code!=BYTE_CODE_THIS_CALL){
 
 							if(unresolved_instruction->value_op1==(uint8_t)ZS_UNDEFINED_IDX){
 								// if byte code has not defined number of parameters, it loads the function
-								unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_FUNCTION;
+								unresolved_instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 							}else{
-								unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_CALL;
+								unresolved_instruction->byte_code=BYTE_CODE_CALL;
 							}
 						}
 						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable
-						if(unresolved_instruction->byte_code == ByteCode::ByteCodeId::BYTE_CODE_ID_UNRESOLVED_CALL){
-							unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_INDIRECT_GLOBAL_CALL;
+						if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
+							unresolved_instruction->byte_code=BYTE_CODE_INDIRECT_GLOBAL_CALL;
 						}else{
 							// global
-							if(unresolved_instruction->value_op1==ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO){
-								unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL_IRGO;
+							if(unresolved_instruction->value_op1==INSTRUCTION_VALUE_OP1_PUSH_STK_GLOBAL_IRGO){
+								unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
 							}else{
-								if(unresolved_instruction->properties & ZS_INSTRUCTION_PROPERTY_USE_PUSH_STK){
-									unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_PUSH_STK_GLOBAL;
+								if(unresolved_instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+									unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
 								}else{
-									unresolved_instruction->byte_code=ByteCode::ByteCodeId::BYTE_CODE_ID_LOAD_GLOBAL;
+									unresolved_instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 								}
 							}
 						}

@@ -8,8 +8,8 @@
 	sprintf(_str_out,"%s@%s",_property_name,_metamethod_name)
 
 
-#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(_str_out,_property_name,_metamethod_id) \
-	ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,_property_name,Metamethod::toSymbolString(_metamethod_id))
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(_str_out,_property_name,_metamethod) \
+	ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,_property_name,MetamethodHelper::getSymbolName(_metamethod))
 
 
 namespace zetscript{

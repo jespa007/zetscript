@@ -27,12 +27,12 @@ namespace zetscript{
 	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ZetScript *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		StringScriptObject *so_ref=NULL;
 		// we have to create an new string variable
-		if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
 			so_ref=(StringScriptObject *)stk_result_op1->value;
 		}
 
 		if(so_ref == NULL){
-		   if(ZS_STK_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){
+		   if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){
 			   so_ref=(StringScriptObject *)stk_result_op2->value;
 		   }else{
 			   ZS_THROW_RUNTIME_ERRORF("Expected one of both operants as string var");
@@ -62,11 +62,11 @@ namespace zetscript{
 		for(int i=0; i < 2; i++){
 			//char aux[100]={0};
 			StackElement *stk_src_item=(*stk_src_it);
-			if(stk_src_item->properties & ZS_STK_PROPERTY_PTR_STK){
+			if(stk_src_item->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			if(stk_src_item->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+			if(stk_src_item->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 				*(*str_dst_it)=((ScriptObject *)stk_src_item->value)->toString();
 			}else{
 				*(*str_dst_it)=_zs->stackElementToString( stk_src_item);
@@ -100,12 +100,12 @@ namespace zetscript{
 
 
 
-		if(stk.properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
+		if(stk.properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 			stk.value=(zs_int)(((ContainerSlot *)stk.value)->getSrcContainerRef());
-			stk.properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+			stk.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 		}
 
-		if(stk.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			// transform '\"' to '"','\n' to carry returns, etc
 			str_input=zs_strutils::unescape(((ScriptObject *)stk.value)->toString());
 		}
@@ -113,11 +113,11 @@ namespace zetscript{
 			str_input=_zs->stackElementToString( &stk);
 		}
 
-		if(_stk_args->properties & ZS_STK_PROPERTY_PTR_STK){
+		if(_stk_args->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 			_stk_args=(StackElement *)_stk_args->value;
 		}
 
-		if(_stk_args->properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+		if(_stk_args->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_args->value;
 			if(so->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
 				sov=(ArrayScriptObject *)so;
@@ -220,12 +220,12 @@ namespace zetscript{
 								zs_string str_format_results="";
 								StackElement stk_arg=*sov->getStackElementByIndex(idx_num);
 
-								if(stk_arg.properties & ZS_STK_PROPERTY_CONTAINER_SLOT){
+								if(stk_arg.properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 									stk_arg.value=(zs_int)(((ContainerSlot *)stk_arg.value)->getSrcContainerRef());
-									stk_arg.properties=ZS_STK_PROPERTY_SCRIPT_OBJECT;
+									stk_arg.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 								}
 
-								if(stk_arg.properties & ZS_STK_PROPERTY_SCRIPT_OBJECT){
+								if(stk_arg.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 									str_format_results=((ScriptObject *)stk_arg.value)->toString();
 								}else{
 									str_format_results=_zs->stackElementToString(

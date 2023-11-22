@@ -288,7 +288,7 @@ namespace zetscript{
 					it++;
 				}
 
-				const Metamethod::MetamethodId *it_setter=MetamethodMembers::member_setter_list;
+				const Metamethod *it_setter=MetamethodMembers::member_setter_list;
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
@@ -472,7 +472,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_SET
+			 ,METAMETHOD_SET
 			 ,&params
 			,params_len
 			,return_script_type_id
@@ -631,7 +631,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_POST_INC
+			 ,METAMETHOD_POST_INC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -671,7 +671,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_POST_DEC
+			 ,METAMETHOD_POST_DEC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -714,7 +714,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_PRE_INC
+			 ,METAMETHOD_PRE_INC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -757,7 +757,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_PRE_DEC
+			 ,METAMETHOD_PRE_DEC
 			,&params
 			,params_len
 			,return_script_type_id
@@ -798,7 +798,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_ADD_ASSIGN
+			 ,METAMETHOD_ADD_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -839,7 +839,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_SUB_ASSIGN
+			 ,METAMETHOD_SUB_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -880,7 +880,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_MUL_ASSIGN
+			 ,METAMETHOD_MUL_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -921,7 +921,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_DIV_ASSIGN
+			 ,METAMETHOD_DIV_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -962,7 +962,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_MOD_ASSIGN
+			 ,METAMETHOD_MOD_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1003,7 +1003,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_AND_ASSIGN
+			 ,METAMETHOD_AND_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1044,7 +1044,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_OR_ASSIGN
+			 ,METAMETHOD_OR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1085,7 +1085,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_XOR_ASSIGN
+			 ,METAMETHOD_XOR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1126,7 +1126,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_SHL_ASSIGN
+			 ,METAMETHOD_SHL_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id
@@ -1167,7 +1167,7 @@ namespace zetscript{
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name
-			 ,Metamethod::MetamethodId::METAMETHOD_ID_SHR_ASSIGN
+			 ,METAMETHOD_SHR_ASSIGN
 			,&params
 			,params_len
 			,return_script_type_id

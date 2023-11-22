@@ -6,80 +6,80 @@
 
 namespace zetscript{
 
-	ByteCode::ByteCodeId eval_operator_to_byte_code(Operator op){
+	ByteCode eval_operator_to_byte_code(Operator op){
 		switch(op){
 		default:
 			ZS_THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
 			break;
 		// assign and arithmetic with assign
 		case Operator::ZS_OPERATOR_ASSIGN:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_STORE;
+			return BYTE_CODE_STORE;
 		case Operator::ZS_OPERATOR_ASSIGN_ADD:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_ADD_ASSIGN;
+			return BYTE_CODE_ADD_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SUB:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SUB_ASSIGN;
+			return BYTE_CODE_SUB_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_MUL:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_MUL_ASSIGN;
+			return BYTE_CODE_MUL_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_DIV:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_DIV_ASSIGN;
+			return BYTE_CODE_DIV_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_MOD:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_MOD_ASSIGN;
+			return BYTE_CODE_MOD_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_XOR:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR_ASSIGN;
+			return BYTE_CODE_BITWISE_XOR_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_AND:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND_ASSIGN;
+			return BYTE_CODE_BITWISE_AND_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_OR:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR_ASSIGN;
+			return BYTE_CODE_BITWISE_OR_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_LEFT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SHL_ASSIGN;
+			return BYTE_CODE_SHL_ASSIGN;
 		case Operator::ZS_OPERATOR_ASSIGN_SHIFT_RIGHT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SHR_ASSIGN;
+			return BYTE_CODE_SHR_ASSIGN;
 
 		// arithmetic ops
 		case Operator::ZS_OPERATOR_ADD:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_ADD;
+			return BYTE_CODE_ADD;
 		case Operator::ZS_OPERATOR_SUB:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SUB;
+			return BYTE_CODE_SUB;
 		case Operator::ZS_OPERATOR_MUL:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_MUL;
+			return BYTE_CODE_MUL;
 		case Operator::ZS_OPERATOR_DIV:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_DIV;
+			return BYTE_CODE_DIV;
 		case Operator::ZS_OPERATOR_MOD:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_MOD;
+			return BYTE_CODE_MOD;
 		case Operator::ZS_OPERATOR_XOR:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_XOR;
+			return BYTE_CODE_BITWISE_XOR;
 		case Operator::ZS_OPERATOR_AND:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_AND;
+			return BYTE_CODE_BITWISE_AND;
 		case Operator::ZS_OPERATOR_OR:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_BITWISE_OR;
+			return BYTE_CODE_BITWISE_OR;
 		case Operator::ZS_OPERATOR_SHIFT_LEFT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SHL;
+			return BYTE_CODE_SHL;
 		case Operator::ZS_OPERATOR_SHIFT_RIGHT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_SHR;
+			return BYTE_CODE_SHR;
 
 		// logic
 		case Operator::ZS_OPERATOR_LOGIC_AND:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_AND;
+			return BYTE_CODE_LOGIC_AND;
 		case Operator::ZS_OPERATOR_LOGIC_OR:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_LOGIC_OR;
+			return BYTE_CODE_LOGIC_OR;
 		case Operator::ZS_OPERATOR_EQUAL:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_EQU;
+			return BYTE_CODE_EQU;
 		case Operator::ZS_OPERATOR_NOT_EQUAL:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_NOT_EQU;
+			return BYTE_CODE_NOT_EQU;
 		case Operator::ZS_OPERATOR_GT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_GT;
+			return BYTE_CODE_GT;
 		case Operator::ZS_OPERATOR_LT:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_LT;
+			return BYTE_CODE_LT;
 		case Operator::ZS_OPERATOR_GTE:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_GTE;
+			return BYTE_CODE_GTE;
 		case Operator::ZS_OPERATOR_LTE:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_LTE;
+			return BYTE_CODE_LTE;
 		case Operator::ZS_OPERATOR_INSTANCEOF:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_INSTANCEOF;
+			return BYTE_CODE_INSTANCEOF;
 		case Operator::ZS_OPERATOR_IN:
-			return ByteCode::ByteCodeId::BYTE_CODE_ID_IN;
+			return BYTE_CODE_IN;
 		}
-		return ByteCode::ByteCodeId::BYTE_CODE_ID_INVALID;
+		return BYTE_CODE_INVALID;
 	}
 
 	const char * eval_operator_to_str(Operator op){

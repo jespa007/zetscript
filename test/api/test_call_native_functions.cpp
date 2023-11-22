@@ -241,7 +241,7 @@ zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_
     	// save resulting
     	zetscript::StackElement *stk=output->newSlot();
     	stk->value=_input->getStackElementByIndex(rand_txt.get(i))->value;
-    	stk->properties=zetscript::ZS_STK_PROPERTY_INT;
+    	stk->properties=zetscript::STACK_ELEMENT_PROPERTY_INT;
     }
 
      return output;
