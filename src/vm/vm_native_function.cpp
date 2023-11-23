@@ -99,43 +99,43 @@ namespace zetscript{
 				// Only check native functions
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
-					int arg_idx_type=-1;
+					ScriptTypeId arg_script_type_id=SCRIPT_TYPE_ID_INVALID;
 
 					for( unsigned k = 0; k < _n_args && all_check;k++){ // ignore first parameter due expects zetscript
 						StackElement *current_arg=&_stk_arg[k];
-						arg_idx_type=irfs->params[k+start_param].id;
+						arg_script_type_id=irfs->params[k+start_param].script_type_id;
 
-						if(arg_idx_type!=ScriptTypeId::SCRIPT_TYPE_ID_STACK_ELEMENT){
-							//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
+						if(arg_script_type_id != SCRIPT_TYPE_ID_STACK_ELEMENT){
+							//unsigned short var_type = STACK_ELEMENT_TYPE_PROPERTIES(current_arg->properties);
 							if(current_arg->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 								current_arg=(StackElement *)current_arg->value;
 							}
 
-							switch(current_arg->properties & STACK_ELEMENT_PROPERTY_TYPES){
+							switch(current_arg->properties & MSK_STACK_ELEMENT_TYPE_PROPERTIES){
 								default:
 									aux_string="unknow";
 									all_check=false;
 									break;
 								case STACK_ELEMENT_PROPERTY_INT:
 									all_check=
-											arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
-										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C
-										  ||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C;
+											arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_INT_C
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_FLOAT:
-									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C
-											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C
-											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_PTR_C
-											||arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_INT_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_BOOL:
-									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_PTR_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_BOOL_PTR_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION:
-									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_FUNCTION_MEMBER;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION:
-									all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FUNCTION;
 									break;
 								// decoment to not allow nulls
 								/*case STACK_ELEMENT_PROPERTY_NULL:
@@ -144,18 +144,18 @@ namespace zetscript{
 								case STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT:
 
 									if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(current_arg)){
-										all_check=arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING; // if string object --> direct
+										all_check=arg_script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C && current_arg->value!=0)
-											  ||	arg_idx_type==ScriptTypeId::SCRIPT_TYPE_ID_CONST_CHAR_PTR_C;
+												(	arg_script_type_id == SCRIPT_TYPE_ID_ZS_STRING_PTR_C && current_arg->value!=0)
+											  ||	arg_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
 										var_object=((ScriptObject *)current_arg->value);
 										aux_string=var_object->getTypeName();
-										all_check=var_object->getScriptType()->extendsFrom(arg_idx_type);
+										all_check=var_object->getScriptType()->extendsFrom(arg_script_type_id);
 									}
 									break;
 							}
@@ -171,7 +171,7 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			zs_string class_str=_class_obj==NULL?"":_class_obj->id!=ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj->name:"";
+			zs_string class_str=_class_obj==NULL?"":_class_obj->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj->name:"";
 			int n_candidates=0;
 			zs_string str_candidates="";
 			zs_string function_name_not_found=
@@ -190,13 +190,13 @@ namespace zetscript{
 					args_str.append(",");
 				}
 
-				//unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(current_arg->properties);
+				//unsigned short var_type = STACK_ELEMENT_TYPE_PROPERTIES(current_arg->properties);
 				if(current_arg->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 					current_arg=(StackElement *)current_arg->value;
 				}
 
 
-				switch(current_arg->properties & STACK_ELEMENT_PROPERTY_TYPES){
+				switch(current_arg->properties & MSK_STACK_ELEMENT_TYPE_PROPERTIES){
 
 				default:
 					aux_string=data->zs->stackElementToStringTypeOf(current_arg);
@@ -245,7 +245,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// type if not main
-					if(_class_obj!=NULL && _class_obj->id!=ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
+					if(_class_obj!=NULL && _class_obj->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN){
 						str_candidates.append(_class_obj->name);
 						str_candidates.append("::");
 					}
@@ -261,7 +261,7 @@ namespace zetscript{
 						}
 
 						str_candidates+=zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->params[a].id)
+							SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_type_factory,irfs->params[a].script_type_id)
 						);
 					}
 
@@ -272,7 +272,7 @@ namespace zetscript{
 					str_candidates.append(" -- BIND FUNCTION AS --> ");
 
 					str_candidates.append(zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->return_script_type_id)
+							SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_type_factory,irfs->return_script_type_id)
 						)
 					);
 
@@ -285,7 +285,7 @@ namespace zetscript{
 						}
 
 						str_candidates.append(zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->params[a].id)
+							SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_type_factory,irfs->params[a].script_type_id)
 							)
 						);
 					}
@@ -338,7 +338,7 @@ namespace zetscript{
 			return;
 		}
 
-		int return_script_type_id=_c_function->return_script_type_id;
+		ScriptTypeId return_script_type_id=_c_function->return_script_type_id;
 		zs_int converted_param[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		zs_float aux_float[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
@@ -361,7 +361,7 @@ namespace zetscript{
 				idx_arg_start++;
 				n_args++;
 				converted_param[1]=(zs_int)_this_object->getNativeObject();
-			}else if(_this_object->script_type_id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
+			}else if(_this_object->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN){
 				ZS_VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
 						,_c_function->name.c_str()
 						,_this_object->getScriptType()->name.c_str()
@@ -404,12 +404,12 @@ namespace zetscript{
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].id == ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(
 					&_stk_arg_c_function[i-idx_arg_start]
-					,_c_function->params[i].id
+					,_c_function->params[i].script_type_id
 					,(zs_int *)&converted_param[i]
 					,data->vm_error_description
 				)){
@@ -422,7 +422,7 @@ namespace zetscript{
 			}
 		}
 
-		if(_c_function->return_script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 1:
@@ -522,7 +522,7 @@ namespace zetscript{
 					break;
 			}
 
-		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -620,7 +620,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -722,7 +722,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(_c_function->return_script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_ZS_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:

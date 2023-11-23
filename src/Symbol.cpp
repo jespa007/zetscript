@@ -54,7 +54,7 @@ namespace zetscript{
 			);
 		}
 
-		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, info_registered_class->id, ptr_variable);
+		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, info_registered_class->script_type_id, ptr_variable);
 
 		return{
 				(zs_int)var,

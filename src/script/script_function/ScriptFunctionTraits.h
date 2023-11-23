@@ -160,7 +160,7 @@ namespace zetscript{
 	}
 
 	template <typename F>
-	int getNativeFunctionRetArgsTypes(
+	ScriptTypeId getNativeFunctionRetArgsTypes(
 			 ScriptTypeFactory *_script_class_factory
 			,ScriptType * _script_type
 			,F _ptr_function
@@ -168,7 +168,7 @@ namespace zetscript{
 			,int *_params_len
 			, const char **_str_return_type=NULL
 	){
-		int return_script_type_id=-1;
+		ScriptTypeId return_script_type_id=SCRIPT_TYPE_ID_INVALID;
 		const char * return_type;
 		zs_vector<zs_int> args;
 		zs_string error="";
@@ -212,10 +212,10 @@ namespace zetscript{
 
 			for(int i = 0; i < args.size(); i++){
 				const char *str_param=(const char *)args.get(i);
-				int id = _script_class_factory->getScriptTypeIdFromTypeNamePtr(str_param);
+				ScriptTypeId script_type_id = _script_class_factory->getScriptTypeIdFromTypeNamePtr(str_param);
 
 				if(i==0){
-					if(id!=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ZETSCRIPT){
+					if(script_type_id!=SCRIPT_TYPE_ID_SCRIPT_OBJECT_ZETSCRIPT){
 						ZS_THROW_RUNTIME_ERROR(
 							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
 							,zs_rtti::demangle(str_param).c_str()
@@ -235,7 +235,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(id==ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C || id==ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C || id == ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){
+				if(script_type_id==SCRIPT_TYPE_ID_FLOAT_C || script_type_id==SCRIPT_TYPE_ID_BOOL_C || script_type_id == SCRIPT_TYPE_ID_ZS_STRING_C){
 					error=zs_strutils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,zs_rtti::demangle(str_param).c_str()
@@ -243,7 +243,7 @@ namespace zetscript{
 					goto exit_function_traits;
 				}
 
-				if(id==ZS_UNDEFINED_IDX){
+				if(script_type_id==SCRIPT_TYPE_ID_INVALID){
 
 					error=zs_strutils::format("Argument %i type '%s' not registered"
 						,i+1
@@ -252,7 +252,7 @@ namespace zetscript{
 					goto exit_function_traits;
 				}
 
-				(*_params)[i]=ScriptFunctionParam(id,str_param);
+				(*_params)[i]=ScriptFunctionParam(script_type_id,str_param);
 			}
 		}
 

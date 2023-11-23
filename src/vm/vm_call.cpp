@@ -345,7 +345,7 @@ execute_function:
 
 							if((stk_arg->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
-								if(so_param->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so_param->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+								if(so_param->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so_param->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 									StringScriptObject *sc=ZS_NEW_STRING_OBJECT(data->zs);
 									vm_create_shared_script_object(_vm,sc);
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
@@ -462,7 +462,7 @@ execute_function:
 					){
 						ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
 						sc=data->script_type_factory->getScriptType(sf_call_calling_object->script_type_id);
-					}else if(sf_call_script_function->owner_script_type_id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN
+					}else if(sf_call_script_function->owner_script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN
 							&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 					){
 						sc=data->script_type_factory->getScriptType(sf_call_script_function->owner_script_type_id);
@@ -494,7 +494,7 @@ execute_function:
 
 							for( int k = 0; k < sf_call_n_args && all_check;k++){
 								StackElement *current_arg=sf_call_stk_start_arg_call+k;
-								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].id);
+								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].script_type_id);
 							}
 
 							if(all_check==false){

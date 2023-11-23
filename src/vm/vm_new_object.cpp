@@ -25,7 +25,7 @@ namespace zetscript{
 
 			 symbol_aux=NULL;
 
-			 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,stk_result_op1->value);
+			 so_aux=NEW_OBJECT_VAR_BY_SCRIPT_TYPE_ID(data->script_type_factory,stk_result_op1->value);
 
 			vm_create_shared_script_object(_vm,so_aux);
 
@@ -33,7 +33,7 @@ namespace zetscript{
 			data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
 			data->vm_stk_current++;
 
-			if(so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // custom object by user
+			if(so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // custom object by user
 
 				so_class_aux1=(ClassScriptObject *)so_aux;
 

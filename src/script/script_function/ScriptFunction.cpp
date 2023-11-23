@@ -19,22 +19,22 @@ namespace zetscript{
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
 			,int _idx_script_function
-			,int _idx_type_owner
+			,ScriptTypeId _owner_script_type_id
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			, int _params_len
-			,int _idx_return_type
+			,ScriptTypeId _return_script_type_id
 			, zs_int _ref_native_function_ptr
 			,uint16_t _properties
 		) {
 
 		// function data...
-		owner_script_type_id=_idx_type_owner;
+		owner_script_type_id=_owner_script_type_id;
 		name=_function_name;
 		id=_idx_script_function;
 		idx_position = _idx_position;
-		return_script_type_id = _idx_return_type;
+		return_script_type_id = _return_script_type_id;
 		ref_native_function_ptr=_ref_native_function_ptr;
 		properties = _properties;
 		scope = NULL;
@@ -618,7 +618,7 @@ namespace zetscript{
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,int8_t _params_len
-			, int _idx_return_type
+			, ScriptTypeId _return_script_type_id
 			,zs_int _ref_ptr
 			, unsigned short _function_properties
 	){
@@ -668,7 +668,7 @@ namespace zetscript{
 				symbol_repeat->n_params=(int8_t)_params_len;
 				return symbol_repeat;
 			}else{ // check all params equal
-				ScriptFunction::checkNativeFunctionParams(_scope_block,_idx_return_type,_function_name,*_params,_params_len);
+				ScriptFunction::checkNativeFunctionParams(_scope_block,_return_script_type_id,_function_name,*_params,_params_len);
 			}
 
 			// from here... function should be both as c ref, mark function property to deduce at runtme
@@ -686,7 +686,7 @@ namespace zetscript{
 				,_function_name
 				,_params
 				,_params_len
-				,_idx_return_type
+				,_return_script_type_id
 				,_ref_ptr
 				,_function_properties
 		);

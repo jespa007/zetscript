@@ -9,13 +9,13 @@
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, short _idx_type,void *_c_object){
-		return new ClassScriptObject(_zs, _idx_type,_c_object);
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, ScriptTypeId _script_type_id,void *_c_object){
+		return new ClassScriptObject(_zs, _script_type_id,_c_object);
 	}
 
 	ClassScriptObject::ClassScriptObject(
 			ZetScript *_zs
-			, short _idx_type
+			, ScriptTypeId _script_type_id
 			,void *_c_object
 	):ObjectScriptObject(_zs){
 		was_created_by_constructor=false;
@@ -25,7 +25,7 @@ namespace zetscript{
 	//	script_type = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		script_type_id = ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS;
+		script_type_id = SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 
@@ -35,7 +35,7 @@ namespace zetscript{
 
 		vm=zs->getVirtualMachine();
 
-		script_type_id=_idx_type;
+		script_type_id=_script_type_id;
 		ScriptType *script_type=getScriptType();
 		zs_vector<Symbol *> *member_vars=script_type->scope->symbol_variables;
 		//------------------------------------------------------------------------------
@@ -77,8 +77,8 @@ namespace zetscript{
 		}else {
 			ScriptType *sc=script_type;
 			// get first type with c inheritance...
-			while((sc->idx_base_types->size()>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->get(0)); // get base type (only first in script because has single inheritance)...
+			while((sc->base_script_type_ids->size()>0) && (script_class_native==NULL)){
+				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
 					break;
@@ -115,8 +115,8 @@ namespace zetscript{
 			return;
 		}
 
-		if(sc->idx_base_types->size()>0){
-			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->get(0)));
+		if(sc->base_script_type_ids->size()>0){
+			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->base_script_type_ids->get(0)));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script type
@@ -140,7 +140,7 @@ namespace zetscript{
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
 
-		if(this->script_type_id<ScriptTypeId::SCRIPT_TYPE_ID_MAX){
+		if(this->script_type_id < SCRIPT_TYPE_ID_MAX){
 			return;
 		}
 
@@ -193,10 +193,10 @@ namespace zetscript{
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;
 					switch(ptr_function->return_script_type_id){
-					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
+					case SCRIPT_TYPE_ID_ZS_STRING_C:
 							aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
-					case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_PTR_C:
+					case SCRIPT_TYPE_ID_ZS_STRING_PTR_C:
 							str=((zs_string * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");

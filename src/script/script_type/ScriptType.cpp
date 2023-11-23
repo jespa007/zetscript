@@ -17,7 +17,7 @@ namespace zetscript{
 	//------------------------------------------------------------
 
 	ScriptType::ScriptType(ZetScript *_zs
-			,short _idx_type
+			,ScriptTypeId _script_type_id
 			, const zs_string & _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
@@ -28,7 +28,7 @@ namespace zetscript{
 		delete_native_instance = NULL;
 		new_native_instance=NULL;
 		idx_function_member_constructor = ZS_UNDEFINED_IDX;
-		id=_idx_type;
+		script_type_id=_script_type_id;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		name=_class_name;
@@ -36,7 +36,7 @@ namespace zetscript{
 		native_name=_str_class_ptr_type;
 		allocated_member_properties=new zs_vector<MemberProperty *>();
 
-		idx_base_types=new zs_vector<zs_int>;
+		base_script_type_ids=new zs_vector<ScriptTypeId>;
 
 		// factories
 		zs = _zs;
@@ -77,7 +77,7 @@ namespace zetscript{
 
 				if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 					script_interface+=zs_rtti::demangle(
-						GET_IDX_2_CLASS_C_STR(this,sf->params[a].id)
+						SCRIPT_TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].script_type_id)
 					);
 				}else{
 					script_interface+=zs_strutils::format("p%i",a-start_idx+1);
@@ -91,7 +91,7 @@ namespace zetscript{
 
 			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 				native_interface.append(zs_rtti::demangle(
-						GET_IDX_2_CLASS_C_STR(this,sf->return_script_type_id)
+						SCRIPT_TYPE_ID_TO_NATIVE_NAME(this,sf->return_script_type_id)
 					)
 				);
 
@@ -103,7 +103,7 @@ namespace zetscript{
 						native_interface.append(",");
 					}
 					native_interface.append(zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(this,sf->params[a].id)
+							SCRIPT_TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].script_type_id)
 						)
 					);
 				}
@@ -120,13 +120,13 @@ namespace zetscript{
 		}
 	}
 
-	bool ScriptType::extendsFrom(short _idx_type){
-		if(_idx_type==this->id){
+	bool ScriptType::extendsFrom(ScriptTypeId _script_type_id){
+		if(_script_type_id==this->script_type_id){
 			return true;
 		}
 
-		for(int i=0; i < this->idx_base_types->size(); i++){
-			if (script_type_factory->getScriptType(this->idx_base_types->get(i))->extendsFrom(_idx_type) == true) {
+		for(int i=0; i < this->base_script_type_ids->size(); i++){
+			if (script_type_factory->getScriptType(this->base_script_type_ids->get(i))->extendsFrom(_script_type_id) == true) {
 				return true;
 			}
 		}
@@ -134,11 +134,11 @@ namespace zetscript{
 		return false;
 	}
 
-	ScriptType * 				ScriptType::getScriptType(short idx){
-		return script_type_factory->getScriptType(idx);
+	ScriptType * 				ScriptType::getScriptType(ScriptTypeId _script_type_id){
+		return script_type_factory->getScriptType(_script_type_id);
 	}
 
-	short					ScriptType::getScriptTypeIdFromTypeNamePtr(const char * s){
+	ScriptTypeId				ScriptType::getScriptTypeIdFromTypeNamePtr(const char * s){
 		return script_type_factory->getScriptTypeIdFromTypeNamePtr(s);
 	}
 
@@ -212,7 +212,7 @@ namespace zetscript{
 			,ScriptFunctionParam **_params
 			,int _params_len
 			,uint16_t _properties
-			,int _idx_return_type
+			,ScriptTypeId _return_script_type_id
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file
 			,short _line
@@ -284,7 +284,7 @@ namespace zetscript{
 				_params,
 				_params_len,
 				_properties,
-				_idx_return_type,
+				_return_script_type_id,
 				_ref_ptr,
 				_file,
 				_line
@@ -311,7 +311,7 @@ namespace zetscript{
 		 , ScriptFunctionParam **_params
 		 ,int _params_len
 		, uint16_t _function_properties
-		, int _idx_return_type
+		, ScriptTypeId _return_script_type_id
 		,zs_int _ref_ptr
 		, const char * _file
 		, short _line
@@ -342,7 +342,7 @@ namespace zetscript{
 			//}
 		}else{ // native function, check parameter type ...
 
-			ScriptFunction::checkNativeFunctionParams(this->scope,_idx_return_type,_function_name,*_params,_params_len);
+			ScriptFunction::checkNativeFunctionParams(this->scope,_return_script_type_id,_function_name,*_params,_params_len);
 		}
 
 		Symbol *symbol_function =  script_function_factory->newScriptFunction(
@@ -351,11 +351,11 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,id 				// idx type which belongs to...
+				,script_type_id 				// idx type which belongs to...
 				,_function_name
 				,_params
 				,_params_len
-				,_idx_return_type
+				,_return_script_type_id
 				,_ref_ptr // c function
 				,_function_properties
 		);
@@ -408,7 +408,7 @@ namespace zetscript{
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
 
-						/*switch(_idx_return_type){
+						/*switch(_return_script_type_id){
 						case ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS:
 						case ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C:
 						case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
@@ -451,24 +451,24 @@ namespace zetscript{
 							case METAMETHOD_XOR: // ^ logic xor
 							case METAMETHOD_SHL: // << shift left
 							case METAMETHOD_SHR: // >> shift right
-								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 									ZS_THROW_RUNTIME_ERROR("Error registering static metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
-										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 
 									return NULL;
 								}
 								break;
 
-								/*if(this->script_type_factory->getScriptType(_idx_return_type)->native_name != this->native_name){
+								/*if(this->script_type_factory->getScriptType(_return_script_type_id)->native_name != this->native_name){
 
 									ZS_THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return '%s' but it was '%s'",
 											this->name.c_str(),
 											_function_name.c_str(),
 											zs_rtti::demangle(this->native_name.c_str()).c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 									return NULL;
 								}*/
@@ -492,11 +492,11 @@ namespace zetscript{
 							// member metamethod
 							switch(i){
 							case METAMETHOD_TO_STRING:
-								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_ZS_STRING_C){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_ZS_STRING_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'zs_string' but it was '%s'",
 											this->name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 									return NULL;
 								}
@@ -504,11 +504,11 @@ namespace zetscript{
 							case METAMETHOD_NOT:
 							case METAMETHOD_IN:
 
-								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_BOOL_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
 											this->name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 									return NULL;
 								}
@@ -516,11 +516,11 @@ namespace zetscript{
 							case METAMETHOD_NEG:
 							case METAMETHOD_BWC:
 
-								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
-										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 
 									return NULL;
@@ -528,11 +528,11 @@ namespace zetscript{
 								break;
 							case METAMETHOD_POST_INC: // i++
 							case METAMETHOD_POST_DEC: // i--
-								if(_idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS /*&& _idx_return_type != ScriptTypeId::SCRIPT_TYPE_ID_VOID_C*/){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS /*&& _return_script_type_id != ScriptTypeId::SCRIPT_TYPE_ID_VOID_C*/){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'ClassScriptObject *' but it was '%s'",
 										this->name.c_str(),
 										_function_name.c_str(),
-										zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->native_name.c_str()).c_str()
+										zs_rtti::demangle(this->script_type_factory->getScriptType(_return_script_type_id)->native_name.c_str()).c_str()
 									);
 
 									return NULL;
@@ -753,7 +753,7 @@ namespace zetscript{
 		}
 
 		delete allocated_member_properties;
-		delete idx_base_types;
+		delete base_script_type_ids;
 
 	}
 }

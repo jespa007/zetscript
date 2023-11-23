@@ -20,10 +20,10 @@ namespace zetscript{
 
 	public:
 
-		int 								id; 	// registered type idx
-		zs_string							name;		// info symbol type
+		ScriptTypeId						script_type_id; // registered type idx
+		zs_string							name;			// info symbol type
 		Scope							*	scope;
-		zs_string 							native_name; // type_id().name();
+		zs_string 							native_name; 	// type_id().name();
 		uint16_t							properties;
 
 		zs_vector<MemberProperty *>		*	allocated_member_properties;
@@ -38,17 +38,17 @@ namespace zetscript{
 		void								* 	new_native_instance;
 		void 								*	delete_native_instance;
 
-		zs_vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
+		zs_vector<ScriptTypeId>				*   base_script_type_ids; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
-				 ,short _idx_type
+				 ,ScriptTypeId _script_type_id
 				 , const zs_string & _name
 				 , Scope *_scope
-				 ,const char *  native_name=ZS_TYPE_NAME_SCRIPT_OBJECT
+				 ,const char *  native_name=SCRIPT_TYPE_NAME_SCRIPT_OBJECT
 				 ,uint16_t _properties=0
 		);
 
-		 bool extendsFrom(short id);
+		 bool extendsFrom(ScriptTypeId _script_type_id);
 
 		//---------------------------------------------------
 		//
@@ -79,7 +79,7 @@ namespace zetscript{
 			,ScriptFunctionParam **_params
 			,int _params_len
 			,uint16_t _function_properties
-			,int _idx_return_type
+			,ScriptTypeId _return_script_type_id
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""
 			,short _line=-1
@@ -114,7 +114,7 @@ namespace zetscript{
 			,ScriptFunctionParam **_params=NULL
 			,int _params_len=0
 			, uint16_t _function_properties=0
-			, int _idx_return_type=ZS_UNDEFINED_IDX
+			,ScriptTypeId  _idx_return_type=SCRIPT_TYPE_ID_INVALID
 			, zs_int _ref_ptr=0
 			, const char * _file=""
 			, short _line=-1
@@ -157,8 +157,8 @@ namespace zetscript{
 		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
-		ScriptType * 					getScriptType(short id);
-		short							getScriptTypeIdFromTypeNamePtr(const char  * s);
+		ScriptType * 			getScriptType(ScriptTypeId _script_type_id);
+		ScriptTypeId			getScriptTypeIdFromTypeNamePtr(const char  * s);
 	};
 }
 

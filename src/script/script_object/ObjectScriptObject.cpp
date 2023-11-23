@@ -50,7 +50,7 @@ namespace zetscript{
 
 	ObjectScriptObject::ObjectScriptObject(
 			ZetScript	*_zs
-	):ContainerScriptObject(_zs,ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
+	):ContainerScriptObject(_zs, SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
 		map_fields=new zs_map();
 	}
 

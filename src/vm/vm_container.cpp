@@ -56,7 +56,7 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
-					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INDEX_CLASS_TYPE? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
@@ -181,7 +181,7 @@ namespace zetscript{
 			 ){
 				// if object is C
 				// exceptions
-				if(sc_type->id<ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || sc_type->id>ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
+				if(sc_type->script_type_id < SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || sc_type->script_type_id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
@@ -189,7 +189,7 @@ namespace zetscript{
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-							,sc_type->id>ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
+							,sc_type->script_type_id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
 							,str_symbol_aux1
 						);
@@ -470,7 +470,7 @@ namespace zetscript{
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_BOOL){\
 			stk_dst->properties=STACK_ELEMENT_PROPERTY_BOOL;\
 			*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
-		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_INDEX_CLASS_TYPE | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
+		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
 			*stk_dst=stk_src;\
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){\
 
@@ -551,12 +551,12 @@ lbl_exit_function:
 			}
 
 
-			if(		   so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
-					|| so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
-					|| so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
+			if(		   so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
+					|| so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
+					|| so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
 			){
 
-				if(so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
+				if(so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
 					index_aux1=0;
 
 					if(STACK_ELEMENT_IS_INT(stk_result_op2)){ \
@@ -619,7 +619,7 @@ lbl_exit_function:
 
 				}
 				goto lbl_exit_ok;
-			}else if(so_aux->script_type_id==ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
+			}else if(so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
 				if(STACK_ELEMENT_IS_INT(stk_result_op2)==false){ \
 					ZS_VM_STOP_EXECUTEF("Expected integer index for String access");
 				}

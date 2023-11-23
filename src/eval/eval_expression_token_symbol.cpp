@@ -289,7 +289,7 @@ namespace zetscript{
 						EvalInstruction *ei_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.get(0);
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							ei_instruction->vm_instruction.byte_code= BYTE_CODE_LOAD_TYPE;
-							ei_instruction->vm_instruction.value_op2=token_node_symbol_class->id;
+							ei_instruction->vm_instruction.value_op2=token_node_symbol_class->script_type_id;
 						}
 
 						// set operator symbol
@@ -394,7 +394,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_type_owner->id == ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
+								&& scope_info->script_type_owner->script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -568,7 +568,7 @@ namespace zetscript{
 							);
 						}
 
-						if(scope_info->script_type_owner->id == ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
+						if(scope_info->script_type_owner->script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -679,7 +679,7 @@ namespace zetscript{
 
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
-				if(eval_data->current_function->script_function->owner_script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){
+				if(eval_data->current_function->script_function->owner_script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line

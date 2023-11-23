@@ -192,7 +192,7 @@ namespace zetscript{
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_type_owner->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN
+		if(scope_info->script_type_owner->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -515,7 +515,7 @@ namespace zetscript{
 							,&params
 							,params_len
 							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
-							,0
+							,SCRIPT_TYPE_ID_CLASS_MAIN
 							,0
 							,eval_data->current_parsing_file
 							,line

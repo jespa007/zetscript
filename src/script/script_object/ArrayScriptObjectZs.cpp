@@ -97,7 +97,7 @@ namespace zetscript{
 					   ((ScriptObject *)stk_element->value)->script_type_id
 					   ){
 					// particular case string
-					if(((ScriptObject *)stk_to_compare->value)->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
+					if(((ScriptObject *)stk_to_compare->value)->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
 						found=((ScriptObject *)stk_to_compare->value)->toString()==((ScriptObject *)stk_element->value)->toString();
 					}
 				}

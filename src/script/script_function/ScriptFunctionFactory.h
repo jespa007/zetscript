@@ -30,12 +30,12 @@ namespace zetscript{
 				, const char * file
 				, short line
 				//--- Function data
-			    , int id
+			    , ScriptTypeId _script_type_id
 				, const zs_string & name
 				, ScriptFunctionParam **_params
 				,int _params_len
 
-				, int return_script_type_id=ZS_UNDEFINED_IDX
+				, ScriptTypeId _return_script_type_id=SCRIPT_TYPE_ID_INVALID
 				, zs_int ref_native_function_ptr=0
 				, unsigned short properties=0
 			);

@@ -163,9 +163,9 @@ namespace zetscript{
 		const char		*stackElementToStringTypeOf(char *_str_out, StackElement *_stk);
 
 		void			stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src);
-		StackElement 	toStackElement(zs_int ptr_var, short idx_builtin_type_var);
-		bool			stackElementTo(StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error);
-		bool			canStackElementCastTo(StackElement * _stack_element, int _idx_builtin_type, bool _strict = false);
+		StackElement 	toStackElement(zs_int ptr_var, ScriptTypeId _script_type_id);
+		bool			stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id, zs_int *_ptr_var, zs_string  & _error);
+		bool			canStackElementCastTo(StackElement * _stack_element,ScriptTypeId _script_type_id, bool _strict = false);
 
 		template<typename _C>
 		StackElement	toStackElement( _C _val);
@@ -607,7 +607,7 @@ namespace zetscript{
 		bool getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf);
 
 		template<typename R>
-		R checkAndConvertStackElement(StackElement *_stk, int _idx_return);
+		R checkAndConvertStackElement(StackElement *_stk, ScriptTypeId _return_script_type_id);
 
 
 	};

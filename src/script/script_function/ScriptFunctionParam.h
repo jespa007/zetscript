@@ -13,7 +13,7 @@ namespace zetscript{
 
 	class ScriptFunctionParam{
 	public:
-		int id;
+		ScriptTypeId script_type_id;
 		zs_string name; //arg c++ type or arg name
 		int line;
 		uint16_t properties;
@@ -21,7 +21,7 @@ namespace zetscript{
 
 		ScriptFunctionParam();
 		ScriptFunctionParam(const zs_string & _name);
-		ScriptFunctionParam(int _idx_type, const zs_string & _name);
+		ScriptFunctionParam(ScriptTypeId _script_type_id, const zs_string & _name);
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
 
 		ScriptFunctionParam & operator=( const ScriptFunctionParam & _function_param);

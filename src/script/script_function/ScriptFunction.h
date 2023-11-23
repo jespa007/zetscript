@@ -40,8 +40,8 @@ namespace zetscript{
 
 
 		// script type
-		int 				return_script_type_id; 		// idx return type
-		int					owner_script_type_id; 				// which type belongs to...
+		ScriptTypeId		return_script_type_id; 		// idx return type
+		ScriptTypeId		owner_script_type_id; 				// which type belongs to...
 
 		uint16_t			properties;
 
@@ -64,12 +64,12 @@ namespace zetscript{
 		ScriptFunction(
 				ZetScript *_zs
 				,int _idx_script_function
-				,int _idx_type
+				,ScriptTypeId _owner_script_type_id
 				,int _idx_position
 				,const zs_string & name
 				, ScriptFunctionParam **_params
 				, int _params_len
-				,int  return_script_type_id
+				,ScriptTypeId  return_script_type_id
 				, zs_int _ref_native_function_ptr
 				, uint16_t _properties
 		);
@@ -130,7 +130,7 @@ namespace zetscript{
 				, const zs_string & name
 				, ScriptFunctionParam **_params=NULL
 				,int8_t _params_len=0
-				, int return_script_type_id=ZS_UNDEFINED_IDX
+				, ScriptTypeId _return_script_type_id=SCRIPT_TYPE_ID_INVALID
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);

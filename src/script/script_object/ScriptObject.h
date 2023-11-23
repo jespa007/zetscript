@@ -21,12 +21,12 @@ namespace zetscript{
 	class ScriptObject{
 	public:
 		InfoSharedPointerNode 				* 	shared_pointer; // 8
-		short									script_type_id; // 2
+		ScriptTypeId							script_type_id; // 2
 		uint16_t 								properties; // it tells its properties
 
 		ScriptObject(
 				ZetScript 		*	_zs
-				,short _idx_type=ZS_UNDEFINED_IDX
+				,ScriptTypeId _script_type_id=SCRIPT_TYPE_ID_INVALID
 		);
 
 		Symbol 								*	getGetter();

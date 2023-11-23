@@ -23,7 +23,7 @@ namespace zetscript{
 		Symbol *symbol_member_property=NULL;
 
 
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
+		ScriptTypeId return_script_type_id=getNativeFunctionRetArgsTypes(
 			this->script_type_factory
 			,NULL
 			,_ptr_function
@@ -71,7 +71,7 @@ namespace zetscript{
 		int params_len=0;
 		const char *return_type;
 
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
+		ScriptTypeId return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,NULL
 				,_ptr_function
@@ -115,7 +115,7 @@ namespace zetscript{
 		int params_len=0;
 		const char *return_type;
 
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
+		ScriptTypeId return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,NULL
 				,_ptr_function
@@ -157,7 +157,7 @@ namespace zetscript{
 		zs_string error;
 
 		// 1. check all parameters ok.
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
+		ScriptTypeId return_script_type_id=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,this
 				,_ptr_function

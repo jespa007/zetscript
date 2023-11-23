@@ -461,7 +461,7 @@ namespace zetscript{
 		zs_int dst_container_slot_id = _container_slot->getIdSlot();
 
 		// More tests would be needed see issue #336
-		if (dst_container_ref->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY) {
+		if (dst_container_ref->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY) {
 			stk_obj = ((ArrayScriptObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
 
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"

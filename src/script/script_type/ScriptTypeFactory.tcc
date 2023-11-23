@@ -22,7 +22,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
+		ScriptTypeId return_script_type_id=getNativeFunctionRetArgsTypes(
 				this
 				,NULL
 				,_ptr_function
@@ -61,7 +61,7 @@ namespace zetscript{
 		ScriptType *sc=NULL;
 		const char * native_name = typeid( T *).name();
 		//int size=script_types->size();
-		int id=ZS_UNDEFINED_IDX;
+		ScriptTypeId script_type_id=SCRIPT_TYPE_ID_INVALID;
 		Scope * scope = NULL;
 
 
@@ -74,11 +74,11 @@ namespace zetscript{
 			);
 		}
 
-		id=script_types->size();
+		script_type_id=(ScriptTypeId)script_types->size();
 		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS|ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,name);
 
-		sc = new ScriptType(zs,id,name,scope,native_name,ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
+		sc = new ScriptType(zs,script_type_id,name,scope,native_name,ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptTypeOwner(sc);
 
 		// in T there's no script constructor ...
@@ -97,7 +97,7 @@ namespace zetscript{
 			sc->properties|=ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		sc->id=script_types->size()-1;
+		sc->script_type_id=(ScriptTypeId)(script_types->size()-1);
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",name.c_str(),zs_rtti::demangle(native_name).c_str());
 
 		return sc;
@@ -113,18 +113,18 @@ namespace zetscript{
 		const char * class_name_ptr=typeid(T *).name();
 		zs_string error;
 
-		int idx_base_type = getScriptTypeIdFromTypeNamePtr(base_class_name_ptr);
-		if(idx_base_type == -1) {
+		ScriptTypeId base_script_type_id = getScriptTypeIdFromTypeNamePtr(base_class_name_ptr);
+		if(base_script_type_id == SCRIPT_TYPE_ID_INVALID) {
 			ZS_THROW_RUNTIME_ERROR("base native type '%s' not registered",base_class_name_ptr);
 		}
 
 
-		int idx_register_class = getScriptTypeIdFromTypeNamePtr(class_name_ptr);
-		if(idx_register_class == ZS_UNDEFINED_IDX) {
+		ScriptTypeId register_script_type_id = getScriptTypeIdFromTypeNamePtr(class_name_ptr);
+		if(register_script_type_id == SCRIPT_TYPE_ID_INVALID) {
 			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
 		}
 
-		if(scriptTypeInheritsFrom(idx_register_class,idx_base_type)){
+		if(scriptTypeInheritsFrom(register_script_type_id,base_script_type_id)){
 			ZS_THROW_RUNTIME_ERROR("native type '%s' is already registered as base of '%s' ",zs_rtti::demangle(name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
@@ -134,11 +134,11 @@ namespace zetscript{
 		}
 
 		// now only allows one inheritance!
-		ScriptType *main_class=script_types->get(idx_register_class);
+		ScriptType *main_class=script_types->get(register_script_type_id);
 
 
-		for(int i=0; i < main_class->idx_base_types->size(); i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->get(i)); // get base type...
+		for(int i=0; i < main_class->base_script_type_ids->size(); i++){
+			ScriptType *sc=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
 			if(sc->native_name ==base_class_name_ptr){
 				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(name).c_str()
@@ -147,13 +147,13 @@ namespace zetscript{
 		}
 
 
-		ScriptType *base=(ScriptType *)script_types->get(idx_base_type);
+		ScriptType *base=(ScriptType *)script_types->get(base_script_type_id);
 
 		// search native types that already inherits type B
-		for(int i=0; i < main_class->idx_base_types->size(); i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->get(i)); // get base type...
+		for(int i=0; i < main_class->base_script_type_ids->size(); i++){
+			ScriptType *sc=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
 			// check whether type inherits inheritates B
-			if(sc->extendsFrom(idx_base_type)){
+			if(sc->extendsFrom(base_script_type_id)){
 				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
 					,zs_rtti::demangle(name).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
@@ -163,7 +163,7 @@ namespace zetscript{
 				);
 			}
 			// check the viceversa, if B inheritates inherited types of main_class
-			if(base->extendsFrom(sc->id)){
+			if(base->extendsFrom(sc->script_type_id)){
 				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
 					,zs_rtti::demangle(name).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
@@ -174,15 +174,15 @@ namespace zetscript{
 			}
 		}
 
-		ScriptType *this_class = (ScriptType *)script_types->get(idx_register_class);
-		this_class->idx_base_types->push_back(idx_base_type);
+		ScriptType *this_class = (ScriptType *)script_types->get(register_script_type_id);
+		this_class->base_script_type_ids->push_back(base_script_type_id);
 
 		//----------------------------
 		//
 		// DERIVATE STATE
 		//
 
-		ScriptType *base_class = script_types->get(idx_base_type);
+		ScriptType *base_class = script_types->get(base_script_type_id);
 		zs_vector<Symbol *> *base_vars=base_class->scope->symbol_variables;
 		zs_vector<Symbol *> *base_functions=base_class->scope->symbol_functions;
 

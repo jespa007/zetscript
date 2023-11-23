@@ -57,7 +57,7 @@
 	}\
 
 #define ZS_VM_OPERATION_DIV \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		if(stk_result_op2->value == 0){\
@@ -97,7 +97,7 @@
 	}\
 
 #define ZS_VM_OPERATION_ADD \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value + stk_result_op2->value);\
@@ -126,7 +126,7 @@
 	}\
 
 #define ZS_VM_OPERATION_ARITHMETIC(__C_OP__, __METAMETHOD__)\
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -155,7 +155,7 @@
 	}\
 
 #define ZS_VM_OPERATION_COMPARE(__C_OP__, __METAMETHOD_ID_OPERATION__,__IS_JE_CASE__)\
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		ZS_VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -176,11 +176,11 @@
 		if(STACK_ELEMENT_IS_TYPE(stk_result_op1)){\
 			PRAGMA_PUSH\
 			PRAGMA_DISABLE_WARNING(4127)\
-			if(__METAMETHOD_ID_OPERATION__ ==METAMETHOD_EQU || __METAMETHOD_ID_OPERATION__ ==METAMETHOD_NEQU){\
+			if(__METAMETHOD_ID_OPERATION__ == METAMETHOD_EQU || __METAMETHOD_ID_OPERATION__ == METAMETHOD_NEQU){\
 				PRAGMA_POP\
-				if((stk_result_op1->value == ScriptTypeId::SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties == ScriptTypeId::SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_EQU)){\
+				if((stk_result_op1->value == SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties == SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_EQU)){\
 					ZS_VM_PUSH_STK_BOOLEAN(true);\
-				}else if((stk_result_op1->value == ScriptTypeId::SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties != ScriptTypeId::SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_NEQU)){\
+				}else if((stk_result_op1->value == SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties != SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_NEQU)){\
 					ZS_VM_PUSH_STK_BOOLEAN(true);\
 				}else{\
 					ZS_VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -224,7 +224,7 @@
 	}\
 
 #define ZS_VM_OPERATION_MOD(__METAMETHOD__) \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		if(stk_result_op2->value == 0){\
@@ -264,7 +264,7 @@
 	}\
 
 #define ZS_VM_OPERATION_LOGIC(__C_OP__)\
-	if((ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_BOOL){\
+	if((STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_BOOL){\
 		ZS_VM_PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
 		ZS_PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
@@ -273,7 +273,7 @@
 
 
 #define ZS_VM_OPERATION_BINARY(__C_OP__, __METAMETHOD__)\
-	if((ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_INT){\
+	if((STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_INT){\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
 		if(vm_call_metamethod(\
@@ -291,7 +291,7 @@
 #define VM_POST_OPERATION(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	ZS_EXTRACT_STK_RESULT_PRE_POST_OPERATION\
-	switch(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
+	switch(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES((stk_result_op1)->properties)){\
 	case STACK_ELEMENT_PROPERTY_INT:\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value);\
 		stk_result_op1->value __C_OP__;\
@@ -321,7 +321,7 @@
 #define VM_PRE_OPERATION(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	ZS_EXTRACT_STK_RESULT_PRE_POST_OPERATION\
-	switch(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
+	switch(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES((stk_result_op1)->properties)){\
 	case STACK_ELEMENT_PROPERTY_INT:\
 		__C_OP__ stk_result_op1->value;\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value);\

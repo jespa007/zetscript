@@ -6,8 +6,8 @@
 
 namespace zetscript{
 
-	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_type){
-		script_type_id=_idx_type;
+	ScriptObject::ScriptObject(ZetScript *_zs, ScriptTypeId _script_type_id){
+		script_type_id=_script_type_id;
 		shared_pointer=NULL;
 		properties=0;
 
@@ -22,7 +22,7 @@ namespace zetscript{
 		vm=_zs->getVirtualMachine();
 
 		// init builtin
-		if(script_type_id >= ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && script_type_id<ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
+		if(script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && script_type_id < SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
 			zs_vector<Symbol *> *symbol_vars=script_type->scope->symbol_variables;
 			//------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ namespace zetscript{
 	}
 
 	void ScriptObject::unrefStackElementContainer(StackElement *si){
-		unsigned short var_type = ZS_GET_STK_PROPERTY_TYPES(si->properties);
+		unsigned short var_type = STACK_ELEMENT_TYPE_PROPERTIES(si->properties);
 
 		switch(var_type){
 

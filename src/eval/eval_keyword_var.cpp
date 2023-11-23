@@ -40,7 +40,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->script_type_owner->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN
+			if(scope_var->script_type_owner->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions

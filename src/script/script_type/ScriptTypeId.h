@@ -4,28 +4,30 @@
  */
 #pragma once
 
-#define ZS_TYPE_NAME_UNDEFINED					"Undefined"
-#define ZS_TYPE_NAME_NULL 						"Null"
-#define ZS_TYPE_NAME_INT 						"Integer"
-#define ZS_TYPE_NAME_BOOL 						"Boolean"
-#define ZS_TYPE_NAME_STACK_ELEMENT 				"StackElement"
-#define ZS_TYPE_NAME_FLOAT 						"Float"
-#define ZS_TYPE_NAME_FUNCTION					"Function"
-#define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
-#define ZS_TYPE_NAME_OBJECT_STRING 				"String"
-#define ZS_TYPE_NAME_OBJECT_ARRAY 				"Array"
-#define ZS_TYPE_NAME_OBJECT_OBJECT 				"Object"
-#define ZS_TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
-#define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
-#define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
-#define ZS_TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING 	"IteratorString"
-#define ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY 		"IteratorArray"
-#define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
-#define ZS_TYPE_NAME_SCRIPT_OBJECT 				"__ScriptObject__"
+#define SCRIPT_TYPE_NAME_UNDEFINED					"Undefined"
+#define SCRIPT_TYPE_NAME_NULL 						"Null"
+#define SCRIPT_TYPE_NAME_INT 						"Integer"
+#define SCRIPT_TYPE_NAME_BOOL 						"Boolean"
+#define SCRIPT_TYPE_NAME_STACK_ELEMENT 				"StackElement"
+#define SCRIPT_TYPE_NAME_FLOAT 						"Float"
+#define SCRIPT_TYPE_NAME_FUNCTION					"Function"
+#define SCRIPT_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
+#define SCRIPT_TYPE_NAME_OBJECT_STRING 				"String"
+#define SCRIPT_TYPE_NAME_OBJECT_ARRAY 				"Array"
+#define SCRIPT_TYPE_NAME_OBJECT_OBJECT 				"Object"
+#define SCRIPT_TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
+#define SCRIPT_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
+#define SCRIPT_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
+#define SCRIPT_TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING "IteratorString"
+#define SCRIPT_TYPE_NAME_OBJECT_ITERATOR_ARRAY 		"IteratorArray"
+#define SCRIPT_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
+#define SCRIPT_TYPE_NAME_SCRIPT_OBJECT 				"__ScriptObject__"
 
 namespace zetscript{
 
-	typedef enum : int16_t{
+	typedef int ScriptTypeId;
+
+	enum: int16_t{
 
 		// !!! HERE WE DEFINE THE BUILTINT CLASSES
 		// !!! WARNING THE REGISTER HAS TO RESPECT THE SAME ORDER
@@ -84,5 +86,5 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------->
 		SCRIPT_TYPE_ID_MAX
 
-	}ScriptTypeId;
+	};
 }

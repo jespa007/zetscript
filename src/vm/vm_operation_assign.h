@@ -17,7 +17,7 @@ if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 }
 
 #define ZS_VM_OPERATION_ADD_ASSIGN() \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value += stk_result_op2->value);\
@@ -55,7 +55,7 @@ if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 
 
 #define ZS_VM_OPERATION_ARITHMETIC_ASSIGN(__C_OP__, __METAMETHOD__)\
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -92,7 +92,7 @@ if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 	}\
 
 #define ZS_VM_OPERATION_DIV_ASSIGN() \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	zs_float_aux=(zs_float *)&stk_result_op1->value;\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
@@ -141,7 +141,7 @@ if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 
 
 #define ZS_VM_OPERATION_MOD_ASSIGN() \
-	msk_properties=(ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	msk_properties=(STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties)<<16)|STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op2->properties);\
 	zs_float_aux=(zs_float *)&stk_result_op1->value;\
 	switch(msk_properties){\
 	case STACK_ELEMENT_OP1_INT_OP2_INT:\
@@ -189,7 +189,7 @@ if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
 	}\
 
 #define ZS_VM_OPERATION_BINARY_ASSIGN(__C_OP__, __METAMETHOD__)\
-	if((ZS_GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_INT){\
+	if((STACK_ELEMENT_PRIMITIVE_TYPE_PROPERTIES(stk_result_op1->properties&stk_result_op2->properties)) == STACK_ELEMENT_PROPERTY_INT){\
 		ZS_VM_PUSH_STK_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
 		if(!vm_call_metamethod_set(\

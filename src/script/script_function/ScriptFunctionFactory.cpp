@@ -23,11 +23,11 @@ namespace zetscript{
 			, const char * _file
 			, short _line
 			//--- Function data
-			, int _idx_type
+			, ScriptTypeId _script_type_id
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,int _params_len
-			, int _idx_return_type
+			, ScriptTypeId _return_script_type_id
 			, zs_int _ref_native_function_ptr
 			, unsigned short _function_properties
 		){
@@ -42,12 +42,12 @@ namespace zetscript{
 			ScriptFunction *sf_repeaded=NULL;
 			if(p_irv!=NULL && (p_irv->properties & ZS_SYMBOL_PROPERTY_FUNCTION)){
 				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
-				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->owner_script_type_id != _idx_type){
+				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->owner_script_type_id != _script_type_id){
 					_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS;
 				}
 			}
 
-			if(_function_name == zs->getScriptTypeFactory()->getScriptTypeName(_idx_type)){
+			if(_function_name == zs->getScriptTypeFactory()->getScriptTypeName(_script_type_id)){
 				_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 		}
@@ -69,12 +69,12 @@ namespace zetscript{
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
 				,id
-				,_idx_type
+				,_script_type_id
 				, symbol->idx_position
 				,_function_name
 				,_params
 				,_params_len
-				,_idx_return_type
+				,_return_script_type_id
 				,_ref_native_function_ptr
 				,_function_properties
 		);

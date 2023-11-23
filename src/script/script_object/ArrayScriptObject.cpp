@@ -34,7 +34,7 @@ namespace zetscript{
 
 	ArrayScriptObject::ArrayScriptObject(
 			ZetScript *_zs
-	):ContainerScriptObject(_zs,ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
+	):ContainerScriptObject(_zs,SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
 	}
 
 	zs_vector<StackElement *> * ArrayScriptObject::getStkListElements(){ // return list of stack elements

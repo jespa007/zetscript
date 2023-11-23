@@ -384,7 +384,7 @@ namespace zetscript{
 					is_native_type=sc->isNativeType();
 					symbol_constructor_function_name=sc->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
-					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->id)){
+					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->script_type_id)){
 						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
@@ -397,7 +397,7 @@ namespace zetscript{
 					}
 
 					eval_instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
-					eval_instruction->vm_instruction.value_op1=sc->id;
+					eval_instruction->vm_instruction.value_op1=sc->script_type_id;
 				}
 
 

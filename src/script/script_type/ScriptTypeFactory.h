@@ -5,22 +5,22 @@
 #pragma once
 
 
-#define NEW_OBJECT_VAR_BY_TYPE_IDX(script_type_factory,idx)				((script_type_factory)->instanceScriptObjectByTypeIdx(idx))
-#define GET_SCRIPT_TYPE(script_type_factory,idx_or_name)				((script_type_factory)->getScriptType(idx_or_name))
-#define GET_SCRIPT_TYPE_NAME(script_type_factory,idx) 					((script_type_factory)->getScriptTypeName(idx))
-#define SCRIPT_TYPE_MAIN(script_type_factory)							((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN))    // 0 is the main type
+#define NEW_OBJECT_VAR_BY_SCRIPT_TYPE_ID(script_type_factory,script_type_id)		((script_type_factory)->instanceScriptObjectByScriptTypeId(script_type_id))
+#define GET_SCRIPT_TYPE(script_type_factory,idx_or_name)							((script_type_factory)->getScriptType(idx_or_name))
+#define GET_SCRIPT_TYPE_NAME(script_type_factory,script_type_id) 					((script_type_factory)->getScriptTypeName(script_type_id))
+#define SCRIPT_TYPE_MAIN(script_type_factory)										((script_type_factory)->getScriptType(SCRIPT_TYPE_ID_CLASS_MAIN))    // 0 is the main type
 
-#define SCRIPT_OBJECT_STRING(script_type_factory)						((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_ITERATOR_ASSIGNRING(script_type_factory)				((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_STRING))
-//#define SCRIPT_CLASS_DICTIONARY(script_type_factory)					((script_type_factory->script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY))
-#define SCRIPT_OBJECT_ARRAY(script_type_factory)						((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY))
-#define SCRIPT_OBJECT_ITERATOR_ARRAY(script_type_factory)				((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_ARRAY))
+#define SCRIPT_OBJECT_STRING(script_type_factory)									((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING))
+#define SCRIPT_OBJECT_ITERATOR_ASSIGNRING(script_type_factory)						((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_STRING))
+//#define SCRIPT_CLASS_DICTIONARY(script_type_factory)								((script_type_factory->script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY))
+#define SCRIPT_OBJECT_ARRAY(script_type_factory)									((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY))
+#define SCRIPT_OBJECT_ITERATOR_ARRAY(script_type_factory)							((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_ARRAY))
 
-#define SCRIPT_OBJECT_OBJECT(script_type_factory)						((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT))
-#define SCRIPT_OBJECT_ITERATOR_OBJECT(script_type_factory)				((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_OBJECT))
+#define SCRIPT_OBJECT_OBJECT(script_type_factory)									((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT))
+#define SCRIPT_OBJECT_ITERATOR_OBJECT(script_type_factory)							((script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
-//#define SCRIPT_CLASS_FUNCTOR(script_type_factory)						((script_type_factory->script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION))
-#define GET_IDX_2_CLASS_C_STR(script_type_factory,idx) 					((script_type_factory)->getScriptType(idx)->native_name.c_str())
+//#define SCRIPT_CLASS_FUNCTOR(script_type_factory)									((script_type_factory->script_type_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION))
+#define SCRIPT_TYPE_ID_TO_NATIVE_NAME(script_type_factory,script_type_id) 			((script_type_factory)->getScriptType(script_type_id)->native_name.c_str())
 
 
 namespace zetscript{
@@ -68,16 +68,16 @@ namespace zetscript{
 											, short line=-1
 										);
 
-		ScriptType * 					getScriptType(short _idx_type);
+		ScriptType * 					getScriptType(ScriptTypeId _script_type_id);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
-		short							getScriptTypeId(const zs_string & _type_name);
-		short		 					getScriptTypeIdFromTypeNamePtr(const zs_string & _type_name_ptr);
+		ScriptTypeId					getScriptTypeId(const zs_string & _type_name);
+		ScriptTypeId		 			getScriptTypeIdFromTypeNamePtr(const zs_string & _type_name_ptr);
 
-		const char 	* 					getScriptTypeName(short _idx_type);
-		bool							scriptTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
-		bool							isScriptTypeInstanceable(short _idx_type);
+		const char 	* 					getScriptTypeName(ScriptTypeId _script_type_id);
+		bool							scriptTypeInheritsFrom(ScriptTypeId _script_type_id,ScriptTypeId _script_type_id_inherits_from);
+		bool							isScriptTypeInstanceable(ScriptTypeId _script_type_id);
 
 		zs_vector<ScriptType *>	*		getScriptTypes();
 
@@ -90,7 +90,7 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & name);
-		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  id, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByScriptTypeId(ScriptTypeId  _script_type_id, void * value_object = NULL);
 
 
 		/**

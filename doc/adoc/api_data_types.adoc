@@ -1,7 +1,7 @@
 
 === Data types
 
-This section will describe the data types used in the ZetScript API that  interops within both native and script environments. Some of the types described has methods and properties that usually are used internally by the ZetScript API and in order to simply the documentation won't be described.
+This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environments. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
 
 ==== zs_int
 
@@ -1114,9 +1114,8 @@ include::../examples/api/types/zs_vector_data_out.txt[]
 
 ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
 
-- id: id script type
-- name: Name script type
-- scope: Scope of script type
+- script_type_id: The id of script type
+- name: The name of script type
 - native_name: Native name of script type
 - properties: A integer value composed of the following mask values,  
 
@@ -1124,51 +1123,13 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 |====
 |Name |Mask value|Description
 
-|ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		
+|SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		
 |0x1
 |It tells script type is native
 
-|ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
+|SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
 |0x2
 |it tells script type is static or not instantiable
-
-|====
-
-==== Scope
-
-Scope is an type managed internally by ZetScript that defines the variables, types or functions in a scope. Symbol type has the following fields.
-
-- script_type_owner: Script type owner
-- scope_parent: Scope parent
-- scope_base: Scope root
-- symbol_variables: List of symbols as the variables defined in the scope.
-- symbol_functions: List of symbols as the functions defined in the scope.
-- symbol_types: List of symbols as the types defined in the scope.
-- properties: A integer value composed of the following mask values,  
-
-[cols="1d,2m,2d"]
-|====
-|Name |Mask value|Description
-
-|ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF
-|0x01
-|Tells that scope is native
-
-|ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION
-|0x02
-|Tells that scopes references a function
-
-|ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS
-|0x04
-|Tells that scope references a class
-
-|ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK|
-|0x08
-|Tells that scope references a block 
-
-|ZS_SCOPE_PROPERTY_UNUSUED
-|0x10
-|Tells that scope is unused
 
 |====
 
@@ -1186,35 +1147,35 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 [cols="1d,2m,2d"]
 |====
 |Name |Mask value|Description
-|ZS_SYMBOL_PROPERTY_C_OBJECT_REF
+|SYMBOL_PROPERTY_C_OBJECT_REF
 |0x0001
 |ref_ptr holds C object
 
-|ZS_SYMBOL_PROPERTY_STATIC
+|SYMBOL_PROPERTY_STATIC
 |0x0002
 |C function or C++ static functions
 
-|ZS_SYMBOL_PROPERTY_TYPE
+|SYMBOL_PROPERTY_TYPE
 |0x0004
 |symbol is type
 
-|ZS_SYMBOL_PROPERTY_FUNCTION
+|SYMBOL_PROPERTY_FUNCTION
 |0x0008
 |ref_ptr holds script function ptr
 
-|ZS_SYMBOL_PROPERTY_CONST
+|SYMBOL_PROPERTY_CONST
 |0x0010
 |This symbol is not assignable
 	
-|ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY
+|SYMBOL_PROPERTY_MEMBER_PROPERTY
 |0x0020
 |Member attrib
 
-|ZS_SYMBOL_PROPERTY_ARG_BY_REF
+|SYMBOL_PROPERTY_ARG_BY_REF
 |0x0040
 |Is a reference
 
-|ZS_SYMBOL_PROPERTY_ALLOCATED_STK
+|SYMBOL_PROPERTY_ALLOCATED_STK
 |0x0080
 |Is a reference
 
@@ -1228,59 +1189,59 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |====
 |Name |Mask value|Description
 
-|ZS_STK_PROPERTY_UNDEFINED
+|STACK_ELEMENT_PROPERTY_UNDEFINED
 |0x0000
 |Its value is 0 defined as *Undefined* type
 
-|ZS_STK_PROPERTY_NULL
+|STACK_ELEMENT_PROPERTY_NULL
 |0x0001
 |Its value is 0 defined as *Null* type
 
-|ZS_STK_PROPERTY_CHAR_PTR
+|STACK_ELEMENT_PROPERTY_CHAR_PTR
 |0x0002
 |Its value is a *const char &#42;* type
 
-|ZS_STK_PROPERTY_INT
+|STACK_ELEMENT_PROPERTY_INT
 |0x0004
 |Its value is a *zs_int* type
 		
-|ZS_STK_PROPERTY_FLOAT
+|STACK_ELEMENT_PROPERTY_FLOAT
 |0x0008
 |Its value is a *zs_float &#42;* type 
 
-|ZS_STK_PROPERTY_BOOL
+|STACK_ELEMENT_PROPERTY_BOOL
 |0x0010
 |Its value is a *bool* type 
 
-|ZS_STK_PROPERTY_INDEX_CLASS_TYPE
+|STACK_ELEMENT_PROPERTY_INDEX_CLASS_TYPE
 |0x0020
 |Its value a zs_int as the index of a defined or registered Class
 
-|ZS_STK_PROPERTY_FUNCTION
+|STACK_ELEMENT_PROPERTY_FUNCTION
 |0x0040
 |Its value is *Symbol &#42;* as the symbol that refers a *ScriptFunction &#42;* of a function in _ref_ptr_ field
 
-|ZS_STK_PROPERTY_MEMBER_FUNCTION
+|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION
 |0x0080
 |Its value is *Symbol &#42;* as the symbol that refererences a *ScriptFunction &#42;* of a member function in _ref_ptr_ field
 
-|ZS_STK_PROPERTY_MEMBER_PROPERTY
+|STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY
 |0x0100
 |Its value is a *StackElementMemberProperty &#42;*
 
-|ZS_STK_PROPERTY_SCRIPT_OBJECT
+|STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
 |0x0200
 |Its value is a *ScriptObject &#42;*
 
-|ZS_STK_PROPERTY_CONTAINER_SLOT
+|STACK_ELEMENT_PROPERTY_CONTAINER_SLOT
 |0x0400
 |Its value is a *ContainerSlot &#42;*
 
-|ZS_STK_PROPERTY_PTR_STK
+|STACK_ELEMENT_PROPERTY_PTR_STK
 |0x0800
 |Its value is a *StackElement &#42;*
 		
-|ZS_STK_PROPERTY_READ_ONLY
+|STACK_ELEMENT_PROPERTY_READ_ONLY
 |0x1000
 |StackElement is defined as read only
 

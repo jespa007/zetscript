@@ -232,7 +232,7 @@ namespace zetscript{
 			}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_BOOL){
 				stk_dst->properties=STACK_ELEMENT_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;
-			}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_INDEX_CLASS_TYPE | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){
+			}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
 				STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_src)

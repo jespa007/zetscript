@@ -79,12 +79,12 @@ namespace zetscript{
 		sf_eval=new	ScriptFunction(
 				_zs
 				,ZS_SCRIPT_FUNCTION_EVAL_IDX
-				,ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN
+				,SCRIPT_TYPE_ID_CLASS_MAIN
 				,-1
 				,name
 				,function_params_ptr
 				,function_params_len
-				,ZS_UNDEFINED_IDX
+				,SCRIPT_TYPE_ID_INVALID
 				,0
 				,0
 		);

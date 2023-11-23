@@ -251,23 +251,23 @@ namespace zetscript{
 				case ZS_UNDEFINED_IDX:
 					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
-				case ScriptTypeId::SCRIPT_TYPE_ID_INT_C:
+				case SCRIPT_TYPE_ID_INT_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT)!=0);
 					break;
-				case ScriptTypeId::SCRIPT_TYPE_ID_FLOAT_C:
+				case SCRIPT_TYPE_ID_FLOAT_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FLOAT)!=0);
 					break;
-				case ScriptTypeId::SCRIPT_TYPE_ID_BOOL_C:
+				case SCRIPT_TYPE_ID_BOOL_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)!=0);
 					break;
-				case ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION:
+				case SCRIPT_TYPE_ID_FUNCTION:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
 					if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
 						ZS_VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
 								((ObjectScriptObject *)(stk_result_op1->value))->script_type_id // A
-								, instruction->value_op2		// B
+								,instruction->value_op2		// B
 						));
 					}else{
 						ZS_VM_PUSH_STK_BOOLEAN(false);
@@ -497,11 +497,11 @@ namespace zetscript{
 				continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,instruction->value_op1);
+				 	so_aux=NEW_OBJECT_VAR_BY_SCRIPT_TYPE_ID(data->script_type_factory,instruction->value_op1);
 
 					vm_create_shared_script_object(_vm,so_aux);
 
-					if(so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
+					if(so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){
 						so_class_aux1=(ClassScriptObject *)so_aux;
 						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
@@ -862,7 +862,7 @@ namespace zetscript{
 		ScriptObject *so_aux=(ScriptObject *)stk_var->value;
 
 		//special case for constant string object (they don't are shared elements)
-		if(so_aux->script_type_id == ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so_aux->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+		if(so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so_aux->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
 			so_aux=ZS_NEW_STRING_OBJECT(data->zs,so_aux->toString());
 			stk_var->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
@@ -908,7 +908,7 @@ namespace zetscript{
 
 			vm_unref_shared_script_object(_vm,so_aux,NULL);
 
-			if(so_aux->script_type_id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS)
+			if(so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS)
 			{ // max ...
 				so_class_aux1=(ClassScriptObject *)so_aux;
 
@@ -916,6 +916,7 @@ namespace zetscript{
 					so_class_aux1->deleteNativeObjectOnDestroy(true);
 				}
 			}
+
 			STACK_ELEMENT_SET_UNDEFINED(stk_result_op1);
 		}
 	}
