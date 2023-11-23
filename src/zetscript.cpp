@@ -476,7 +476,7 @@ namespace zetscript{
 			VirtualMachine *vm=this->getVirtualMachine();
 
 			// create new if constant
-			if(so->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so->properties & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+			if(so->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING && (so->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(this);
 				vm_create_shared_script_object(
 						vm
@@ -1008,7 +1008,7 @@ namespace zetscript{
 		stk_constants->set(_key.c_str(),(zs_int)stk);
 
 		so=ZS_NEW_STRING_OBJECT(this);
-		so->properties=ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT;
+		so->properties=SCRIPT_OBJECT_PROPERTY_CONSTANT;
 
 		// swap values stk_ref/value
 		so->set(_value.c_str());

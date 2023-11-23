@@ -15,7 +15,7 @@ namespace zetscript{
 	class ScriptFunction;
 
 	typedef enum{
-		ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT=0x1<<0
+		SCRIPT_OBJECT_PROPERTY_CONSTANT=0x1<<0
 	}ScriptObjectProperty;
 
 	class ScriptObject{

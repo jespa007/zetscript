@@ -11,7 +11,7 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
-		if(_obj->properties  & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to create shared constant script object");
 		}
 
@@ -73,7 +73,7 @@ namespace zetscript{
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
 
-		if(_obj->properties  & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to share constant script object");
 		}
 
@@ -101,7 +101,7 @@ namespace zetscript{
 			, ScriptObject 	*	_obj
 			,VM_ScopeBlock 	*	_scope_block
 	){
-		if(_obj->properties  & ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to unref constant script object");
 		}
 

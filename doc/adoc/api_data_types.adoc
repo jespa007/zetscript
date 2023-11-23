@@ -1110,6 +1110,376 @@ Console output:
 include::../examples/api/types/zs_vector_data_out.txt[]
 ----
 
+==== ByteCode
+
+ByteCode represents
+Here there's a meaning of each byte code
+
+[cols="1m,1m,2d"]
+|====
+|Instruction |Name| Description
+
+|BYTE_CODE_EQU
+|EQU
+|Logical equal
+
+|BYTE_CODE_NOT_EQU
+|NOT_EQU
+|Logical not equal
+
+|BYTE_CODE_LT
+|LT
+|Less than
+
+|BYTE_CODE_LTE
+|LTE
+|Less than equal
+
+|BYTE_CODE_GT
+|GT
+|Greather than		
+
+|BYTE_CODE_GTE
+|GTE
+|Greather than equal
+
+|BYTE_CODE_LOGIC_AND
+|LOGIC_AND
+|Login AND
+
+|BYTE_CODE_LOGIC_OR
+|LOGIC_OR
+|Logic OR
+
+|BYTE_CODE_INSTANCEOF
+|INSTANCEOF
+|Instanceof
+
+|BYTE_CODE_NOT
+|NOT
+|Not
+
+|BYTE_CODE_NEG
+|NEG
+|Negate
+
+|BYTE_CODE_ADD
+|ADD
+|Addition
+
+|BYTE_CODE_SUB
+|SUB
+|Substraction
+
+|BYTE_CODE_DIV
+|DIV
+|Division	
+
+|BYTE_CODE_MUL
+|MUL
+|Multiplication	
+
+|BYTE_CODE_MOD
+|MOD
+|Modulus
+
+|BYTE_CODE_AND
+|AND
+|Bitwise AND
+
+|BYTE_CODE_OR
+|OR
+|Bitwise OR
+
+|BYTE_CODE_XOR
+|XOR
+|Bitwise XOR
+
+|BYTE_CODE_SHL
+|SHL
+|Bitwise SHIFT LEFT
+
+|BYTE_CODE_SHR
+|SHR
+|Bitwise SHIFT RIGHT
+
+|BYTE_CODE_BWC
+|BWC
+|Bitwise complement
+
+|BYTE_CODE_ASSIGN
+|ASSIGN
+|Assign
+
+|BYTE_CODE_ADD_ASSIGN
+|ADD_ASSIGN
+|Addition and assignment
+
+|BYTE_CODE_SUB_ASSIGN
+|SUB_ASSIGN
+|Substraction and assignment
+
+|BYTE_CODE_MUL_ASSIGN
+|MUL_ASSIGN
+|Multiplication and assignment
+
+|BYTE_CODE_DIV_ASSIGN
+|DIV_ASSIGN
+|Division and assignment
+
+|BYTE_CODE_MOD_ASSIGN
+|MOD_ASSIGN
+|Modulus and assignment
+
+|BYTE_CODE_AND_ASSIGN
+|AND_ASSIGN
+|Bitwise AND and assignment
+
+|BYTE_CODE_OR_ASSIGN
+|OR_ASSIGN
+|Bitwise OR and assignment
+
+|BYTE_CODE_XOR_ASSIGN
+|XOR_ASSIGN
+|Bitwise XOR and assignment
+
+|BYTE_CODE_SHL_ASSIGN
+|SHL_ASSIGN
+|Bitwise SHIFT LEFT and assignment
+
+|BYTE_CODE_SHR_ASSIGN
+|SHR_ASSIGN
+|Bitwise SHIFT RIGHT and assignment
+
+|BYTE_CODE_PUSH_STK_GLOBAL_IRGO
+|PUSH_STK_GLOBAL_IRGO
+|Push global variable from return function to stack
+
+|BYTE_CODE_PUSH_STK_GLOBAL
+|PUSH_STK_GLOBAL
+|Push global variable to stack
+
+|BYTE_CODE_
+|PUSH_STK_LOCAL
+|Push local variable to stack
+			
+|BYTE_CODE_
+|PUSH_STK_REF
+|Push argument reference to stack
+
+|BYTE_CODE_
+|PUSH_STK_THIS
+|Push current object instance to stack
+
+|BYTE_CODE_
+|PUSH_STK_ARRAY@ITEM
+|Push array item to stack
+
+|BYTE_CODE_
+|PUSH_STK_OBJ@ITEM 
+|Push object item to stack
+
+|BYTE_CODE_
+|PUSH_STK_THIS@VAR
+|Push member variable to stack
+
+|BYTE_CODE_
+|LOAD_GLOBAL
+|Load global variable to stack
+
+|BYTE_CODE_
+|LOAD_LOCAL
+|Load local variable to stack
+
+|BYTE_CODE_
+|LOAD_REF
+|Load argument reference to stack
+
+|BYTE_CODE_
+|LOAD_THIS
+|Load current instance to stack
+
+|BYTE_CODE_
+|LOAD_CONSTRUCTOR_FUNCT
+|Load constructor function to stack
+
+|BYTE_CODE_
+|LOAD_???
+|Unresolved load symbol. It tries to resolve and load at runtime
+
+|BYTE_CODE_
+|CALL
+|Performs a direct call
+
+|BYTE_CODE_
+|CALL???
+|Unresolved direct call. It tries to load at runtime
+
+|BYTE_CODE_
+|STK_CALL
+|Performs a call from current stack
+
+|BYTE_CODE_
+|MEMBER_CALL
+|Performs member call
+
+|BYTE_CODE_
+|LOAD_THIS@VAR
+|Load member variable to stack
+
+|BYTE_CODE_
+|LOAD_THIS@FUN
+|Load member function to stack
+
+|BYTE_CODE_
+|LOAD_ARRAY@ITEM
+|Load array item to stack
+
+|BYTE_CODE_
+|LOAD_OBJ@ITEM
+|Load object item to stack
+
+|BYTE_CODE_
+|LOAD_FUN
+|Load function to stack
+
+|BYTE_CODE_
+|LOAD_UNDEFINED
+|Load undefined value to stack
+
+|BYTE_CODE_
+|LOAD_NULL
+|Load Null value to stack
+
+|BYTE_CODE_
+|LOAD_STK
+|Load stack element to stack
+
+|BYTE_CODE_
+|LOAD_STR
+|Load _String_ value to stack
+
+|BYTE_CODE_
+|LOAD_FLT
+|Load _Float_ value to stack
+
+|BYTE_CODE_
+|LOAD_BOOL
+|Load _Boolean_ value to stack
+
+|BYTE_CODE_
+|LOAD_INT
+|Load _Integer_ value to stack
+
+|BYTE_CODE_
+|LOAD_TYPE
+|Load _Type_ value to stack
+
+|BYTE_CODE_
+|JMP
+|Performs an unconditional jump.
+
+|BYTE_CODE_
+|JMP_CASE 
+|Performs a jump Switch-Case.
+			
+|BYTE_CODE_
+|JNT
+|Performs a jump if not true
+
+|BYTE_CODE_
+|JT
+|Performs jump if true.
+			
+|BYTE_CODE_
+|JE_CASE
+|Performs a jump if equal Switch-Case
+
+|BYTE_CODE_
+|CALL_CONSTRUCTOR
+|Performs a constructor call
+
+|BYTE_CODE_
+|NEW_ARRAY
+|Creates an array object
+
+|BYTE_CODE_			
+|PUSH_AITEM
+|Push array item to stack
+			
+|BYTE_CODE_
+|RET
+|Return
+
+|BYTE_CODE_
+|NEW_OBJECT_BY_TYPE
+|Creates new object by type
+
+|BYTE_CODE_
+|NEW_OBJECT_BY_VALUE
+|Creates new object by value
+			
+|BYTE_CODE_
+|DELETE
+|Deletes object
+
+|BYTE_CODE_
+|POP_SCOPE
+|Pop scope
+
+|BYTE_CODE_
+|PUSH_SCOPE
+|Push scope
+
+|BYTE_CODE_
+|PUSH_OITEM
+|Push object item
+
+|BYTE_CODE_
+|NEW_OBJECT
+|Creates new object
+
+|BYTE_CODE_
+|NEW_STR
+|Creates new string
+	
+|BYTE_CODE_	
+|IT_INIT
+|Performs iterator init
+
+|BYTE_CODE_
+|STORE_CONST
+|Performs a constant assignment
+
+|BYTE_CODE_			
+|PRE_INC
+|Performs a preincrement
+
+|BYTE_CODE_
+|PRE_DEC
+|Performs a predecrement
+
+|BYTE_CODE_
+|POST_INC
+|Performs a postincrement
+
+|BYTE_CODE_
+|POST_DEC
+|Performs a postdecrement
+
+|BYTE_CODE_
+|RESET_STACK
+|Resets stack
+			
+|BYTE_CODE_
+|TYPEOF
+|Typeof
+
+|BYTE_CODE_
+|IN
+|In operator
+|====
+
 ==== ScriptType
 
 ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
@@ -1121,14 +1491,12 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 
 [cols="1d,2m,2d"]
 |====
-|Name |Mask value|Description
+|Name |Description
 
 |SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		
-|0x1
 |It tells script type is native
 
 |SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
-|0x2
 |it tells script type is static or not instantiable
 
 |====
@@ -1146,37 +1514,29 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 
 [cols="1d,2m,2d"]
 |====
-|Name |Mask value|Description
+|Name |Description
 |SYMBOL_PROPERTY_C_OBJECT_REF
-|0x0001
 |ref_ptr holds C object
 
 |SYMBOL_PROPERTY_STATIC
-|0x0002
 |C function or C++ static functions
 
 |SYMBOL_PROPERTY_TYPE
-|0x0004
 |symbol is type
 
 |SYMBOL_PROPERTY_FUNCTION
-|0x0008
 |ref_ptr holds script function ptr
 
 |SYMBOL_PROPERTY_CONST
-|0x0010
 |This symbol is not assignable
 	
 |SYMBOL_PROPERTY_MEMBER_PROPERTY
-|0x0020
 |Member attrib
 
 |SYMBOL_PROPERTY_ARG_BY_REF
-|0x0040
 |Is a reference
 
 |SYMBOL_PROPERTY_ALLOCATED_STK
-|0x0080
 |Is a reference
 
 |====
@@ -1190,59 +1550,45 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |Name |Mask value|Description
 
 |STACK_ELEMENT_PROPERTY_UNDEFINED
-|0x0000
 |Its value is 0 defined as *Undefined* type
 
 |STACK_ELEMENT_PROPERTY_NULL
-|0x0001
 |Its value is 0 defined as *Null* type
 
 |STACK_ELEMENT_PROPERTY_CHAR_PTR
-|0x0002
 |Its value is a *const char &#42;* type
 
 |STACK_ELEMENT_PROPERTY_INT
-|0x0004
 |Its value is a *zs_int* type
 		
 |STACK_ELEMENT_PROPERTY_FLOAT
-|0x0008
 |Its value is a *zs_float &#42;* type 
 
 |STACK_ELEMENT_PROPERTY_BOOL
-|0x0010
 |Its value is a *bool* type 
 
 |STACK_ELEMENT_PROPERTY_INDEX_CLASS_TYPE
-|0x0020
 |Its value a zs_int as the index of a defined or registered Class
 
 |STACK_ELEMENT_PROPERTY_FUNCTION
-|0x0040
 |Its value is *Symbol &#42;* as the symbol that refers a *ScriptFunction &#42;* of a function in _ref_ptr_ field
 
 |STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION
-|0x0080
 |Its value is *Symbol &#42;* as the symbol that refererences a *ScriptFunction &#42;* of a member function in _ref_ptr_ field
 
 |STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY
-|0x0100
 |Its value is a *StackElementMemberProperty &#42;*
 
 |STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
-|0x0200
 |Its value is a *ScriptObject &#42;*
 
 |STACK_ELEMENT_PROPERTY_CONTAINER_SLOT
-|0x0400
 |Its value is a *ContainerSlot &#42;*
 
 |STACK_ELEMENT_PROPERTY_PTR_STK
-|0x0800
 |Its value is a *StackElement &#42;*
 		
 |STACK_ELEMENT_PROPERTY_READ_ONLY
-|0x1000
 |StackElement is defined as read only
 
 |====
@@ -1258,8 +1604,7 @@ _ScriptObject_ defines a the parent class of any object in TypeScript. This type
 [cols="1d,2m,2d"]
 |====
 |Name |Mask value|Description
-|ZS_SCRIPT_OBJECT_PROPERTY_CONSTANT
-|0x1
+|SCRIPT_OBJECT_PROPERTY_CONSTANT
 |Tells if ScriptObject represents a constant object
 
 |====
