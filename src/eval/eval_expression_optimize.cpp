@@ -365,7 +365,7 @@ namespace zetscript{
 				,token_operator->line
 				,"Invalid constant operation %s %s %s"
 				,i1->getConstantValueOp2ToString().c_str()
-				,ByteCodeHelper::getNameOperator(byte_code)
+				,ByteCodeHelper::getByteCodeOperatorName(byte_code)
 				,i2->getConstantValueOp2ToString().c_str()
 			);
 			break;

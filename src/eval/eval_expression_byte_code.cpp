@@ -12,6 +12,34 @@ namespace zetscript{
 		TokenNode			*token_node;
 	}AssignTokenInformation;
 
+	ByteCode eval_byte_code_load_var_type_to_push_stk(ByteCode _byte_code){
+		// load ptr var
+		switch(_byte_code){
+			// load var content
+		default:
+			break;
+			case BYTE_CODE_LOAD_GLOBAL:return BYTE_CODE_PUSH_STK_GLOBAL;
+			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
+			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF
+			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
+			case BYTE_CODE_LOAD_ARRAY_ITEM:return BYTE_CODE_PUSH_STK_ARRAY_ITEM;
+			case BYTE_CODE_LOAD_THIS_VARIABLE:return BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
+		}
+		return BYTE_CODE_INVALID;
+	}
+
+	bool	eval_is_byte_code_load_var_type(ByteCode _byte_code){
+		return _byte_code==BYTE_CODE_LOAD_GLOBAL
+				|| _byte_code==BYTE_CODE_LOAD_LOCAL
+				|| _byte_code==BYTE_CODE_LOAD_REF
+				|| _byte_code==BYTE_CODE_LOAD_THIS
+				|| _byte_code==BYTE_CODE_LOAD_ARRAY_ITEM
+				|| _byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
+				|| _byte_code==BYTE_CODE_LOAD_OBJECT_ITEM;
+	}
+
+
 	char * eval_sub_expression(
 			EvalData *eval_data
 			,const char *s
@@ -275,7 +303,7 @@ namespace zetscript{
 			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->get(ei_assign_loader_instructions_post_expression->size()-1);
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
-			if(ByteCodeHelper::isLoadVarType(last_load_instruction->byte_code)){
+			if(eval_is_byte_code_load_var_type(last_load_instruction->byte_code)){
 
 				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
 					EVAL_ERROR_FILE_LINE_GOTOF(
@@ -285,7 +313,7 @@ namespace zetscript{
 						,"'this' is not assignable");
 				}
 
-				last_load_instruction->byte_code=ByteCodeHelper::loadVarTypeToPushStk(last_load_instruction->byte_code);
+				last_load_instruction->byte_code=eval_byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}

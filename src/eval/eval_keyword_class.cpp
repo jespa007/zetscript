@@ -262,8 +262,8 @@ namespace zetscript{
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-			}else if(ByteCodeHelper::isLoadVarType(byte_code)){
-				eval_instruction->vm_instruction.byte_code=ByteCodeHelper::loadVarTypeToPushStk(byte_code);
+			}else if(eval_is_byte_code_load_var_type(byte_code)){
+				eval_instruction->vm_instruction.byte_code=eval_byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
 			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
@@ -437,14 +437,14 @@ namespace zetscript{
 							zs_string list_valid_metamethods="";
 
 
-							list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getSymbolName(METAMETHOD_SET)+"'\n";
+							list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getMetamethodSymbolName(METAMETHOD_SET)+"'\n";
 							list_valid_metamethods+=zs_string("- '_get'\n");
 
 							// get all member list
 							const Metamethod *it_mm=MetamethodMembers::member_list;
 							while(*it_mm!=0){
 								if(*it_mm!=METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+ MetamethodHelper::getSymbolName(*it_mm)+"'\n";
+									list_valid_metamethods+=zs_string("- '")+ MetamethodHelper::getMetamethodSymbolName(*it_mm)+"'\n";
 								}
 								it_mm++;
 							}
@@ -454,7 +454,7 @@ namespace zetscript{
 							const Metamethod *it_setters=MetamethodMembers::member_setter_list;
 							while(*it_setters!=0){
 								if(*it_setters!=METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getSymbolName(*it_setters)+"'\n";
+									list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getMetamethodSymbolName(*it_setters)+"'\n";
 								}
 								it_setters++;
 							}

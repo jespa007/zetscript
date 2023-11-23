@@ -62,7 +62,7 @@ namespace zetscript{
 		const static Metamethod 	member_setter_list[];
 		const static Metamethod 	member_list[];
 
-		//const static zs_string & 			MetamethodHelper::getSymbolName(MetamethodHelper _byte_code, const zs_string & _property_name);
+		//const static zs_string & 			MetamethodHelper::getMetamethodSymbolName(MetamethodHelper _byte_code, const zs_string & _property_name);
 		//bool static 						isMetamethodMember(MetamethodHelper _metamethod);
 	//	bool static 						isMetamethodMember(const zs_string & _metamethod);
 		static 	MetamethodHelper 			symbolNameToSetterMetamethod(const zs_string & _metamethod_name);

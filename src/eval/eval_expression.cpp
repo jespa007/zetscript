@@ -233,7 +233,7 @@ eval_error_sub_expression:
 		// is load or find variable
 		for(int i=0;i < eval_instructions->size(); i++){
 			Instruction *ei=&((EvalInstruction *)eval_instructions->get(i))->vm_instruction;
-			if(((ByteCodeHelper::isLoadVarType(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
+			if(((eval_is_byte_code_load_var_type(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
 				return false;
 			}
 		}
@@ -384,8 +384,8 @@ eval_error_sub_expression:
 				zs_vector<EvalInstruction *> *ei_left_sub_expressions=(zs_vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(l);
 				Instruction *last_load_instruction=&((EvalInstruction *)ei_left_sub_expressions->get(ei_left_sub_expressions->size()-1))->vm_instruction;
 
-				if(ByteCodeHelper::isLoadVarType(last_load_instruction->byte_code)){
-					last_load_instruction->byte_code=ByteCodeHelper::loadVarTypeToPushStk(last_load_instruction->byte_code);
+				if(eval_is_byte_code_load_var_type(last_load_instruction->byte_code)){
+					last_load_instruction->byte_code=eval_byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 
 					if(
 							last_load_instruction->byte_code==BYTE_CODE_PUSH_STK_ARRAY_ITEM

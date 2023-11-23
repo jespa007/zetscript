@@ -209,7 +209,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,(int8_t)instruction->value_op1!=ZS_UNDEFINED_IDX?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
 				);
 				break;
@@ -266,7 +266,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,instruction->byte_code == BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 					? "\t" : "\t\t"
 					,symbol_value.c_str()
@@ -278,7 +278,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
@@ -298,7 +298,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
 					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
 					?"\t\t":"\t"
@@ -317,7 +317,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
 					,(int)(instruction->value_op2)>=0?"+":""
 					,(int)(instruction->value_op2)
@@ -333,7 +333,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
@@ -341,7 +341,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
@@ -357,7 +357,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,instruction->byte_code==BYTE_CODE_STACK_CALL?"\t\t":"\t\t\t"
 					,instruction->byte_code==BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_UNDEFINED_IDX?"??":""
 					,symbol_value.c_str()
@@ -372,7 +372,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,instruction->byte_code==BYTE_CODE_MEMBER_CALL?"\t\t":"\t"
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
@@ -392,7 +392,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,instruction->byte_code==BYTE_CODE_STORE_CONST
 					?"\t\t":"\t\t\t"
 					,(int)instruction->value_op1
@@ -421,7 +421,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 					,"\t\t"
 					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
@@ -431,7 +431,7 @@ namespace zetscript{
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
-					,ByteCodeHelper::getName(instruction->byte_code)
+					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 				);
 				break;
 			default:
@@ -441,7 +441,7 @@ namespace zetscript{
 						idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,ByteCodeHelper::getName(instruction->byte_code)
+						,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 						,iload_info.c_str()
 					);
 				}else{
@@ -450,14 +450,14 @@ namespace zetscript{
 							idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCodeHelper::getName(instruction->byte_code)
+							,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 						);
 					}else if(n_ops==1){
 						printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%i\n"
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCodeHelper::getName(instruction->byte_code)
+							,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 							,instruction->value_op1
 						);
 					}else{ //2 ops
@@ -465,7 +465,7 @@ namespace zetscript{
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
-							,ByteCodeHelper::getName(instruction->byte_code)
+							,ByteCodeHelper::getByteCodeName(instruction->byte_code)
 							,instruction->value_op1
 							,(int)instruction->value_op2
 						);

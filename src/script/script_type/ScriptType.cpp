@@ -233,7 +233,7 @@ namespace zetscript{
 		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
-		//zs_string member_property_metamethod_name=MetamethodHelper::getSymbolName(_metamethod)+"@"+_property_name;
+		//zs_string member_property_metamethod_name=MetamethodHelper::getMetamethodSymbolName(_metamethod)+"@"+_property_name;
 		mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
 		if(mp_setter_info.metamethod != METAMETHOD_INVALID){
 			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
@@ -381,23 +381,23 @@ namespace zetscript{
 		else{
 			// check metamethod function (not property metamethod)...
 			for(int i = 0; i < Metamethod::MAX_METAMETHOD_IDS; i++){
-				if(ZS_STRCMP(MetamethodHelper::getSymbolName((Metamethod)i),==,_function_name.c_str())){
+				if(ZS_STRCMP(MetamethodHelper::getMetamethodSymbolName((Metamethod)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
 					MetamethodMemberSetterInfo info_mp;
 					Metamethod op=(Metamethod)i;
-					const char *operator_str=MetamethodHelper::getOperatorName(op);
-					const char *str_symbol_metamethod=MetamethodHelper::getSymbolName(op);
-					int n_args_static_metamethod=MetamethodHelper::getNumberArguments(op); // expected params for static function, n_args -1 else
+					const char *operator_str=MetamethodHelper::getMetamethodOperatorName(op);
+					const char *str_symbol_metamethod=MetamethodHelper::getMetamethodSymbolName(op);
+					int n_args_static_metamethod=MetamethodHelper::getMetamethodNumberArguments(op); // expected params for static function, n_args -1 else
 					int this_arg=0;
 
 					// can be one parameter or 0 params...
-					if(MetamethodHelper::shouldBeStatic(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
+					if(MetamethodHelper::isMetamethodStatic(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						ZS_THROW_RUNTIME_ERROR("MetamethodHelper '%s::%s' has to be declared as static instead of member"
 							,name.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
-					}else if((MetamethodHelper::shouldBeStatic(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
+					}else if((MetamethodHelper::isMetamethodStatic(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						ZS_THROW_RUNTIME_ERROR("MetamethodHelper '%s::%s' has to be declared as member instead of static"
 							,name.c_str()
 							,_function_name.c_str()

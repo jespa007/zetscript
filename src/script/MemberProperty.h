@@ -9,7 +9,7 @@
 
 
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(_str_out,_property_name,_metamethod) \
-	ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,_property_name,MetamethodHelper::getSymbolName(_metamethod))
+	ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(_str_out,_property_name,MetamethodHelper::getMetamethodSymbolName(_metamethod))
 
 
 namespace zetscript{

@@ -55,7 +55,7 @@ namespace zetscript{
 	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(Metamethod _metamethod){
 		MetamethodMemberSetterInfo info;
 		info.metamethod= _metamethod;
-		info.metamethod_name=MetamethodHelper::getSymbolName(_metamethod);
+		info.metamethod_name=MetamethodHelper::getMetamethodSymbolName(_metamethod);
 		switch(_metamethod){
 			case METAMETHOD_SET:
 				info.setters=&setters;
@@ -101,7 +101,7 @@ namespace zetscript{
 		Metamethod metamethod=METAMETHOD_INVALID;
 
 		while(*it!=0){
-			const char *_mt_name=MetamethodHelper::getSymbolName(*it);
+			const char *_mt_name=MetamethodHelper::getMetamethodSymbolName(*it);
 			if(_metamethod_name==_mt_name){
 				metamethod=*it;
 				break;
@@ -116,7 +116,7 @@ namespace zetscript{
 	MetamethodMemberGetterInfo MetamethodMembers::getGetterInfo(Metamethod _metamethod){
 		MetamethodMemberGetterInfo info;
 		info.metamethod= _metamethod;
-		info.metamethod_name=MetamethodHelper::getSymbolName(_metamethod);
+		info.metamethod_name=MetamethodHelper::getMetamethodSymbolName(_metamethod);
 		switch(_metamethod){
 			case METAMETHOD_POST_INC:
 				info.getter=&postinc;
@@ -169,7 +169,7 @@ namespace zetscript{
 		Metamethod *it=getter_bytecodes;
 
 		while(*it != METAMETHOD_INVALID){
-			if(_metamethod_name==MetamethodHelper::getSymbolName(*it)){
+			if(_metamethod_name==MetamethodHelper::getMetamethodSymbolName(*it)){
 				metamethod=*it;
 				break;
 			}
@@ -222,7 +222,7 @@ namespace zetscript{
 				break;
 			default:
 				ZS_THROW_EXCEPTION("Unexpected to register '%s' setter"
-					,MetamethodHelper::getSymbolName(_metamethod)
+					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 				);
 				break;
 			}

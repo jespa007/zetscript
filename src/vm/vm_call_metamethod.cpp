@@ -20,12 +20,12 @@ namespace zetscript{
 		StackElement 		*	stk_vm_current_backup,*stk_args;
 		ScriptFunction 		*	ptr_function_found=NULL;
 		StackElement 			ret_obj;
-		const char 			*	operator_str=MetamethodHelper::getOperatorName(_metamethod);
-		const char 			*	str_symbol_metamethod=MetamethodHelper::getSymbolName(_metamethod);
+		const char 			*	operator_str=MetamethodHelper::getMetamethodOperatorName(_metamethod);
+		const char 			*	str_symbol_metamethod=MetamethodHelper::getMetamethodSymbolName(_metamethod);
 		zs_string 				error_found="";
 		ScriptObject 		*	script_object=NULL;
 		zs_string 				str_script_type_object_found="";
-		int 					n_stk_args=MetamethodHelper::getNumberArguments(_metamethod);//_is_static?2:1;
+		int 					n_stk_args=MetamethodHelper::getMetamethodNumberArguments(_metamethod);//_is_static?2:1;
 		size_t 					n_stk_local_symbols=0;
 		StackElement 		*	stk_return=NULL;
 		int 					n_returned_arguments_from_function=0;
@@ -97,7 +97,7 @@ namespace zetscript{
 				}else{
 					error_found=zs_strutils::format("Type '%s' does not implements metamethod '%s'"
 						,str_script_type_object_found.c_str()
-						,MetamethodHelper::getSymbolName(_metamethod)
+						,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					);
 				}
 			}
@@ -229,10 +229,10 @@ namespace zetscript{
 
 			if(stk_result_op2 != NULL){
 				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
-					,MetamethodHelper::getOperatorName(_metamethod)
-					,MetamethodHelper::getSymbolName(_metamethod)
+					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
+					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
-					,MetamethodHelper::getOperatorName(_metamethod)
+					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,data->zs->stackElementToStringTypeOf(stk_result_op2).c_str()
 					,error_found.empty()?"":":"
 					,error_found.c_str()
@@ -240,9 +240,9 @@ namespace zetscript{
 				);
 			}else{
 				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '%s (%s)'%s%s%s"
-					,MetamethodHelper::getOperatorName(_metamethod)
-					,MetamethodHelper::getSymbolName(_metamethod)
-					,MetamethodHelper::getOperatorName(_metamethod)
+					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
+					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
+					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
 					,error_found.empty()?"":":"
 					,error_found.c_str()
@@ -274,8 +274,8 @@ namespace zetscript{
 		MetamethodMembers 			*			ptr_metamethod_members_aux=NULL;
 		ScriptFunction 				*			ptr_function_found=NULL;
 		MetamethodMemberSetterInfo 				setter_info;
-		const char 					*			str_set_metamethod=MetamethodHelper::getSymbolName(_metamethod);
-		const char 					*			str_aka_set_metamethod=MetamethodHelper::getOperatorName(_metamethod);
+		const char 					*			str_set_metamethod=MetamethodHelper::getMetamethodSymbolName(_metamethod);
+		const char 					*			str_aka_set_metamethod=MetamethodHelper::getMetamethodOperatorName(_metamethod);
 		Instruction					*			instruction=_instruction;
 
 		if(_metamethod == METAMETHOD_ADD_ASSIGN){

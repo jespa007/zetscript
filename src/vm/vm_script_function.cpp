@@ -767,9 +767,9 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,MetamethodHelper::getOperatorName(_metamethod)
+				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-				,MetamethodHelper::getOperatorName(_metamethod)
+				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
@@ -780,8 +780,8 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Member property '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,MetamethodHelper::getSymbolName(_metamethod)\
-				,MetamethodHelper::getOperatorName(_metamethod)\
+				,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
+				,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 			);\
 			break;
 		case ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED:
@@ -792,8 +792,8 @@ namespace zetscript{
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 				,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
-				,MetamethodHelper::getSymbolName(_metamethod)\
-				,MetamethodHelper::getOperatorName(_metamethod)\
+				,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
+				,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 			);\
 			break;
 		case ZS_VM_MAIN_ERROR_CANNOT_FIND_SYMBOL:
@@ -847,8 +847,8 @@ namespace zetscript{
 					,"Symbol '%s' as type '%s' the metamethod '%s' (aka '%s') doesn't returns value to perform negate operation" \
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
-					,MetamethodHelper::getSymbolName(_metamethod)\
-					,MetamethodHelper::getOperatorName(_metamethod)\
+					,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
+					,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 				);\
 			break;
 		}

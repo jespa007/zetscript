@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const char * MetamethodHelper::getOperatorName(Metamethod _metamethod){
+	const char * MetamethodHelper::getMetamethodOperatorName(Metamethod _metamethod){
 		switch (_metamethod) {
 			case	METAMETHOD_EQU:		return  "==";  		// ==
 			case	METAMETHOD_NEQU: 	return  "!=";  		// !=,
@@ -51,7 +51,7 @@ namespace zetscript{
 		}
 	}
 
-	const char * MetamethodHelper::getSymbolName(Metamethod _metamethod){
+	const char * MetamethodHelper::getMetamethodSymbolName(Metamethod _metamethod){
 
 		switch (_metamethod) {
 		default:
@@ -100,7 +100,7 @@ namespace zetscript{
 		return "none";
 	}
 
-	int	MetamethodHelper::getNumberArguments(Metamethod _metamethod){
+	int	MetamethodHelper::getMetamethodNumberArguments(Metamethod _metamethod){
 		switch(_metamethod){
 		default:
 			break;
@@ -131,7 +131,7 @@ namespace zetscript{
 		return 2;
 	}
 
-	bool		 MetamethodHelper::shouldBeStatic(Metamethod _metamethod){
+	bool		 MetamethodHelper::isMetamethodStatic(Metamethod _metamethod){
 
 		switch(_metamethod){
 		case METAMETHOD_EQU:

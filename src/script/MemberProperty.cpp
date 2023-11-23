@@ -30,7 +30,7 @@ namespace zetscript{
 
 		//
 		while(*it!=0){
-			if(zs_strutils::starts_with(at,MetamethodHelper::getSymbolName(*it))){
+			if(zs_strutils::starts_with(at,MetamethodHelper::getMetamethodSymbolName(*it))){
 				return true;
 			}
 			it++;

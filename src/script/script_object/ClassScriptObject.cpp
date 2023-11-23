@@ -135,7 +135,7 @@ namespace zetscript{
 	}
 
 	bool ClassScriptObject::itHasSetMetamethod(){
-		return getStackElementByKeyName(MetamethodHelper::getSymbolName(METAMETHOD_SET)) != NULL;
+		return getStackElementByKeyName(MetamethodHelper::getMetamethodSymbolName(METAMETHOD_SET)) != NULL;
 	}
 
 	void ClassScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -164,7 +164,7 @@ namespace zetscript{
 
 	zs_string ClassScriptObject::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(MetamethodHelper::getSymbolName(METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(MetamethodHelper::getMetamethodSymbolName(METAMETHOD_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;

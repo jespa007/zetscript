@@ -92,8 +92,8 @@ namespace zetscript{
 
 			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
-			const char *__STR_SETTER_METAMETHOD__=MetamethodHelper::getSymbolName(METAMETHOD_SET);\
-			const char *__STR_AKA_SETTER_METAMETHOD__=MetamethodHelper::getOperatorName(METAMETHOD_SET);\
+			const char *__STR_SETTER_METAMETHOD__=MetamethodHelper::getMetamethodSymbolName(METAMETHOD_SET);\
+			const char *__STR_AKA_SETTER_METAMETHOD__=MetamethodHelper::getMetamethodOperatorName(METAMETHOD_SET);\
 			*stk_arg=*stk_src;\
 			if(stk_dst->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);

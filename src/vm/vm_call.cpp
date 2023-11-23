@@ -504,11 +504,12 @@ execute_function:
 
 						if(sf_found==NULL){
 
-#ifdef __DEBUG__
+#ifdef __ZS_VERBOSE_MESSAGE__
 								static int index=0;
 
 								printf("Have to find function %i '%s'\n",index++,sf_call_script_function->name.c_str());
 #endif
+
 
 
 							if((sf_found=vm_find_native_function(

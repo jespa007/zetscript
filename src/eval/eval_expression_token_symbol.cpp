@@ -458,8 +458,8 @@ namespace zetscript{
 								if(byte_code_aux ==BYTE_CODE_LOAD_REF){
 									ei_arg->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
 								}
-								else if(ByteCodeHelper::isLoadVarType(byte_code_aux)){
-									ei_arg->vm_instruction.byte_code=ByteCodeHelper::loadVarTypeToPushStk(byte_code_aux);
+								else if(eval_is_byte_code_load_var_type(byte_code_aux)){
+									ei_arg->vm_instruction.byte_code=eval_byte_code_load_var_type_to_push_stk(byte_code_aux);
 									ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
 								}
 							}
@@ -794,8 +794,8 @@ namespace zetscript{
 
 
 			// if post inc/dec hange load by push because is mutable
-			if(ByteCodeHelper::isLoadVarType(last_load_instruction->byte_code)){
-				last_load_instruction->byte_code=ByteCodeHelper::loadVarTypeToPushStk(last_load_instruction->byte_code);
+			if(eval_is_byte_code_load_var_type(last_load_instruction->byte_code)){
+				last_load_instruction->byte_code=eval_byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
@@ -859,8 +859,8 @@ namespace zetscript{
 				(pre_operation == PreOperation::PRE_OPERATION_INC)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)){
 
-				if(ByteCodeHelper::isLoadVarType(last_load_instruction->byte_code)){
-					last_load_instruction->byte_code=ByteCodeHelper::loadVarTypeToPushStk(last_load_instruction->byte_code);
+				if(eval_is_byte_code_load_var_type(last_load_instruction->byte_code)){
+					last_load_instruction->byte_code=eval_byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}
