@@ -303,7 +303,7 @@ namespace zetscript{
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		zs_string symbol_name;
-		ScriptType *sc=NULL;
+		ScriptType *script_type=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
@@ -356,10 +356,10 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 
-				sc=GET_SCRIPT_TYPE(eval_data->script_type_factory,symbol_name);
+				script_type=GET_SCRIPT_TYPE(eval_data->script_type_factory,symbol_name);
 
 				// parse expression
-				if(sc==NULL){
+				if(script_type==NULL){
 					char *test_str=NULL;
 					if((test_str = eval_sub_expression(
 							eval_data
@@ -381,23 +381,23 @@ namespace zetscript{
 							 ,expression
 						 );
 				}else{ // known type
-					is_native_type=sc->isNativeType();
-					symbol_constructor_function_name=sc->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
+					is_native_type=script_type->isNativeType();
+					symbol_constructor_function_name=script_type->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
-					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->script_type_id)){
+					if(!eval_data->script_type_factory->isScriptTypeInstanceable(script_type->id)){
 						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
 								,"Cannot create object type '%s' because it has been defined as not instantiable. "
 								"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-								,sc->getTypeName()
-								,sc->getTypeName()
-								,sc->getTypeName()
+								,script_type->getTypeName()
+								,script_type->getTypeName()
+								,script_type->getTypeName()
 								);
 					}
 
 					eval_instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
-					eval_instruction->vm_instruction.value_op1=sc->script_type_id;
+					eval_instruction->vm_instruction.value_op1=script_type->id;
 				}
 
 
@@ -472,11 +472,11 @@ namespace zetscript{
 
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
-					 constructor_function=sc->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=sc->scope->symbol_functions->size()-1;
+					 constructor_function=script_type->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
+					 int start_idx_function=script_type->scope->symbol_functions->size()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc->scope->symbol_functions->get(i);
+							Symbol *symbol_member = (Symbol *)script_type->scope->symbol_functions->get(i);
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 							if(sf_member->name== ZS_CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
@@ -490,7 +490,7 @@ namespace zetscript{
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 						 }else{// is a native constructor, find a constructor if it passes one or more args
 							 if(n_args > 0){ // we have to find our custom function to call after object is created
-								 constructor_function=sc->getSymbol(symbol_name.c_str(),n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
+								 constructor_function=script_type->getSymbol(symbol_name.c_str(),n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
 								 if(constructor_function == NULL){
 									 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",symbol_name.c_str(),n_args);
 								 }

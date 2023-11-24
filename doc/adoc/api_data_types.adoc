@@ -1484,8 +1484,8 @@ Here there's a meaning of each byte code
 
 ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
 
-- script_type_id: The id of script type
-- name: The name of script type
+- id: The script type id
+- name: The script type name
 - native_name: Native name of script type
 - properties: A integer value composed of the following mask values,  
 
@@ -1515,8 +1515,8 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 [cols="1d,2m,2d"]
 |====
 |Name |Description
-|SYMBOL_PROPERTY_C_OBJECT_REF
-|ref_ptr holds C object
+|SYMBOL_PROPERTY_NATIVE_OBJECT_REF
+|ref_ptr holds native object
 
 |SYMBOL_PROPERTY_STATIC
 |C function or C++ static functions
@@ -1598,7 +1598,26 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 
 _ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
 
-- script_type_id: The script type representated by the instance of script object.
+- script_type_id: The script type representated by the instance of script object. ZetScript it register primitive objects as which script_type_ids matches with the following,
+
+[cols="1d,2m,2d"]
+|====
+
+|Name|Description
+
+|SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING
+|Tells that the object is an instance of StringScriptObject
+
+|SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
+|Tells that the object is an instance of  ScriptObjectArray
+
+|SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
+|Tells that the object is an instance of  ObjectScriptObject
+
+|SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
+|Tells that the object is an instance of  ClassScriptObject
+|====
+
 - properties: A integer value composed of the following mask values,  
 
 [cols="1d,2m,2d"]

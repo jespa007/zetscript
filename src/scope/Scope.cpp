@@ -14,7 +14,7 @@ namespace zetscript{
 	Scope::Scope(ZetScript * _zs,int _idx_script_function, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
-		script_type_owner=NULL;
+		owner_script_type=NULL;
 		id=_idx_script_function;
 		zs=_zs;
 		offset_instruction_push_scope=ZS_UNDEFINED_IDX;
@@ -28,7 +28,7 @@ namespace zetscript{
 			scope_base = this;
 		}else{ // others...
 			scope_base = scope_parent->scope_base;
-			script_type_owner=scope_parent->script_type_owner; // propagate script type
+			owner_script_type=scope_parent->owner_script_type; // propagate script type
 
 			if(id==ZS_UNDEFINED_IDX){ // May be is a block containing if-else, for, etc --> propagate current script function
 				id=scope_parent->id;
@@ -39,16 +39,16 @@ namespace zetscript{
 		}
 	}
 
-	void Scope::setScriptTypeOwner(ScriptType *_script_type_owner){
+	void Scope::setScriptTypeOwner(ScriptType *_owner_script_type){
 		if(scope_parent != NULL){
 			ZS_THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
-		script_type_owner=_script_type_owner;
+		owner_script_type=_owner_script_type;
 	}
 
-	ScriptType * Scope::getScriptTypeOwner(){
-		return scope_base->script_type_owner;
+	ScriptType * Scope::getOwnerScriptType(){
+		return scope_base->owner_script_type;
 	}
 
 	int Scope::getIdxScriptFunction(){

@@ -61,7 +61,7 @@ namespace zetscript{
 
 	ScriptFunction * vm_find_native_function(
 			VirtualMachine 		*	_vm
-			,ScriptType 		*	_class_obj // if NULL is MainClass
+			,ScriptType 		*	_class_obj_script_type // if NULL is MainClass
 			,ScriptFunction 	*	_script_function
 			,Instruction 		* 	_instruction // call instruction
 			,bool 					_is_constructor
@@ -80,9 +80,9 @@ namespace zetscript{
 		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope->symbol_functions->data();// vector of symbols
 		size_t stk_elements_builtin_len=  data->main_function_object->scope->symbol_functions->size();// vector of symbols
 
-		if(_class_obj != NULL){
-			stk_elements_builtin_ptr=_class_obj->scope->symbol_functions->data();
-			stk_elements_builtin_len=_class_obj->scope->symbol_functions->size();
+		if(_class_obj_script_type != NULL){
+			stk_elements_builtin_ptr=_class_obj_script_type->scope->symbol_functions->data();
+			stk_elements_builtin_len=_class_obj_script_type->scope->symbol_functions->size();
 		}
 
 		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
@@ -171,7 +171,7 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			zs_string class_str=_class_obj==NULL?"":_class_obj->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj->name:"";
+			zs_string class_str=_class_obj_script_type==NULL?"":_class_obj_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj_script_type->name:"";
 			int n_candidates=0;
 			zs_string str_candidates="";
 			zs_string function_name_not_found=
@@ -245,8 +245,8 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// type if not main
-					if(_class_obj!=NULL && _class_obj->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN){
-						str_candidates.append(_class_obj->name);
+					if(_class_obj_script_type!=NULL && _class_obj_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN){
+						str_candidates.append(_class_obj_script_type->name);
 						str_candidates.append("::");
 					}
 

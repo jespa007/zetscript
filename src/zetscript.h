@@ -75,7 +75,7 @@
 
 #include "scope/zs_scope.h"
 #include "module/zs_module.h"
-#include "script/zs_script.h"
+#include <script/zs_script.h>
 #include "eval/eval.h"
 #include "vm/vm.h"
 

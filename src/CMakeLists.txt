@@ -66,7 +66,7 @@ endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
 
-set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/scripts" )
+set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/language" )
 MESSAGE("-- Script test path: " ${ZS_TEST_ALL_SCRIPT_TEST_PATH}  )
 
 configure_file(${PROJECT_SOURCE_DIR}/../test/test_all_config.h.in ${PROJECT_SOURCE_DIR}/../test/test_all_config.h)
@@ -208,7 +208,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	# Modules
 	module/zs_module.cpp
 	
-	# VM
+	# Virtual machine
 	vm/vm.cpp
 	
 	# Eval		
@@ -217,10 +217,10 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	# Scope
 	scope/zs_scope.cpp
 			
-	# Script
+	# Core
 	script/zs_script.cpp 
 
-	# Core
+	# Main api
 	zetscript.cpp
 )
 

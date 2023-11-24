@@ -496,7 +496,7 @@ namespace zetscript{
 					ZS_THROW_EXCEPTION_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
 						,function_member->scope!=NULL?
 								zs_strutils::format("%s::%s"
-										,function_member->scope->script_type_owner->name.c_str()
+										,function_member->scope->owner_script_type->name.c_str()
 										,_function_name.c_str()).c_str()
 								:_function_name.c_str()
 
@@ -828,7 +828,7 @@ namespace zetscript{
 				}else{
 					if(unresolved_instruction->byte_code==BYTE_CODE_THIS_CALL){
 
-						ScriptType *sc_sf=this->scope->getScriptTypeOwner();
+						ScriptType *sc_sf=this->scope->getOwnerScriptType();
 						for(int j = 0; j < sc_sf->scope->symbol_functions->size(); j++){
 							Symbol *sv=(Symbol *)sc_sf->scope->symbol_functions->get(j);
 							if(

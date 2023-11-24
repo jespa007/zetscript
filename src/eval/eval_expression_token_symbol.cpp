@@ -74,7 +74,7 @@ namespace zetscript{
 		int last_accessor_line=line;
 		int last_line_ok=line;
 		zs_string static_error;
-		ScriptType *token_node_symbol_class=NULL;
+		ScriptType *token_node_symbol_script_type=NULL;
 
 		// check pre operator (-,+,!,-- or ++)
 		switch(pre_operation=is_pre_operation(aux_p)){
@@ -285,11 +285,11 @@ namespace zetscript{
 
 					}else{ // check if only gets the type
 
-						token_node_symbol_class=eval_data->script_type_factory->getScriptType(token_node_symbol->value);
+						token_node_symbol_script_type=eval_data->script_type_factory->getScriptType(token_node_symbol->value);
 						EvalInstruction *ei_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.get(0);
-						if(token_node_symbol_class != NULL){ // byte code it will be a type
+						if(token_node_symbol_script_type != NULL){ // byte code it will be a type
 							ei_instruction->vm_instruction.byte_code= BYTE_CODE_LOAD_TYPE;
-							ei_instruction->vm_instruction.value_op2=token_node_symbol_class->script_type_id;
+							ei_instruction->vm_instruction.value_op2=token_node_symbol_script_type->id;
 						}
 
 						// set operator symbol
@@ -356,7 +356,7 @@ namespace zetscript{
 			}
 		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 
-			if(token_node_symbol_class!=NULL){
+			if(token_node_symbol_script_type!=NULL){
 
 				EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
@@ -394,7 +394,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_type_owner->script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
+								&& scope_info->owner_script_type->id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -568,7 +568,7 @@ namespace zetscript{
 							);
 						}
 
-						if(scope_info->script_type_owner->script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
+						if(scope_info->owner_script_type->id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -579,7 +579,7 @@ namespace zetscript{
 
 						// set symbol name
 						ei_first_token_node->symbol_name=accessor_name;
-						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbolVariableMember(accessor_name.c_str());
+						Symbol *symbol_access_this=scope_info->owner_script_type->getSymbolVariableMember(accessor_name.c_str());
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
 						}

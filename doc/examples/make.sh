@@ -16,7 +16,7 @@ do
 	for j in $dir
 	do
 		base_file="$(basename $j .zs)"
-		../../bin/gcc/Release/zs --no-execution-time "scripts/"$i"/"$base_file".zs" > "scripts/"$i"/"$base_file"_out.txt" 
+		../../bin/gcc/Release/zs --no-execution-time "language/"$i"/"$base_file".zs" > "scripts/"$i"/"$base_file"_out.txt" 
 		
 	done
 done

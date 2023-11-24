@@ -44,9 +44,9 @@ namespace zetscript{
 		}*/
 		
 		// it should be script object
-		ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+		ScriptType *registered_class_script_type = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
-		if (info_registered_class == NULL) {
+		if (registered_class_script_type == NULL) {
 			ZS_THROW_RUNTIME_ERROR(
 				"Native symbol '%s' has type '%s' that is not registered"
 				, symbol->name.c_str()
@@ -54,7 +54,7 @@ namespace zetscript{
 			);
 		}
 
-		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, info_registered_class->script_type_id, ptr_variable);
+		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, registered_class_script_type->id, ptr_variable);
 
 		return{
 				(zs_int)var,

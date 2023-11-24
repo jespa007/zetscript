@@ -153,10 +153,10 @@ namespace zetscript{
 				ScriptType *sc=NULL;
 				if(
 					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
-					&& (	scope->script_type_owner->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN)
+					&& (	scope->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN)
 					   // is function member
 					){ // type members are defined as functions
-					sc=scope->script_type_owner;
+					sc=scope->owner_script_type;
 				}
 
 				if(sc != NULL){

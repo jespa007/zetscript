@@ -192,7 +192,7 @@ namespace zetscript{
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_type_owner->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN
+		if(scope_info->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -207,7 +207,7 @@ namespace zetscript{
 			else{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 			}
-			sc=scope_info->script_type_owner;
+			sc=scope_info->owner_script_type;
 		}
 		else{
 			key_w = eval_is_keyword(aux_p);
@@ -288,9 +288,9 @@ namespace zetscript{
 				zs_string error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
+					,scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 							"declaring function member '%s::%s'"
-							,scope_info->script_type_owner->name.c_str()
+							,scope_info->owner_script_type->name.c_str()
 							,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
 							).c_str():"declaring function"
 							,*aux_p
@@ -299,9 +299,9 @@ namespace zetscript{
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
+							,scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 									"declaring function member '%s::%s'"
-									,scope_info->script_type_owner->name.c_str()
+									,scope_info->owner_script_type->name.c_str()
 									,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
 									).c_str():"declaring function"
 
@@ -547,7 +547,7 @@ namespace zetscript{
 				}
 
 				if((properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)){ // is a function that was created within a member function...
+					if(scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)){ // is a function that was created within a member function...
 						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}

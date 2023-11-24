@@ -17,7 +17,7 @@ namespace zetscript{
 	//------------------------------------------------------------
 
 	ScriptType::ScriptType(ZetScript *_zs
-			,ScriptTypeId _script_type_id
+			,ScriptTypeId _id
 			, const zs_string & _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
@@ -28,7 +28,7 @@ namespace zetscript{
 		delete_native_instance = NULL;
 		new_native_instance=NULL;
 		idx_function_member_constructor = ZS_UNDEFINED_IDX;
-		script_type_id=_script_type_id;
+		id=_id;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		name=_class_name;
@@ -116,12 +116,12 @@ namespace zetscript{
 			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 				printf(" -Native interface: '%s'\n",native_interface.c_str());
 			}
-			printf(" -Type origin: '%s'\n",sf->scope->script_type_owner->name.c_str());
+			printf(" -Type origin: '%s'\n",sf->scope->owner_script_type->name.c_str());
 		}
 	}
 
 	bool ScriptType::extendsFrom(ScriptTypeId _script_type_id){
-		if(_script_type_id==this->script_type_id){
+		if(_script_type_id==this->id){
 			return true;
 		}
 
@@ -327,7 +327,7 @@ namespace zetscript{
 					ScriptFunction *existing_sf=(ScriptFunction *)existing_symbol->ref_ptr;
 
 					// check whether the function was declared at the same class
-					if(existing_sf->scope->script_type_owner == this){
+					if(existing_sf->scope->owner_script_type == this){
 						ZS_THROW_EXCEPTION("Member function '%s' is already defined at " ZS_FORMAT_FILE_LINE
 							,_function_name.c_str()
 							//,zs_path::get_filename(_file).c_str()
@@ -351,7 +351,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,script_type_id 				// idx type which belongs to...
+				,this->id 				// idx type which belongs to...
 				,_function_name
 				,_params
 				,_params_len

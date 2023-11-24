@@ -17,7 +17,7 @@ namespace zetscript{
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement 				*	stk_var=NULL;
 		StackElementMemberProperty 		*	stk_mp_aux=NULL;
-		ScriptType					*	sc_type=NULL;
+		ScriptType					*	script_type=NULL;
 		Symbol 						*	symbol_function_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
 		bool 							instruction_store=false;
@@ -84,7 +84,7 @@ namespace zetscript{
 		symbol_function_member=NULL;
 
 		//
-		sc_type=so_aux->getScriptType();
+		script_type=so_aux->getScriptType();
 		// Because BYTE_CODE_LOAD_OBJECT_ITEM it does not use the valueop2, it's used as a cache of the script type of the object
 		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)){
 			symbol_function_member=(Symbol *)instruction->value_op2;
@@ -95,7 +95,7 @@ namespace zetscript{
 		}
 
 		if(symbol_function_member==NULL){
-			symbol_function_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);
+			symbol_function_member=script_type->getSymbolMemberFunction(str_symbol_aux1);
 			instruction->value_op2=(zs_int)symbol_function_member;
 		}
 
@@ -131,10 +131,10 @@ namespace zetscript{
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 						,symbol_function_member->name.c_str()
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-						,sc_type->getTypeName()
-						,sc_type->getTypeName()
+						,script_type->getTypeName()
+						,script_type->getTypeName()
 						,symbol_function_member->name.c_str()
-						,sc_type->getTypeName()
+						,script_type->getTypeName()
 						,symbol_function_member->name.c_str()
 
 					);
@@ -181,7 +181,7 @@ namespace zetscript{
 			 ){
 				// if object is C
 				// exceptions
-				if(sc_type->script_type_id < SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || sc_type->script_type_id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
+				if(script_type->id < SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || script_type->id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
@@ -189,7 +189,7 @@ namespace zetscript{
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-							,sc_type->script_type_id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
+							,script_type->id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
 							,str_symbol_aux1
 						);

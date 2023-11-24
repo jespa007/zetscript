@@ -9,7 +9,7 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum:uint16_t  {
-	ZS_SYMBOL_PROPERTY_C_OBJECT_REF 			= 0x0001,// ref_ptr holds C object
+	ZS_SYMBOL_PROPERTY_NATIVE_OBJECT_REF 			= 0x0001,// ref_ptr holds C object
 	ZS_SYMBOL_PROPERTY_STATIC 					= 0x0002,// C function or C++ static functions
 	ZS_SYMBOL_PROPERTY_TYPE						= 0x0004,// symbol is type
 	ZS_SYMBOL_PROPERTY_FUNCTION					= 0x0008,// ref_ptr holds script function ptr

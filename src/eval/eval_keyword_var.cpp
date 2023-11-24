@@ -30,7 +30,7 @@ namespace zetscript{
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			bool is_static=scope_info==ZS_MAIN_SCOPE(eval_data);
-			ScriptType *sc=NULL;
+			ScriptType *script_type=NULL;
 			zs_string s_aux="",variable_name="";
 			zs_string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
@@ -40,11 +40,11 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->script_type_owner->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN
+			if(scope_var->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
-				sc=scope_var->script_type_owner;
+				script_type=scope_var->owner_script_type;
 				is_class_scope=true;
 				is_static=true;
 			}
@@ -57,7 +57,7 @@ namespace zetscript{
 				end_var=NULL;
 				zs_string pre_variable_name="";
 				ScriptFunction *sf_field_initializer=NULL;
-				ScriptType *sc_var_member_extension=sc;
+				ScriptType *sc_var_member_extension=script_type;
 
 				if(sc_var_member_extension==NULL){
 					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
@@ -215,7 +215,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->name.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",script_type->name.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 

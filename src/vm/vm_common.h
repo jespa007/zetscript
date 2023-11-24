@@ -261,7 +261,7 @@ namespace zetscript{
 
 	ScriptFunction * vm_find_native_function(
 		VirtualMachine 		*	_vm
-		,ScriptType 		*	_class_obj // if NULL is MainClass
+		,ScriptType 		*	_class_obj_script_type // if NULL is MainClass
 		,ScriptFunction 	*	_script_function
 		,Instruction 		* 	_instruction // call instruction
 		,bool 					_is_constructor

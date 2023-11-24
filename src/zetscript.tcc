@@ -4,10 +4,10 @@
  */
 
 
-#include 	"script/script_type/ScriptTypeFactory.tcc"
-#include 	"script/script_object/ArrayScriptObject.tcc"
-#include 	"script/script_object/ObjectScriptObject.tcc"
-#include 	"script/script_object/ClassScriptObject.tcc"
+#include <script/script_object/ArrayScriptObject.tcc>
+#include <script/script_object/ClassScriptObject.tcc>
+#include <script/script_object/ObjectScriptObject.tcc>
+#include <script/script_type/ScriptTypeFactory.tcc>
 
 
 
@@ -52,7 +52,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(native_name.c_str()).c_str());
 			}
 
-			if(this->stackElementTo(_stk, script_type->script_type_id, (zs_int *)&ptr_var,error)==false){
+			if(this->stackElementTo(_stk, script_type->id, (zs_int *)&ptr_var,error) == false){
 				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
 						,zs_rtti::demangle(native_name.c_str()).c_str()
 						,error.c_str()
@@ -77,7 +77,7 @@ namespace zetscript{
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,script_type->script_type_id
+				,script_type->id
 			);
 		}	
 
@@ -97,7 +97,7 @@ namespace zetscript{
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,script_type->script_type_id
+				,script_type->id
 				,true
 			);
 		}			
@@ -148,10 +148,10 @@ namespace zetscript{
 			}
 
 			// particular case for zs_float
-			if(script_type->script_type_id==SCRIPT_TYPE_ID_FLOAT_C){
+			if(script_type->id == SCRIPT_TYPE_ID_FLOAT_C){
 				return this->toStackElement((zs_int)&_val,SCRIPT_TYPE_ID_FLOAT_PTR_C);
 			}
-			return this->toStackElement((zs_int)_val,script_type->script_type_id);
+			return this->toStackElement((zs_int)_val,script_type->id);
 		}
 
 

@@ -58,7 +58,7 @@ namespace zetscript{
 		,short registered_line
 	){//, const zs_string & base_class_name=""){
 
-		ScriptType *sc=NULL;
+		ScriptType *script_type=NULL;
 		const char * native_name = typeid( T *).name();
 		//int size=script_types->size();
 		ScriptTypeId script_type_id=SCRIPT_TYPE_ID_INVALID;
@@ -78,29 +78,29 @@ namespace zetscript{
 		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS|ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,name);
 
-		sc = new ScriptType(zs,script_type_id,name,scope,native_name,ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
-		scope->setScriptTypeOwner(sc);
+		script_type = new ScriptType(zs,script_type_id,name,scope,native_name,ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
+		scope->setScriptTypeOwner(script_type);
 
 		// in T there's no script constructor ...
-		sc->idx_function_member_constructor=ZS_UNDEFINED_IDX;
+		script_type->idx_function_member_constructor=ZS_UNDEFINED_IDX;
 		// allow dynamic constructor in function its parameters ...
-		sc->new_native_instance = NULL;
-		sc->delete_native_instance = NULL;
-		script_types->push_back(sc);
+		script_type->new_native_instance = NULL;
+		script_type->delete_native_instance = NULL;
+		script_types->push_back(script_type);
 
 
 		if((_new_native_instance != NULL) && (_delete_native_instance != NULL)){ // it can instanced, not static
-			sc->new_native_instance = (void *)_new_native_instance;
-			sc->delete_native_instance = (void *)_delete_native_instance;
+			script_type->new_native_instance = (void *)_new_native_instance;
+			script_type->delete_native_instance = (void *)_delete_native_instance;
 
 		}else{ // Cannot be instanced so is static
-			sc->properties|=ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
+			script_type->properties|=ZS_SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		sc->script_type_id=(ScriptTypeId)(script_types->size()-1);
+		script_type->id=script_types->size()-1;
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",name.c_str(),zs_rtti::demangle(native_name).c_str());
 
-		return sc;
+		return script_type;
 	}
 
 
@@ -138,8 +138,8 @@ namespace zetscript{
 
 
 		for(int i=0; i < main_class->base_script_type_ids->size(); i++){
-			ScriptType *sc=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
-			if(sc->native_name ==base_class_name_ptr){
+			ScriptType *script_type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
+			if(script_type->native_name ==base_class_name_ptr){
 				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(name).c_str()
 						, zs_rtti::demangle(base_class_name).c_str());
@@ -151,24 +151,24 @@ namespace zetscript{
 
 		// search native types that already inherits type B
 		for(int i=0; i < main_class->base_script_type_ids->size(); i++){
-			ScriptType *sc=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
+			ScriptType *script_type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
 			// check whether type inherits inheritates B
-			if(sc->extendsFrom(base_script_type_id)){
+			if(script_type->extendsFrom(base_script_type_id)){
 				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
 					,zs_rtti::demangle(name).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(name).c_str()
-					,zs_rtti::demangle(sc->name.c_str()).c_str()
+					,zs_rtti::demangle(script_type->name.c_str()).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}
 			// check the viceversa, if B inheritates inherited types of main_class
-			if(base->extendsFrom(sc->script_type_id)){
+			if(base->extendsFrom(script_type->id)){
 				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
 					,zs_rtti::demangle(name).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(name).c_str()
-					, zs_rtti::demangle(sc->name.c_str()).c_str()
+					, zs_rtti::demangle(script_type->name.c_str()).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}

@@ -20,7 +20,7 @@ namespace zetscript{
 
 	public:
 
-		ScriptTypeId						script_type_id; // registered type idx
+		ScriptTypeId						id; // registered type idx
 		zs_string							name;			// info symbol type
 		Scope							*	scope;
 		zs_string 							native_name; 	// type_id().name();
@@ -41,7 +41,7 @@ namespace zetscript{
 		zs_vector<ScriptTypeId>				*   base_script_type_ids; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
-				 ,ScriptTypeId _script_type_id
+				 ,ScriptTypeId _id
 				 , const zs_string & _name
 				 , Scope *_scope
 				 ,const char *  native_name=SCRIPT_TYPE_NAME_SCRIPT_OBJECT
@@ -162,5 +162,5 @@ namespace zetscript{
 	};
 }
 
-#include "ScriptType.tcc"
+#include <script/script_type/ScriptType.tcc>
 

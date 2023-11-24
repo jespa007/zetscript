@@ -84,7 +84,7 @@ int main(int argc, char * argv[]) {
 
 
 	printf("======================================\n\n");
-	printf("Testing script samples\n\n");
+	printf("Testing language samples\n\n");
 	printf("-Script test path: \"%s\"\n\n",ZS_TEST_ALL_SCRIPT_TEST_PATH);
 
 	// test all external tests...

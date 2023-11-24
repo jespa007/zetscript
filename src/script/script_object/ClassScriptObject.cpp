@@ -51,7 +51,7 @@ namespace zetscript{
 				return;
 			}
 
-			if(symbol->properties & ZS_SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+			if(symbol->properties & ZS_SYMBOL_PROPERTY_NATIVE_OBJECT_REF) //if(IS_CLASS_C)
 			{
 				// we know the type object so we assign the pointer ...
 				void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);

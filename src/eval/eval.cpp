@@ -564,7 +564,7 @@ namespace zetscript{
 					Symbol *symbol_member = (Symbol *)sc_sf->scope->symbol_functions->get(j);
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name == sf->name;
-					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_NATIVE_OBJECT_REF?match_names:true);
 					if(
 							(match_names)
 						&& (match_params)
@@ -598,7 +598,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								symbol_sf_foundf->scope->script_type_owner->name)+"::"+symbol_sf_foundf->name);
+								symbol_sf_foundf->scope->owner_script_type->name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:
