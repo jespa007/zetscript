@@ -18,9 +18,9 @@ namespace zetscript{
 		return System::clock();
 	}
 
-	void SystemModule_eval(ZetScript *_zs,StringObject *_so_str_eval,ObjectObject *_oo_param){
+	void SystemModule_eval(ZetScript *_zs,StringObject *_so_str_eval,DictionaryObject *_oo_param){
 		StringObject *so_str_eval=NULL;
-		ObjectObject *oo_param=NULL;
+		DictionaryObject *oo_param=NULL;
 		FunctionParam *function_params=NULL;
 		FunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
@@ -45,7 +45,7 @@ namespace zetscript{
 		// 0. setup scope and parameters
 		if(_oo_param != NULL){//->properties != 0){
 
-			oo_param=_oo_param;//(ObjectObject *)stk_oo_param->value;
+			oo_param=_oo_param;//(DictionaryObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 

@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ObjectObject;
+using zetscript::DictionaryObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 
 // print array contents
-void printObject(ZetScript *_zs,ObjectObject *_object){
+void printObject(ZetScript *_zs,DictionaryObject *_object){
 	printf("Object contents : %s",_object->toString().toConstChar());
 }
 

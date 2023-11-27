@@ -18,7 +18,7 @@ namespace zetscript{
 		//
 		static ObjectIteratorObject * newObjectIteratorObject(
 				ZetScript *_zs
-				, ObjectObject *_so_ref
+				, DictionaryObject *_so_ref
 		);
 
 		//
@@ -28,7 +28,7 @@ namespace zetscript{
 
 		ObjectIteratorObject(
 				ZetScript *_zs
-				,ObjectObject *_so_ref
+				,DictionaryObject *_so_ref
 		);
 		void get();
 		void next();

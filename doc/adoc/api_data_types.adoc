@@ -1611,8 +1611,8 @@ _Object_ defines a the parent class of any object in TypeScript. This type is us
 |TYPE_ID_OBJECT_ARRAY
 |Tells that the object is an instance of  ObjectArray
 
-|TYPE_ID_OBJECT_OBJECT
-|Tells that the object is an instance of  ObjectObject
+|TYPE_ID_DICTIONARY_OBJECT
+|Tells that the object is an instance of  DictionaryObject
 
 |TYPE_ID_OBJECT_CLASS
 |Tells that the object is an instance of  ClassObject
@@ -2078,20 +2078,20 @@ Console output:
 include::../examples/api/types/array_object_tostring_out.txt[]
 ----
 
-==== ObjectObject
+==== DictionaryObject
 
 _ObjectObject_ it defines a array script object.
 
 ===== Contructor
 
-The ObjectObject constructor creates a new object script object. ObjectObject constructor needs a ZetScript context.
+The DictionaryObject constructor creates a new object script object. DictionaryObject constructor needs a ZetScript context.
 
 
 *Syntax*
 
 [source,cpp]
 ----
-ObjectObject(ZetScript *_zs);
+DictionaryObject(ZetScript *_zs);
 ----
 
 [.underline]#Parameters#
@@ -2116,7 +2116,7 @@ include::../examples/api/types/object_object_constructor_out.txt[]
 ===== Member functions
 
 
-====== ObjectObject::set()
+====== DictionaryObject::set()
 
 Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
@@ -2124,7 +2124,7 @@ Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
 [source,cpp]
 ----
-void ObjectObject::set(int _key, _T _element)
+void DictionaryObject::set(int _key, _T _element)
 ----
 
 [.underline]#Template#
@@ -2155,7 +2155,7 @@ Console output:
 include::../examples/api/types/object_object_set_out.txt[]
 ----
 
-====== ObjectObject::elementInstanceOf()
+====== DictionaryObject::elementInstanceOf()
 
 Says whether the element is instance of zetscript data type or a registered type.
 
@@ -2192,7 +2192,7 @@ Console output:
 include::../examples/api/types/object_object_element_instanceof_out.txt[]
 ----
 
-====== ObjectObject::get()
+====== DictionaryObject::get()
 
 Returns element of type _&#x5f;T_ at key __key_.
 
@@ -2240,7 +2240,7 @@ Console output:
 include::../examples/api/types/object_object_get_out.txt[]
 ----
 
-====== ObjectObject::toString()
+====== DictionaryObject::toString()
 
 Returns a string as the object contents in json format.
 
@@ -2384,7 +2384,7 @@ typedef enum{
 
 ===== ZetScript::newObjectObject()
 
-		ObjectObject * newObjectObject();
+		DictionaryObject * newObjectObject();
 
 ===== ZetScript::newArrayObject()
 		ArrayObject * newArrayObject();

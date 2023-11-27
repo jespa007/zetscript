@@ -333,7 +333,7 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			String variable_name,key_id;
 			String error;
-			ObjectObject *so;
+			DictionaryObject *so;
 			StackElement *stk_element=NULL;
 
 			str_current = eval_ignore_blanks(str_current, line);
@@ -349,7 +349,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ObjectObject::newObjectObject(data->zs);
+				so=DictionaryObject::newObjectObject(data->zs);
 				vm_create_shared_object(data->zs->getVirtualMachine(),so);
 
 				if(stk_json_element != data->first_element){

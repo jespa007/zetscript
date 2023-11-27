@@ -3,12 +3,12 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::ObjectObject;
+using zetscript::DictionaryObject;
 using zetscript::StringObject;
 
-void printKeys(ZetScript *_zs,ObjectObject *_object){
+void printKeys(ZetScript *_zs,DictionaryObject *_object){
 
-	// instance new ObjectObject using ZetScript context
+	// instance new DictionaryObject using ZetScript context
 	auto keys=_object->getKeys();
 	printf("keys : [");
 	for(int i=0; i < keys.size(); i++){

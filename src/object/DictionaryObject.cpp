@@ -10,13 +10,13 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ObjectObject * ObjectObject::newObjectObject(ZetScript	*_zs){
-		return new ObjectObject(_zs);
+	DictionaryObject * DictionaryObject::newObjectObject(ZetScript	*_zs){
+		return new DictionaryObject(_zs);
 	}
 
-	ObjectObject * ObjectObject::concat(ZetScript *zs,ObjectObject *o1,ObjectObject *o2){
+	DictionaryObject * DictionaryObject::concat(ZetScript *zs,DictionaryObject *o1,DictionaryObject *o2){
 		//String error;
-		ObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
+		DictionaryObject *obj = ZS_NEW_DICTIONARY_OBJECT(zs);
 
 		// get properties from object o1
 		MapString *map=o1->getMapStringFields();
@@ -32,7 +32,7 @@ namespace zetscript{
 		return obj;
 	}
 
-	void  ObjectObject::append(ZetScript *zs,ObjectObject *o1,ObjectObject *o2){
+	void  DictionaryObject::append(ZetScript *zs,DictionaryObject *o1,DictionaryObject *o2){
 		ZS_UNUSUED_PARAM(zs);
 		String error;
 
@@ -48,13 +48,13 @@ namespace zetscript{
 	//
 	//----------------------------------------------
 
-	ObjectObject::ObjectObject(
+	DictionaryObject::DictionaryObject(
 			ZetScript	*_zs
-	):ContainerObject(_zs, TYPE_ID_OBJECT_OBJECT){
+	):ContainerObject(_zs, TYPE_ID_DICTIONARY_OBJECT){
 		map_fields=new MapString();
 	}
 
-	StackElement * ObjectObject::setStackElementByKeyName(
+	StackElement * DictionaryObject::setStackElementByKeyName(
 			const String &  _key_name
 			//,String & error
 			,StackElement * _stk_src
@@ -86,7 +86,7 @@ namespace zetscript{
 		return stk_dst;
 	}
 
-	StackElement 	* ObjectObject::getStackElementByKeyName(const String &  _key_name){
+	StackElement 	* DictionaryObject::getStackElementByKeyName(const String &  _key_name){
 		StackElement *stk=getBuiltinField(_key_name);
 		if(stk==NULL){
 			// get user field
@@ -100,22 +100,22 @@ namespace zetscript{
 		return stk;
 	}
 
-	bool ObjectObject::exists(const String &  _key_name){
+	bool DictionaryObject::exists(const String &  _key_name){
 		if(map_builtin_fields->exist(_key_name.toConstChar())){
 			return true;
 		}
 		return map_fields->exist(_key_name.toConstChar());
 	}
 
-	MapString *ObjectObject::getMapStringFields(){
+	MapString *DictionaryObject::getMapStringFields(){
 		return map_fields;
 	}
 
-	int	ObjectObject::length(){
+	int	DictionaryObject::length(){
 		return this->map_fields->count();
 	}
 
-	Vector<String> ObjectObject::getKeys(){
+	Vector<String> DictionaryObject::getKeys(){
 		Vector<String> keys;
 		for(auto mi=map_fields->begin();!mi.end();mi.next()){
 				keys.append(mi.key);
@@ -123,7 +123,7 @@ namespace zetscript{
 		return keys;
 	}
 
-	bool ObjectObject::erase(const String &  _property_name/*, const Function *info_function*/){
+	bool DictionaryObject::erase(const String &  _property_name/*, const Function *info_function*/){
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_fields->get(_property_name.toConstChar(),&exists);
 		if(!exists){
@@ -136,7 +136,7 @@ namespace zetscript{
 		return true;
 	}
 
-	void ObjectObject::eraseAll(){
+	void DictionaryObject::eraseAll(){
 
 		for(auto it=map_fields->begin();!it.end();it.next()){
 			StackElement *si=(StackElement *)(it.value);
@@ -145,12 +145,12 @@ namespace zetscript{
 		map_fields->clear();
 	}
 
-	String ObjectObject::toString(){
+	String DictionaryObject::toString(){
 		StackElement stk={(zs_int)this,STACK_ELEMENT_PROPERTY_OBJECT};
 		return json::serialize(zs,&stk,false,false);
 	}
 
-	ObjectObject::~ObjectObject(){
+	DictionaryObject::~DictionaryObject(){
 
 		eraseAll();
 		delete map_fields;

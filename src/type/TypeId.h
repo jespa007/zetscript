@@ -14,7 +14,7 @@
 #define TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
 #define TYPE_NAME_OBJECT_STRING 				"String"
 #define TYPE_NAME_OBJECT_ARRAY 				"Array"
-#define TYPE_NAME_OBJECT_OBJECT 				"Object"
+#define TYPE_NAME_DICTIONARY_OBJECT 				"Object"
 #define TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
 #define TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
 #define TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
@@ -76,7 +76,7 @@ namespace zetscript{
 		TYPE_ID_OBJECT_ARRAY, // Array []
 
 		// Object & type
-		TYPE_ID_OBJECT_OBJECT, //  Object {}
+		TYPE_ID_DICTIONARY_OBJECT, //  Object {}
 		TYPE_ID_OBJECT_CLASS, // class A{}
 
 		//

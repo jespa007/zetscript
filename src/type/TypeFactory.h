@@ -16,7 +16,7 @@
 #define OBJECT_ARRAY(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ARRAY))
 #define OBJECT_ITERATOR_ARRAY(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_ARRAY))
 
-#define OBJECT_OBJECT(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_OBJECT_OBJECT))
+#define DICTIONARY_OBJECT(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_DICTIONARY_OBJECT))
 #define OBJECT_ITERATOR_OBJECT(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(type_factory)									((type_factory->type_factory)->getType(TypeId::TYPE_ID_FUNCTION))
@@ -41,7 +41,7 @@ namespace zetscript{
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
-	class ObjectObject;
+	class DictionaryObject;
 	class Function;
 	class Type;
 	class ZetScript;

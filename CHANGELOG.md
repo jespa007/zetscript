@@ -206,7 +206,7 @@ Solved issues
 - #275 Change VirtualMachine class by struct and C functions  
 - #276 Implement built-in iterators
 - #277 optimize access stk_vm_current 
-- #279 Support array access for ObjectObject 
+- #279 Support array access for DictionaryObject 
 - #281 Console Helper Class 
 - #282 Improve the meaning of printing errors 
 - #284 Seffault when native function returns object as NULL 

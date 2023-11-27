@@ -442,8 +442,8 @@ SET(
 	script/object/ContainerObject.h
 	script/object/ContainerSlot.h
 	script/object/ContainerSlot.h
-	script/object/ObjectObject.h
-	script/object/ObjectObject.tcc
+	script/object/DictionaryObject.h
+	script/object/DictionaryObject.tcc
 	script/object/ObjectObjectZs.h
 	script/object/ObjectIteratorObject.h
 	script/object/ObjectIteratorObjectZs.h

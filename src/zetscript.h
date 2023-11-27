@@ -120,7 +120,7 @@ namespace zetscript{
 		//
 		bool isFilenameAlreadyParsed(const String & filename);
 		//
-		ObjectObject * newObjectObject();
+		DictionaryObject * newObjectObject();
 		StringObject * newStringObject(const String & _str="");
 		ArrayObject * newArrayObject();
 

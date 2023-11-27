@@ -5,12 +5,12 @@ using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 using zetscript::ArrayObject;
-using zetscript::ObjectObject;
+using zetscript::DictionaryObject;
 
 // Definition of the native function interface returnObject
-ObjectObject *returnObject(ZetScript *_zs){
-	// instance new ObjectObject using ZetScript context
-	ObjectObject *object=_zs->newObjectObject();
+DictionaryObject *returnObject(ZetScript *_zs){
+	// instance new DictionaryObject using ZetScript context
+	DictionaryObject *object=_zs->newObjectObject();
 
 	// instance new ArrayObject using ZetScript context
 	ArrayObject *array=_zs->newArrayObject();

@@ -71,7 +71,7 @@ namespace zetscript{
 		cl=type_factory->registerType("System","",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringObject *)>(SystemModule_eval));
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringObject *,ObjectObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringObject *,DictionaryObject *)>(SystemModule_eval));
 		//cl->registerStaticMemberFunction("assertNative",SystemModule_assert);
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
@@ -207,7 +207,7 @@ namespace zetscript{
 				"Object:%i\n"
 				"StringObject:%i\n"
 				"ArrayObject:%i\n"
-				"ObjectObject:%i\n"
+				"DictionaryObject:%i\n"
 				"ClassObject:%i\n"
 				"ContainerSlot:%i\n"
 				,(int)sizeof(zs_char)
@@ -229,7 +229,7 @@ namespace zetscript{
 				, (int)sizeof(Object)
 				, (int)sizeof(StringObject)
 				, (int)sizeof(ArrayObject)
-				, (int)sizeof(ObjectObject)
+				, (int)sizeof(DictionaryObject)
 				, (int)sizeof(ClassObject)
 				, (int)sizeof(ContainerSlot)
 			);
@@ -327,13 +327,13 @@ namespace zetscript{
 			result=TYPE_NAME_OBJECT_STRING;
 		else if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk))
 			result=TYPE_NAME_OBJECT_ARRAY;
-		else if(STACK_ELEMENT_IS_OBJECT_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_OBJECT;
+		else if(STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk))
+			result=TYPE_NAME_DICTIONARY_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk))
 			result=TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING;
 		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk))
 			result=TYPE_NAME_OBJECT_ITERATOR_ARRAY;
-		else if(STACK_ELEMENT_IS_ITERATOR_OBJECT_OBJECT(stk))
+		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_OBJECT(stk))
 			result=TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STACK_ELEMENT_IS_FUNCTION(stk))
 			result=String("fun@")+((Function *)(((Symbol *)stk->value)->ref_ptr))->name;
@@ -843,7 +843,7 @@ namespace zetscript{
 				 break;
 			 case TYPE_ID_OBJECT_ARRAY:
 			 case TYPE_ID_OBJECT_ITERATOR_ARRAY:
-			 case TYPE_ID_OBJECT_OBJECT:
+			 case TYPE_ID_DICTIONARY_OBJECT:
 			 case TYPE_ID_OBJECT_CLASS:
 			 case TYPE_ID_OBJECT_ITERATOR_OBJECT:
 			 case TYPE_ID_OBJECT_STRING:
@@ -1028,8 +1028,8 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-	ObjectObject * ZetScript::newObjectObject(){
-		return ObjectObject::newObjectObject(this);
+	DictionaryObject * ZetScript::newObjectObject(){
+		return DictionaryObject::newObjectObject(this);
 	}
 
 	StringObject * ZetScript::newStringObject(const String & _str){

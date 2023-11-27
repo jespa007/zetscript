@@ -266,7 +266,7 @@ namespace zetscript{
 				default:
 					if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 						ZS_VM_PUSH_STK_BOOLEAN(data->type_factory->scriptTypeInheritsFrom(			//
-								((ObjectObject *)(stk_result_op1->value))->type_id // A
+								((DictionaryObject *)(stk_result_op1->value))->type_id // A
 								,instruction->value_op2		// B
 						));
 					}else{
@@ -525,7 +525,7 @@ namespace zetscript{
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
-				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
+				 	so_aux=ZS_NEW_DICTIONARY_OBJECT(data->zs);
 					vm_create_shared_object(_vm,so_aux);
 					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 					continue;

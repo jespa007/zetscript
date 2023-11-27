@@ -5,7 +5,7 @@
 #pragma once
 
 namespace zetscript{
-	class ObjectObject;
+	class DictionaryObject;
 	class StringObject;
 
 	namespace json{

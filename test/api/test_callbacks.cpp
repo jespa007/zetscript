@@ -48,14 +48,14 @@ void test_callback(
 void test_callback(
 	zetscript::ZetScript *_zs
 	,zetscript::Function *_script_function
-	,zetscript::ObjectObject *_user_params
+	,zetscript::DictionaryObject *_user_params
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = _zs->bindFunction<zetscript::StringObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::ObjectObject *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindFunction<zetscript::StringObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::DictionaryObject *)>(_script_function,__FILE__,__LINE__);
 
 	// call the function with params 1,2,3. The function returns a 'StringObject' ...
 	auto so=script_function(&param1,&param2,&param3,_user_params);
@@ -78,8 +78,8 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 	// bind 'test_callback' receives a 'Function' pointer type
 	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::Function *_script_function)>(test_callback));
 
-	// bind 'test_callback' receives a 'Function' and 'ObjectObject' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::Function *_script_function,zetscript::ObjectObject *_params)>(test_callback));
+	// bind 'test_callback' receives a 'Function' and 'DictionaryObject' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::Function *_script_function,zetscript::DictionaryObject *_params)>(test_callback));
 
 
 	_zs->eval(
@@ -99,7 +99,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 		"			){\n"
 		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
 		"			}"
-		//		2nd parameter: Object with user params ('ObjectObject *' in C aka '{}')
+		//		2nd parameter: Object with user params ('DictionaryObject *' in C aka '{}')
 		"			,{"
 		"				that:this"
 		"			}"

@@ -6,7 +6,7 @@
 
 #include <script/object/ArrayObject.tcc>
 #include <script/object/ClassObject.tcc>
-#include <script/object/ObjectObject.tcc>
+#include <script/object/DictionaryObject.tcc>
 #include <script/type/TypeFactory.tcc>
 
 

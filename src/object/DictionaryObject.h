@@ -5,12 +5,12 @@
 #pragma once
 
 
-#define ZS_NEW_OBJECT_OBJECT(zs) (ObjectObject::newObjectObject(zs))
+#define ZS_NEW_DICTIONARY_OBJECT(zs) (DictionaryObject::newObjectObject(zs))
 
 namespace zetscript{
 
 	class ZetScript;
-	class  ObjectObject:public ContainerObject{
+	class  DictionaryObject:public ContainerObject{
 
 	public:
 
@@ -18,16 +18,16 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ObjectObject * newObjectObject(ZetScript	*_zs);
-		static ObjectObject * concat(ZetScript *zs,ObjectObject *o1,ObjectObject *o2);
-		static void  append(ZetScript *zs,ObjectObject *o1,ObjectObject *o2);
+		static DictionaryObject * newObjectObject(ZetScript	*_zs);
+		static DictionaryObject * concat(ZetScript *zs,DictionaryObject *o1,DictionaryObject *o2);
+		static void  append(ZetScript *zs,DictionaryObject *o1,DictionaryObject *o2);
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
 
-		ObjectObject(ZetScript	*_zs);
+		DictionaryObject(ZetScript	*_zs);
 
 		/**
 		 * setters to set field value
@@ -87,7 +87,7 @@ namespace zetscript{
 
 
 		virtual String toString();
-		virtual ~ObjectObject();
+		virtual ~DictionaryObject();
 
 	protected:
 

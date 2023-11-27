@@ -65,7 +65,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
 
 #define ZS_NO_PARAMS Vector<StackElement>{}
-#define ZS_VM_FUNCTION_TYPE std::function<ObjectObject * (const Vector<ObjectObject *> & param)>
+#define ZS_VM_FUNCTION_TYPE std::function<DictionaryObject * (const Vector<DictionaryObject *> & param)>
 
 #define ZS_VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
@@ -139,7 +139,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 	(\
 		(_container->type_id == TYPE_ID_OBJECT_ARRAY) \
 				   || \
-		(_container->type_id == TYPE_ID_OBJECT_OBJECT) \
+		(_container->type_id == TYPE_ID_DICTIONARY_OBJECT) \
 					|| \
 		(((_container->type_id >= TYPE_ID_OBJECT_CLASS) && _container->isNativeObject())==false) \
 	)

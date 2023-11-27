@@ -93,7 +93,7 @@ namespace zetscript{
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 	const char * k_str_zettype_ptr=typeid(ZetScript *).name();
 
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(DictionaryObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ArrayObject)
 
@@ -237,7 +237,7 @@ namespace zetscript{
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		SCF_REGISTER_CLASS(TYPE_NAME_OBJECT_ARRAY,ArrayObject,TYPE_ID_OBJECT_ARRAY);
-		SCF_REGISTER_CLASS(TYPE_NAME_OBJECT_OBJECT,ObjectObject,TYPE_ID_OBJECT_OBJECT);
+		SCF_REGISTER_CLASS(TYPE_NAME_DICTIONARY_OBJECT,DictionaryObject,TYPE_ID_DICTIONARY_OBJECT);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_CLASS,ClassObject,TYPE_ID_OBJECT_CLASS);
 		// it needs script object type to have zetscript reference
 		// BUILT-IN SCRIPT OBJECTS CLASSES
@@ -339,13 +339,13 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// Object
-		registerStaticMemberFunction<ObjectObject>("clear",&ObjectObjectZs_clear);
-		registerStaticMemberFunction<ObjectObject>("erase",&ObjectObjectZs_erase);
-		registerStaticMemberFunction<ObjectObject>("contains",&ObjectObjectZs_contains);
-		registerStaticMemberFunction<ObjectObject>("extend",&ObjectObjectZs_extend);
-		registerStaticMemberFunction<ObjectObject>("concat",ObjectObject::concat);
-		registerStaticMemberFunction<ObjectObject>("keys",ObjectObjectZs_keys);
-		registerStaticMemberFunction<ObjectObject>("_iter",ObjectObjectZs_iter);
+		registerStaticMemberFunction<DictionaryObject>("clear",&ObjectObjectZs_clear);
+		registerStaticMemberFunction<DictionaryObject>("erase",&ObjectObjectZs_erase);
+		registerStaticMemberFunction<DictionaryObject>("contains",&ObjectObjectZs_contains);
+		registerStaticMemberFunction<DictionaryObject>("extend",&ObjectObjectZs_extend);
+		registerStaticMemberFunction<DictionaryObject>("concat",DictionaryObject::concat);
+		registerStaticMemberFunction<DictionaryObject>("keys",ObjectObjectZs_keys);
+		registerStaticMemberFunction<DictionaryObject>("_iter",ObjectObjectZs_iter);
 
 		// IteratorObject
 		registerMemberFunction<ObjectIteratorObject>("_next",ObjectIteratorObjectZs_next);
@@ -649,8 +649,8 @@ namespace zetscript{
 				so=ArrayObject::newArrayObject(zs);
 				break;
 			// Object
-			case TYPE_ID_OBJECT_OBJECT: //  Object {}
-				so=ObjectObject::newObjectObject(zs);
+			case TYPE_ID_DICTIONARY_OBJECT: //  Object {}
+				so=DictionaryObject::newObjectObject(zs);
 				break;
 
 			default:
@@ -699,7 +699,7 @@ namespace zetscript{
 		if(
 				_type_id == TYPE_ID_OBJECT_STRING
 				|| _type_id == TYPE_ID_OBJECT_ARRAY
-				|| _type_id == TYPE_ID_OBJECT_OBJECT
+				|| _type_id == TYPE_ID_DICTIONARY_OBJECT
 				|| _type_id >= TYPE_ID_MAX
 		){
 			return ((Type *)types->get(_type_id))->isNonInstantiable()==false;

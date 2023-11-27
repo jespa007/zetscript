@@ -55,7 +55,7 @@ namespace zetscript{
 			ZetScript *_zs
 			,Object *_this_object
 			, String & _str_result
-			, ObjectObject *_obj
+			, DictionaryObject *_obj
 			, int _ident
 			, bool _is_formatted
 			,bool _strict_json_format
@@ -251,10 +251,10 @@ namespace zetscript{
 					break;
 				default:
 					if(
-						obj->type_id>=TYPE_ID_OBJECT_OBJECT
+						obj->type_id>=TYPE_ID_DICTIONARY_OBJECT
 					){
 						if(_this_object != obj){ // avoid recursivity
-							serialize_object(_zs,_this_object,_str_result,(ObjectObject *)obj,_ident,_is_formatted,_strict_json_format);
+							serialize_object(_zs,_this_object,_str_result,(DictionaryObject *)obj,_ident,_is_formatted,_strict_json_format);
 						}
 						else{
 							_str_result.append("\"Object@"+String(_this_object->getTypeName())+"\"");
@@ -271,9 +271,9 @@ namespace zetscript{
 
 			if(
 					(_stk->properties & STACK_ELEMENT_PROPERTY_OBJECT)
-				&& (((Object *)(_stk->value))->type_id>=TYPE_ID_OBJECT_OBJECT)
+				&& (((Object *)(_stk->value))->type_id>=TYPE_ID_DICTIONARY_OBJECT)
 			){
-				serialize_object(_zs,(Object *)_stk->value,serialized_stk,(ObjectObject *)(_stk->value),0,_is_formatted,_strict_json_format);
+				serialize_object(_zs,(Object *)_stk->value,serialized_stk,(DictionaryObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{
 				serialize_stk(_zs,NULL,serialized_stk,_stk,0,_is_formatted,_strict_json_format);
 			}

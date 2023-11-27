@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ObjectObject;
+using zetscript::DictionaryObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::MapString;
 
 // c function expects an array of integers and floats
-void paramObjectObject(ZetScript *_zs, ObjectObject *_object){
+void paramObjectObject(ZetScript *_zs, DictionaryObject *_object){
 	printf("Values in object:\n");
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.size();i++){

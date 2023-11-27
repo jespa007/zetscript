@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ObjectObject;
+using zetscript::DictionaryObject;
 
 int main()
 {
@@ -13,10 +13,10 @@ int main()
         "}\n"
  	);
 
-    // It binds 'returnObject' as 'ObjectObject *(void)'
-    auto returnObject=zs.bindFunction<ObjectObject *()>("returnObject");
+    // It binds 'returnObject' as 'DictionaryObject *(void)'
+    auto returnObject=zs.bindFunction<DictionaryObject *()>("returnObject");
 
-    // Calls ZetScript function which it returns 'ObjectObject *' reference
+    // Calls ZetScript function which it returns 'DictionaryObject *' reference
     auto object_object=returnObject();
 
     // Prints its value by console.

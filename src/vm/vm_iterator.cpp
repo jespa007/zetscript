@@ -64,7 +64,7 @@ namespace zetscript{
 
 			int n_args=0;
 
-			// ObjectObject uses static method in order to call iter (i.e Object::iter(o)
+			// DictionaryObject uses static method in order to call iter (i.e Object::iter(o)
 			if((symbol_iter->properties & SYMBOL_PROPERTY_STATIC)!= 0){ //is static
 				n_args=1;
 
@@ -183,12 +183,12 @@ namespace zetscript{
 				)
 			);
 			break;
-			case TYPE_ID_OBJECT_OBJECT: // check key value exists...
+			case TYPE_ID_DICTIONARY_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				String str_op1=((StringObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
 					ObjectObjectZs_contains(
-						data->zs,(ObjectObject *)so_aux,&str_op1
+						data->zs,(DictionaryObject *)so_aux,&str_op1
 					)
 				);
 

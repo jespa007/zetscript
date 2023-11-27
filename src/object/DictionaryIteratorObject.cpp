@@ -9,14 +9,14 @@ namespace zetscript{
 
 	ObjectIteratorObject * ObjectIteratorObject::newObjectIteratorObject(
 			ZetScript *_zs
-			,ObjectObject *_so_ref){
+			,DictionaryObject *_so_ref){
 		return new ObjectIteratorObject(_zs,_so_ref);
 	}
 
 
 	ObjectIteratorObject::ObjectIteratorObject(
 		ZetScript *_zs
-		,ObjectObject *_so_ref
+		,DictionaryObject *_so_ref
 	):RefObjectObject(_zs,_so_ref){
 		type_id=TYPE_ID_OBJECT_ITERATOR_OBJECT;
 		stk_key.setUndefined();
