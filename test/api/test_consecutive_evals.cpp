@@ -34,21 +34,21 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 	_zs->eval("{var d=0;  { var e=1}}\n");
 
 	_zs->eval("var a7=7\n");
-	_zs->eval("var a8=8\n",_show_print?zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE:0);
+	_zs->eval("var a8=8\n",_show_print?zetscript::EVAL_OPTION_PRINT_BYTE_CODE:0);
 
 
 	// Check all vars ordered as at the top should have idx as the end of its symbol has (i.e a1, a2, a3)
 	zetscript::Scope *main_scope=_zs->getScopeFactory()->getMainScope();
 	for(int i=0; i < main_scope->symbol_variables->size(); i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->get(i);
-		zetscript::zs_string str_to_compare="a"+zetscript::zs_strutils::zs_int_to_str(s->idx_position+1);
-		if(_show_print) printf("%s %i\n",s->name.c_str(),(s->idx_position+1));
+		zetscript::String str_to_compare="a"+zetscript::String::intToString(s->idx_position+1);
+		if(_show_print) printf("%s %i\n",s->name.toConstChar(),(s->idx_position+1));
 		if(s->name != str_to_compare){
 			throw new std::runtime_error(
-				zetscript::zs_strutils::format(
+				zetscript::String::format(
 						"Symbol are not ordered ('%s' != '%s')"
-						,s->name.c_str()
-						,str_to_compare.c_str()).c_str()
+						,s->name.toConstChar()
+						,str_to_compare.toConstChar()).toConstChar()
 			);
 		}
 
@@ -62,7 +62,7 @@ void test_anonymous_scopes_no_print(zetscript::ZetScript *_zs){
 
 void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->eval(zetscript::zs_strutils::format(
+	_zs->eval(zetscript::String::format(
 		"class A{\n"
 		"	constructor(){\n"
 		//		should call A::function1 of the instance of var is A
@@ -77,7 +77,7 @@ void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_pr
 		"};\n",_show_print?"true":"false")
 	);
 
-	_zs->eval(zetscript::zs_strutils::format(
+	_zs->eval(zetscript::String::format(
 		"class B extends A{\n"
 		"	constructor(){\n"
 		"		super();\n"

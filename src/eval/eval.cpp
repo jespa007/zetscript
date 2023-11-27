@@ -33,7 +33,7 @@ namespace zetscript{
 			,EvalData *_eval_data_from
 			, const char *  _filename
 			, int _line
-			, ScriptFunction *_sf
+			, Function *_sf
 	){
 		EvalData *eval_data=_eval_data_from;//new EvalData(zs);
 		if(_eval_data_from==NULL){
@@ -43,14 +43,14 @@ namespace zetscript{
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
-		zs_string str_error="";
-		zs_string error_file="";
+		String str_error="";
+		String error_file="";
 		int error_line=-1;
 		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
-		ScriptFunction *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
+		Function *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
 		sf->removeUnusuedScopes();
-		sf->clearScriptFunctionLastCalls();
+		sf->clearFunctionLastCalls();
 
 		if(sf != ZS_MAIN_FUNCTION(eval_data)){ // remove/reset old code
 			scope_info =sf->scope;// ZS_NEW_SCOPE(eval_data,sf->id,ZS_MAIN_SCOPE(eval_data),ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
@@ -78,7 +78,7 @@ namespace zetscript{
 
 		if(_eval_data_from == NULL){
 
-			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->id != ZS_SCRIPT_FUNCTION_EVAL_IDX){ // is anonyomuse function
+			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->id != ZS_FUNCTION_EVAL_IDX){ // is anonyomuse function
 				if(scope_info->symbol_variables->size() == 0){ // remove scope
 					scope_info->markAsUnusued();
 				}
@@ -95,7 +95,7 @@ namespace zetscript{
 
 
 		if(error){
-			ZS_THROW_EXCEPTION_FILE_LINE(error_file.c_str(),error_line,str_error.c_str());
+			ZS_THROW_EXCEPTION_FILE_LINE(error_file.toConstChar(),error_line,str_error.toConstChar());
 		}
 	}
 
@@ -136,7 +136,7 @@ namespace zetscript{
 				);
 
 				// and finally insert pop scope
-				eval_data->current_function->eval_instructions.push_back(
+				eval_data->current_function->eval_instructions.append(
 						new EvalInstruction(BYTE_CODE_POP_SCOPE,0)
 				);
 			}
@@ -221,8 +221,8 @@ namespace zetscript{
 			,const char *s
 			,int & line
 			,  Scope *scope_info
-			, ScriptFunction *sf
-			,ScriptFunctionParam *params
+			, Function *sf
+			,FunctionParam *params
 			, int params_len
 	){
 
@@ -241,7 +241,7 @@ namespace zetscript{
 					,eval_data->current_parsing_file
 					,params[i].line
 					,params[i].name
-					,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?ZS_SYMBOL_PROPERTY_ARG_BY_REF:0
+					,params[i].properties & MSK_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
 				);
 
 			}catch(std::exception & ex){
@@ -305,7 +305,7 @@ namespace zetscript{
 			}else if((directive = is_directive(aux)) != Directive::DIRECTIVE_UNKNOWN){ // eval directive
 				// try directive ...
 				char *start_var,* end_var;
-				zs_string str_symbol;
+				String str_symbol;
 				if(directive != Directive::DIRECTIVE_UNKNOWN){
 					switch(directive){
 					case DIRECTIVE_IMPORT:
@@ -330,32 +330,32 @@ namespace zetscript{
 
 						end_var=aux;
 
-						str_symbol=zs_strutils::copy_from_ptr_diff(start_var,end_var);
+						str_symbol=String::copyFromPtrDiff(start_var,end_var);
 
-						ZS_LOG_DEBUG("import file: %s",str_symbol.c_str());
+						ZS_LOG_DEBUG("import file: %s",str_symbol.toConstChar());
 
 						// save current file info...
-						if(!zs_file::exists(str_symbol)){
+						if(!File::exists(str_symbol)){
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
 								,"Error import: file '%s' not exist"
-								,str_symbol.c_str()
+								,str_symbol.toConstChar()
 							);
 						}
 
 						try{
 							// compile but not execute, it will execute the last eval
-							eval_data->zs->evalFile(str_symbol,ZS_EVAL_OPTION_NO_EXECUTE,eval_data);
-						}catch(zs_exception & ex){
+							eval_data->zs->evalFile(str_symbol,EVAL_OPTION_NO_EXECUTE,eval_data);
+						}catch(Exception & ex){
 							eval_data->error=true;\
 							eval_data->error_file=ex.getFilename();
 							eval_data->error_line=ex.getLine();
-							eval_data->str_error=zs_strutils::format(
+							eval_data->str_error=String::format(
 									"%s \n"
 									ZS_FORMAT_FILE_LINE" from import '%s'"
 									,ex.what()
-									,zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str()
+									,Path::getFilename(current_parsing_file).toConstChar(),line,str_symbol.toConstChar()
 							);
 							return 0;
 						}
@@ -408,18 +408,18 @@ namespace zetscript{
 		return aux;
 	}
 
-	void eval_push_function(EvalData *eval_data,ScriptFunction *script_function){
-		eval_data->eval_functions.push_back(
+	void eval_push_function(EvalData *eval_data,Function *script_function){
+		eval_data->eval_functions.append(
 				eval_data->current_function=new EvalFunction(script_function)
 		);
 	}
 
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
+	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const String & symbol_to_find){
 		ZS_UNUSUED_PARAM(eval_data);
 		return scope->getSymbol(symbol_to_find, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 	}
 
-	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find){
+	Symbol *eval_find_global_symbol(EvalData *eval_data, const String & symbol_to_find){
 		// try find global variable...
 		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
 	}
@@ -427,7 +427,7 @@ namespace zetscript{
 	void eval_pop_current_function(EvalData *eval_data){
 		// delete and popback function information...
 		delete eval_data->current_function;
-		eval_data->eval_functions.pop_back();
+		eval_data->eval_functions.pop();
 
 		eval_data->current_function = NULL;
 		if(eval_data->eval_functions.size() > 0){
@@ -459,11 +459,11 @@ namespace zetscript{
 		return true;
 	}
 
-	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector<zs_int> *order_local_vars){
+	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,Vector<zs_int> *order_local_vars){
 		for(int i=0; i < current_scope->symbol_variables->size(); i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->get(i);
 			lookup_table[s->idx_position]=n_variable++;
-			order_local_vars->push_back(s->idx_position);
+			order_local_vars->append(s->idx_position);
 		}
 
 		auto scopes=current_scope->getScopes();
@@ -476,9 +476,9 @@ namespace zetscript{
 		}
 	}
 
-	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,zs_vector<zs_int> *order_local_vars){
+	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,Vector<zs_int> *order_local_vars){
 
-		ScriptFunction *sf = eval_data->current_function->script_function;
+		Function *sf = eval_data->current_function->script_function;
 
 		int n_local_variable=0;
 		if(eval_all_local_variables_in_scopes_already_sorted(sf->scope,n_local_variable) == true){
@@ -508,9 +508,9 @@ namespace zetscript{
 
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
-		zs_string static_error;
-		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data->script_type_factory,sf->owner_script_type_id);
+		String static_error;
+		Function *sf = eval_data->current_function->script_function;
+		Type *sc_sf = GET_OBJECT_TYPE(eval_data->type_factory,sf->owner_type_id);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
@@ -534,9 +534,9 @@ namespace zetscript{
 		int total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
-		zs_vector<zs_int> order_local_vars;
+		Vector<zs_int> order_local_vars;
 		Symbol *symbol_sf_foundf=NULL;
-		zs_string target_name="";
+		String target_name="";
 
 		int ok=FALSE;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data,&order_local_vars);
@@ -562,9 +562,9 @@ namespace zetscript{
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
 					Symbol *symbol_member = (Symbol *)sc_sf->scope->symbol_functions->get(j);
-					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
+					Function *sf_member=(Function *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name == sf->name;
-					bool match_params=(sf_member->properties & ZS_SYMBOL_PROPERTY_NATIVE_OBJECT_REF?match_names:true);
+					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_NATIVE_OBJECT_REF?match_names:true);
 					if(
 							(match_names)
 						&& (match_params)
@@ -581,7 +581,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->name.c_str()
+							,sc_sf->name.toConstChar()
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -589,16 +589,16 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function of '%s::%s'"
-							,sc_sf->name.c_str()
-							,sf->name.c_str()
+							,sc_sf->name.toConstChar()
+							,sf->name.toConstChar()
 						);
 					}
 				}
 				eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
-						,zs_string(
-								symbol_sf_foundf->scope->owner_script_type->name)+"::"+symbol_sf_foundf->name);
+						,String(
+								symbol_sf_foundf->scope->owner_type->name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:
@@ -681,19 +681,19 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
+			sf->instruction_source_infos.append(new InstructionSourceInfo(instruction_info));
 		}
 
 		if(lookup_sorted_table_local_variables != NULL){
 
 			// update variables symbol...
-			zs_vector<Symbol *> *local_vars_dst=new zs_vector<Symbol *>();
+			Vector<Symbol *> *local_vars_dst=new Vector<Symbol *>();
 
 			for(int i=0; i < sf->local_variables->size(); i++){
 				int idx_var=order_local_vars.get(i);
 				Symbol *s=(Symbol *)sf->local_variables->get(idx_var);
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];
-				local_vars_dst->push_back(s);
+				local_vars_dst->append(s);
 			}
 
 			delete sf->local_variables;

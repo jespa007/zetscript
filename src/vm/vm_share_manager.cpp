@@ -4,14 +4,14 @@
  */
 namespace zetscript{
 
-	void vm_create_shared_script_object(
+	void vm_create_shared_object(
 		VirtualMachine *_vm
-		,ScriptObject *_obj
+		,Object *_obj
 		,VM_ScopeBlock *_vm_scope_block
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
-		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to create shared constant script object");
 		}
 
@@ -31,7 +31,7 @@ namespace zetscript{
 			_node->previous=NULL;
 			_node->next=NULL;
 			_node->data.n_shares=0;
-			_node->data.ptr_script_object_shared=_obj;
+			_node->data.ptr_object_shared=_obj;
 			_node->data.vm_scope_block_where_created=_vm_scope_block;//ZS_VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
@@ -66,14 +66,14 @@ namespace zetscript{
 		}
 	}
 
-	void vm_share_script_object(
+	void vm_share_object(
 		VirtualMachine *_vm
-		,ScriptObject *_obj
+		,Object *_obj
 	){
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
 
-		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to share constant script object");
 		}
 
@@ -92,16 +92,16 @@ namespace zetscript{
 
 			// Mov to shared pointer...
 			vm_deattach_shared_node(_vm,&_node->data.vm_scope_block_where_created->unreferenced_objects,_node);
-			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->id,_node->data.ptr_script_object_shared);
+			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_object_shared->id,_node->data.ptr_object_shared);
 		}
 	}
 
-	void vm_unref_shared_script_object(
+	void vm_unref_shared_object(
 			VirtualMachine 	*	_vm
-			, ScriptObject 	*	_obj
+			, Object 	*	_obj
 			,VM_ScopeBlock 	*	_scope_block
 	){
-		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
+		if(_obj->properties  & OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to unref constant script object");
 		}
 
@@ -121,7 +121,7 @@ namespace zetscript{
 		if(shared_pointer->data.n_shares==0){
 
 			if(_scope_block==NULL){
-				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
+				delete shared_pointer->data.ptr_object_shared; // it deletes shared_object
 				free(shared_pointer);
 			}else{
 				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
@@ -174,8 +174,8 @@ namespace zetscript{
 
 				vm_deattach_shared_node(vm,list,current);
 
-				delete current->data.ptr_script_object_shared;
-				current->data.ptr_script_object_shared=NULL;
+				delete current->data.ptr_object_shared;
+				current->data.ptr_object_shared=NULL;
 				free(current);
 
 				current=next_node;

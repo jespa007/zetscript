@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ScriptFunction;
+using zetscript::Function;
 
 // c function
-void paramScriptFunction(ZetScript *_zs, ScriptFunction *_script_function){
+void paramFunction(ZetScript *_zs, Function *_script_function){
 
 	// bind script function to be callable from C
-    auto function=_zs->bindScriptFunction<void(void)>(_script_function);
+    auto function=_zs->bindFunction<void(void)>(_script_function);
 
     // call script function
     function();
@@ -16,11 +16,11 @@ void paramScriptFunction(ZetScript *_zs, ScriptFunction *_script_function){
 int main(){
 	ZetScript zs;
 
-    zs.registerFunction("paramScriptFunction",paramScriptFunction);
+    zs.registerFunction("paramFunction",paramFunction);
 
     // call c function with string param
     zs.eval(
-        "paramScriptFunction(function(){\n"
+        "paramFunction(function(){\n"
     	"	Console::outln(\"Hello world\");\n"
     	"});"
  	);

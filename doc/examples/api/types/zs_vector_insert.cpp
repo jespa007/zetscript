@@ -1,11 +1,11 @@
 #include "zetscript.h"
-using zetscript::zs_vector;
+using zetscript::Vector;
 int main(){
-	zs_vector<int> vector;
+	Vector<int> vector;
 
-	vector.push_back(1);
-	vector.push_back(2);
-	vector.push_back(4);
+	vector.append(1);
+	vector.append(2);
+	vector.append(4);
 
 	// insert integer 3 at position 2
 	vector.insert(2,3);

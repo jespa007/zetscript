@@ -22,10 +22,10 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return) \
 	for(int i=0; i < _n_return; i++){\
 		StackElement *stk_ret = _stk_return+i;\
-		if(stk_ret->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
+		if(stk_ret->properties & STACK_ELEMENT_PROPERTY_OBJECT){\
+			Object *sv=(Object *)stk_ret->value;\
 			if(sv->shared_pointer == NULL){\
-				vm_create_shared_script_object(_vm,sv);\
+				vm_create_shared_object(_vm,sv);\
 			}\
 		}\
 	}
@@ -33,8 +33,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_EXTRACT_FUNCTION_INFO\
 	{ /* get elements from type */ \
 		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
-		if(symbol->properties & ZS_SYMBOL_PROPERTY_FUNCTION){ \
-			irfs = (ScriptFunction *)symbol->ref_ptr;\
+		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
+			irfs = (Function *)symbol->ref_ptr;\
 			if((irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)\
 					&&\
 			 ((irfs->properties & FUNCTION_PROPERTY_STATIC)==0)\
@@ -64,8 +64,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_SET_BOOLEAN_RETURN(b) 			CURRENT_VM->setBooleanReturnValue(b)
 #define ZS_SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
 
-#define ZS_NO_PARAMS zs_vector<StackElement>{}
-#define ZS_VM_FUNCTION_TYPE std::function<ObjectScriptObject * (const zs_vector<ObjectScriptObject *> & param)>
+#define ZS_NO_PARAMS Vector<StackElement>{}
+#define ZS_VM_FUNCTION_TYPE std::function<ObjectObject * (const Vector<ObjectObject *> & param)>
 
 #define ZS_VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
@@ -137,11 +137,11 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 
 #define ZS_VM_CHECK_CONTAINER_FOR_SLOT(_container) \
 	(\
-		(_container->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY) \
+		(_container->type_id == TYPE_ID_OBJECT_ARRAY) \
 				   || \
-		(_container->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT) \
+		(_container->type_id == TYPE_ID_OBJECT_OBJECT) \
 					|| \
-		(((_container->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
+		(((_container->type_id >= TYPE_ID_OBJECT_CLASS) && _container->isNativeObject())==false) \
 	)
 
 #define ZS_VM_STR_AUX_MAX_LENGTH	100
@@ -161,16 +161,16 @@ namespace zetscript{
 	typedef struct{
 		const char *file;
 		int line;
-		ScriptObject * script_object;
+		Object * object;
 	}InfoLifetimeObject;
 
 	struct VirtualMachineData{
 
 		 bool									vm_error,vm_error_max_stack_reached;
-		 zs_string								vm_error_description;
-		 zs_string								vm_error_file;
+		 String								vm_error_description;
+		 String								vm_error_file;
 		 int 									vm_error_line;
-		 zs_string 								vm_error_callstack_str;
+		 String 								vm_error_callstack_str;
 		 char									vm_str_metamethod_aux[ZS_VM_STR_AUX_MAX_LENGTH];
 		 char									vm_str_aux[2][ZS_VM_STR_AUX_MAX_LENGTH];
 		 VM_ScopeFunction					*	vm_current_scope_function;
@@ -178,19 +178,19 @@ namespace zetscript{
 
 
 		 StackElement     						vm_stack[ZS_VM_STACK_MAX];
-		 zs_vector<InfoLifetimeObject *>		lifetime_object;
+		 Vector<InfoLifetimeObject *>		lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement 						*	vm_stk_current;
-		ScriptFunction  					*	main_function_object;
-		ScriptType 							*	main_class_object;
+		Function  					*	main_function_object;
+		Type 							*	main_class_object;
 
-		const ScriptFunction 				*	current_call_c_function;
+		const Function 				*	current_call_c_function;
 		ZetScript *zs;
-		ScriptFunctionFactory 				*	script_function_factory;
-		ScriptTypeFactory 					*	script_type_factory;
+		FunctionFactory 				*	script_function_factory;
+		TypeFactory 					*	type_factory;
 		ScopeFactory 						*	scope_factory;
-		zs_map_int								cyclic_container_instances;
+		MapInt								cyclic_container_instances;
 
 		VirtualMachineData(ZetScript *_zs){
 			memset(&vm_stack,0,sizeof(vm_stack));
@@ -205,7 +205,7 @@ namespace zetscript{
 			zs=_zs;
 
 			script_function_factory=NULL;
-			script_type_factory=NULL;
+			type_factory=NULL;
 			scope_factory=NULL;
 			vm_error=false;
 			vm_error_line=-1;
@@ -218,7 +218,7 @@ namespace zetscript{
 
 	bool vm_call_metamethod(
 		VirtualMachine			*		_vm
-		,ScriptFunction 		*		_script_function
+		,Function 		*		_script_function
 		,Instruction 			*		_instruction
 		,Metamethod 		_metamethod
 		,StackElement 			*		_stk_result_op1
@@ -229,23 +229,23 @@ namespace zetscript{
 
 	bool vm_inner_call(
 		VirtualMachine 			*	_vm
-		,ScriptFunction			* 	_script_function
+		,Function			* 	_script_function
 		,Instruction			* 	_instruction
-		,ScriptObject 			*	_script_object
-		,ScriptFunction 		*	_script_function_to_call
+		,Object 			*	_object
+		,Function 		*	_script_function_to_call
 		,int 						_n_args
 		,bool 						_stack_return_value=false
 	);
 
 	bool vm_new_object_by_value(
 		VirtualMachine 		*vm
-		,ScriptFunction *calling_function
+		,Function *calling_function
 		,Instruction *instruction
 	);
 
 	void vm_print_main_error(
 		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_script_function
+		,Function 		*	_script_function
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
@@ -259,13 +259,13 @@ namespace zetscript{
 		, Metamethod 		_metamethod
 	);
 
-	ScriptFunction * vm_find_native_function(
+	Function * vm_find_native_function(
 		VirtualMachine 		*	_vm
-		,ScriptType 		*	_class_obj_script_type // if NULL is MainClass
-		,ScriptFunction 	*	_script_function
+		,Type 		*	_class_obj_type // if NULL is MainClass
+		,Function 	*	_script_function
 		,Instruction 		* 	_instruction // call instruction
 		,bool 					_is_constructor
-		,const zs_string 	& 	_symbol_to_find
+		,const String 	& 	_symbol_to_find
 		,StackElement 		*	_stk_arg
 		,uint8_t	 			_n_args
 	);
@@ -273,7 +273,7 @@ namespace zetscript{
 	void vm_assign_container_slot(
 		VirtualMachine *_vm
 		, ContainerSlot *_container_slot
-		, ContainerScriptObject *_src_container_ref
+		, ContainerObject *_src_container_ref
 	);
 
 	void vm_deref_cyclic_references(
@@ -282,10 +282,10 @@ namespace zetscript{
 
 	void vm_remove_container_instance_cyclic_references_map(
 		  VirtualMachine *_vm
-		, ContainerScriptObject *_container_slot
+		, ContainerObject *_container_slot
 	);
 
-	zs_map_int *vm_get_cyclic_container_instances(
+	MapInt *vm_get_cyclic_container_instances(
 			VirtualMachine *_vm
 	);
 

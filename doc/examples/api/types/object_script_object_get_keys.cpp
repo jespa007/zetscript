@@ -3,19 +3,19 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::ObjectScriptObject;
-using zetscript::StringScriptObject;
+using zetscript::ObjectObject;
+using zetscript::StringObject;
 
-void printKeys(ZetScript *_zs,ObjectScriptObject *_object){
+void printKeys(ZetScript *_zs,ObjectObject *_object){
 
-	// instance new ObjectScriptObject using ZetScript context
+	// instance new ObjectObject using ZetScript context
 	auto keys=_object->getKeys();
 	printf("keys : [");
 	for(int i=0; i < keys.size(); i++){
 		if(i>0){
 			printf(",");
 		}
-		printf("\"%s\"",keys.get(i).c_str());
+		printf("\"%s\"",keys.get(i).toConstChar());
 	}
 	printf("]\n");
 }

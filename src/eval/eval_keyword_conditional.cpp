@@ -8,7 +8,7 @@ namespace zetscript{
 
 	typedef struct{
 		EvalInstruction *ei_je_instruction;
-		zs_vector<EvalInstruction *> 		 ei_load_symbols;
+		Vector<EvalInstruction *> 		 ei_load_symbols;
 	}EvalInstructionCase;
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ namespace zetscript{
 		Keyword key_w;
 
 		EvalInstruction *ei_if_jnt;
-		zs_vector<EvalInstruction *>		ei_else_end_jmp;
+		Vector<EvalInstruction *>		ei_else_end_jmp;
 		EvalInstruction *ei_aux;
 		bool end=true;
 
@@ -55,13 +55,13 @@ namespace zetscript{
 
 
 				// insert instruction if evaluated expression
-				eval_data->current_function->eval_instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
+				eval_data->current_function->eval_instructions.append(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 				ei_aux->instruction_source_info.file=eval_data->current_parsing_file;
 				ei_aux->instruction_source_info.line=line;
 
 				ei_if_jnt=ei_aux;
 				int idx_start_block=eval_data->current_function->eval_instructions.size();
-				//ei_jmps.push_back(ei_aux);
+				//ei_jmps.append(ei_aux);
 
 				IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 				if(*aux_p != '{'){
@@ -91,14 +91,14 @@ namespace zetscript{
 
 
 					// we should insert jmp to end conditional chain if/else...
-					eval_data->current_function->eval_instructions.push_back(ei_aux=new EvalInstruction(
+					eval_data->current_function->eval_instructions.append(ei_aux=new EvalInstruction(
 							BYTE_CODE_JMP
 							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							,eval_data->current_function->eval_instructions.size()
 							));
 					ei_if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
 
-					ei_else_end_jmp.push_back(ei_aux);
+					ei_else_end_jmp.append(ei_aux);
 
 					aux_p += strlen(eval_data_keywords[key_w].str);
 
@@ -140,7 +140,7 @@ namespace zetscript{
 	}
 
 
-	void eval_switch_deallocate(zs_vector<EvalInstruction *> & ei_switch_condition,zs_vector<EvalInstructionCase *> & _eic_cases,EvalInstruction **_ei_jmp_default){
+	void eval_switch_deallocate(Vector<EvalInstruction *> & ei_switch_condition,Vector<EvalInstructionCase *> & _eic_cases,EvalInstruction **_ei_jmp_default){
 
 		// deallocate condition
 		for(int i=0; i < ei_switch_condition.size(); i++){
@@ -168,11 +168,11 @@ namespace zetscript{
 	char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 		char *aux_p = (char *)s;
-		zs_string val;
+		String val;
 		Keyword key_w;//,key_w2;
-		zs_vector<EvalInstruction *> 		ei_switch_condition; // switch condition
-		zs_vector<EvalInstructionCase *>	eic_cases; // stores all conditional instructions at begin
-		zs_vector<EvalInstruction *>  		ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
+		Vector<EvalInstruction *> 		ei_switch_condition; // switch condition
+		Vector<EvalInstructionCase *>	eic_cases; // stores all conditional instructions at begin
+		Vector<EvalInstruction *>  		ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
 		EvalInstruction *ei_jmp_default = NULL;
 
 		// check for keyword ...
@@ -236,7 +236,7 @@ namespace zetscript{
 				if(key_w == KEYWORD_CASE){
 					int line_case=line;
 					EvalInstructionCase *eval_instruction_case=new EvalInstructionCase();
-					eic_cases.push_back(eval_instruction_case);
+					eic_cases.append(eval_instruction_case);
 
 					// ignore case
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
@@ -361,8 +361,8 @@ namespace zetscript{
 								,INSTRUCTION_VALUE_OP1_JMP_BREAK
 								,0
 						);
-						eval_data->current_function->eval_instructions.push_back(ei_break_jmp);
-						ei_break_jmps.push_back(ei_break_jmp);
+						eval_data->current_function->eval_instructions.append(ei_break_jmp);
+						ei_break_jmps.append(ei_break_jmp);
 					}
 
 

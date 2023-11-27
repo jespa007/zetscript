@@ -1,7 +1,7 @@
 #include "zetscript.h"
-using zetscript::zs_string;
+using zetscript::String;
 int main(){
-	zs_string string="Hello World";
+	String string="Hello World";
 
 	for(int c=0; c < string.length();c++){
 		printf("%c",string.at(c));

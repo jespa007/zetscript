@@ -64,7 +64,7 @@ else()
 	MESSAGE("-- Float precision: single"  )
 endif()
 
-configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
+configure_file(${PROJECT_SOURCE_DIR}/Config.h.in ${PROJECT_SOURCE_DIR}/base/Config.h)
 
 set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/language" )
 MESSAGE("-- Script test path: " ${ZS_TEST_ALL_SCRIPT_TEST_PATH}  )
@@ -374,29 +374,29 @@ endif()
 SET(
 	HS
 	# Utils
-	util/zs_datetime.h
-	util/zs_dir.h
-	util/zs_file.h
-	util/zs_io.h
-	util/zs_log.h
-	util/zs_map_iterator.h
-	util/zs_map.h
-	util/zs_map_int.h
-	util/zs_map_int_iterator.h
-	util/zs_mem.h
-	util/zs_path.h
-	util/zs_rtti.h
-	util/zs_string.h
-	util/zs_strutils.h
-	util/zs_timespan.h
+	util/DateTime.h
+	util/Directory.h
+	util/File.h
+	util/Console::.h
+	util/Log.h
+	util/MapStringIterator.h
+	util/MapString.h
+	util/MapInt.h
+	util/MapIntIterator.h
+	util/Memory.h
+	util/Path.h
+	util/Rtti.h
+	util/String.h
+	util/String.h
+	util/TimeSpan.h
 	util/zs_util.h
-	util/zs_vector.h
-	util/zs_vector.tcc
-	util/zs_list.tcc
-	util/zs_buffer.h
-	util/zs_system.h
-	util/zs_list.h
-	util/zs_exception.h
+	util/Vector.h
+	util/Vector.tcc
+	util/List.tcc
+	util/Buffer.h
+	util/System.h
+	util/List.h
+	util/Exception.h
 	
 
 	#eval
@@ -421,42 +421,42 @@ SET(
 	script/StackElementMemberProperty.h
 		
 	# script/function	
-	script/script_function/ScriptFunction.h
-	script/script_function/ScriptFunctionFactory.h
-	script/script_function/ScriptFunctionParam.h
-	script/script_function/ScriptFunctionTraits.h
+	script/script_function/Function.h
+	script/script_function/FunctionFactory.h
+	script/script_function/FunctionParam.h
+	script/script_function/FunctionTraits.h
 	
 	# script/type
-	script/script_type/ScriptType.h
-	script/script_type/ScriptTypeId.h
-	script/script_type/ScriptType.tcc
-	script/script_type/ScriptTypeFactory.h
-	script/script_type/ScriptTypeFactory.tcc
+	script/type/Type.h
+	script/type/TypeId.h
+	script/type/Type.tcc
+	script/type/TypeFactory.h
+	script/type/TypeFactory.tcc
 	
 	# script/object
-	script/script_object/RefObjectScriptObject.h
-	script/script_object/ScriptObject.h
-	script/script_object/ClassScriptObject.h
-	script/script_object/ClassScriptObject.tcc
-	script/script_object/MemberFunctionScriptObject.h
-	script/script_object/ContainerScriptObject.h
-	script/script_object/ContainerSlot.h
-	script/script_object/ContainerSlot.h
-	script/script_object/ObjectScriptObject.h
-	script/script_object/ObjectScriptObject.tcc
-	script/script_object/ObjectScriptObjectZs.h
-	script/script_object/ObjectIteratorScriptObject.h
-	script/script_object/ObjectIteratorScriptObjectZs.h
-	script/script_object/StringScriptObject.h
-	script/script_object/StringScriptObjectZs.h
-	script/script_object/StringIteratorScriptObject.h
-	script/script_object/StringIteratorScriptObjectZs.h
-	script/script_object/VarRefScriptObject.h
-	script/script_object/ArrayScriptObject.h
-	script/script_object/ArrayScriptObject.tcc
-	script/script_object/ArrayScriptObjectZs.h
-	script/script_object/ArrayIteratorScriptObject.h
-	script/script_object/ArrayIteratorScriptObjectZs.h
+	script/object/RefObjectObject.h
+	script/object/Object.h
+	script/object/ClassObject.h
+	script/object/ClassObject.tcc
+	script/object/MemberFunctionObject.h
+	script/object/ContainerObject.h
+	script/object/ContainerSlot.h
+	script/object/ContainerSlot.h
+	script/object/ObjectObject.h
+	script/object/ObjectObject.tcc
+	script/object/ObjectObjectZs.h
+	script/object/ObjectIteratorObject.h
+	script/object/ObjectIteratorObjectZs.h
+	script/object/StringObject.h
+	script/object/StringObjectZs.h
+	script/object/StringIteratorObject.h
+	script/object/StringIteratorObjectZs.h
+	script/object/VarRefObject.h
+	script/object/ArrayObject.h
+	script/object/ArrayObject.tcc
+	script/object/ArrayObjectZs.h
+	script/object/ArrayIteratorObject.h
+	script/object/ArrayIteratorObjectZs.h
 	
 			
 	# scope

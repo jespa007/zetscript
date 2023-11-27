@@ -9,7 +9,7 @@ void test_arithmetic_vars(zetscript::ZetScript *_zs, bool _show_print=true) {
 
 	int n_test=0;
 
-	// test declare var int/bool/zs_string/number
+	// test declare var int/bool/String/number
 	if(_show_print) printf("%i. testing primitive var\n",++n_test);
 
 	// decalre vars

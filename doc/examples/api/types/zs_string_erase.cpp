@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main(){
-	zs_string string="Helilo World";
+	String string="Helilo World";
 
 	string.erase(3);
-	printf("string.erase(3) => '%s'\n",string.c_str());
+	printf("string.erase(3) => '%s'\n",string.toConstChar());
 	
 	return 0;
 }

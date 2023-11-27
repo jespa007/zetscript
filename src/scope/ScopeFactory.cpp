@@ -10,23 +10,23 @@ namespace zetscript{
 	//-----------
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
-		this->scopes = new zs_vector<Scope *>;
+		this->scopes = new Vector<Scope *>;
 		main_scope=NULL;
 		idx_clear_checkpoint=0;  // start from MAIN scope
 	}
 
 	void ScopeFactory::init(){
-		main_scope=newScope(ZS_IDX_SCRIPT_FUNCTION_MAIN,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
+		main_scope=newScope(ZS_IDX_FUNCTION_MAIN,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
 		idx_clear_checkpoint=scopes->size();
 	}
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
 		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,_properties);
-		scopes->push_back(scope_node);
+		scopes->append(scope_node);
 		return scope_node;
 	}
 
-	zs_vector<Scope *> 	*		ScopeFactory::getScopes(){
+	Vector<Scope *> 	*		ScopeFactory::getScopes(){
 		return scopes;
 	}
 
@@ -41,7 +41,7 @@ namespace zetscript{
 				// search parent element
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
-					zs_vector<Scope *> *childs=scope->scope_parent->getScopes();
+					Vector<Scope *> *childs=scope->scope_parent->getScopes();
 					for(int i=0; i < childs->size(); i++){
 						Scope *child=(Scope *)childs->get(i);
 						if(child==scope){
@@ -61,7 +61,7 @@ namespace zetscript{
 	void ScopeFactory::clear(){
 		int idx_start = idx_clear_checkpoint;
 
-		zs_string global_symbol="";
+		String global_symbol="";
 
 		for(
 			int v=(int)(scopes->size()-1);

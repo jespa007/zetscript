@@ -24,8 +24,8 @@ namespace zetscript{
 		}
 
 
-		zs_string Instruction::getConstantString(){
-			ScriptObject *obj=NULL;
+		String Instruction::getConstantString(){
+			Object *obj=NULL;
 			StackElement *stk=NULL;
 
 			if((this->byte_code == BYTE_CODE_LOAD_STRING)
@@ -34,7 +34,7 @@ namespace zetscript{
 			){
 
 				stk=(StackElement *)this->value_op2;
-				obj = (ScriptObject *)stk->value;
+				obj = (Object *)stk->value;
 
 			}else{
 				ZS_THROW_EXCEPTION("instruction is not constant string");
@@ -67,15 +67,15 @@ namespace zetscript{
 			return BYTE_CODE_IS_LOAD_CONSTANT(byte_code);
 		}
 
-		zs_string Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
-			zs_string value_op2_string="unknow-value";
+		String Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
+			String value_op2_string="unknow-value";
 
 			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
 			}else if(byte_code==BYTE_CODE_LOAD_INT || (this->properties & INSTRUCTION_PROPERTY_INT)){
-				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
+				value_op2_string=String::intToString(this->value_op2);
 			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_FLOAT)){
-				value_op2_string=zs_strutils::zs_float_to_str(this->getConstantFloat());
+				value_op2_string=String::floatToString(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 				if(_str_with_quotes){
 					value_op2_string="\""+this->getConstantString()+"\"";
@@ -231,7 +231,7 @@ namespace zetscript{
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+0);
 				 case  BYTE_CODE_CONSTRUCTOR_CALL:
 				 case  BYTE_CODE_MEMBER_CALL:
-					 // +1 to pop MemberFunctionScriptObject or MemberFunction for CONSTRUCTOR
+					 // +1 to pop MemberFunctionObject or MemberFunction for CONSTRUCTOR
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:
 					

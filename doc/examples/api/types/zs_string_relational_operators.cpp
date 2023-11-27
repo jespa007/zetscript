@@ -1,8 +1,8 @@
 #include "zetscript.h"
-using zetscript::zs_string;
+using zetscript::String;
 int main(){
-	zs_string string="Hello World";
-	zs_string string2="!!Hello World!!";
+	String string="Hello World";
+	String string2="!!Hello World!!";
 
 	if(string == "Hello World"){
 		printf("string == 'Hello World'\n");

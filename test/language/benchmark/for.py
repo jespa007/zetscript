@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import time
 
-# Map "range" to an efficient range in both Python 2 and 3.
+# MapString "range" to an efficient range in both Python 2 and 3.
 try:
     range = xrange
 except NameError:

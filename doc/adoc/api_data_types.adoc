@@ -3,7 +3,7 @@
 
 This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environments. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
 
-==== zs_int
+==== zetscript::zs_int
 
 Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ZetScript is compiled for 32bits or 64bits. 
 
@@ -14,7 +14,7 @@ Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b
 zetscript::zs_int i=10;
 ----
 
-==== zs_float
+==== zetscript::zs_float
 
 _zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
 
@@ -25,53 +25,53 @@ _zs_float_ type it defines a float variable represented as IEEE-754 floating poi
 zetscript::zs_float f=20.5;
 ----
 
-==== zs_string
+==== zetscript::String
 
-_zs_string_ it defines a string represented a sequence of chars
+_String_ it defines a string represented a sequence of chars
 
 ===== Constructor
 
-The zs_string constructor creates a new zs_tring as empty or initialized with other string or zs_string.
+The String constructor creates a new zs_tring as empty or initialized with other string or String.
 
 *Syntax*
 
 [source,cpp]
 ----
-zs_string();
-zs_string(const char * _s);
-zs_string(const zs_string & _str);
-zs_string(zs_string && _str);
+String();
+String(const char * _s);
+String(const String & _str);
+String(String && _str);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;s_ : A pointer to an array of characters.
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_constructor.cpp[]
+include::../examples/api/types/string_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_constructor_out.txt[]
+include::../examples/api/types/string_constructor_out.txt[]
 ----
 
 ===== Static constants
 
-====== zs_string::n_pos
+====== String::n_pos
 
 npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
-====== zs_string::length()
+====== String::length()
 
 Returns the length of the string, in terms of bytes.
 
@@ -94,18 +94,18 @@ The number of bytes in the string.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_length.cpp[]
+include::../examples/api/types/string_length.cpp[]
 ----
 
 Console output:
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_length_out.txt[]
+include::../examples/api/types/string_length_out.txt[]
 ----
 
 
-====== zs_string::empty()
+====== String::empty()
 
 Returns whether the string is empty.
 
@@ -128,17 +128,17 @@ true if the string length is 0, false otherwise.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_empty.cpp[]
+include::../examples/api/types/string_empty.cpp[]
 ----
 
 Console output:
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_empty_out.txt[]
+include::../examples/api/types/string_empty_out.txt[]
 ----
 
-====== zs_string::c_str()
+====== String::toConstChar()
 
 Returns a pointer to an array that contains a null-terminated sequence of characters (i.e., a C-string) representing the current value of the string object.
 
@@ -146,7 +146,7 @@ Returns a pointer to an array that contains a null-terminated sequence of charac
 
 [source,cpp]
 ----
-const char * c_str() const;
+const char * toConstChar() const;
 ----
 
 [.underline]#Parameters#
@@ -161,17 +161,17 @@ A pointer of characters of the string object's value.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_c_str.cpp[]
+include::../examples/api/types/string_to_const_char.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_c_str_out.txt[]
+include::../examples/api/types/string_to_const_char_out.txt[]
 ----
 
-====== zs_string::operator=()
+====== String::operator=()
 
 Assigns a new value to the string, replacing its current contents.
 
@@ -179,15 +179,15 @@ Assigns a new value to the string, replacing its current contents.
 
 [source,cpp]
 ----
-zs_string& operator=(const zs_string & _str);
-zs_string& operator=(zs_string && _str);
-zs_string& operator=(const char* _s);
+String& operator=(const String & _str);
+String& operator=(String && _str);
+String& operator=(const char* _s);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;s_ : A pointer to an array of characters.
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 
 [.underline]#Return#
 
@@ -197,17 +197,17 @@ zs_string& operator=(const char* _s);
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_operator_assign.cpp[]
+include::../examples/api/types/string_operator_assign.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_operator_assign_out.txt[]
+include::../examples/api/types/string_operator_assign_out.txt[]
 ----
 
-======  zs_string::operator+=()
+======  String::operator+=()
 
 Appends string at the end of current contents.
 
@@ -215,15 +215,15 @@ Appends string at the end of current contents.
 
 [source,cpp]
 ----
-zs_string& operator+=(const zs_string& _string);
-zs_string& operator+=(const char* _string);
-zs_string& operator+=(char _char);
+String& operator+=(const String& _string);
+String& operator+=(const char* _string);
+String& operator+=(char _char);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;s_ : A pointer to an array of characters.
-- _&#95;str_ : zs_string object.
+- _&#95;str_ : String object.
 
 [.underline]#Return#
 
@@ -233,17 +233,17 @@ zs_string& operator+=(char _char);
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_operator_add_assign.cpp[]
+include::../examples/api/types/string_operator_add_assign.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_operator_add_assign_out.txt[]
+include::../examples/api/types/string_operator_add_assign_out.txt[]
 ----
 
-====== zs_string::operator[]()
+====== String::operator[]()
 
 Returns a reference to the character from a position.
 
@@ -267,17 +267,17 @@ The character at the specified position in the string.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_operator_access.cpp[]
+include::../examples/api/types/string_operator_access.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_operator_access_out.txt[]
+include::../examples/api/types/string_operator_access_out.txt[]
 ----
 
-====== zs_string::at()
+====== String::at()
 
 Returns a reference to the character at position __pos_.
 
@@ -301,17 +301,17 @@ The character at the specified position in the string.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_at.cpp[]
+include::../examples/api/types/string_at.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_at_out.txt[]
+include::../examples/api/types/string_at_out.txt[]
 ----
 
-====== zs_string::clear()
+====== String::clear()
 
 Erases the contents of the string.
 
@@ -334,17 +334,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_clear.cpp[]
+include::../examples/api/types/string_clear.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_clear_out.txt[]
+include::../examples/api/types/string_clear_out.txt[]
 ----
 
-====== zs_string::substr()
+====== String::substr()
 
 Returns a new string with its value initialized to a copy of a substring of this object.
 
@@ -352,13 +352,13 @@ Returns a new string with its value initialized to a copy of a substring of this
 
 [source,cpp]
 ----
-zs_string  substr (int _pos = 0, int _len = npos) const;
+String  substr (int _pos = 0, int _len = npos) const;
 ----
 
 [.underline]#Parameters#
 
 - _&#95;pos_ : Position of the first character to be copied as a substring.
-- _&#95;len_ : Number of characters to include in the substring. As default it passes zs_string::npos that indicates it will take all characters until the end of the string.
+- _&#95;len_ : Number of characters to include in the substring. As default it passes String::npos that indicates it will take all characters until the end of the string.
 
 [.underline]#Return#
 
@@ -368,17 +368,17 @@ A string with a substring of this object.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_substr.cpp[]
+include::../examples/api/types/string_substr.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_substr_out.txt[]
+include::../examples/api/types/string_substr_out.txt[]
 ----
 
-======  zs_string::find()
+======  String::find()
 
 Searches the string for the first occurrence of the sequence specified by its arguments.
 
@@ -386,35 +386,35 @@ Searches the string for the first occurrence of the sequence specified by its ar
 
 [source,cpp]
 ----
-int find(const zs_string & _str, int _pos = 0) const;
+int find(const String & _str, int _pos = 0) const;
 int find(const char *_s, int _pos = 0) const;
 ----
 
 [.underline]#Parameters#
 
 - _&#95;s_ :  A pointer to an array of characters.
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 - _&#95;pos_ : Position of the first character in the string to be considered in the search.
 
 [.underline]#Return#
 
-The position of the first character of the first match. If no matches were found, the function returns zs_string::npos
+The position of the first character of the first match. If no matches were found, the function returns String::npos
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_find.cpp[]
+include::../examples/api/types/string_find.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_find_out.txt[]
+include::../examples/api/types/string_find_out.txt[]
 ----
 
-====== zs_string::find_last_of()
+====== String::findLastOf()
 
 Searches the string for the last character that matches any of the characters specified in its arguments.
 
@@ -423,13 +423,13 @@ Searches the string for the last character that matches any of the characters sp
 
 [source,cpp]
 ----
-int find_last_of(const char *_s, int _pos = npos) const;
-int find_last_of(const zs_string & _str, int _pos = npos) const;
+int findLastOf(const char *_s, int _pos = npos) const;
+int findLastOf(const String & _str, int _pos = npos) const;
 ----
 
 [.underline]#Parameters#
 
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 - _&#95;s_ :  A pointer to an array of characters.
 - _&#95;pos_ : Position of the last character in the string to be considered in the search.
 
@@ -442,17 +442,17 @@ The position of the last character that matches. If no matches are found, the fu
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_find_last_of.cpp[]
+include::../examples/api/types/string_find_last_of.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_find_last_of_out.txt[]
+include::../examples/api/types/string_find_last_of_out.txt[]
 ----
 
-====== zs_string::replace()
+====== String::replace()
 
 Replaces the portion of the string.
 
@@ -460,14 +460,14 @@ Replaces the portion of the string.
 
 [source,cpp]
 ----
-zs_string & replace(int _pos, int _len, const zs_string & _to_replace);
+String & replace(int _pos, int _len, const String & _to_replace);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;pos_ : Position of the first character to be replaced.
 - _&#95;len_ : Number of characters to replace. A value of string::npos indicates all characters until the end of the string.
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 
 [.underline]#Return#
 
@@ -477,18 +477,18 @@ zs_string & replace(int _pos, int _len, const zs_string & _to_replace);
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_replace.cpp[]
+include::../examples/api/types/string_replace.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_replace_out.txt[]
+include::../examples/api/types/string_replace_out.txt[]
 ----
 
 
-====== zs_string::append()
+====== String::append()
 
 Appends a character o string at the end of current contents.
 
@@ -499,7 +499,7 @@ Appends a character o string at the end of current contents.
 void append(char _c);
 void append(const char * _s);
 void append(const char *_s, int _len);
-void append(const zs_string & _str);
+void append(const String & _str);
 
 ----
 
@@ -508,7 +508,7 @@ void append(const zs_string & _str);
 - _&#95;c_ : The character to append.
 - _&#95;s_ : A pointer to array of characters.
 - _&#95;len_ : The length of number of characters to copy.
-- _&#95;str_ : A zs_string object.
+- _&#95;str_ : A String object.
 
 
 [.underline]#Return#
@@ -519,18 +519,18 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_append.cpp[]
+include::../examples/api/types/string_append.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_append_out.txt[]
+include::../examples/api/types/string_append_out.txt[]
 ----
 
 
-====== zs_string::erase()
+====== String::erase()
 
 Erases part of the string, reducing its length.
 
@@ -555,18 +555,18 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_erase.cpp[]
+include::../examples/api/types/string_erase.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_erase_out.txt[]
+include::../examples/api/types/string_erase_out.txt[]
 ----
 
 
-====== zs_string::insert()
+====== String::insert()
 
 Inserts additional characters into the string right before the character indicated by _&#x5f;pos_.
 
@@ -575,14 +575,14 @@ Inserts additional characters into the string right before the character indicat
 [source,cpp]
 ----
 void insert(int _pos, char _char);
-void insert(int _pos, const zs_string & _string);
+void insert(int _pos, const String & _string);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;pos_ : Position of the first character to insert.
 - _&#95;c_ : The character to insert.
-- _&#95;str_ : The characters from zs_string object to insert.
+- _&#95;str_ : The characters from String object to insert.
 
 [.underline]#Return#
 
@@ -592,19 +592,19 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_insert.cpp[]
+include::../examples/api/types/string_insert.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_insert_out.txt[]
+include::../examples/api/types/string_insert_out.txt[]
 ----
 
 ===== Static functions
 
-====== zs_string::operator+()
+====== String::operator+()
 
 Returns a new string object with its value being the concatenation of the characters in left operand followed by those of right operand.
 
@@ -612,18 +612,18 @@ Returns a new string object with its value being the concatenation of the charac
 
 [source,cpp]
 ----
-friend zs_string operator+(const zs_string & _s1, const zs_string &_s2);
-friend zs_string operator+(const zs_string & _s1, const char *_s2);
-friend zs_string operator+(const char * _s1, const zs_string & _s2);
+friend String operator+(const String & _s1, const String &_s2);
+friend String operator+(const String & _s1, const char *_s2);
+friend String operator+(const char * _s1, const String & _s2);
 
-friend zs_string operator+(const zs_string & _s1, char _s2);
-friend zs_string operator+(char  _s1, const zs_string & _s2);
+friend String operator+(const String & _s1, char _s2);
+friend String operator+(char  _s1, const String & _s2);
 ----
 
 [.underline]#Parameters#
 
-- _&#95;s1_ : A char, pointer to array of characters or zs_string object as left operand.
-- _&#95;s2_ : A char, pointer to array of characters or zs_string object as right operand.
+- _&#95;s1_ : A char, pointer to array of characters or String object as left operand.
+- _&#95;s2_ : A char, pointer to array of characters or String object as right operand.
 
 [.underline]#Return#
 
@@ -633,35 +633,35 @@ A string whose value is the concatenation of &#95;s1 and &#95;s2.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_operator_add.cpp[]
+include::../examples/api/types/string_operator_add.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_operator_add_out.txt[]
+include::../examples/api/types/string_operator_add_out.txt[]
 ----
 
 ====== Relational operators
 
-zs_string implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operation between the left operand and right operand.
+String implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operation between the left operand and right operand.
 
 *Syntax*
 
 [source,cpp]
 ----
-friend bool operator _REL_OPERATOR_(const zs_string & _s1, const zs_string &_s2);
-friend bool operator _REL_OPERATOR_(const zs_string & _s1, const char *_s2);
-friend bool operator _REL_OPERATOR_(const char * _s1, const zs_string & _s2);
+friend bool operator _REL_OPERATOR_(const String & _s1, const String &_s2);
+friend bool operator _REL_OPERATOR_(const String & _s1, const char *_s2);
+friend bool operator _REL_OPERATOR_(const char * _s1, const String & _s2);
 ----
 
 Where &#95;REL_OPERATOR&#95; can be *==* or *!=*
 
 [.underline]#Parameters#
 
-- _&#95;s1_ : A pointer to array of characters or zs_string object as left operand.
-- _&#95;s2_ : A pointer to array of characters or zs_string object as right operand.
+- _&#95;s1_ : A pointer to array of characters or String object as left operand.
+- _&#95;s2_ : A pointer to array of characters or String object as right operand.
 
 [.underline]#Return#
 
@@ -671,43 +671,43 @@ true if satisfies the condition &#95;s1 _R &#95;s2 and false otherwise.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_string_relational_operators.cpp[]
+include::../examples/api/types/string_relational_operators.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_string_relational_operators_out.txt[]
+include::../examples/api/types/string_relational_operators_out.txt[]
 ----
 
-==== zs_vector
+==== zetscript::Vector
 
-_zs_vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
+_Vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
 
 
 ===== Constructor
 
-The zs_vector constructor creates a new zs_vector as empty or initialized with other zs_vector.
+The Vector constructor creates a new Vector as empty or initialized with other Vector.
 
 [source,cpp]
 ----
-zs_vector();
-zs_vector(const zs_vector & _vector);
+Vector();
+Vector(const Vector & _vector);
 ----
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_constructor.cpp[]
+include::../examples/api/types/vector_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_constructor_out.txt[]
+include::../examples/api/types/vector_constructor_out.txt[]
 ----
 
 [.underline]#Parameters#
@@ -716,13 +716,13 @@ include::../examples/api/types/zs_vector_constructor_out.txt[]
 
 ===== Static constants
 
-====== zs_vector::n_pos
+====== Vector::n_pos
 
 npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
-====== zs_vector::push_back()
+====== Vector::push()
 
 Appends an element at the end of current contents.
 
@@ -730,7 +730,7 @@ Appends an element at the end of current contents.
 
 [source,cpp]
 ----
-bool 		push_back( const _T & _element);
+bool 		push( const _T & _element);
 ----
 
 [.underline]#Parameters#
@@ -745,10 +745,10 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_push_back.cpp[]
+include::../examples/api/types/vector_push.cpp[]
 ----
 
-====== zs_vector::size()
+====== Vector::length()
 
 Returns the number of elements of the vector. 
 
@@ -756,7 +756,7 @@ Returns the number of elements of the vector.
 
 [source,cpp]
 ----
-int	size() const;
+int	length() const;
 ----
 
 [.underline]#Parameters#
@@ -771,17 +771,17 @@ The number of elements in the vector.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_size.cpp[]
+include::../examples/api/types/vector_length.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_size_out.txt[]
+include::../examples/api/types/vector_length_out.txt[]
 ----
 
-====== zs_vector::set()
+====== Vector::set()
 
 Replaces the element from a position.
 
@@ -805,10 +805,10 @@ none
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_set.cpp[]
+include::../examples/api/types/vector_set.cpp[]
 ----
 
-====== zs_vector::get()
+====== Vector::get()
 
 Returns a reference to the element from a position.
 
@@ -831,17 +831,17 @@ The element at the specified position in the vector.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_get.cpp[]
+include::../examples/api/types/vector_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_get_out.txt[]
+include::../examples/api/types/vector_get_out.txt[]
 ----
 
-====== zs_vector::pop_back()
+====== Vector::pop()
 
 Returns the last element by copy and erases the last element.
 
@@ -849,7 +849,7 @@ Returns the last element by copy and erases the last element.
 
 [source,cpp]
 ----
-void    		pop_back();
+void    		pop();
 ----
 
 [.underline]#Parameters#
@@ -864,17 +864,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_pop_back.cpp[]
+include::../examples/api/types/vector_pop_back.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_pop_back_out.txt[]
+include::../examples/api/types/vector_pop_back_out.txt[]
 ----
 
-====== zs_vector::operator=()
+====== Vector::operator=()
 
 Replaces current content by the set of elements from other vector.
 
@@ -882,7 +882,7 @@ Replaces current content by the set of elements from other vector.
 
 [source,cpp]
 ----
-zs_vector& operator=(const zs_vector& _vector);		
+Vector& operator=(const Vector& _vector);		
 ----
 
 [.underline]#Parameters#
@@ -897,18 +897,18 @@ zs_vector& operator=(const zs_vector& _vector);
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_operator_assign.cpp[]
+include::../examples/api/types/vector_operator_assign.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_operator_assign_out.txt[]
+include::../examples/api/types/vector_operator_assign_out.txt[]
 ----
 
 
-====== zs_vector::erase()
+====== Vector::erase()
 
 Erases an element from a position.
 
@@ -931,17 +931,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_erase.cpp[]
+include::../examples/api/types/vector_erase.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_erase_out.txt[]
+include::../examples/api/types/vector_erase_out.txt[]
 ----
 
-====== zs_vector::concat()
+====== Vector::concat()
 
 Copies all elements from other vector at the end of current contents.
 
@@ -949,7 +949,7 @@ Copies all elements from other vector at the end of current contents.
 
 [source,cpp]
 ----
-void 		concat(const zs_vector<_T>  & _vector);
+void 		concat(const Vector<_T>  & _vector);
 ----
 
 [.underline]#Parameters#
@@ -964,17 +964,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_concat.cpp[]
+include::../examples/api/types/vector_concat.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_concat_out.txt[]
+include::../examples/api/types/vector_concat_out.txt[]
 ----
 
-====== zs_vector::insert()        
+====== Vector::insert()        
 
 Inserts an element or copies all elements of other vector from a position.
 
@@ -983,14 +983,14 @@ Inserts an element or copies all elements of other vector from a position.
 [source,cpp]
 ----
 void 		insert(int _pos,const _T & _element);
-void 		insert(int _pos,const zs_vector<_T>  & _vector, int _len=npos);
+void 		insert(int _pos,const Vector<_T>  & _vector, int _len=npos);
 ----
 
 [.underline]#Parameters#
 
 - _&#95;pos_ : Position of the first element to insert.
 - _&#95;vector_ : The elements of vector source to insert.
-- _&#95;len_ : The number of elements to insert. A value of zs_vector::npos indicates all elements until the end of the vector.
+- _&#95;len_ : The number of elements to insert. A value of Vector::npos indicates all elements until the end of the vector.
 
 [.underline]#Return#
 
@@ -1000,17 +1000,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_insert.cpp[]
+include::../examples/api/types/vector_insert.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_insert_out.txt[]
+include::../examples/api/types/vector_insert_out.txt[]
 ----
 
-====== zs_vector::clear()
+====== Vector::clear()
 
 Erases the contents of the vector.
 
@@ -1033,17 +1033,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_clear.cpp[]
+include::../examples/api/types/vector_clear.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_clear_out.txt[]
+include::../examples/api/types/vector_clear_out.txt[]
 ----
 
-====== zs_vector::resize()
+====== Vector::resize()
 
 Resizes the vector by a length.
 
@@ -1066,18 +1066,18 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_resize.cpp[]
+include::../examples/api/types/vector_resize.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_resize_out.txt[]
+include::../examples/api/types/vector_resize_out.txt[]
 ----
 
 
-====== zs_vector::data()
+====== Vector::data()
 
 Returns the pointer to the array of the elements.
 
@@ -1100,14 +1100,14 @@ A pointer of elements of the vector.
 
 [source,cpp]
 ----
-include::../examples/api/types/zs_vector_data.cpp[]
+include::../examples/api/types/vector_data.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zs_vector_data_out.txt[]
+include::../examples/api/types/vector_data_out.txt[]
 ----
 
 ==== ByteCode
@@ -1480,9 +1480,9 @@ Here there's a meaning of each byte code
 |In operator
 |====
 
-==== ScriptType
+==== Type
 
-ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
+Type is an type managed by ZetScript that defines a builtin or registered script type. Type has the following fields.
 
 - id: The script type id
 - name: The script type name
@@ -1493,10 +1493,10 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 |====
 |Name |Description
 
-|SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		
+|TYPE_PROPERTY_C_OBJECT_REF		
 |It tells script type is native
 
-|SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
+|TYPE_PROPERTY_NON_INSTANTIABLE	
 |it tells script type is static or not instantiable
 
 |====
@@ -1571,16 +1571,16 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |Its value a zs_int as the index of a defined or registered Class
 
 |STACK_ELEMENT_PROPERTY_FUNCTION
-|Its value is *Symbol &#42;* as the symbol that refers a *ScriptFunction &#42;* of a function in _ref_ptr_ field
+|Its value is *Symbol &#42;* as the symbol that refers a *Function &#42;* of a function in _ref_ptr_ field
 
 |STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION
-|Its value is *Symbol &#42;* as the symbol that refererences a *ScriptFunction &#42;* of a member function in _ref_ptr_ field
+|Its value is *Symbol &#42;* as the symbol that refererences a *Function &#42;* of a member function in _ref_ptr_ field
 
 |STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY
 |Its value is a *StackElementMemberProperty &#42;*
 
-|STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
-|Its value is a *ScriptObject &#42;*
+|STACK_ELEMENT_PROPERTY_OBJECT
+|Its value is a *Object &#42;*
 
 |STACK_ELEMENT_PROPERTY_CONTAINER_SLOT
 |Its value is a *ContainerSlot &#42;*
@@ -1594,28 +1594,28 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |====
 
 
-==== ScriptObject
+==== Object
 
-_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
+_Object_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _Object_ type has the following fields:
 
-- script_type_id: The script type representated by the instance of script object. ZetScript it register primitive objects as which script_type_ids matches with the following,
+- type_id: The script type representated by the instance of script object. ZetScript it register primitive objects as which type_ids matches with the following,
 
 [cols="1d,2m,2d"]
 |====
 
 |Name|Description
 
-|SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING
-|Tells that the object is an instance of StringScriptObject
+|TYPE_ID_OBJECT_STRING
+|Tells that the object is an instance of StringObject
 
-|SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
-|Tells that the object is an instance of  ScriptObjectArray
+|TYPE_ID_OBJECT_ARRAY
+|Tells that the object is an instance of  ObjectArray
 
-|SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
-|Tells that the object is an instance of  ObjectScriptObject
+|TYPE_ID_OBJECT_OBJECT
+|Tells that the object is an instance of  ObjectObject
 
-|SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
-|Tells that the object is an instance of  ClassScriptObject
+|TYPE_ID_OBJECT_CLASS
+|Tells that the object is an instance of  ClassObject
 |====
 
 - properties: A integer value composed of the following mask values,  
@@ -1623,24 +1623,24 @@ _ScriptObject_ defines a the parent class of any object in TypeScript. This type
 [cols="1d,2m,2d"]
 |====
 |Name |Mask value|Description
-|SCRIPT_OBJECT_PROPERTY_CONSTANT
-|Tells if ScriptObject represents a constant object
+|OBJECT_PROPERTY_CONSTANT
+|Tells if Object represents a constant object
 
 |====
 
-==== StringScriptObject
+==== StringObject
 
-_StringScriptObject_ defines a string script object.
+_StringObject_ defines a string script object.
 
 ===== Constructor
 
-The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a ZetScript context.
+The StringObject constructor creates a new string script object as empty or initialized with a string.  The StringObject constructor needs a ZetScript context.
 
 *Syntax*
 
 [source,cpp]
 ----
-StringScriptObject(ZetScript *_zs, const zs_string & _str="");
+StringObject(ZetScript *_zs, const String & _str="");
 ----
 
 [.underline]#Parameters#
@@ -1652,19 +1652,19 @@ StringScriptObject(ZetScript *_zs, const zs_string & _str="");
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_constructor.cpp[]
+include::../examples/api/types/string_object_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_constructor_out.txt[]
+include::../examples/api/types/string_object_constructor_out.txt[]
 ----
 
 ===== Member functions
 
-====== StringScriptObject::set()
+====== StringObject::set()
 
 Replaces current string value.
 
@@ -1672,7 +1672,7 @@ Replaces current string value.
 
 [source,cpp]
 ----
-void set(const zs_string & _str);
+void set(const String & _str);
 ----
 
 [.underline]#Parameters#
@@ -1687,25 +1687,25 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_set.cpp[]
+include::../examples/api/types/string_object_set.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_set_out.txt[]
+include::../examples/api/types/string_object_set_out.txt[]
 ----
 
-====== StringScriptObject::get()
+====== StringObject::get()
 
-Gets its current string value as zs_string or array of characters
+Gets its current string value as String or array of characters
 
 *Syntax*
 
 [source,cpp]
 ----
-const zs_string & get();
+const String & get();
 ----
 
 [.underline]#Parameters#
@@ -1714,23 +1714,23 @@ None
 
 [.underline]#Return#
 
-Its contents as string as zs_string
+Its contents as string as String
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_get.cpp[]
+include::../examples/api/types/string_object_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_get_out.txt[]
+include::../examples/api/types/string_object_get_out.txt[]
 ----
 
-====== StringScriptObject::getConstChar()
+====== StringObject::getConstChar()
 
 Gets its current string value as array of characters
 
@@ -1753,17 +1753,17 @@ Its contents as string as array of characters
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_get_const_char.cpp[]
+include::../examples/api/types/string_object_get_const_char.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_get_const_char_out.txt[]
+include::../examples/api/types/string_object_get_const_char_out.txt[]
 ----
 
-====== StringScriptObject::toString()
+====== StringObject::toString()
 
 Gets its current string value
 
@@ -1771,7 +1771,7 @@ Gets its current string value
 
 [source,cpp]
 ----
-zs_string toString();
+String toString();
 ----
 
 [.underline]#Parameters#
@@ -1780,23 +1780,23 @@ None
 
 [.underline]#Return#
 
-Its contents as string as zs_string
+Its contents as string as String
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_to_string.cpp[]
+include::../examples/api/types/string_object_to_string.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_to_string_out.txt[]
+include::../examples/api/types/string_object_to_string_out.txt[]
 ----
 
-====== StringScriptObject::length()
+====== StringObject::length()
 
 Returns the length of the string, in terms of bytes.
 
@@ -1817,29 +1817,29 @@ The number of bytes in the string.
 
 [source,cpp]
 ----
-include::../examples/api/types/string_script_object_length.cpp[]
+include::../examples/api/types/string_object_length.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_script_object_length_out.txt[]
+include::../examples/api/types/string_object_length_out.txt[]
 ----
 		
-==== ArrayScriptObject
+==== ArrayObject
 
-_ArrayScriptObject_ it defines a array script object.
+_ArrayObject_ it defines a array script object.
 
 ===== Contructor
 
-The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ZetScript context.
+The ArrayObject constructor creates a new array script object. ArrayObject constructor needs a ZetScript context.
 
 *Syntax*
 
 [source,cpp]
 ----
-ArrayScriptObject(ZetScript *_zs);
+ArrayObject(ZetScript *_zs);
 ----
 
 [.underline]#Parameters#
@@ -1850,19 +1850,19 @@ ArrayScriptObject(ZetScript *_zs);
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_constructor.cpp[]
+include::../examples/api/types/array_object_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_constructor_out.txt[]
+include::../examples/api/types/array_object_constructor_out.txt[]
 ----
 
 ===== Member functions
 
-====== ArrayScriptObject::push()
+====== ArrayObject::push()
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
@@ -1889,17 +1889,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_push.cpp[]
+include::../examples/api/types/array_object_push.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_push_out.txt[]
+include::../examples/api/types/array_object_push_out.txt[]
 ----
 
-====== ArrayScriptObject::length()
+====== ArrayObject::length()
 
 Returns the number of the elements of the array.
 
@@ -1930,7 +1930,7 @@ Console output:
 include::../examples/api/types/string_array_object_length_out.txt[]
 ----
 
-====== ArrayScriptObject::set()
+====== ArrayObject::set()
 
 Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
 
@@ -1960,17 +1960,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_set.cpp[]
+include::../examples/api/types/array_object_set.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_set_out.txt[]
+include::../examples/api/types/array_object_set_out.txt[]
 ----
 
-====== ArrayScriptObject::elementInstanceOf()
+====== ArrayObject::elementInstanceOf()
 
 Says whether the element at a position is instance of zetscript data type or a registered type.
 
@@ -1997,18 +1997,18 @@ Returns true if the element at position _&#95;pos_ it type or extends from type 
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_element_instanceof.cpp[]
+include::../examples/api/types/array_object_element_instanceof.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_element_instanceof_out.txt[]
+include::../examples/api/types/array_object_element_instanceof_out.txt[]
 ----
 
 
-====== ArrayScriptObject::get()
+====== ArrayObject::get()
 
 Returns a reference element of type _&#x5f;T_ at position __pos_.
 
@@ -2035,17 +2035,17 @@ The element at the specified position in the array.
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_get.cpp[]
+include::../examples/api/types/array_object_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_get_out.txt[]
+include::../examples/api/types/array_object_get_out.txt[]
 ----
 
-====== ArrayScriptObject::toString()
+====== ArrayObject::toString()
 
 Returns a string as the array contents in json format.
 
@@ -2053,7 +2053,7 @@ Returns a string as the array contents in json format.
 
 [source,cpp]
 ----
-zs_string toString();
+String toString();
 ----
 
 [.underline]#Parameters#
@@ -2068,30 +2068,30 @@ A string of the array contents in json format.
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_tostring.cpp[]
+include::../examples/api/types/array_object_tostring.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_tostring_out.txt[]
+include::../examples/api/types/array_object_tostring_out.txt[]
 ----
 
-==== ObjectScriptObject
+==== ObjectObject
 
-_ObjectScriptObject_ it defines a array script object.
+_ObjectObject_ it defines a array script object.
 
 ===== Contructor
 
-The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ZetScript context.
+The ObjectObject constructor creates a new object script object. ObjectObject constructor needs a ZetScript context.
 
 
 *Syntax*
 
 [source,cpp]
 ----
-ObjectScriptObject(ZetScript *_zs);
+ObjectObject(ZetScript *_zs);
 ----
 
 [.underline]#Parameters#
@@ -2102,21 +2102,21 @@ ObjectScriptObject(ZetScript *_zs);
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_constructor.cpp[]
+include::../examples/api/types/object_object_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_constructor_out.txt[]
+include::../examples/api/types/object_object_constructor_out.txt[]
 ----
 
 
 ===== Member functions
 
 
-====== ObjectScriptObject::set()
+====== ObjectObject::set()
 
 Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
@@ -2124,7 +2124,7 @@ Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
 [source,cpp]
 ----
-void ObjectScriptObject::set(int _key, _T _element)
+void ObjectObject::set(int _key, _T _element)
 ----
 
 [.underline]#Template#
@@ -2145,17 +2145,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_set.cpp[]
+include::../examples/api/types/object_object_set.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_set_out.txt[]
+include::../examples/api/types/object_object_set_out.txt[]
 ----
 
-====== ObjectScriptObject::elementInstanceOf()
+====== ObjectObject::elementInstanceOf()
 
 Says whether the element is instance of zetscript data type or a registered type.
 
@@ -2163,7 +2163,7 @@ Says whether the element is instance of zetscript data type or a registered type
 
 [source,cpp]
 ----
-bool 	elementInstanceOf<_T>(const zs_string & _key);
+bool 	elementInstanceOf<_T>(const String & _key);
 ----
 
 [.underline]#Template#
@@ -2182,17 +2182,17 @@ Returns true if the element at key _&#95;key_ it type or extends from type _&#95
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_element_instanceof.cpp[]
+include::../examples/api/types/object_object_element_instanceof.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_element_instanceof_out.txt[]
+include::../examples/api/types/object_object_element_instanceof_out.txt[]
 ----
 
-====== ObjectScriptObject::get()
+====== ObjectObject::get()
 
 Returns element of type _&#x5f;T_ at key __key_.
 
@@ -2200,10 +2200,10 @@ Returns element of type _&#x5f;T_ at key __key_.
 
 [source,cpp]
 ----
-_T 	get(const zs_string & _key);
+_T 	get(const String & _key);
 ----
 
-====== ArrayScriptObject::get()
+====== ArrayObject::get()
 
 Returns a reference element at key.
 
@@ -2211,7 +2211,7 @@ Returns a reference element at key.
 
 [source,cpp]
 ----
-_T 	get(const zs_string & _key);
+_T 	get(const String & _key);
 ----
 
 [.underline]#Template#
@@ -2230,17 +2230,17 @@ The element at the specified position in the array.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_get.cpp[]
+include::../examples/api/types/object_object_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_get_out.txt[]
+include::../examples/api/types/object_object_get_out.txt[]
 ----
 
-====== ObjectScriptObject::toString()
+====== ObjectObject::toString()
 
 Returns a string as the object contents in json format.
 
@@ -2248,7 +2248,7 @@ Returns a string as the object contents in json format.
 
 [source,cpp]
 ----
-zs_string toString();
+String toString();
 ----
 
 [.underline]#Parameters#
@@ -2263,17 +2263,17 @@ A string of the object contents in json format.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_tostring.cpp[]
+include::../examples/api/types/object_object_tostring.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_tostring_out.txt[]
+include::../examples/api/types/object_object_tostring_out.txt[]
 ----
 
-====== ArrayScriptObject::getKeys()
+====== ArrayObject::getKeys()
 
 Returns a vector of strings as the keys of the Object.
 
@@ -2281,7 +2281,7 @@ Returns a vector of strings as the keys of the Object.
 
 [source,cpp]
 ----
-zs_vector<zs_string> getKeys();
+Vector<String> getKeys();
 ----
 
 [.underline]#Parameters#
@@ -2296,19 +2296,19 @@ A vector of strings as the keys of the Object.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_script_object_get_keys.cpp[]
+include::../examples/api/types/object_object_get_keys.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_script_object_get_keys_out.txt[]
+include::../examples/api/types/object_object_get_keys_out.txt[]
 ----
 
-==== ClassScriptObject
+==== ClassObject
 
-_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+_ClassObject_ it a subclass of _ObjectObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
 
 
 
@@ -2316,9 +2316,9 @@ template<typename _C>
 _C to();
 
 
-==== ScriptFunction
+==== Function
 
-_ScriptFunction_ it defines a function object that contains function information. 
+_Function_ it defines a function object that contains function information. 
 
 - id: id from factory
 - name: function name
@@ -2326,8 +2326,8 @@ _ScriptFunction_ it defines a function object that contains function information
 
 
 		// script type
-		int 				return_script_type_id; 		// idx return type
-		int					owner_script_type_id; 				// which type belongs to...
+		int 				return_type_id; 		// idx return type
+		int					owner_type_id; 				// which type belongs to...
 
 		uint16_t			properties;
 
@@ -2343,13 +2343,13 @@ typedef enum{
 
 
 ===== ZetScript::eval()
-		StackElement	eval(const zs_string & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const String & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 
-		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 
 
 ===== ZetScript::evalFile()
-		StackElement	evalFile(const zs_string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	evalFile(const String & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
 
 ===== ZetScript::intToStackElement()
@@ -2369,52 +2369,52 @@ typedef enum{
 		_C stackElementTo(StackElement   _stk);
 
 ===== ZetScript::stackElementToString()
-		zs_string		stackElementToString(StackElement _stk,const zs_string & _format="");
+		String		stackElementToString(StackElement _stk,const String & _format="");
 
 ===== ZetScript::stackElementToStringTypeOf()
-		zs_string		stackElementToStringTypeOf(StackElement _stk);
+		String		stackElementToStringTypeOf(StackElement _stk);
 
 ===== ZetScript::toStackElement()
 		template<typename _C>
 		StackElement	toStackElement( _C _val);
 
-===== newStringScriptObject();
+===== newStringObject();
 
-		StringScriptObject * newStringScriptObject(const zs_string & _str="");
+		StringObject * newStringObject(const String & _str="");
 
-===== ZetScript::newObjectScriptObject()
+===== ZetScript::newObjectObject()
 
-		ObjectScriptObject * newObjectScriptObject();
+		ObjectObject * newObjectObject();
 
-===== ZetScript::newArrayScriptObject()
-		ArrayScriptObject * newArrayScriptObject();
+===== ZetScript::newArrayObject()
+		ArrayObject * newArrayObject();
 
-===== ZetScript::newClassScriptObject()
+===== ZetScript::newClassObject()
 
 		template<typename _C>
-		ClassScriptObject * newClassScriptObject(_C  *_instance=NULL);
+		ClassObject * newClassObject(_C  *_instance=NULL);
 
 
 ===== ZetScript::registerConstant()
 
 
-		void registerConstant(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const String & var_name, int value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
 		// register object
-		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
+		StackElement * registerStkConstantStringObject(const String & _key,const String & _value);
 
-		StackElement * getStkConstantStringObject(const zs_string & _key);
+		StackElement * getStkConstantStringObject(const String & _key);
 
 
 ===== ZetScript::registerType()
 
 		template<typename T>
-		ScriptType * registerType(
-				const zs_string & name
+		Type * registerType(
+				const String & name
 				, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
 				, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
@@ -2424,13 +2424,13 @@ typedef enum{
 ===== ZetScript::registerFunction()
 
 		template <typename F>
-		void registerFunction( const zs_string & _name_script_function,F ptr_function)
+		void registerFunction( const String & _name_script_function,F ptr_function)
 
 *Syntax*
 
 [source,cpp]
 ----
-void registerFunction( const zs_string & _function_name,F _c_function, const char *_registered_file="",short _registered_line=-1);
+void registerFunction( const String & _function_name,F _c_function, const char *_registered_file="",short _registered_line=-1);
 ----
 
 [.underline]#Parameters#
@@ -2459,7 +2459,7 @@ void registerFunction( const zs_string & _function_name,F _c_function, const cha
 
 		template <typename T,typename F>
 		void	registerMemberFunction(
-				const zs_string & _name_script_function
+				const String & _name_script_function
 				,F function_type
 				 , const char *_registered_file=""
 				,short _registered_line=-1
@@ -2469,7 +2469,7 @@ void registerFunction( const zs_string & _function_name,F _c_function, const cha
 
 		template <typename T,typename F>
 		void	registerConstMemberProperty(
-				const zs_string & _property_name
+				const String & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
@@ -2480,8 +2480,8 @@ void registerFunction( const zs_string & _function_name,F _c_function, const cha
 
 		template <typename T,typename F>
 		void	registerMemberPropertyMetamethod(
-				const zs_string & _property_name
-				,const zs_string & _metamethod_name
+				const String & _property_name
+				,const String & _metamethod_name
 				,F _ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
@@ -2490,25 +2490,25 @@ void registerFunction( const zs_string & _function_name,F _c_function, const cha
 ===== ZetScript::registerStaticMemberFunction()
 
 		template <typename T,typename F>
-		void registerStaticMemberFunction(const zs_string & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1);
+		void registerStaticMemberFunction(const String & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1);
 
 ===== ZetScript::unrefLifetimeObject()        
 
-		void unrefLifetimeObject(ScriptObject *so);
+		void unrefLifetimeObject(Object *so);
 
-===== ZetScript::bindScriptFunction()        
-
-		template <  typename F>
-		std::function<F> bindScriptFunction(const zs_string & function_access, const char *_file="", int _line=-1);
+===== ZetScript::bindFunction()        
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(MemberFunctionScriptObject *_sf, const char *_file="", int _line=-1);
+		std::function<F> bindFunction(const String & function_access, const char *_file="", int _line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(ScriptFunction *_sf, ScriptObject *_calling_object, const char *_file="", int _line=-1);
+		std::function<F> bindFunction(MemberFunctionObject *_sf, const char *_file="", int _line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(ScriptFunction *_sf, const char *_file="", int _line=-1);
+		std::function<F> bindFunction(Function *_sf, Object *_calling_object, const char *_file="", int _line=-1);
+
+		template <  typename F>
+		std::function<F> bindFunction(Function *_sf, const char *_file="", int _line=-1);
 
 
 ===== ZetScript::clear()

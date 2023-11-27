@@ -12,7 +12,7 @@ int main()
  	);
 
     // It binds 'paramBoolean' as '(void *)(bool *)'
-    auto paramBoolean=zs.bindScriptFunction<void(bool *)>("paramBoolean");
+    auto paramBoolean=zs.bindFunction<void(bool *)>("paramBoolean");
 
     // Prepare parameter values 
     bool value=true;

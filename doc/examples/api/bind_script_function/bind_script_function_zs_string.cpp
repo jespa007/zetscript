@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main()
 {
@@ -12,11 +12,11 @@ int main()
         "}\n"
  	);
 
-    auto add=zs.bindScriptFunction<zs_string(zs_string *,zs_string *)>("add");
-    zs_string s1="Hello";
-    zs_string s2="World";
+    auto add=zs.bindFunction<String(String *,String *)>("add");
+    String s1="Hello";
+    String s2="World";
 
-    printf("result : %s\n", add(&s1,&s2).c_str());
+    printf("result : %s\n", add(&s1,&s2).toConstChar());
 
  	return 0;
 }

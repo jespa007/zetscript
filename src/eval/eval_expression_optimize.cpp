@@ -5,7 +5,7 @@
 #define ZS_MAX_REGISTER_LENGTH	128
 
 #define ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(_file,_line,_message,...) \
-	ZS_THROW_EXCEPTION(zs_strutils::format_file_line(_file,_line,_message,__VA_ARGS__).c_str())
+	ZS_THROW_EXCEPTION(String::formatFileLine(_file,_line,_message,__VA_ARGS__).toConstChar())
 
 
 #define ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
@@ -29,9 +29,9 @@
 			eval_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant arithmetic operation %s %s %s"\
-			,i1->getConstantValueOp2ToString().c_str()\
+			,i1->getConstantValueOp2ToString().toConstChar()\
 			,ZS_STR(ARITHMETIC_OP)\
-			,i2->getConstantValueOp2ToString().c_str());\
+			,i2->getConstantValueOp2ToString().toConstChar());\
 	}
 
 
@@ -52,16 +52,16 @@
 		result_op_bool=ZS_READ_INTPTR_FLOAT(i1->value_op2)__COMPARE_OP__ ZS_READ_INTPTR_FLOAT(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if( i1->byte_code == BYTE_CODE_LOAD_STRING && i2->byte_code==BYTE_CODE_LOAD_STRING){\
-		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
+		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().toConstChar(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().toConstChar());\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
 			eval_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant compare operation %s %s %s"\
-			,i1->getConstantValueOp2ToString().c_str()\
+			,i1->getConstantValueOp2ToString().toConstChar()\
 			,ZS_STR(__COMPARE_OP__)\
-			,i2->getConstantValueOp2ToString().c_str()\
+			,i2->getConstantValueOp2ToString().toConstChar()\
 		);\
 	}
 
@@ -74,9 +74,9 @@
 			 eval_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant bitwise operation %s %s %s"\
-			,i1->getConstantValueOp2ToString().c_str()\
+			,i1->getConstantValueOp2ToString().toConstChar()\
 			,ZS_STR(BINARY_OP)\
-			,i2->getConstantValueOp2ToString().c_str()\
+			,i2->getConstantValueOp2ToString().toConstChar()\
 		);\
 	}
 
@@ -89,9 +89,9 @@
 			eval_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant boolean operation %s %s %s"\
-			,i1->getConstantValueOp2ToString().c_str()\
+			,i1->getConstantValueOp2ToString().toConstChar()\
 			,ZS_STR(LOGIC_OP)\
-			,i2->getConstantValueOp2ToString().c_str()\
+			,i2->getConstantValueOp2ToString().toConstChar()\
 		);\
 	}
 
@@ -130,7 +130,7 @@ namespace zetscript{
 		 }
 
 		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
-		 if(eval_data->script_type_factory->getScriptType(i1->symbol_name)!=NULL){
+		 if(eval_data->type_factory->getType(i1->symbol_name)!=NULL){
 			return false;
 		}
 
@@ -142,7 +142,7 @@ namespace zetscript{
 			if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol_name)) != NULL){
 				load_byte_code=BYTE_CODE_LOAD_LOCAL;
 				load_value_op2=symbol_found->idx_position;
-				if((symbol_found->properties & (ZS_SYMBOL_PROPERTY_ARG_BY_REF)) == ZS_SYMBOL_PROPERTY_ARG_BY_REF){
+				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
 					load_byte_code=BYTE_CODE_LOAD_REF;
 				}
 			}else { // if global or not found cannot be optimized
@@ -150,17 +150,17 @@ namespace zetscript{
 			}
 		}else if(i1->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
 			if(load_value_op2 == ZS_UNDEFINED_IDX){
-				ScriptType *sc=NULL;
+				Type *sc=NULL;
 				if(
 					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
-					&& (	scope->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN)
+					&& (	scope->owner_type->id != TYPE_ID_CLASS_MAIN)
 					   // is function member
 					){ // type members are defined as functions
-					sc=scope->owner_script_type;
+					sc=scope->owner_type;
 				}
 
 				if(sc != NULL){
-					symbol_found = sc->getSymbolVariableMember(i1->symbol_name.c_str());
+					symbol_found = sc->getSymbolVariableMember(i1->symbol_name.toConstChar());
 				}
 
 				if(symbol_found == NULL){
@@ -191,8 +191,8 @@ namespace zetscript{
 		zs_float  result_op_float=0;
 		zs_int result_op_int=0;
 		bool	result_op_bool=false;
-		zs_string result_op_str="";
-		zs_string str_constant_key="";
+		String result_op_str="";
+		String str_constant_key="";
 		EvalInstruction *result_instruction=NULL;
 		ByteCode result_bc=BYTE_CODE_INVALID;
 		Instruction *i1=&ei1->vm_instruction;
@@ -209,15 +209,15 @@ namespace zetscript{
 		case BYTE_CODE_ADD: // int & int/int & float/float&float
 
 			if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
-				result_op_str=zs_strutils::format("%s%s"
-						,i1->getConstantString().c_str()
-						,i2->byte_code==BYTE_CODE_LOAD_STRING?i2->getConstantString().c_str():i2->getConstantValueOp2ToString().c_str());
+				result_op_str=String::format("%s%s"
+						,i1->getConstantString().toConstChar()
+						,i2->byte_code==BYTE_CODE_LOAD_STRING?i2->getConstantString().toConstChar():i2->getConstantValueOp2ToString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}
 			else if(i1->isConstant() && i2->byte_code == BYTE_CODE_LOAD_STRING){
-				result_op_str=zs_strutils::format("%s%s"
-						,i1->byte_code==BYTE_CODE_LOAD_STRING?i1->getConstantString().c_str():i1->getConstantValueOp2ToString().c_str()
-						,i2->getConstantString().c_str());
+				result_op_str=String::format("%s%s"
+						,i1->byte_code==BYTE_CODE_LOAD_STRING?i1->getConstantString().toConstChar():i1->getConstantValueOp2ToString().toConstChar()
+						,i2->getConstantString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}else{
 				ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(+);
@@ -259,8 +259,8 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant arithmetic operation %s / %s"
-					,i1->getConstantValueOp2ToString().c_str()
-					,i2->getConstantValueOp2ToString().c_str()
+					,i1->getConstantValueOp2ToString().toConstChar()
+					,i2->getConstantValueOp2ToString().toConstChar()
 				);
 			}
 			break;
@@ -293,8 +293,8 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant arithmetic operation %s % %s"
-					,i1->getConstantValueOp2ToString().c_str()
-					,i2->getConstantValueOp2ToString().c_str()
+					,i1->getConstantValueOp2ToString().toConstChar()
+					,i2->getConstantValueOp2ToString().toConstChar()
 				);
 			}
 			break;
@@ -343,10 +343,10 @@ namespace zetscript{
 			break;
 		case BYTE_CODE_IN:
 			if(INSTRUCTION_BYTE_CODE_IS_LOAD_INT(i1) && INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i2)){
-				result_op_bool=strchr(i2->getConstantString().c_str(),i1->getConstantInt()) != NULL;
+				result_op_bool=strchr(i2->getConstantString().toConstChar(),i1->getConstantInt()) != NULL;
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}else if(INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i1) && INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i2)){
-				result_op_bool=zs_strutils::contains(i2->getConstantString().c_str(),i1->getConstantString().c_str());
+				result_op_bool=String::contains(i2->getConstantString().toConstChar(),i1->getConstantString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}
 			else{
@@ -354,8 +354,8 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant operation %s in %s"
-					,i1->getConstantValueOp2ToString().c_str()
-					,i2->getConstantValueOp2ToString().c_str()
+					,i1->getConstantValueOp2ToString().toConstChar()
+					,i2->getConstantValueOp2ToString().toConstChar()
 				);
 			}
 			break;
@@ -364,9 +364,9 @@ namespace zetscript{
 				eval_data->current_parsing_file
 				,token_operator->line
 				,"Invalid constant operation %s %s %s"
-				,i1->getConstantValueOp2ToString().c_str()
+				,i1->getConstantValueOp2ToString().toConstChar()
 				,ByteCodeHelper::getByteCodeOperatorName(byte_code)
-				,i2->getConstantValueOp2ToString().c_str()
+				,i2->getConstantValueOp2ToString().toConstChar()
 			);
 			break;
 		}
@@ -389,7 +389,7 @@ namespace zetscript{
 			);
 			break;
 		case BYTE_CODE_LOAD_STRING:
-			str_constant_key=zs_string("\"")+result_op_str+"\"";
+			str_constant_key=String("\"")+result_op_str+"\"";
 			result_instruction=new EvalInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
@@ -412,7 +412,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,Scope *scope_info
 			,TokenNode   *token_operation
-			, zs_vector<EvalInstruction *> *eval_instructions
+			, Vector<EvalInstruction *> *eval_instructions
 	){
 		int size_instructions=eval_instructions->size();
 		EvalInstruction *instruction=NULL;

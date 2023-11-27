@@ -2,7 +2,7 @@
 
 using zetscript::ZetScript;
 using zetscript::zs_float;
-using zetscript::ClassScriptObject;
+using zetscript::ClassObject;
 
 // C++ class to be registered
 class Number{
@@ -29,11 +29,11 @@ void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
 
-// C function that returns classScriptObject
-ClassScriptObject *returnNumber(ZetScript *_zs){
+// C function that returns classObject
+ClassObject *returnNumber(ZetScript *_zs){
 
 	// Define script class object
-	ClassScriptObject *class_script_object=NULL;
+	ClassObject *class_object=NULL;
 
 	// Instances number
 	Number *number=new Number();
@@ -41,11 +41,11 @@ ClassScriptObject *returnNumber(ZetScript *_zs){
 	// initializes value
 	number->value=10;
 
-	// instance new ClassScriptObject using ZetScript context and number instance
-	class_script_object=_zs->newClassScriptObject(number);
+	// instance new ClassObject using ZetScript context and number instance
+	class_object=_zs->newClassObject(number);
 
 	// return class script object
-    return class_script_object;
+    return class_object;
 }
 
 int main(){
@@ -57,7 +57,7 @@ int main(){
 	// register property getter Number::value
 	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
-	// register C function that returns Number ClassScriptObject
+	// register C function that returns Number ClassObject
     zs.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console

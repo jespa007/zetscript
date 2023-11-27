@@ -57,7 +57,7 @@ typedef enum:unsigned short {
 	 (properties) & INSTRUCTION_PROPERTY_INT ? STACK_ELEMENT_PROPERTY_INT \
 	:(properties) & INSTRUCTION_PROPERTY_BOOL ? STACK_ELEMENT_PROPERTY_BOOL \
 	:(properties) & INSTRUCTION_PROPERTY_FLOAT ? STACK_ELEMENT_PROPERTY_FLOAT \
-	:(properties) & INSTRUCTION_PROPERTY_STRING ? (STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT | STACK_ELEMENT_PROPERTY_READ_ONLY) \
+	:(properties) & INSTRUCTION_PROPERTY_STRING ? (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_READ_ONLY) \
 	:0
 
 #define INSTRUCTION_GET_PARAMETER_COUNT(instruction) 	((instruction)->value_op1 & 0x0f)
@@ -106,12 +106,12 @@ namespace zetscript{
 		 ,uint16_t _properties=0
 		 );
 
-		zs_string getConstantString();
+		String getConstantString();
 		zs_float getConstantFloat();
 		zs_int getConstantInt();
 		bool isConstant();
 
-		zs_string getConstantValueOp2ToString( bool _str_with_quotes=true);
+		String getConstantValueOp2ToString( bool _str_with_quotes=true);
 
 
 	};

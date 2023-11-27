@@ -73,7 +73,7 @@ void test_arithmetic_constants(zetscript::ZetScript *_zs, bool _show_print=true)
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(_zs,4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(_zs,5,4.0); // op1 > op2
 
-	if(_show_print) printf("%i. testing zs_string...\n",++n_test);
+	if(_show_print) printf("%i. testing String...\n",++n_test);
 	TEST_ARITHMETIC_ASSIGNRING_EXPRESSION(_zs,"test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_ASSIGNRING_EXPRESSION(_zs,"test_",+,"-100"); // concatenate -int
 	TEST_ARITHMETIC_ASSIGNRING_EXPRESSION(_zs,"test_",+,"100.000000"); // concatenate float

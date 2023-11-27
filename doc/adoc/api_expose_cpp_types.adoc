@@ -19,7 +19,7 @@ To register a non instantible type it's done calling _ZetScript::registerType_ s
 *Syntax*
 [source,cpp]
 ----
-ScriptType * registerType<_Type>(const zs_string & _class_name);
+Type * registerType<_Type>(const String & _class_name);
 ----
 
 [.underline]#Template# 
@@ -32,7 +32,7 @@ ScriptType * registerType<_Type>(const zs_string & _class_name);
 
 [.underline]#Returns# 
 
-A _ScriptType_ object
+A _Type_ object
 
 *Example*
 
@@ -100,7 +100,7 @@ To register instantiable type it's done also with _ZetScript::registerType_ but,
 *Syntax*
 [source,cpp]
 ----
-ScriptType * registerType<_Type>(const zs_string & _class_name, RegisteredType * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs, RegisteredType * _this));
+Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs, RegisteredType * _this));
 ----
 
 [.underline]#Template# 
@@ -126,7 +126,7 @@ void RegisteredType_delete(ZetScript *_zs, RegisteredType *_this);
 
 [.underline]#Returns# 
 
-A _ScriptType_ object
+A _Type_ object
 
 *Example*
 
@@ -266,7 +266,7 @@ To register a member function it has to create and register a C function with a 
 
 As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _zs_string_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
+As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, ObjectObject or new instance/reference of a registered type.
 
 *Syntax*
 
@@ -282,7 +282,7 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be void, bool, zs_int,zs_float, zs_string,  a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, String,  a new instance of _StringObject_, _ArrayObject_, ObjectObject or new instance/reference of a registered type
 
 [.underline]#Parameters# 
 
@@ -297,7 +297,7 @@ After the member function is defined it has to be registered with _ZetScript::re
 *Syntax*
 [source,cpp]
 ----
-void registerMemberFunction<RegisteredType>(const zs_string & __member_function_name_, Function _function);
+void registerMemberFunction<RegisteredType>(const String & __member_function_name_, Function _function);
 ----
 
 [.underline]#Types# 
@@ -362,7 +362,7 @@ To register a static member function it has to create and register a C function 
 
 As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _zs_string_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
+As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, ObjectObject or new instance/reference of a registered type.
 
 *Syntax*
 
@@ -378,7 +378,7 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be _void_, _bool_, _zs_int_, _zs_float_, _zs_string_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
+- _ReturnType_: Return type can be _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, ObjectObject or new instance/reference of a registered type.
 
 [.underline]#Parameters# 
 
@@ -392,7 +392,7 @@ After the constructor function is defined it has to be registered with _ZetScrip
 *Syntax*
 [source,cpp]
 ----
-void registerStaticMemberFunction<RegisteredType>(const zs_string & _static_member_name, Function _function);
+void registerStaticMemberFunction<RegisteredType>(const String & _static_member_name, Function _function);
 ----
 
 [.underline]#Types# 

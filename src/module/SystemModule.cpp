@@ -15,21 +15,21 @@ namespace zetscript{
 
 	zs_float SystemModule_clock(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
-		return zs_system::clock();
+		return System::clock();
 	}
 
-	void SystemModule_eval(ZetScript *_zs,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
-		StringScriptObject *so_str_eval=NULL;
-		ObjectScriptObject *oo_param=NULL;
-		ScriptFunctionParam *function_params=NULL;
-		ScriptFunctionParam **function_params_ptr=NULL;
+	void SystemModule_eval(ZetScript *_zs,StringObject *_so_str_eval,ObjectObject *_oo_param){
+		StringObject *so_str_eval=NULL;
+		ObjectObject *oo_param=NULL;
+		FunctionParam *function_params=NULL;
+		FunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
-		zs_string str_param_name;
-		ScriptFunction *sf_eval=NULL;
-		zs_vector<StackElement *> stk_params;
+		String str_param_name;
+		Function *sf_eval=NULL;
+		Vector<StackElement *> stk_params;
 		StackElement **stk_params_data=NULL;
 		const char *str_start=NULL;
-		zs_string str_unescaped_source="";
+		String str_unescaped_source="";
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int n_ret_args=0;
@@ -45,25 +45,25 @@ namespace zetscript{
 		// 0. setup scope and parameters
 		if(_oo_param != NULL){//->properties != 0){
 
-			oo_param=_oo_param;//(ObjectScriptObject *)stk_oo_param->value;
+			oo_param=_oo_param;//(ObjectObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
-				function_params=new ScriptFunctionParam[function_params_len];
+				function_params=new FunctionParam[function_params_len];
 				function_params_ptr=&function_params;
 
 				if(function_params!=NULL){
 					int i=0;
-					zs_map *fields=oo_param->getMapFields();
+					MapString *fields=oo_param->getMapStringFields();
 
 					for(auto it=fields->begin(); !it.end(); it.next()){
 						StackElement *stk=((StackElement *)it.value);
-						function_params[i]=ScriptFunctionParam(it.key);
-						stk_params.push_back(stk);
+						function_params[i]=FunctionParam(it.key);
+						stk_params.append(stk);
 
-						if(stk->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
+						if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 							// inc number of ref as standard in pass object args
-							((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
+							((Object *)stk->value)->shared_pointer->data.n_shares++;
 						}
 
 						i++;
@@ -75,16 +75,16 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		zs_string  name=zs_strutils::format("__eval@_%i__",n_eval_function++);
-		sf_eval=new	ScriptFunction(
+		String  name=String::format("__eval@_%i__",n_eval_function++);
+		sf_eval=new	Function(
 				_zs
-				,ZS_SCRIPT_FUNCTION_EVAL_IDX
-				,SCRIPT_TYPE_ID_CLASS_MAIN
+				,ZS_FUNCTION_EVAL_IDX
+				,TYPE_ID_CLASS_MAIN
 				,-1
 				,name
 				,function_params_ptr
 				,function_params_len
-				,SCRIPT_TYPE_ID_INVALID
+				,TYPE_ID_INVALID
 				,0
 				,0
 		);
@@ -96,7 +96,7 @@ namespace zetscript{
 		// 2. register arg symbols
 		// catch parameters...
 		if(function_params_len > 0){
-			zs_map *fields=oo_param->getMapFields();
+			MapString *fields=oo_param->getMapStringFields();
 
 			for(auto it=fields->begin(); !it.end(); it.next()){
 
@@ -112,8 +112,8 @@ namespace zetscript{
 			}
 		}
 
-		str_unescaped_source=zs_strutils::unescape(so_str_eval->toString());
-		str_start=str_unescaped_source.c_str();
+		str_unescaped_source=String::unescape(so_str_eval->toString());
+		str_start=str_unescaped_source.toConstChar();
 
 		// 3. Call zetscript->eval this function
 		try{
@@ -126,7 +126,7 @@ namespace zetscript{
 					,sf_eval
 			);
 		}catch(std::exception & ex){
-			vm_set_error(vm,(zs_string("eval error:")+ex.what()).c_str());
+			vm_set_error(vm,(String("eval error:")+ex.what()).toConstChar());
 			goto goto_eval_exit;
 		}
 
@@ -169,8 +169,8 @@ namespace zetscript{
 
 		// modifug
 		if(vm_it_has_error(vm)){
-			zs_string error=vm_get_error(vm);
-			vm_set_error(vm,zs_strutils::format("eval error: %s",error.c_str()).c_str());
+			String error=vm_get_error(vm);
+			vm_set_error(vm,String::format("eval error: %s",error.toConstChar()).toConstChar());
 		}
 
 goto_eval_exit:
@@ -212,13 +212,13 @@ goto_eval_exit:
 		data->vm_stk_current=stk_start_arg_call+n_ret_args;
 	}
 
-	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){
+	void 	SystemModule_eval(ZetScript *_zs, StringObject *_so_str_eval){
 		SystemModule_eval(_zs,_so_str_eval,NULL);
 	}
 
 	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
-		vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
+		StringObject *str_out=StringObject::format(zs,str,args);
+		vm_set_error(zs->getVirtualMachine(),str_out->toString().toConstChar());
 		delete str_out;
 
 	}

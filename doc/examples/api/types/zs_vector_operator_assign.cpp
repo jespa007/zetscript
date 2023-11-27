@@ -1,12 +1,12 @@
 #include "zetscript.h"
-using zetscript::zs_vector;
+using zetscript::Vector;
 int main(){
-	zs_vector<int> vector1,vector2;
+	Vector<int> vector1,vector2;
 
-	vector1.push_back(1);
-	vector1.push_back(2);
-	vector1.push_back(3);
-	vector1.push_back(4);
+	vector1.append(1);
+	vector1.append(2);
+	vector1.append(3);
+	vector1.append(4);
 
 	vector2=vector1;
 

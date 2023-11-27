@@ -1,7 +1,7 @@
 #include "zetscript.h"
-using zetscript::zs_vector;
+using zetscript::Vector;
 int main(){
-	zs_vector<int> vector;
+	Vector<int> vector;
 
 	vector.resize(4);
 

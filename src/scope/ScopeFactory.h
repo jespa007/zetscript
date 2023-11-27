@@ -12,14 +12,14 @@
 
 namespace zetscript{
 
-	class ScriptFunctionFactory;
+	class FunctionFactory;
 	class ScopeFactory{
 		public:
 			ScopeFactory(ZetScript 		*zs);
 			void init();
 			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,uint16_t _properties=0);
 			Scope 						* 	getMainScope(){return main_scope;}
-			zs_vector<Scope *> 			* 	getScopes();
+			Vector<Scope *> 			* 	getScopes();
 			void clear();
 			void clearUnusuedScopes();
 			void saveState();
@@ -33,7 +33,7 @@ namespace zetscript{
 			/**
 			 * Array of script scopes.
 			 */
-			zs_vector<Scope *> 		 *scopes;
+			Vector<Scope *> 		 *scopes;
 			Scope *main_scope;
 			int		idx_clear_checkpoint;
 			//int idx_clear_global_checkpoint_global_symbol_registered_variables;

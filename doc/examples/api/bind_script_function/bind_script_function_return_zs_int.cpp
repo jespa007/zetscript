@@ -13,7 +13,7 @@ int main(){
  	);
 
    // It binds 'returnInteger' as 'zs_int(void)'
-   auto returnInteger=zs.bindScriptFunction<zs_int()>("returnInteger");
+   auto returnInteger=zs.bindFunction<zs_int()>("returnInteger");
 
    // Calls ZetScript function and prints return value by console.
    printf("result : %ld\n",returnInteger());

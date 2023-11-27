@@ -9,15 +9,15 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 enum:uint16_t  {
-	ZS_SYMBOL_PROPERTY_NATIVE_OBJECT_REF 			= 0x0001,// ref_ptr holds C object
-	ZS_SYMBOL_PROPERTY_STATIC 					= 0x0002,// C function or C++ static functions
-	ZS_SYMBOL_PROPERTY_TYPE						= 0x0004,// symbol is type
-	ZS_SYMBOL_PROPERTY_FUNCTION					= 0x0008,// ref_ptr holds script function ptr
-	ZS_SYMBOL_PROPERTY_CONST 					= 0x0010,// This symbol is not assignable
-	ZS_SYMBOL_PROPERTY_MEMBER_PROPERTY			= 0x0020,// Member attrib
-	ZS_SYMBOL_PROPERTY_ARG_BY_REF				= 0x0040,// Is a reference
-	//ZS_SYMBOL_PROPERTY_ALLOCATED_STK			= 0x0080,// Is a reference
-};
+	SYMBOL_PROPERTY_NATIVE_OBJECT_REF 			= 0x0001,// ref_ptr holds C object
+	SYMBOL_PROPERTY_STATIC 					= 0x0002,// C function or C++ static functions
+	SYMBOL_PROPERTY_TYPE						= 0x0004,// symbol is type
+	SYMBOL_PROPERTY_FUNCTION					= 0x0008,// ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_CONST 					= 0x0010,// This symbol is not assignable
+	SYMBOL_PROPERTY_MEMBER_PROPERTY			= 0x0020,// Member attrib
+	SYMBOL_PROPERTY_ARG_BY_REF				= 0x0040,// Is a reference
+	//SYMBOL_PROPERTY_ALLOCATED_STK			= 0x0080,// Is a reference
+}SymbolProperty;
 
 namespace zetscript{
 
@@ -31,15 +31,15 @@ namespace zetscript{
 		Scope *scope;		// scope where symbol was registered
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
-		zs_string name; 	// symbol name
+		String name; 	// symbol name
 		zs_int ref_ptr; 	// pointer ref that holds rellevant information
-		zs_string str_native_type; // In case is C, we need to know its type ...
+		String str_native_type; // In case is C, we need to know its type ...
 
 		int8_t n_params; // max params in case of function
 
 		Symbol *overrided_symbol; // for virtual functions
 
-		Symbol(const zs_string & _name);
+		Symbol(const String & _name);
 
 		Symbol(const Symbol & _symbol);
 

@@ -29,13 +29,13 @@ void test_call_script_function(){
 	);
 
 	// instance function delete_test function.
-	auto  say_hello=zs.bindScriptFunction<void ()>("say_hello");
+	auto  say_hello=zs.bindFunction<void ()>("say_hello");
 
 	// it calls "say_hello" function with no parameters
 	say_hello();
 
 	// instance member function test.function1.
-	auto  test_say_hello=zs.bindScriptFunction<void (zetscript::zs_int)>("test.say_hello");
+	auto  test_say_hello=zs.bindFunction<void (zetscript::zs_int)>("test.say_hello");
 
 	// it calls "test.function1" member function with 10 as parameter.
 	test_say_hello(10);

@@ -21,9 +21,9 @@ data->vm_stk_current->value=init_value; \
 data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_INT; \
 data->vm_stk_current++;
 
-#define ZS_VM_PUSH_STK_SCRIPT_OBJECT(obj_value) \
+#define ZS_VM_PUSH_STK_OBJECT(obj_value) \
 data->vm_stk_current->value=(zs_int)obj_value; \
-data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT; \
+data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT; \
 data->vm_stk_current++;
 
 #define ZS_VM_PUSH_STK_FLOAT(init_value) \
@@ -32,14 +32,14 @@ data->vm_stk_current++;
 	data->vm_stk_current++; \
 
 
-#define ZS_VM_PUSH_STK_SCRIPT_FUNCTION(ref) \
+#define ZS_VM_PUSH_STK_FUNCTION(ref) \
 data->vm_stk_current->value=ref; \
 data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_FUNCTION; \
 data->vm_stk_current++;
 
 #define ZS_VM_PUSH_STK_TYPE(ref) \
 data->vm_stk_current->value=ref; \
-data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID; \
+data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_TYPE_ID; \
 data->vm_stk_current++;
 
 
@@ -51,7 +51,7 @@ data->vm_stk_current++;
 #define ZS_VM_PUSH_NEW_CONTAINER_SLOT(so_aux,str_symbol_aux1,stk_slot) \
 {\
 	data->vm_stk_current->value=(intptr_t)(ContainerSlot::newContainerSlot(\
-		(ContainerScriptObject *)so_aux\
+		(ContainerObject *)so_aux\
 		,(zs_int)str_symbol_aux1\
 		,stk_slot\
 		)\

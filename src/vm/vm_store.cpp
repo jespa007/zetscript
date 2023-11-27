@@ -7,22 +7,22 @@ namespace zetscript{
 
 	bool vm_store(
 			VirtualMachine 	*	_vm
-			,ScriptFunction *	_script_function
+			,Function *	_script_function
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData 			*		data=(VirtualMachineData *)_vm->data;
 		StackElement 				*		stk_dst=NULL,
 									*		stk_src=NULL;
-		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
+		Vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
-		ScriptObject 				*		so_aux=NULL;
+		Object 				*		so_aux=NULL;
 		StackElementMemberProperty 	*		stk_mp_aux=NULL;
-		ScriptFunction 				*		ptr_function_found=NULL;
+		Function 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
 		Instruction					*		instruction=_instruction;
-		bool								unref_old_stk_script_object=true;
+		bool								unref_old_stk_object=true;
 
 
 		 // n elements left
@@ -37,13 +37,13 @@ namespace zetscript{
 	vm_store_next:
 		store_lst_setter_functions=NULL;
 		dst_container_slot=NULL;
-		unref_old_stk_script_object=true;
+		unref_old_stk_object=true;
 
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 
 
 		// check if by ref
-		if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_dst)){
+		if(STACK_ELEMENT_IS_VAR_REF_OBJECT(stk_dst)){
 			stk_dst=(StackElement *)(ZS_GET_STK_VAR_REF(stk_dst)->value);
 		}
 
@@ -56,7 +56,7 @@ namespace zetscript{
 		 }else if((stk_dst->properties & STACK_ELEMENT_PROPERTY_CHAR_PTR)==0){
 			ZS_VM_STOP_EXECUTE(
 				"Expected l-value on assignment but it was type '%s'"
-				,data->zs->stackElementToStringTypeOf(stk_dst).c_str()
+				,data->zs->stackElementToStringTypeOf(stk_dst).toConstChar()
 			);
 		}
 
@@ -68,8 +68,8 @@ namespace zetscript{
 		// check if operand has setter metamethod/s
 		store_lst_setter_functions=NULL;
 
-		if(STACK_ELEMENT_IS_CLASS_SCRIPT_OBJECT(stk_dst)){
-			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(METAMETHOD_SET))!=NULL){
+		if(STACK_ELEMENT_IS_CLASS_OBJECT(stk_dst)){
+			if((store_lst_setter_functions=((ClassObject *)stk_dst->value)->getSetterList(METAMETHOD_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
@@ -81,8 +81,8 @@ namespace zetscript{
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
-					,stk_mp_aux->member_property->script_type->getTypeName()
-					,stk_mp_aux->member_property->property_name.c_str()
+					,stk_mp_aux->member_property->type->getTypeName()
+					,stk_mp_aux->member_property->property_name.toConstChar()
 				);
 			}
 		}
@@ -99,19 +99,19 @@ namespace zetscript{
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
 				so_aux=stk_mp_aux->so_object;\
 			}else{
-				so_aux=(ClassScriptObject *)stk_dst->value;
+				so_aux=(ClassObject *)stk_dst->value;
 			}
-			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
+			ptr_function_found=(Function *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter different parameter types
 
 				Symbol * symbol_setter = NULL;
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
-					symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__);
+					symbol_setter = so_aux->getType()->getSymbol(__STR_SETTER_METAMETHOD__);
 
 					if(symbol_setter == NULL){\
 						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->name.c_str() \
+								,so_aux->getType()->name.toConstChar() \
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}\
@@ -120,8 +120,8 @@ namespace zetscript{
 
 					if(stk_mp_aux->member_property->metamethod_members.setters.size()==0){
 						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->name.c_str()\
-								,stk_mp_aux->member_property->property_name.c_str()\
+								,so_aux->getType()->name.toConstChar()\
+								,stk_mp_aux->member_property->property_name.toConstChar()\
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}
@@ -129,14 +129,14 @@ namespace zetscript{
 
 					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
 						data->vm_str_metamethod_aux
-						,stk_mp_aux->member_property->property_name.c_str()
+						,stk_mp_aux->member_property->property_name.toConstChar()
 						,METAMETHOD_SET
 					); // symbol to find"
 				}
 
 				if((ptr_function_found=vm_find_native_function( \
 						_vm \
-						,data->script_type_factory->getScriptType(so_aux->script_type_id)\
+						,data->type_factory->getType(so_aux->type_id)\
 						,_script_function\
 						,instruction\
 						,false\
@@ -144,16 +144,16 @@ namespace zetscript{
 						,stk_arg \
 						,1))==NULL){ \
 					if(stk_dst->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){ \
-							data->vm_error_description=zs_strutils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
-								,so_aux->getScriptType()->name.c_str()\
-								,stk_mp_aux->member_property->property_name.c_str()\
-								,data->vm_error_description.c_str())
+							data->vm_error_description=String::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
+								,so_aux->getType()->name.toConstChar()\
+								,stk_mp_aux->member_property->property_name.toConstChar()\
+								,data->vm_error_description.toConstChar())
 							;\
 					}else{
 
-						data->vm_error_description=zs_strutils::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
-								,so_aux->getScriptType()->name.c_str()
-								,data->vm_error_description.c_str()
+						data->vm_error_description=String::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
+								,so_aux->getType()->name.toConstChar()
+								,data->vm_error_description.toConstChar()
 							);\
 
 
@@ -161,7 +161,7 @@ namespace zetscript{
 					goto lbl_exit_function;
 				}\
 			}else if(store_lst_setter_functions->size()>1){ // it has overrided metamethods
-				Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
+				Symbol * symbol_setter = so_aux->getType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 				if(symbol_setter == NULL){\
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
 							,__STR_SETTER_METAMETHOD__\
@@ -171,7 +171,7 @@ namespace zetscript{
 				if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function",__STR_SETTER_METAMETHOD__,__STR_AKA_SETTER_METAMETHOD__);\
 				}\
-				ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
+				ptr_function_found=(Function *)symbol_setter->ref_ptr;\
 			}\
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 				vm_execute_native_function(\
@@ -187,8 +187,8 @@ namespace zetscript{
 
 				// if argument is a script object should share, because on returning
 				// it does pop and it could deallocate twice
-				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
-					vm_share_script_object(_vm,(ScriptObject *)stk_arg->value);
+				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+					vm_share_object(_vm,(Object *)stk_arg->value);
 				}
 
 				vm_execute_script_function(\
@@ -232,43 +232,43 @@ namespace zetscript{
 			}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_BOOL){
 				stk_dst->properties=STACK_ELEMENT_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;
-			}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){
+			}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
-				STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_src)
+				STACK_ELEMENT_IS_STRING_OBJECT(stk_src)
 							||
 				(stk_src_properties & (STACK_ELEMENT_PROPERTY_CHAR_PTR))
 
 			){
-				StringScriptObject *str_object=NULL;
+				StringObject *str_object=NULL;
 
-				if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_dst)){ // dst is string reload
-					str_object=(StringScriptObject *)stk_dst->value;
-					unref_old_stk_script_object=false;
-				}else{ // Generates a zs_string var
+				if(STACK_ELEMENT_IS_STRING_OBJECT(stk_dst)){ // dst is string reload
+					str_object=(StringObject *)stk_dst->value;
+					unref_old_stk_object=false;
+				}else{ // Generates a String var
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
-					stk_dst->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+					stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					// create shared ptr
-					vm_create_shared_script_object(_vm,str_object);
+					vm_create_shared_object(_vm,str_object);
 					// share ptr
-					vm_share_script_object(_vm,str_object);
+					vm_share_object(_vm,str_object);
 					//-------------------------------------
 				}
 
 				if(stk_src_properties & (STACK_ELEMENT_PROPERTY_CHAR_PTR)){
 					str_object->set((const char *)stk_src->value);
 				}else{
-					str_object->set(((StringScriptObject *)(stk_src->value))->get());
+					str_object->set(((StringObject *)(stk_src->value))->get());
 				}
 
 
-			}else if(stk_src_properties & (STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){// object we pass its reference
+			}else if(stk_src_properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){// object we pass its reference
 
 				if(stk_src_properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_src->value)->getSrcContainerRef();
 				}
 				else{
-					so_aux=(ScriptObject *)stk_src->value;
+					so_aux=(Object *)stk_src->value;
 				}
 
 				// if dst and src don't references same object
@@ -288,45 +288,45 @@ namespace zetscript{
 						   (dst_container_slot!=NULL)
 					){
 
-						vm_assign_container_slot(_vm,dst_container_slot, (ContainerScriptObject *)so_aux);
+						vm_assign_container_slot(_vm,dst_container_slot, (ContainerObject *)so_aux);
 
 					}else{ // assign object
 
 						// unref current
 						stk_dst->value=(intptr_t)so_aux;
-						stk_dst->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+						stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					}
 
-					vm_share_script_object(_vm,so_aux);
+					vm_share_object(_vm,so_aux);
 				}else{
 
 					// because is same references, it has to be not dereferenced
-					unref_old_stk_script_object=false;
+					unref_old_stk_object=false;
 #ifdef __ZS_LOG_CONTAINER_SLOT__
 					printf(ZS_FORMAT_FILE_LINE" Warning assigning same object %p type %s\n"
 							,SFI_GET_FILE(_script_function,instruction)\
 							,SFI_GET_LINE(_script_function,instruction)\
 							,(void *)so_aux
-							,so_aux->getScriptType()->name.c_str()
+							,so_aux->getType()->name.toConstChar()
 					);
 #endif
 				}
 
 			}else{
 				ZS_VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
-					,data->zs->stackElementToStringTypeOf(stk_src).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_src).toConstChar()
 				);
 			}
 
 			// if old dst value was a script object, it has to be dereferenced because it was written by other type ...
 			if(
-				(old_stk_dst.properties & (STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT))
+				(old_stk_dst.properties & (STACK_ELEMENT_PROPERTY_OBJECT))
 								&&
-					unref_old_stk_script_object==true
+					unref_old_stk_object==true
 			){
-				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
+				Object  *old_so=(Object  *)old_stk_dst.value;
 
-				vm_unref_shared_script_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK);
+				vm_unref_shared_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK);
 			}else if(
 					(old_stk_dst.properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)!=0
 										&&
@@ -336,14 +336,14 @@ namespace zetscript{
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
 				dst_container_slot=NULL; // because old_stk_dst had reference to dst_container now it sets as NULL to no be freed twice
 #ifdef __ZS_LOG_CONTAINER_SLOT__
-				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).c_str());
+				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).toConstChar());
 #endif
 			}
 		}
 
 		// check whether dst_container_slot is not referenced
 		if(
-				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
+				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=TypeId::TYPE_ID_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;

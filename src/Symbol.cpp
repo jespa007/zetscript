@@ -14,12 +14,12 @@ namespace zetscript{
 			|| k_str_const_char_type_ptr == symbol->str_native_type
 			|| k_str_string_type_ptr == symbol->str_native_type
 			) {
-			StringScriptObject *s = ZS_NEW_STRING_OBJECT(zs);
+			StringObject *s = ZS_NEW_STRING_OBJECT(zs);
 
 
 			if (k_str_string_type_ptr == symbol->str_native_type) {
-				// assign native zs_string ptr
-				s->str_ptr = (zs_string *)ptr_variable;
+				// assign native String ptr
+				s->str_ptr = (String *)ptr_variable;
 			}else{
 				// assign value
 				*(s->str_ptr) = (char *)ptr_variable;
@@ -27,7 +27,7 @@ namespace zetscript{
 
 			return {
 				(zs_int)(s),
-				STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
+				STACK_ELEMENT_PROPERTY_OBJECT
 			};
 		}
 		/*else if (k_str_bool_type_ptr == symbol->str_native_type) {
@@ -44,21 +44,21 @@ namespace zetscript{
 		}*/
 		
 		// it should be script object
-		ScriptType *registered_class_script_type = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+		Type *registered_class_type = zs->getTypeFactory()->getTypeFromTypeNamePtr(symbol->str_native_type);//  Type::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
-		if (registered_class_script_type == NULL) {
+		if (registered_class_type == NULL) {
 			ZS_THROW_RUNTIME_ERROR(
 				"Native symbol '%s' has type '%s' that is not registered"
-				, symbol->name.c_str()
-				, symbol->str_native_type.c_str()
+				, symbol->name.toConstChar()
+				, symbol->str_native_type.toConstChar()
 			);
 		}
 
-		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, registered_class_script_type->id, ptr_variable);
+		ClassObject *var = ClassObject::newClassObject(zs, registered_class_type->id, ptr_variable);
 
 		return{
 				(zs_int)var,
-				STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT
+				STACK_ELEMENT_PROPERTY_OBJECT
 		};
 	}
 
@@ -81,7 +81,7 @@ namespace zetscript{
 	}
 
 	// PUBLIC
-	Symbol::Symbol(const zs_string & _name){
+	Symbol::Symbol(const String & _name){
 		name = _name;
 		str_native_type = "";
 		file="";

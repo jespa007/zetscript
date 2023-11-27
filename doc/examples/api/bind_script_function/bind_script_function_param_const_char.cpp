@@ -10,7 +10,7 @@ int main(){
         "}\n"
  	);
    // It binds 'concat' as '(void *)(const char *, const char *)'
-   auto printConcat=zs.bindScriptFunction<void(const char * _value1, const char * _value2)>("printConcat");
+   auto printConcat=zs.bindFunction<void(const char * _value1, const char * _value2)>("printConcat");
 
    // Calls binded ZetScript function with parameters
    printConcat("Hello","World");

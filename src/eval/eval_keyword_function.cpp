@@ -12,17 +12,17 @@ namespace zetscript{
 
 	static int k_anonymous_function=0;
 
-	zs_string eval_anonymous_function_name(const zs_string &pre_name="",const zs_string &post_name=""){
-		return "@"+(pre_name==""?"":pre_name)+"_afun_"+(post_name==""?"":post_name+"_")+zs_strutils::zs_int_to_str(k_anonymous_function++);
+	String eval_anonymous_function_name(const String &pre_name="",const String &post_name=""){
+		return "@"+(pre_name==""?"":pre_name)+"_afun_"+(post_name==""?"":post_name+"_")+String::intToString(k_anonymous_function++);
 	}
 
 
 	void eval_generate_byte_code_field_initializer(
 			EvalData *_eval_data
-			, ScriptFunction *_sf
+			, Function *_sf
 			, int _line
-			,const zs_string & _symbol_name
-			, zs_vector<EvalInstruction *> *_eval_instructions
+			,const String & _symbol_name
+			, Vector<EvalInstruction *> *_eval_instructions
 	){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
@@ -66,7 +66,7 @@ namespace zetscript{
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
 			// add instruction source information...
-			_sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
+			_sf->instruction_source_infos.append(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
@@ -81,7 +81,7 @@ namespace zetscript{
 			,ZS_UNDEFINED_IDX
 			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
-		_sf->instruction_source_infos.push_back(new InstructionSourceInfo(
+		_sf->instruction_source_infos.append(new InstructionSourceInfo(
 			eval_instruction_source_info(
 				_eval_data
 				,_eval_data->current_parsing_file
@@ -91,7 +91,7 @@ namespace zetscript{
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
-		_sf->instruction_source_infos.push_back(NULL);
+		_sf->instruction_source_infos.append(NULL);
 
 		if(_sf->instructions != NULL){
 			free(_sf->instructions); // deallocate last allocated instructions
@@ -103,9 +103,9 @@ namespace zetscript{
 		_eval_instructions->clear();
 	}
 
-	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
+	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,Vector<EvalInstruction *> *eval_instructions){
 
-		zs_string name=eval_anonymous_function_name("","defval");
+		String name=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
@@ -117,7 +117,7 @@ namespace zetscript{
 			, name
 		);
 
-		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
+		Function *sf=(Function *)symbol_sf->ref_ptr;
 
 		Scope *new_scope_info = eval_new_scope_function(eval_data,ZS_MAIN_SCOPE(eval_data));
 		sf->scope=new_scope_info;
@@ -142,7 +142,7 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_infos.push_back(
+			sf->instruction_source_infos.append(
 				new InstructionSourceInfo(instruction_info)
 			);
 
@@ -155,7 +155,7 @@ namespace zetscript{
 		start_ptr->byte_code=BYTE_CODE_RET;
 		start_ptr->value_op1= INSTRUCTION_VALUE_OP1_NOT_DEFINED;
 		start_ptr->value_op2=ZS_UNDEFINED_IDX;
-		sf->instruction_source_infos.push_back(NULL);
+		sf->instruction_source_infos.append(NULL);
 
 		eval_instructions->clear();
 
@@ -170,12 +170,12 @@ namespace zetscript{
 			, Scope *scope_info
 			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
 			, Symbol ** result_symbol_function
-			, const zs_string & custom_symbol_name
+			, const String & custom_symbol_name
 
 		){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-		ScriptType *sc=NULL; // if NULL it suposes is the main
+		Type *sc=NULL; // if NULL it suposes is the main
 		char *aux_p = (char *)s;
 		Keyword key_w=eval_is_keyword(aux_p);
 		bool is_static = false;
@@ -192,11 +192,11 @@ namespace zetscript{
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
+		if(scope_info->owner_type->id != TYPE_ID_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
-			   || (properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
+			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
 			  )
 			   // is function member
 			){ // type members are defined as functions
@@ -207,7 +207,7 @@ namespace zetscript{
 			else{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 			}
-			sc=scope_info->owner_script_type;
+			sc=scope_info->owner_type;
 		}
 		else{
 			key_w = eval_is_keyword(aux_p);
@@ -218,17 +218,17 @@ namespace zetscript{
 
 
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
-			ScriptFunctionParam *params=NULL;
+			FunctionParam *params=NULL;
 			int params_len=0;
 
 			//bool var_args=false;
 			char *end_var = NULL;
-			zs_string param_value;
-			zs_vector<ScriptFunctionParam *> script_function_params;
-			zs_string conditional_str;
+			String param_value;
+			Vector<FunctionParam *> script_function_params;
+			String conditional_str;
 			Symbol *symbol_sf=NULL;
-			zs_string name="";
-			ScriptFunction *sf = NULL;
+			String name="";
+			Function *sf = NULL;
 
 			// advance keyword...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -277,7 +277,7 @@ namespace zetscript{
 			}
 			else{ // name anonymous function
 
-				if((properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
+				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
 					// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
 					return NULL;
 				}
@@ -285,25 +285,25 @@ namespace zetscript{
 
 			// eval function args...
 			if(*aux_p != '('){ // expected (
-				zs_string error;
+				String error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
+					,scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)?String::format(
 							"declaring function member '%s::%s'"
-							,scope_info->owner_script_type->name.c_str()
-							,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
-							).c_str():"declaring function"
+							,scope_info->owner_type->name.toConstChar()
+							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
+							).toConstChar():"declaring function"
 							,*aux_p
 
 					);
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
+							,scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)?String::format(
 									"declaring function member '%s::%s'"
-									,scope_info->owner_script_type->name.c_str()
-									,(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.c_str()
-									).c_str():"declaring function"
+									,scope_info->owner_type->name.toConstChar()
+									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
+									).toConstChar():"declaring function"
 
 					);
 				}
@@ -313,7 +313,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			while(*aux_p != 0 && *aux_p != ')'){
-				ScriptFunctionParam param_info;
+				FunctionParam param_info;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
@@ -346,14 +346,14 @@ namespace zetscript{
 
 				if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// eval_is_keyword(aux_p)==KEYWORD_REF){
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-					param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS;
+					param_info.properties|=MSK_FUNCTION_ARG_PROPERTY_VAR_ARGS;
 				}else{
 					switch(kw_arg=eval_is_keyword(aux_p)){
 					case Keyword::KEYWORD_UNKNOWN:
 						break;
 					case KEYWORD_REF:
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
+						param_info.properties|=MSK_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
 						EVAL_ERROR_FILE_LINE_GOTO(
@@ -380,16 +380,16 @@ namespace zetscript{
 				}
 
 				// copy value
-				param_value=zs_strutils::copy_from_ptr_diff(aux_p,end_var);
+				param_value=String::copyFromPtrDiff(aux_p,end_var);
 				// ok register symbol into the object function ...
-				param_info.name=zs_string(param_value);
+				param_info.name=String(param_value);
 
 
 				aux_p=end_var;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				if((param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
+				if((param_info.properties & MSK_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line
@@ -399,7 +399,7 @@ namespace zetscript{
 				}
 				else if(*aux_p=='='){ // default argument...
 
-					if(param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
+					if(param_info.properties & MSK_FUNCTION_ARG_PROPERTY_BY_REF ){
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
 							,line
@@ -408,7 +408,7 @@ namespace zetscript{
 						);
 					}
 
-					zs_vector<EvalInstruction *> ei_instructions_default;
+					Vector<EvalInstruction *> ei_instructions_default;
 					bool create_anonymous_function_return_expression=false;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -475,13 +475,13 @@ namespace zetscript{
 
 				}
 
-				script_function_params.push_back(
-						new ScriptFunctionParam(param_info)
+				script_function_params.append(
+						new FunctionParam(param_info)
 				);
 			}
 
 			// register function ...
-			if(properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
+			if(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
 				if(custom_symbol_name != ""){
 					name=custom_symbol_name;
 				}else{
@@ -489,12 +489,12 @@ namespace zetscript{
 				}
 			}
 
-			params=ScriptFunctionParam::createArrayFromArray(&script_function_params);
+			params=FunctionParam::createArrayFromArray(&script_function_params);
 			params_len=script_function_params.size();
 
 			// remove collected script function params
 			for(int i=0; i < script_function_params.size(); i++){
-				delete (ScriptFunctionParam *)script_function_params.get(i);
+				delete (FunctionParam *)script_function_params.get(i);
 			}
 
 			aux_p++;
@@ -515,7 +515,7 @@ namespace zetscript{
 							,&params
 							,params_len
 							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
-							,SCRIPT_TYPE_ID_CLASS_MAIN
+							,TYPE_ID_CLASS_MAIN
 							,0
 							,eval_data->current_parsing_file
 							,line
@@ -546,17 +546,17 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
 
-				if((properties & ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->owner_script_type != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)){ // is a function that was created within a member function...
-						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
+				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
+					if(scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)){ // is a function that was created within a member function...
+						((Function *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}
 			}
 
 			//-------------------------
 			// IMPORTANT NOTE:
-			// Due params var is NULL here because it was marked as assigned at ScriptFunction::updateParams. Reassign params variable again ...
-			params=((ScriptFunction *)symbol_sf->ref_ptr)->params;
+			// Due params var is NULL here because it was marked as assigned at Function::updateParams. Reassign params variable again ...
+			params=((Function *)symbol_sf->ref_ptr)->params;
 			//
 			//-------------------------
 
@@ -564,7 +564,7 @@ namespace zetscript{
 				*result_symbol_function=symbol_sf;
 			}
 
-			sf=(ScriptFunction *)symbol_sf->ref_ptr;
+			sf=(Function *)symbol_sf->ref_ptr;
 
 			eval_push_function(eval_data,sf);
 
@@ -592,7 +592,7 @@ namespace zetscript{
 	eval_keyword_function_params:
 			// unallocate script function params
 			for(int h=0; h < script_function_params.size(); h++){
-				delete (ScriptFunctionParam *)script_function_params.get(h);
+				delete (FunctionParam *)script_function_params.get(h);
 			}
 			script_function_params.clear();
 			return NULL;
@@ -607,7 +607,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		Keyword key_w;
-		zs_string s_aux;
+		String s_aux;
 
 		key_w = eval_is_keyword(aux_p);
 
@@ -621,7 +621,7 @@ namespace zetscript{
 
 		// save starting point before process the expression...
 		do{
-			zs_vector<EvalInstruction *> partial_ex;
+			Vector<EvalInstruction *> partial_ex;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if((aux_p = eval_sub_expression(
@@ -664,7 +664,7 @@ namespace zetscript{
 
 		}while(!end);
 
-		eval_data->current_function->eval_instructions.push_back(
+		eval_data->current_function->eval_instructions.append(
 			new EvalInstruction(BYTE_CODE_RET)
 		);
 

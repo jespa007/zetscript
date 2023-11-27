@@ -119,7 +119,7 @@
 		</configuration>
 		<configuration configurationName="Release"/>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMapStringpings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1995433175;cdt.managedbuild.config.gnu.cross.exe.debug.1995433175.;cdt.managedbuild.tool.gnu.cross.c.compiler.247420078;cdt.managedbuild.tool.gnu.c.compiler.input.1037938088">

@@ -15,13 +15,13 @@
 #define TEST_ARITHMETIC_INT_EXPRESSION(_zs,expr) 						test_arithmetic_int_expression(_zs,expr,ZS_STR(expr))
 #define TEST_ARITHMETIC_FLOAT_EXPRESSION(_zs,val1,print_warnings) 		test_arithmetic_float_expression(_zs,(zetscript::zs_float)(val1),ZS_STR(val1)";",print_warnings)
 #define TEST_ARITHMETIC_BOOL_EXPRESSION(_zs,val1) 						test_arithmetic_bool_expression(_zs,val1,ZS_STR(val1))
-#define TEST_ARITHMETIC_ASSIGNRING_EXPRESSION(_zs,val1,op, val2)			test_arithmetic_string_expression(_zs,zetscript::zs_string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
+#define TEST_ARITHMETIC_ASSIGNRING_EXPRESSION(_zs,val1,op, val2)			test_arithmetitoConstCharing_expression(_zs,zetscript::String(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
 #define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(_zs,val1,val2) 				_complete_test_arithmetic_float_op(_zs,val1, val2,"return %s%s%s")
 
-zetscript::zs_string to_string(bool _b);
-zetscript::zs_string to_string(zetscript::zs_int _i);
-zetscript::zs_string to_string(zetscript::zs_float _f);
-zetscript::zs_string to_string(const zetscript::zs_string & _s);
+zetscript::String toString(bool _b);
+zetscript::String toString(zetscript::zs_int _i);
+zetscript::String toString(zetscript::zs_float _f);
+zetscript::String toString(const zetscript::String & _s);
 
 // Usable AlmostEqual function
 bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B);
@@ -108,5 +108,5 @@ void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const 
 //
 
 void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expected_value, const char *str_expr);
-void test_arithmetic_string_expression(zetscript::ZetScript *_zs,const zetscript::zs_string & expected_value, const char * str_expr);
+void test_arithmetitoConstCharing_expression(zetscript::ZetScript *_zs,const zetscript::String & expected_value, const char * str_expr);
 

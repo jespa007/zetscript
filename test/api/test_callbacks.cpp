@@ -23,49 +23,49 @@ void test_function_1st_c_call(zetscript::ZetScript *_zs){
 
 void test_callback(
 	zetscript::ZetScript *_zs
-	,zetscript::ScriptFunction *_script_function
+	,zetscript::Function *_script_function
 ){
 	zetscript::zs_float param1=1.5;
 	zetscript::zs_int param2=2;
 	bool param3=true;
 	// get zetscript instance
 	// transform script function to c++ function...
-	auto script_function = _zs->bindScriptFunction<zetscript::StringScriptObject * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindFunction<zetscript::StringObject * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function with params 1,2,3. The function returns a 'StringScriptObject' ...
+	// call the function with params 1,2,3. The function returns a 'StringObject' ...
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
 	if(test_function_1st_c_call_print==true){
-		printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
+		printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().toConstChar());
 	}
 
-	// unref 'StringScriptObject' lifetime
+	// unref 'StringObject' lifetime
 	_zs->unrefLifetimeObject(so);
 
 }
 
 void test_callback(
 	zetscript::ZetScript *_zs
-	,zetscript::ScriptFunction *_script_function
-	,zetscript::ObjectScriptObject *_user_params
+	,zetscript::Function *_script_function
+	,zetscript::ObjectObject *_user_params
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = _zs->bindScriptFunction<zetscript::StringScriptObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::ObjectScriptObject *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindFunction<zetscript::StringObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::ObjectObject *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function with params 1,2,3. The function returns a 'StringScriptObject' ...
+	// call the function with params 1,2,3. The function returns a 'StringObject' ...
 	auto so=script_function(&param1,&param2,&param3,_user_params);
 
 	// print the results...
 	if(test_function_1st_c_call_print==true){
-		printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
+		printf("FROM CALLBACK 2: %s\n",so->toString().toConstChar());
 	}
 
-	// unref 'StringScriptObject' lifetime
+	// unref 'StringObject' lifetime
 	_zs->unrefLifetimeObject(so);
 
 }
@@ -75,11 +75,11 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 	test_function_1st_c_call_print=_show_print;
 
 	// 1s combination: Script -> C -> Script
-	// bind 'test_callback' receives a 'ScriptFunction' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
+	// bind 'test_callback' receives a 'Function' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::Function *_script_function)>(test_callback));
 
-	// bind 'test_callback' receives a 'ScriptFunction' and 'ObjectScriptObject' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
+	// bind 'test_callback' receives a 'Function' and 'ObjectObject' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::Function *_script_function,zetscript::ObjectObject *_params)>(test_callback));
 
 
 	_zs->eval(
@@ -90,7 +90,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 		"       this.d=10;\n"
 		// 		calls C function 'test_callback'.
 		"		test_callback("
-		//      1st parameter: Anonymous function ('ScriptFunction *' in C aka 'function(){}')
+		//      1st parameter: Anonymous function ('Function *' in C aka 'function(){}')
 		"			function("
 		"				 _a\n"
 		"				,_b\n"
@@ -99,7 +99,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 		"			){\n"
 		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
 		"			}"
-		//		2nd parameter: Object with user params ('ObjectScriptObject *' in C aka '{}')
+		//		2nd parameter: Object with user params ('ObjectObject *' in C aka '{}')
 		"			,{"
 		"				that:this"
 		"			}"
@@ -113,7 +113,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 
 		// calls C function 'test_callback'.
 		"test_callback(\n"
-		//   Anonymous function ('ScriptFunction *' in C aka 'function(){}')
+		//   Anonymous function ('Function *' in C aka 'function(){}')
 		"	function(a,b,c){\n"
 		"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 		"});\n"
@@ -130,7 +130,7 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 	// test calling script-c-script-c
 
 	_zs->eval(
-			zetscript::zs_strutils::format(
+			zetscript::String::format(
 			"function test_1st_script_call(){\n"
 				"if(%s){\n"
 					"Console::outln (\"Hello from script\");\n"
@@ -147,8 +147,8 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 		)
 	);
 
-	auto  test_1st_script_call=_zs->bindScriptFunction<void ()>("test_1st_script_call");
-	test_2nd_script_call=new std::function<void()>(_zs->bindScriptFunction<void ()>("test_2nd_script_call"));
+	auto  test_1st_script_call=_zs->bindFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=new std::function<void()>(_zs->bindFunction<void ()>("test_2nd_script_call"));
 
 	if(test_1st_script_call){
 		test_1st_script_call();

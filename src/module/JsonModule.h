@@ -5,14 +5,14 @@
 #pragma once
 
 namespace zetscript{
-	class ObjectScriptObject;
-	class StringScriptObject;
+	class ObjectObject;
+	class StringObject;
 
 	namespace json{
-		zs_string serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format=true);
+		String serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format=true);
 	}
 
-	void JsonModule_deserialize(ZetScript *_zs,StringScriptObject *str_json);
-	StringScriptObject * JsonModule_serialize(ZetScript *_zs,StackElement *stk,bool *minimized);
-	StringScriptObject * JsonModule_serialize(ZetScript *_zs,StackElement *stk);
+	void JsonModule_deserialize(ZetScript *_zs,StringObject *str_json);
+	StringObject * JsonModule_serialize(ZetScript *_zs,StackElement *stk,bool *minimized);
+	StringObject * JsonModule_serialize(ZetScript *_zs,StackElement *stk);
 }

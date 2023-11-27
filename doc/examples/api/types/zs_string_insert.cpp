@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main(){
-	zs_string string="Hello Wd";
+	String string="Hello Wd";
 
 	string.insert(7,"orl");
-	printf("string.insert(7,\"orl\") => '%s'\n",string.c_str());
+	printf("string.insert(7,\"orl\") => '%s'\n",string.toConstChar());
 
 	return 0;
 }

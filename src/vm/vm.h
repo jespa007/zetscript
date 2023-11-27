@@ -24,14 +24,14 @@ namespace zetscript{
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 
-	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
+	void 			vm_unref_lifetime_object(VirtualMachine *vm,Object *object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
 
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm);
 
 	void 			vm_set_error(VirtualMachine *vm, const char *_str_error,...);
 	void 			vm_set_file_line_error(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
-	zs_string 		vm_get_error(VirtualMachine *vm);
+	String 		vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(
 		VirtualMachine 	*	_vm
@@ -56,8 +56,8 @@ namespace zetscript{
 
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm
-		,ScriptObject 	*	_this_object
-		,ScriptFunction *	_script_function
+		,Object 	*	_this_object
+		,Function *	_script_function
 		,StackElement 	*  	_stk_params=NULL
 		,unsigned char		_n_stk_params=0
 		,unsigned short 	_properties=0
@@ -67,25 +67,25 @@ namespace zetscript{
 
 	void vm_execute_script_function(
 			VirtualMachine			* _vm,
-			ScriptObject			* _this_object,
-			ScriptFunction 			* _script_function,
+			Object			* _this_object,
+			Function 			* _script_function,
 			StackElement 		  	* _stk_local_var
 	);
 
 	void  vm_execute_native_function(
 		VirtualMachine 			*	_vm,
-		const ScriptFunction 	*	_script_function,
+		const Function 	*	_script_function,
 		Instruction 			*	_instruction,
-		ScriptObject  			* 	_this_object,
-		const ScriptFunction 	*	_c_function,
+		Object  			* 	_this_object,
+		const Function 	*	_c_function,
 		StackElement 			*	_stk_arg_c_function,
 		unsigned char 				_n_args
 	);
 
 	void vm_execute_script_function(
 		VirtualMachine 		*	_vm,
-		ScriptObject		* 	_this_object,
-		ScriptFunction 		* 	_script_function,
+		Object		* 	_this_object,
+		Function 		* 	_script_function,
 		StackElement 		*	_stk_local_var
 	);
 

@@ -12,8 +12,8 @@ namespace zetscript{
 
 		void serialize_stk(
 				ZetScript *_zs
-				,ScriptObject *_this_object
-				,zs_string & _str_result
+				,Object *_this_object
+				,String & _str_result
 				, StackElement *_stk
 				, int _ident
 				,bool _is_formatted
@@ -23,9 +23,9 @@ namespace zetscript{
 
 		void serialize_array(
 				ZetScript *_zs
-				,ScriptObject *_this_object
-				,zs_string & _str_result
-				, ArrayScriptObject * _array
+				,Object *_this_object
+				,String & _str_result
+				, ArrayObject * _array
 				,int _ident
 				, bool _is_formatted
 				,bool _strict_json_format
@@ -53,9 +53,9 @@ namespace zetscript{
 
 		void serialize_object(
 			ZetScript *_zs
-			,ScriptObject *_this_object
-			, zs_string & _str_result
-			, ObjectScriptObject *_obj
+			,Object *_this_object
+			, String & _str_result
+			, ObjectObject *_obj
 			, int _ident
 			, bool _is_formatted
 			,bool _strict_json_format
@@ -63,14 +63,14 @@ namespace zetscript{
 
 			_str_result.append('{');
 
-			zs_map_iterator fields[2]={
-					_obj->getMapFields()->begin()
-					,_obj->getMapBuiltinFields()->begin()
+			MapStringIterator fields[2]={
+					_obj->getMapStringFields()->begin()
+					,_obj->getMapStringBuiltinFields()->begin()
 			};
 
-			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){
+			for(int i=0; i < 2; i++){//MapStringIterator *it=map_iterators;mi!=map_iterators.end();mi++){
 				int k=0;
-				zs_map_iterator *mi=&fields[i];
+				MapStringIterator *mi=&fields[i];
 				for(;!mi->end();mi->next()){
 
 					StackElement stk_se=*((StackElement *)mi->value);
@@ -78,7 +78,7 @@ namespace zetscript{
 					// depack container slot
 					if(stk_se.properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 						stk_se.value=(zs_int)((ContainerSlot *)(stk_se.value))->getSrcContainerRef();
-						stk_se.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+						stk_se.properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					}
 
 					StackElementMemberProperty *smp=NULL;
@@ -94,7 +94,7 @@ namespace zetscript{
 					if(
 						((stk_se.properties & STACK_ELEMENT_PROPERTY_FUNCTION) == 0)
 							&&
-						STACK_ELEMENT_IS_MEMBER_FUNCTION_SCRIPT_OBJECT(&stk_se) == false
+						STACK_ELEMENT_IS_MEMBER_FUNCTION_OBJECT(&stk_se) == false
 					){
 						bool getter_found=false;
 						bool value_from_vm_execute=false;
@@ -112,14 +112,14 @@ namespace zetscript{
 							_str_result.append(',');
 						}
 
-						_str_result.append("\"" + zs_string(mi->key)+ "\":");
+						_str_result.append("\"" + String(mi->key)+ "\":");
 
 						// if is member property we have to call _get if exist...
 						if(smp!=NULL){
 
-							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
+							Function *ptr_function=(Function *)(smp->member_property->metamethod_members.getter->ref_ptr);
 
-							if(ptr_function!=NULL && _obj->script_type_id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // getter found
+							if(ptr_function!=NULL && _obj->type_id > TYPE_ID_OBJECT_CLASS){ // getter found
 
 								getter_found=true;
 
@@ -140,15 +140,15 @@ namespace zetscript{
 
 									// Change undefined type as null valid in json scope
 									zs_int result= 0;
-									zs_string str_aux="";
-									void *c_object = ((ClassScriptObject *)_obj)->getNativeObject();
+									String str_aux="";
+									void *c_object = ((ClassObject *)_obj)->getNativeObject();
 
-									switch(ptr_function->return_script_type_id){
-									case  SCRIPT_TYPE_ID_ZS_STRING_C:
-										str_aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+									switch(ptr_function->return_type_id){
+									case  TYPE_ID_ZS_STRING_C:
+										str_aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;
-									case  SCRIPT_TYPE_ID_FLOAT_C:
+									case  TYPE_ID_FLOAT_C:
 										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
@@ -157,7 +157,7 @@ namespace zetscript{
 									}
 									stk_getter_result=_zs->toStackElement(
 										result
-										,ptr_function->return_script_type_id
+										,ptr_function->return_type_id
 									);
 								}
 
@@ -178,14 +178,14 @@ namespace zetscript{
 							,_is_formatted
 							,_strict_json_format);
 
-						if(stk_getter_result.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
+						if(stk_getter_result.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 							if(value_from_vm_execute==true){
 								vm_unref_lifetime_object(
 									_zs->getVirtualMachine()
-									,(ScriptObject *)stk_getter_result.value
+									,(Object *)stk_getter_result.value
 								);
 							}else{
-								delete ((ScriptObject *)stk_getter_result.value);
+								delete ((Object *)stk_getter_result.value);
 							}
 
 						}
@@ -205,15 +205,15 @@ namespace zetscript{
 
 		void serialize_stk(
 			ZetScript *_zs
-			, ScriptObject *_this_object
-			,zs_string & _str_result
+			, Object *_this_object
+			,String & _str_result
 			, StackElement *_stk
 			, int _ident
 			,bool _is_formatted
 			,bool _strict_json_format
 		){
 
-			ScriptObject *obj=NULL;
+			Object *obj=NULL;
 			int16_t var_type = 0;
 			StackElement stk=*_stk;
 
@@ -239,25 +239,25 @@ namespace zetscript{
 					_str_result.append("undefined");
 				}
 				break;
-			case STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT: // vector or object
+			case STACK_ELEMENT_PROPERTY_OBJECT: // vector or object
 
-				obj=((ScriptObject *)stk.value);
-				switch(obj->script_type_id){
-				case SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING:
-					_str_result.append(zs_string("\"") + ((StringScriptObject *)obj)->toString() + "\"");
+				obj=((Object *)stk.value);
+				switch(obj->type_id){
+				case TYPE_ID_OBJECT_STRING:
+					_str_result.append(String("\"") + ((StringObject *)obj)->toString() + "\"");
 					break;
-				case SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY:
-					serialize_array(_zs, _this_object, _str_result,(ArrayScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
+				case TYPE_ID_OBJECT_ARRAY:
+					serialize_array(_zs, _this_object, _str_result,(ArrayObject *)obj,_ident,_is_formatted,_strict_json_format);
 					break;
 				default:
 					if(
-						obj->script_type_id>=SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
+						obj->type_id>=TYPE_ID_OBJECT_OBJECT
 					){
 						if(_this_object != obj){ // avoid recursivity
-							serialize_object(_zs,_this_object,_str_result,(ObjectScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
+							serialize_object(_zs,_this_object,_str_result,(ObjectObject *)obj,_ident,_is_formatted,_strict_json_format);
 						}
 						else{
-							_str_result.append("\"Object@"+zs_string(_this_object->getTypeName())+"\"");
+							_str_result.append("\"Object@"+String(_this_object->getTypeName())+"\"");
 						}
 					}
 					break;
@@ -266,14 +266,14 @@ namespace zetscript{
 			}
 		}
 
-		zs_string serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format){
-			zs_string serialized_stk="";
+		String serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format){
+			String serialized_stk="";
 
 			if(
-					(_stk->properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT)
-				&& (((ScriptObject *)(_stk->value))->script_type_id>=SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT)
+					(_stk->properties & STACK_ELEMENT_PROPERTY_OBJECT)
+				&& (((Object *)(_stk->value))->type_id>=TYPE_ID_OBJECT_OBJECT)
 			){
-				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(ObjectScriptObject *)(_stk->value),0,_is_formatted,_strict_json_format);
+				serialize_object(_zs,(Object *)_stk->value,serialized_stk,(ObjectObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{
 				serialize_stk(_zs,NULL,serialized_stk,_stk,0,_is_formatted,_strict_json_format);
 			}

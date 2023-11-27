@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main(){
 	zetscript::ZetScript zs;
@@ -12,12 +12,12 @@ int main(){
         "}\n"
  	);
 
-   // It binds 'printConcat' as '(void *)(zs_string *, zs_string *)'
-   auto printConcat=zs.bindScriptFunction<void(zs_string * _value1, zs_string * _value2)>("printConcat");
+   // It binds 'printConcat' as '(void *)(String *, String *)'
+   auto printConcat=zs.bindFunction<void(String * _value1, String * _value2)>("printConcat");
 
    // Prepare param values
-   zs_string value1="Hello";
-   zs_string value2="World";
+   String value1="Hello";
+   String value2="World";
 
    // Calls ZetScript function by value
    printConcat(&value1,&value2);

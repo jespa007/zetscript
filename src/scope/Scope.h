@@ -25,21 +25,21 @@ namespace zetscript{
 
 	class ScopeFactory;
 	class ZetScript;
-	class ScriptType;
+	class Type;
 	class  Scope{
 	public:
 		uint16_t properties;
 		//bool is_c_node;
 		//bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
-		ScriptType *owner_script_type;
+		Type *owner_type;
 		int offset_instruction_push_scope;
 
 
 		Scope 					*scope_parent, *scope_base;
 
-		zs_vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
-		zs_vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
-		zs_vector<Symbol *>		*symbol_types; // function symbols from starting block { }
+		Vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
+		Vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
+		Vector<Symbol *>		*symbol_types; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions
@@ -61,27 +61,27 @@ namespace zetscript{
 		Symbol * registerSymbolVariable(
 				const char * file
 				, short line
-				,const zs_string & symbol_name
+				,const String & symbol_name
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
 		Symbol * registerSymbolFunction(
 				const char * file
 				, short line
-				,const zs_string & symbol_name
+				,const String & symbol_name
 				, int8_t n_params
 				,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
-		Symbol * registerSymbolScriptType(
+		Symbol * registerSymbolType(
 				const char * file
 				,short line
-				,const zs_string & symbol_name
+				,const String & symbol_name
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
 		Symbol * getSymbol(
-				const zs_string & var_name
+				const String & var_name
 				, int8_t n_params=ZS_NO_PARAMS_SYMBOL_ONLY
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
@@ -89,12 +89,12 @@ namespace zetscript{
 		bool 	unregisterSymbol(Symbol *symbol);
 
 		void						    markAsUnusued();
-		zs_vector<Scope *>	*getScopes();
+		Vector<Scope *>	*getScopes();
 
 		void removeChildrenBlockTypes();
-		void setScriptTypeOwner(ScriptType *_owner_script_type);
-		ScriptType * getOwnerScriptType();
-		int getIdxScriptFunction();
+		void setTypeOwner(Type *_owner_type);
+		Type * getOwnerType();
+		int getIdxFunction();
 		int numInnerScopes();
 
 		int countVariables(bool _recursive=false);
@@ -106,14 +106,14 @@ namespace zetscript{
 
 		ZetScript *zs;
 
-		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
+		Vector<Scope *>		*scopes;  // local scopes from starting block { }
 		ScopeFactory 			*scope_factory;
 		int 					id;
 
 		void 	 checkPreRegisterSymbol(
 				const char * file
 				,short line
-				, const zs_string & symbol_name
+				, const String & symbol_name
 				, int8_t n_params
 				, uint16_t check_repeated_symbols_direction
 		);

@@ -12,7 +12,7 @@ int main(){
  	);
 
     // It binds 'sayHelloWorld' as 'void(void)'
-    auto sayHelloWorld=zs.bindScriptFunction<void(void)>("sayHelloWorld");
+    auto sayHelloWorld=zs.bindFunction<void(void)>("sayHelloWorld");
 
     // Calls ZetScript function
     sayHelloWorld();

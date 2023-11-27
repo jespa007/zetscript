@@ -1,10 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringScriptObject;
+using zetscript::StringObject;
 
-void printString(ZetScript *_zs,StringScriptObject *_string_object){
-	printf("%s\n",_string_object->get().c_str());
+void printString(ZetScript *_zs,StringObject *_string_object){
+	printf("%s\n",_string_object->get().toConstChar());
 }
 
 int main(){

@@ -1,19 +1,19 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ObjectScriptObject;
+using zetscript::ObjectObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::zs_string;
+using zetscript::String;
 
 // Check whether the object element is type integer, float or string
-void testObjectElementInstanceOf(ZetScript *_zs,ObjectScriptObject *_object){
+void testObjectElementInstanceOf(ZetScript *_zs,ObjectObject *_object){
 
     auto keys=_object->getKeys();
 
 	for(int i=0; i < keys.size(); i++){
                
-        printf("Element at key '%s' is type '",keys.get(i).c_str());
+        printf("Element at key '%s' is type '",keys.get(i).toConstChar());
 
         if(_object->elementInstanceOf<zs_int>(keys.get(i))){
             printf("Integer");
@@ -23,7 +23,7 @@ void testObjectElementInstanceOf(ZetScript *_zs,ObjectScriptObject *_object){
             printf("Float");
         }
         
-        if(_object->elementInstanceOf<zs_string>(keys.get(i))){
+        if(_object->elementInstanceOf<String>(keys.get(i))){
             printf("String");
         }
 

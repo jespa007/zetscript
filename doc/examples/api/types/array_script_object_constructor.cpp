@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ArrayScriptObject;
+using zetscript::ArrayObject;
 
-ArrayScriptObject *returnNewArrayObject(ZetScript *_zs){
+ArrayObject *returnNewArrayObject(ZetScript *_zs){
 
-	// instance new StringScriptObject using ZetScript context
-	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
+	// instance new StringObject using ZetScript context
+	ArrayObject *array_object=new ArrayObject(_zs);
 
 	//...
 

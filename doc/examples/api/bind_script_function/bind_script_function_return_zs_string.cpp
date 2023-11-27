@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main(){
    zetscript::ZetScript zs;
@@ -12,10 +12,10 @@ int main(){
         "}\n"
  	);
 
-   // It binds 'returnString' as 'zs_string(void)'
-   auto returnString=zs.bindScriptFunction<zs_string()>("returnString");
+   // It binds 'returnString' as 'String(void)'
+   auto returnString=zs.bindFunction<String()>("returnString");
 
    // Calls ZetScript function and prints return value by console.
-   printf("result : %s\n",returnString().c_str());
+   printf("result : %s\n",returnString().toConstChar());
  	return 0;
 }

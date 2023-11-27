@@ -1,10 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringScriptObject;
+using zetscript::StringObject;
 
-void checkStringLength(ZetScript *_zs,StringScriptObject *_string_object){
-	printf("The length of '%s' is %i\n",_string_object->toString().c_str(),_string_object->length());
+void checkStringLength(ZetScript *_zs,StringObject *_string_object){
+	printf("The length of '%s' is %i\n",_string_object->toString().toConstChar(),_string_object->length());
 }
 
 int main(){

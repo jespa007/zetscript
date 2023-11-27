@@ -1,14 +1,14 @@
 #include "zetscript.h"
-using zetscript::zs_vector;
+using zetscript::Vector;
 int main(){
-	zs_vector<int> vector;
+	Vector<int> vector;
 
-	vector.push_back(1);
-	vector.push_back(2);
-	vector.push_back(3);
-	vector.push_back(4);
+	vector.append(1);
+	vector.append(2);
+	vector.append(3);
+	vector.append(4);
 
-	vector.pop_back();
+	vector.pop();
 
 	printf("vector contents  : [");
 

@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::zs_vector;
+using zetscript::Vector;
 
 int main(){
-	zs_vector<int> vector;
+	Vector<int> vector;
 
 	for(int i=0; i < 5; i++){
-		vector.push_back(i);
+		vector.append(i);
 	}
 
 	int *ptr_data=vector.data();

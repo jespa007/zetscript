@@ -9,7 +9,7 @@ namespace zetscript{
 		typedef struct{
 			const char *filename;
 			const char *str_start;
-			zs_string str_error;
+			String str_error;
 			StackElement *first_element;
 			ZetScript *zs;
 		}JsonDeserializeData;
@@ -152,10 +152,10 @@ namespace zetscript{
 			va_start(ap,  str);
 			vsprintf(error_description,  str,  ap);
 			va_end(ap);
-			zs_string filename="";
+			String filename="";
 
 			if(data->filename!=NULL){
-				filename=zs_path::get_filename(data->filename);
+				filename=Path::getFilename(data->filename);
 			}
 
 			if(data->filename != NULL  && *data->filename != 0){
@@ -170,7 +170,7 @@ namespace zetscript{
 			data->str_error=what_msg;
 		}
 
-		char * read_string_between_quotes(JsonDeserializeData *data, const char *str_start,int & line, zs_string * str_out){
+		char * read_string_between_quotes(JsonDeserializeData *data, const char *str_start,int & line, String * str_out){
 			char *str_current = (char *) str_start;
 
 			if(str_out != NULL){
@@ -213,19 +213,19 @@ namespace zetscript{
 			char *str_end=NULL;
 
 			if (*str_current == '\"') {// try string ...
-				zs_string str_aux;
+				String str_aux;
 				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				ScriptObject *so=StringScriptObject::newStringScriptObject(data->zs, str_aux.c_str());
-				vm_create_shared_script_object(data->zs->getVirtualMachine(),so);
+				Object *so=StringObject::newStringObject(data->zs, str_aux.toConstChar());
+				vm_create_shared_object(data->zs->getVirtualMachine(),so);
 
 				//
 				if(stk_json_element != data->first_element){
-					vm_share_script_object(data->zs->getVirtualMachine(),so);
+					vm_share_object(data->zs->getVirtualMachine(),so);
 				}
 				stk_json_element->value=(intptr_t)so;
-				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 
 			}
 			else if (strncmp(str_current, "true", 4)==0) { // true detected ...
@@ -254,7 +254,7 @@ namespace zetscript{
 					str_current+=bytes_readed;
 
 					zs_float *number_value = 0;
-					if((number_value=zs_strutils::parse_float(default_str_value)) != NULL){
+					if((number_value=String::parseFloat(default_str_value)) != NULL){
 						ZS_FLOAT_COPY(&stk_json_element->value,number_value);
 						stk_json_element->properties=STACK_ELEMENT_PROPERTY_FLOAT;
 						delete number_value;
@@ -274,8 +274,8 @@ namespace zetscript{
 				,StackElement *stk_json_element
 				){
 			char *str_current = (char *)str_start;
-			zs_string error;
-			ArrayScriptObject *vo;
+			String error;
+			ArrayObject *vo;
 			StackElement *stk_element=NULL;
 
 
@@ -288,14 +288,14 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=ArrayScriptObject::newArrayScriptObject(data->zs);
-				vm_create_shared_script_object(data->zs->getVirtualMachine(),vo);
+				vo=ArrayObject::newArrayObject(data->zs);
+				vm_create_shared_object(data->zs->getVirtualMachine(),vo);
 
 				if(stk_json_element != data->first_element){
-					vm_share_script_object(data->zs->getVirtualMachine(),vo);
+					vm_share_object(data->zs->getVirtualMachine(),vo);
 				}
 
-				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 				stk_json_element->value=(intptr_t)vo;
 			}else{
 				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");
@@ -331,9 +331,9 @@ namespace zetscript{
 
 		char * deserialize_object(JsonDeserializeData *data, const char * str_start, int & line,StackElement *stk_json_element) {
 			char *str_current = (char *)str_start;
-			zs_string variable_name,key_id;
-			zs_string error;
-			ObjectScriptObject *so;
+			String variable_name,key_id;
+			String error;
+			ObjectObject *so;
 			StackElement *stk_element=NULL;
 
 			str_current = eval_ignore_blanks(str_current, line);
@@ -343,20 +343,20 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?data->zs->stackElementToStringTypeOf(stk_json_element).c_str():"");
+						,stk_json_element!=NULL?data->zs->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ObjectScriptObject::newObjectScriptObject(data->zs);
-				vm_create_shared_script_object(data->zs->getVirtualMachine(),so);
+				so=ObjectObject::newObjectObject(data->zs);
+				vm_create_shared_object(data->zs->getVirtualMachine(),so);
 
 				if(stk_json_element != data->first_element){
-					vm_share_script_object(data->zs->getVirtualMachine(),so);
+					vm_share_object(data->zs->getVirtualMachine(),so);
 				}
 
-				stk_json_element->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 				stk_json_element->value=(intptr_t)so;
 			}else{
 				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");
@@ -374,15 +374,15 @@ namespace zetscript{
 
 
 					if(*str_current != ':') {// ok check value
-						json_deserialize_error(data, str_current, line, "json-deserialize: Expected ':' after \"%s\"",key_id.c_str());
+						json_deserialize_error(data, str_current, line, "json-deserialize: Expected ':' after \"%s\"",key_id.toConstChar());
 						return NULL;
 					}
 
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// create property... //get c property
-					if((stk_element=so->setStackElementByKeyName(key_id.c_str())) == NULL){
-						json_deserialize_error(data, str_current, line, "Cannot set field value '%s'",key_id.c_str());
+					if((stk_element=so->setStackElementByKeyName(key_id.toConstChar())) == NULL){
+						json_deserialize_error(data, str_current, line, "Cannot set field value '%s'",key_id.toConstChar());
 						return NULL;
 					}
 

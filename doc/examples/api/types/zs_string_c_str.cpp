@@ -1,9 +1,9 @@
 #include "zetscript.h"
-using zetscript::zs_string;
+using zetscript::String;
 int main(){
-	zs_string string="Hello World";
+	String string="Hello World";
 
-	printf("string.c_str() => '%s'\n",string.c_str());
+	printf("string.toConstChar() => '%s'\n",string.toConstChar());
 	
 	return 0;
 }

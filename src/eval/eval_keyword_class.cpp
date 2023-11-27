@@ -8,7 +8,7 @@ namespace zetscript{
 
 
 
-	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptType *sc	);
+	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, Type *sc	);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -19,9 +19,9 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
-		zs_string name;
-		zs_string base_class_name="";
-		ScriptType *sc;
+		String name;
+		String base_class_name="";
+		Type *sc;
 		Keyword key_w;
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -66,14 +66,14 @@ namespace zetscript{
 
 		// register type
 		try{
-			sc=eval_data->script_type_factory->registerScriptType(
+			sc=eval_data->type_factory->registerType(
 				 name
 				,base_class_name
 				,0
 				,eval_data->current_parsing_file
 				, line
 			);
-		}catch(zs_exception &ex){
+		}catch(Exception &ex){
 			eval_data->error=true;
 			eval_data->str_error=ex.what();
 			eval_data->error_line=ex.getLine();
@@ -85,10 +85,10 @@ namespace zetscript{
 			return NULL;
 		}
 
-		ZS_LOG_DEBUG("registered type '%s' line %i ",name.c_str(), class_line);
+		ZS_LOG_DEBUG("registered type '%s' line %i ",name.toConstChar(), class_line);
 
 		if(*aux_p != '{' ){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",name.c_str());
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",name.toConstChar());
 		}
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -153,7 +153,7 @@ namespace zetscript{
 
 						break;
 				default:
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,name.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,name.toConstChar());
 				}
 
 				if(aux_p == NULL){
@@ -166,16 +166,16 @@ namespace zetscript{
 		}
 
 		if(*aux_p != '}'){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",name.c_str());
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",name.toConstChar());
 		}
 
 		return aux_p+1;
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){
+	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,Type **sc,String & member_symbol){
 
 		char *aux_p = (char *)s;
-		zs_string name;
+		String name;
 		*sc=NULL;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -201,11 +201,11 @@ namespace zetscript{
 					,member_symbol
 			);
 
-			if((*sc=GET_SCRIPT_TYPE(eval_data->script_type_factory,name)) == NULL){
+			if((*sc=GET_OBJECT_TYPE(eval_data->type_factory,name)) == NULL){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. Type '%s' not defined"
-					,name.c_str()
-					,member_symbol.c_str()
-					,name.c_str()
+					,name.toConstChar()
+					,member_symbol.toConstChar()
+					,name.toConstChar()
 				);
 			}
 
@@ -217,7 +217,7 @@ namespace zetscript{
 	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		zs_string symbol_value;
+		String symbol_value;
 		Keyword key_w;
 		EvalInstruction *eval_instruction;
 
@@ -266,8 +266,8 @@ namespace zetscript{
 				eval_instruction->vm_instruction.byte_code=eval_byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
-			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));
+			eval_data->current_function->eval_instructions.append(new EvalInstruction(BYTE_CODE_DELETE));
+			eval_data->current_function->eval_instructions.append(new EvalInstruction(BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}
@@ -279,14 +279,14 @@ namespace zetscript{
 			EvalData *eval_data
 			, const char *s
 			, int & line
-			, ScriptType *sc
+			, Type *sc
 		){
 
 		char *aux_p = (char *)s;
-		zs_string property_name="";
+		String property_name="";
 		int attrib_start_line;
 		char *end_var = NULL;
-		zs_string class_property_name=sc->name;
+		String class_property_name=sc->name;
 		Scope *scope_info=sc->scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -314,8 +314,8 @@ namespace zetscript{
 			Symbol *symbol_attrib=NULL;
 			MemberProperty *mp=NULL;
 			
-			zs_string name;
-			zs_string error;
+			String name;
+			String error;
 
 			try{
 				symbol_attrib=sc->registerMemberProperty(
@@ -368,7 +368,7 @@ namespace zetscript{
 						,aux_p
 						, line
 						,scope_info // pass type scope
-						, ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | ZS_EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
+						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
 						,name+"@"+property_name
 					))==NULL){
@@ -404,7 +404,7 @@ namespace zetscript{
 									eval_data->current_parsing_file
 									,line
 									,"Property '%s' has already a '%s' implemented"
-									,property_name.c_str()
+									,property_name.toConstChar()
 									,it->name
 								);
 							}
@@ -416,7 +416,7 @@ namespace zetscript{
 					if(it->name==NULL){
 						// find setter
 
-						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name.c_str());
+						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name.toConstChar());
 
 						if(_mp_info.metamethod!=METAMETHOD_INVALID){
 							if(_mp_info.setters->size() == 0){
@@ -426,7 +426,7 @@ namespace zetscript{
 									eval_data->current_parsing_file
 									,line
 									,"Property '%s' has already a setter '%s'"
-									,property_name.c_str()
+									,property_name.toConstChar()
 									,_mp_info.metamethod_name
 								);
 							}
@@ -434,17 +434,17 @@ namespace zetscript{
 
 							// metamethod not found !
 
-							zs_string list_valid_metamethods="";
+							String list_valid_metamethods="";
 
 
-							list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getMetamethodSymbolName(METAMETHOD_SET)+"'\n";
-							list_valid_metamethods+=zs_string("- '_get'\n");
+							list_valid_metamethods+=String("- '")+MetamethodHelper::getMetamethodSymbolName(METAMETHOD_SET)+"'\n";
+							list_valid_metamethods+=String("- '_get'\n");
 
 							// get all member list
 							const Metamethod *it_mm=MetamethodMembers::member_list;
 							while(*it_mm!=0){
 								if(*it_mm!=METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+ MetamethodHelper::getMetamethodSymbolName(*it_mm)+"'\n";
+									list_valid_metamethods+=String("- '")+ MetamethodHelper::getMetamethodSymbolName(*it_mm)+"'\n";
 								}
 								it_mm++;
 							}
@@ -454,7 +454,7 @@ namespace zetscript{
 							const Metamethod *it_setters=MetamethodMembers::member_setter_list;
 							while(*it_setters!=0){
 								if(*it_setters!=METAMETHOD_SET){
-									list_valid_metamethods+=zs_string("- '")+MetamethodHelper::getMetamethodSymbolName(*it_setters)+"'\n";
+									list_valid_metamethods+=String("- '")+MetamethodHelper::getMetamethodSymbolName(*it_setters)+"'\n";
 								}
 								it_setters++;
 							}
@@ -464,10 +464,10 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"unexpected metamethod '%s' in property '%s::%s'. Valid metamethods are the following:\n\n%s\n"
-								,name.c_str()
-								,class_property_name.c_str()
-								,property_name.c_str()
-								,list_valid_metamethods.c_str()
+								,name.toConstChar()
+								,class_property_name.toConstChar()
+								,property_name.toConstChar()
+								,list_valid_metamethods.toConstChar()
 							);
 						}
 					}
@@ -479,8 +479,8 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file,attrib_start_line
 					,"expected '}' to end in property '%s::%s'"
-					,class_property_name.c_str()
-					,property_name.c_str()
+					,class_property_name.toConstChar()
+					,property_name.toConstChar()
 				);
 			}
 

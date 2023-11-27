@@ -289,7 +289,7 @@ void test_call_script_function(){
 	);
 
 	// instance ZetScript function 'sayHello'
-	auto  say_hello=zs.bindScriptFunction<void ()>("sayHello");
+	auto  say_hello=zs.bindFunction<void ()>("sayHello");
 
 	// it calls 'say_hello' script function from C++
 	say_hello();

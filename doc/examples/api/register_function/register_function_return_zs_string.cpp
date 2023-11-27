@@ -1,10 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_string;
+using zetscript::String;
 
-zs_string returnString(ZetScript *_zs){
-    return "Hello world (zs_string)";
+String returnString(ZetScript *_zs){
+    return "Hello world (String)";
 }
 
 int main(){

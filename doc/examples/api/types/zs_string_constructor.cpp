@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::zs_string;
+using zetscript::String;
 
 int main(void){
 
 	// empty string
-	zs_string empty_string;
+	String empty_string;
 
 	// initialized string
-	zs_string string=zs_string("Hello world");
+	String string=String("Hello world");
 
 	return 0;
 }

@@ -14,8 +14,8 @@
 namespace zetscript{
 
 	struct VM_Foreach{
-		StackElement 		   	*key; // iterator element can be zs_string or integer...
-		ObjectScriptObject		*ptr; // can be struct or zs_vector...
+		StackElement 		   	*key; // iterator element can be String or integer...
+		ObjectObject		*ptr; // can be struct or Vector...
 		unsigned int 		   	idx_current;
 	};
 
@@ -66,14 +66,14 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		// script type factory should be created and initialized
-		data->script_function_factory=_zs->getScriptFunctionFactory();
-		data->script_type_factory=_zs->getScriptTypeFactory();
+		data->script_function_factory=_zs->getFunctionFactory();
+		data->type_factory=_zs->getTypeFactory();
 		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = ZS_MAIN_FUNCTION(data);
-		data->main_class_object = SCRIPT_TYPE_MAIN(data->script_type_factory);
+		data->main_class_object = TYPE_MAIN(data->type_factory);
 	}
 
-	const ScriptFunction * vm_get_current_native_function_call(
+	const Function * vm_get_current_native_function_call(
 			VirtualMachine *_vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -120,7 +120,7 @@ namespace zetscript{
 		data->vm_error_line=_line;
 	}
 
-	zs_string vm_get_error(
+	String vm_get_error(
 			VirtualMachine *vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -131,32 +131,32 @@ namespace zetscript{
 			VirtualMachine *_vm
 			, const char *_file
 			, int _line
-			, ScriptObject *_script_object
+			, Object *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		InfoLifetimeObject *info = (InfoLifetimeObject *)ZS_MALLOC(sizeof(InfoLifetimeObject));
 
 		info->file=_file;
 		info->line=_line;
-		info->script_object=_script_object;
+		info->object=_object;
 
-		if(_script_object->shared_pointer != NULL){
-			if(_script_object->shared_pointer->data.n_shares > 0){
-				_script_object->shared_pointer->data.n_shares++;
+		if(_object->shared_pointer != NULL){
+			if(_object->shared_pointer->data.n_shares > 0){
+				_object->shared_pointer->data.n_shares++;
 			}
 		}
 
-		data->lifetime_object.push_back(info);
+		data->lifetime_object.append(info);
 	}
 
 	int vm_find_lifetime_object(
 			VirtualMachine *_vm
-			,ScriptObject *_script_object
+			,Object *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		for(int i=0; i < data->lifetime_object.size(); i++){
 			InfoLifetimeObject *info=data->lifetime_object.get(i);
-			if(info->script_object==_script_object){
+			if(info->object==_object){
 				return i;
 			}
 		}
@@ -166,20 +166,20 @@ namespace zetscript{
 
 	void vm_unref_lifetime_object(
 			VirtualMachine *_vm
-			,ScriptObject *_script_object
+			,Object *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		int idx = ZS_UNDEFINED_IDX;
-		if((idx=vm_find_lifetime_object(_vm,_script_object))==ZS_UNDEFINED_IDX){
+		if((idx=vm_find_lifetime_object(_vm,_object))==ZS_UNDEFINED_IDX){
 			ZS_THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
 		InfoLifetimeObject *info=data->lifetime_object.get(idx);
 		data->lifetime_object.erase(idx);
 
-		if(info->script_object->shared_pointer!=NULL){
-			vm_unref_shared_script_object(_vm,_script_object,NULL);
+		if(info->object->shared_pointer!=NULL){
+			vm_unref_shared_object(_vm,_object,NULL);
 		}else{
-			delete _script_object;
+			delete _object;
 		}
 		free(info);
 	}
@@ -242,15 +242,15 @@ namespace zetscript{
 
 	StackElement vm_execute(
 		VirtualMachine 		*	_vm
-		 ,ScriptObject 		*	_this_object
-		 ,ScriptFunction 	*	_script_function
+		 ,Object 		*	_this_object
+		 ,Function 	*	_script_function
 		 ,StackElement 		*  	_stk_params
 		 ,unsigned	char  		_n_stk_params
 		 ,unsigned short		_properties
 		 ,const char 		*	_file
 		 ,int 					_line
 	){
-		ScriptObject *deref_native_args[ZS_MAX_NATIVE_FUNCTION_ARGS];
+		Object *deref_native_args[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		int n_deref_native_args=0;
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		int n_stk_params=_n_stk_params;
@@ -271,7 +271,7 @@ namespace zetscript{
 
 		// calling main funcion
 		if(
-			_script_function->id==ZS_IDX_SCRIPT_FUNCTION_MAIN
+			_script_function->id==ZS_IDX_FUNCTION_MAIN
 		){ // set stack and Init vars for first call...
 
 
@@ -306,21 +306,21 @@ namespace zetscript{
 
 			StackElement *stk_it=stk_start;
 			for(int i = 0; i < n_stk_params; i++){
-				if(_stk_params[i].properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
+				if(_stk_params[i].properties & STACK_ELEMENT_PROPERTY_OBJECT){
+					Object *so=(Object *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
-						vm_create_shared_script_object(_vm,so);
+						vm_create_shared_object(_vm,so);
 					}else if((so->shared_pointer->data.n_shares==0) && (_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE)){
 						// share object to avoid be deallocated ...
-						vm_share_script_object(_vm,so);
+						vm_share_object(_vm,so);
 
 						// ... and put in the list to deref after execute
 						deref_native_args[n_deref_native_args++]=so;
 
 					}
 
-					vm_share_script_object(_vm,so);
+					vm_share_object(_vm,so);
 
 				}
 				*stk_it++=_stk_params[i];
@@ -353,10 +353,10 @@ namespace zetscript{
 			// it was error so reset stack and stop execution ...
 			vm_do_stack_dump(_vm);
 
-			zs_string total_error=data->vm_error_description;
+			String total_error=data->vm_error_description;
 			total_error.append(data->vm_error_callstack_str);
 
-			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
+			throw_exception_file_line(data->vm_error_file.toConstChar(),data->vm_error_line,total_error.toConstChar());
 		}else{
 			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_script_function->local_variables->size());
 
@@ -367,13 +367,13 @@ namespace zetscript{
 				stk_return = ptr_stk_return[0];
 
 				// if object add into lifetime till user delete it
-				if(stk_return.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
+				if(stk_return.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 					// add generated
 					vm_insert_lifetime_object(
 						_vm
 						,_file
 						,_line
-						,(ObjectScriptObject *)stk_return.value
+						,(ObjectObject *)stk_return.value
 					);
 				}
 
@@ -383,8 +383,8 @@ namespace zetscript{
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					/*StackElement stk_ret=ptr_stk_return[i];
-					if(stk_ret.properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){
-						delete (ScriptObject *)stk_ret.value;
+					if(stk_ret.properties & STACK_ELEMENT_PROPERTY_OBJECT){
+						delete (Object *)stk_ret.value;
 					}*/
 					// deinit vm variable...
 					ptr_stk_return[i].setUndefined();
@@ -394,7 +394,7 @@ namespace zetscript{
 
 		// unref params passed through from native function if any
 		for(int i=0; i < n_deref_native_args; i++){
-			vm_unref_shared_script_object(_vm,deref_native_args[i],deref_native_args[i]->shared_pointer->data.vm_scope_block_where_created);
+			vm_unref_shared_object(_vm,deref_native_args[i],deref_native_args[i]->shared_pointer->data.vm_scope_block_where_created);
 		}
 
 		// Important restore stk!
@@ -411,23 +411,23 @@ namespace zetscript{
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(data->lifetime_object.size()>0){
-			zs_string created_at="";
-			zs_string end="";
+			String created_at="";
+			String end="";
 			bool some_registers_without_file_line=false;
 
-			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
+			String error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
 			for(int i=0; i < data->lifetime_object.size();i++ ){
 				InfoLifetimeObject *info=data->lifetime_object.get(i);
 				created_at="";
 				end="";
 
 				if(info->file != 0 && *info->file!=0){
-					created_at=zs_strutils::format(" at " ZS_FORMAT_FILE_LINE,zs_path::get_filename(info->file).c_str(),info->line);
+					created_at=String::format(" at " ZS_FORMAT_FILE_LINE,Path::getFilename(info->file).toConstChar(),info->line);
 				}else{
 					created_at=" at [??:??]";
 					some_registers_without_file_line=true;
 				}
-				error+=zs_strutils::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.c_str(),end.c_str());
+				error+=String::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.toConstChar(),end.toConstChar());
 
 			}
 
@@ -440,7 +440,7 @@ namespace zetscript{
 
 			error+="\n\n";
 
-			fprintf(stderr,"%s",error.c_str());
+			fprintf(stderr,"%s",error.toConstChar());
 
 		}
 
@@ -451,26 +451,26 @@ namespace zetscript{
 	void vm_log_container_slot(
 		VirtualMachine* _vm
 		, ContainerSlot* _container_slot
-		, ContainerScriptObject* _src_container_ref
+		, ContainerObject* _src_container_ref
 	) {
 
 		VirtualMachineData* data = (VirtualMachineData*)_vm->data;
 
 		StackElement* stk_obj = NULL;
-		ContainerScriptObject* dst_container_ref = _container_slot->getDstContainerRef();
+		ContainerObject* dst_container_ref = _container_slot->getDstContainerRef();
 		zs_int dst_container_slot_id = _container_slot->getIdSlot();
 
 		// More tests would be needed see issue #336
-		if (dst_container_ref->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY) {
-			stk_obj = ((ArrayScriptObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
+		if (dst_container_ref->type_id == TYPE_ID_OBJECT_ARRAY) {
+			stk_obj = ((ArrayObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
 
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getScriptType()->name.c_str()
+				, _src_container_ref->getType()->name.toConstChar()
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
-				, dst_container_ref->getScriptType()->name.c_str()
-				, data->zs->stackElementToStringTypeOf( stk_obj).c_str()
+				, dst_container_ref->getType()->name.toConstChar()
+				, data->zs->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
 
@@ -480,11 +480,11 @@ namespace zetscript{
 			stk_obj = dst_container_ref->getStackElementByKeyName((const char*)dst_container_slot_id);
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getScriptType()->name.c_str()
+				, _src_container_ref->getType()->name.toConstChar()
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
-				, dst_container_ref->getScriptType()->name.c_str()
-				, data->zs->stackElementToStringTypeOf( stk_obj).c_str()
+				, dst_container_ref->getType()->name.toConstChar()
+				, data->zs->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
 
@@ -495,7 +495,7 @@ namespace zetscript{
 	void vm_assign_container_slot(
 			VirtualMachine *_vm
 			, ContainerSlot *_container_slot
-			, ContainerScriptObject *_src_container_ref
+			, ContainerObject *_src_container_ref
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
@@ -517,20 +517,20 @@ namespace zetscript{
 
 	}
 
-	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerScriptObject *_csso){
+	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerObject *_csso){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		data->cyclic_container_instances.erase((zs_int)_csso);
 	}
 
-	void vm_count_cyclic_references(ContainerScriptObject *_current,ContainerScriptObject *_container_to_check, zs_vector<zs_list_node<ContainerSlot *> *> *_slots){
-		zs_list_node<ContainerSlot *> *first_node=NULL,* current_node=NULL;
+	void vm_count_cyclic_references(ContainerObject *_current,ContainerObject *_container_to_check, Vector<ListNode<ContainerSlot *> *> *_slots){
+		ListNode<ContainerSlot *> *first_node=NULL,* current_node=NULL;
 
 		current_node=first_node=_current->getListContainerSlotsRef()->first;
 
 		if(current_node != NULL){
 			do{
 				if(_container_to_check==current_node->data->getSrcContainerRef()){
-					_slots->push_back(current_node);//_count++;
+					_slots->append(current_node);//_count++;
 				}
 				current_node=current_node->next;
 			}while(current_node!=first_node);
@@ -538,18 +538,18 @@ namespace zetscript{
 		}
 	}
 
-	zs_map_int *vm_get_cyclic_container_instances(VirtualMachine *_vm){
+	MapInt *vm_get_cyclic_container_instances(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		return &data->cyclic_container_instances;
 	}
 
 	void vm_deref_cyclic_references(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		zs_vector<zs_list_node<ContainerSlot *>  *> slots;
+		Vector<ListNode<ContainerSlot *>  *> slots;
 
 		for(size_t it=0; it < data->cyclic_container_instances.count();){
 			// count reference number
-			ContainerScriptObject *cso=(ContainerScriptObject *)(data->cyclic_container_instances.getValueByIdx(it));
+			ContainerObject *cso=(ContainerObject *)(data->cyclic_container_instances.getValueByIdx(it));
 			bool cyclic_container_instances_element=false;
 
 			vm_count_cyclic_references(cso,cso,&slots);
@@ -574,7 +574,7 @@ namespace zetscript{
 						// 1. dettach from container slot list
 						auto container_slot_node=slots.get(i)->data->getContainerSlotNode();
 						container_slots_intance->remove(container_slot_node);
-						vm_unref_shared_script_object(_vm,cso,ZS_VM_MAIN_SCOPE_BLOCK);
+						vm_unref_shared_object(_vm,cso,ZS_VM_MAIN_SCOPE_BLOCK);
 
 						// 2. back container slot as undefined
 						//

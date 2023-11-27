@@ -46,8 +46,8 @@ int main()
         "}\n"
  	);
 
-    // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto paramNumber=zs.bindScriptFunction<void(Number * _number)>("paramNumber");
+    // It binds 'concat' as '(void *)(ArrayObject *, ArrayObject *)'
+    auto paramNumber=zs.bindFunction<void(Number * _number)>("paramNumber");
 
     // Prepare parameters
     auto number=Number(10);

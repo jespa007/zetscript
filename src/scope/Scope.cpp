@@ -14,44 +14,44 @@ namespace zetscript{
 	Scope::Scope(ZetScript * _zs,int _idx_script_function, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
-		owner_script_type=NULL;
+		owner_type=NULL;
 		id=_idx_script_function;
 		zs=_zs;
 		offset_instruction_push_scope=ZS_UNDEFINED_IDX;
 		scope_factory=_zs->getScopeFactory();
-		scopes=new zs_vector<Scope *>;
-		symbol_variables=new zs_vector<Symbol *>;
-		symbol_functions=new zs_vector<Symbol *>;
-		symbol_types=new zs_vector<Symbol *>;
+		scopes=new Vector<Scope *>;
+		symbol_variables=new Vector<Symbol *>;
+		symbol_functions=new Vector<Symbol *>;
+		symbol_types=new Vector<Symbol *>;
 
 		if(_scope_parent == NULL){ // first node (it should be a type)...
 			scope_base = this;
 		}else{ // others...
 			scope_base = scope_parent->scope_base;
-			owner_script_type=scope_parent->owner_script_type; // propagate script type
+			owner_type=scope_parent->owner_type; // propagate script type
 
 			if(id==ZS_UNDEFINED_IDX){ // May be is a block containing if-else, for, etc --> propagate current script function
 				id=scope_parent->id;
 			}
 
 			// parent owns this scope
-			_scope_parent->scopes->push_back(this);
+			_scope_parent->scopes->append(this);
 		}
 	}
 
-	void Scope::setScriptTypeOwner(ScriptType *_owner_script_type){
+	void Scope::setTypeOwner(Type *_owner_type){
 		if(scope_parent != NULL){
 			ZS_THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
-		owner_script_type=_owner_script_type;
+		owner_type=_owner_type;
 	}
 
-	ScriptType * Scope::getOwnerScriptType(){
-		return scope_base->owner_script_type;
+	Type * Scope::getOwnerType(){
+		return scope_base->owner_type;
 	}
 
-	int Scope::getIdxScriptFunction(){
+	int Scope::getIdxFunction(){
 		return id;
 	}
 
@@ -127,7 +127,7 @@ namespace zetscript{
 		if(scope_parent != NULL){
 			for(int i=0;i < scopes->size(); i++){
 				Scope *current_scope=(Scope *)scopes->get(i);
-				scope_parent->scopes->push_back(current_scope);
+				scope_parent->scopes->append(current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
 
@@ -138,14 +138,14 @@ namespace zetscript{
 		this->properties|=ZS_SCOPE_PROPERTY_UNUSUED;
 	}
 
-	zs_vector<Scope *>	*Scope::getScopes(){
+	Vector<Scope *>	*Scope::getScopes(){
 		return scopes;
 	}
 
 	void Scope::checkPreRegisterSymbol(
 			const char * file
 			,short line
-			, const zs_string & symbol_name
+			, const String & symbol_name
 			, int8_t n_params
 			, uint16_t check_repeated_symbols_direction
 	){
@@ -154,28 +154,28 @@ namespace zetscript{
 		// check if you register a type...
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS)==0){
-			if(zs->getScriptTypeFactory()->getScriptTypeId(symbol_name) != ZS_UNDEFINED_IDX){
-				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.c_str());
+			if(zs->getTypeFactory()->getTypeId(symbol_name) != ZS_UNDEFINED_IDX){
+				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.toConstChar());
 			}
 		}
 
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				if(p_irv->file == NULL || *p_irv->file==0){
-					ZS_THROW_EXCEPTION_FILE_LINE(file,line," error symbol '%s' already declared", symbol_name.c_str());
+					ZS_THROW_EXCEPTION_FILE_LINE(file,line," error symbol '%s' already declared", symbol_name.toConstChar());
 				}else{
-					ZS_THROW_EXCEPTION_FILE_LINE(file,line," error symbol '%s' already declared at '%s:%i'", symbol_name.c_str(),zs_path::get_filename(p_irv->file).c_str(),p_irv->line);
+					ZS_THROW_EXCEPTION_FILE_LINE(file,line," error symbol '%s' already declared at '%s:%i'", symbol_name.toConstChar(),Path::getFilename(p_irv->file).toConstChar(),p_irv->line);
 				}
 			}else{
-				ZS_THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());
+				ZS_THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.toConstChar());
 			}
 		}
 	}
 
-	Symbol * Scope::registerSymbolScriptType(
+	Symbol * Scope::registerSymbolType(
 			const char * _file
 			,short _line
-			, const zs_string & _symbol_name
+			, const String & _symbol_name
 			, uint16_t _check_repeated_symbols_direction
 	){
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  ZS_NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
@@ -185,9 +185,9 @@ namespace zetscript{
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
-		symbol->properties |=ZS_SYMBOL_PROPERTY_TYPE;
+		symbol->properties |=SYMBOL_PROPERTY_TYPE;
 
-		symbol_types->push_back(symbol);
+		symbol_types->append(symbol);
 
 		return symbol;
 
@@ -196,7 +196,7 @@ namespace zetscript{
 	Symbol * Scope::registerSymbolVariable(
 			const char * _file
 			,short _line
-			, const zs_string & _symbol_name
+			, const String & _symbol_name
 			,uint16_t _check_repeated_symbols_direction
 	){
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  ZS_NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
@@ -207,7 +207,7 @@ namespace zetscript{
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
 
-		symbol_variables->push_back(symbol);
+		symbol_variables->append(symbol);
 
 		return symbol;
 	}
@@ -215,7 +215,7 @@ namespace zetscript{
 	Symbol * Scope::registerSymbolFunction(
 			const char * _file
 			,short _line
-			, const zs_string & _symbol_name
+			, const String & _symbol_name
 			, int8_t _n_params
 			, uint16_t _check_repeated_symbols_direction
 	){
@@ -230,9 +230,9 @@ namespace zetscript{
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
 		symbol->n_params	=_n_params;
-		symbol->properties |=ZS_SYMBOL_PROPERTY_FUNCTION;
+		symbol->properties |=SYMBOL_PROPERTY_FUNCTION;
 
-		symbol_functions->push_back(symbol);
+		symbol_functions->append(symbol);
 
 		return symbol;
 	}
@@ -243,7 +243,7 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	Symbol * Scope::getSymbol(const zs_string & _str_symbol, int8_t _n_params, uint16_t _scope_direction){
+	Symbol * Scope::getSymbol(const String & _str_symbol, int8_t _n_params, uint16_t _scope_direction){
 
 		// for each variable in current scope ...
 		for(int i = 0; i < symbol_types->size(); i++){
@@ -278,7 +278,7 @@ namespace zetscript{
 		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
-					&& this->scope_parent->getIdxScriptFunction() == id // Only check repeated symbols in the same function scope context.
+					&& this->scope_parent->getIdxFunction() == id // Only check repeated symbols in the same function scope context.
 			){
 				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
 				return this->scope_parent->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
@@ -289,7 +289,7 @@ namespace zetscript{
 			for(int i = 0; i < scopes->size(); i++){
 				Scope *s=(Scope *)scopes->get(i);
 
-				if(s->getIdxScriptFunction() == id){ // Only check repeated symbols in the same function scope context.
+				if(s->getIdxFunction() == id){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
 
 					if(sv != NULL) {

@@ -12,7 +12,7 @@ int main()
  	);
 
     // It binds 'returnBoolean' as 'bool(void)'
-    auto returnBoolean=zs.bindScriptFunction<bool()>("returnBoolean");
+    auto returnBoolean=zs.bindFunction<bool()>("returnBoolean");
 
     // Calls ZetScript function and prints return value by console.
     printf("result : %s\n",returnBoolean()?"true":"false");

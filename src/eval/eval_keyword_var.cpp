@@ -18,7 +18,7 @@ namespace zetscript{
 		// check for keyword ...
 		char *aux_p = (char *)s;
 		Keyword key_w = eval_is_keyword(s);
-		zs_vector<EvalInstruction *> ei_member_var_init;
+		Vector<EvalInstruction *> ei_member_var_init;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 			bool  is_constant = false,
@@ -30,9 +30,9 @@ namespace zetscript{
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			bool is_static=scope_info==ZS_MAIN_SCOPE(eval_data);
-			ScriptType *script_type=NULL;
-			zs_string s_aux="",variable_name="";
-			zs_string error="";
+			Type *type=NULL;
+			String s_aux="",variable_name="";
+			String error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 			is_constant=key_w == Keyword::KEYWORD_CONST;
 			Operator ending_op=Operator::ZS_OPERATOR_UNKNOWN;
@@ -40,11 +40,11 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->owner_script_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
+			if(scope_var->owner_type->id != TYPE_ID_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
-				script_type=scope_var->owner_script_type;
+				type=scope_var->owner_type;
 				is_class_scope=true;
 				is_static=true;
 			}
@@ -55,9 +55,9 @@ namespace zetscript{
 				start_var=aux_p;
 				start_line=line;
 				end_var=NULL;
-				zs_string pre_variable_name="";
-				ScriptFunction *sf_field_initializer=NULL;
-				ScriptType *sc_var_member_extension=script_type;
+				String pre_variable_name="";
+				Function *sf_field_initializer=NULL;
+				Type *sc_var_member_extension=type;
 
 				if(sc_var_member_extension==NULL){
 					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
@@ -83,7 +83,7 @@ namespace zetscript{
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
 					scope_var = ZS_MAIN_SCOPE(eval_data);
-					pre_variable_name=zs_string(sc_var_member_extension->name)+"::";
+					pre_variable_name=String(sc_var_member_extension->name)+"::";
 				}
 
 				if(end_var==NULL){
@@ -98,9 +98,9 @@ namespace zetscript{
 					}
 				}
 
-				ZS_LOG_DEBUG("registered symbol '%s' line %i ",variable_name.c_str(), line);
+				ZS_LOG_DEBUG("registered symbol '%s' line %i ",variable_name.toConstChar(), line);
 
-				Keyword keyw = eval_is_keyword(variable_name.c_str());
+				Keyword keyw = eval_is_keyword(variable_name.toConstChar());
 
 				if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected keyword '%s' after var",eval_data_keywords[keyw].str);
@@ -125,7 +125,7 @@ namespace zetscript{
 							try{
 								symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 									variable_name
-									,ZS_SYMBOL_PROPERTY_CONST | ZS_SYMBOL_PROPERTY_STATIC
+									,SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC
 									,eval_data->current_parsing_file
 									,line
 								);
@@ -188,7 +188,7 @@ namespace zetscript{
 							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
-							eval_data->current_function->eval_instructions.push_back(
+							eval_data->current_function->eval_instructions.append(
 									eval_instruction=new EvalInstruction(
 											is_static?BYTE_CODE_PUSH_STK_GLOBAL:BYTE_CODE_PUSH_STK_LOCAL
 									)
@@ -199,7 +199,7 @@ namespace zetscript{
 							eval_instruction->symbol_name=pre_variable_name+variable_name;
 							eval_instruction->symbol_scope=scope_var;
 
-							eval_data->current_function->eval_instructions.push_back(
+							eval_data->current_function->eval_instructions.append(
 									new EvalInstruction(
 										BYTE_CODE_STORE_CONST
 										,1
@@ -215,8 +215,8 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",script_type->name.c_str()).c_str():""
-							,variable_name.c_str());
+							,sc_var_member_extension!=NULL?String::format("::%s",type->name.toConstChar()).toConstChar():""
+							,variable_name.toConstChar());
 				}
 
 				if(*aux_p == ',' /*|| *aux_p==')'*/){ // is new variable
@@ -230,7 +230,7 @@ namespace zetscript{
 
 			// after variable declaration is expected to have any keyword but is not valid any operator,
 			if((ending_op=is_operator(aux_p))!=Operator::ZS_OPERATOR_UNKNOWN){
-				if((((properties & ZS_EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)==ZS_EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && (ending_op == Operator::ZS_OPERATOR_IN))==false){
+				if((((properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)==EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && (ending_op == Operator::ZS_OPERATOR_IN))==false){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
 				}
 			}

@@ -136,7 +136,7 @@ Solved issues
 - #192 Fix multiassigment 
 - #193 Check fix ternari
 - #194 Detect literal or assigments within literals  
-- #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
+- #195 Change ScriptVar by Object and remove ScriptVarDictionnary
 - #196 Do not extend property when it access 
 - #197 Avoid vector/string objects to add properties through string 
 - #199 Check fix instanceof 
@@ -144,10 +144,10 @@ Solved issues
 - #201 System.print: convert any stackelement in string if argument itself is not string var  
 - #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 - #203 Implement operator + object
-- #204 Implement indexs as ArrayScriptObject in ScriptObject 
+- #204 Implement indexs as ArrayObject in Object 
 - #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 - #206 Override global functions 
-- #207 ScriptObjectString: Implement operator [] 
+- #207 ObjectString: Implement operator [] 
 - #208 Implement Float helper class
 - #209 Implement Boolean helper class  
 - #210 Fix check keyword delete
@@ -157,7 +157,7 @@ Solved issues
 - #214 replace throw_script_error by other smart way to manage exceptions
 - #216 Accept .,() and [] as operator 
 - #217 div/mod issues 
-- #218 Encapsulate std::string in ScriptObjectString 
+- #218 Encapsulate std::string in ObjectString 
 - #219 Create iterator 
 - #220 Set information for non-existant properties in store instruction 
 - #222 do as an option to show system functions 
@@ -166,7 +166,7 @@ Solved issues
 - #215 Implement typeof operator
 - #227 implement DateTime class
 - #229 Implement toJson(bool formated=false) for Array and Object 
-- #230 Control return ScriptObject[String] values that are not deallocated by user 
+- #230 Control return Object[String] values that are not deallocated by user 
 - #231 register class passing C function constructor and destructor
 - #232 Implement setter/getter for member variables 
 - #233 Implement operator IN 
@@ -194,7 +194,7 @@ Solved issues
 - #259 Erase user properties only by remove operator
 - #261 zs_test: test every single simple check to within script and then launch complex scripts and stop if any fails
 - #262 Select compile double or float precision config
-- #263 ScriptObjectString: Implement operator + feature feature
+- #263 ObjectString: Implement operator + feature feature
 - #264 Implement passing args by reference
 - #265 Implement zs_test_strict
 - #266 Optimize using Push/Pop scope 
@@ -206,7 +206,7 @@ Solved issues
 - #275 Change VirtualMachine class by struct and C functions  
 - #276 Implement built-in iterators
 - #277 optimize access stk_vm_current 
-- #279 Support array access for ScriptObjectObject 
+- #279 Support array access for ObjectObject 
 - #281 Console Helper Class 
 - #282 Improve the meaning of printing errors 
 - #284 Seffault when native function returns object as NULL 
@@ -221,9 +221,9 @@ Solved issues
 - #295 Allow switch to have expressions/variables in the case 
 - #296 Create inc/dec metamethods and include in attribute metamethods 
 - #297 Array/Object & class by default it gives all public members in json format by default when prints or do toString()
-- #298 Do not store function members in ScriptObject 
+- #298 Do not store function members in Object 
 - #299 Do not allocate for attribute member in script object 
-- #300 Use linear array instead of zs_vector in vm runtime 
+- #300 Use linear array instead of Vector in vm runtime 
 - #301 Solve inherited class call overrided function
 - #303 Implement ZS_BYTE_CODE_IMMEDIATE_CALL ZS_BYTE_CODE_THIS_CALL
 - #304 Cache scope data
@@ -239,7 +239,7 @@ Solved issues
 - #315 Test stack element limits
 - #316 default functions generates extra byte codes 
 - #317 Change concept of class by type 
-- #302 Improve zs_map
+- #302 Improve MapString
 - #319 Detect when function member object is called and its own object is destroyed 
 - #323 Implement operator "==" for Array 
 - #323 Implement operator "==" for Array
@@ -252,7 +252,7 @@ Solved issues
 - #333 for in doesn't work for function calls  
 - #335 Generate library name with version
 - #334 Implement concatenated call  
-- #337 Implement zs_map_int 
+- #337 Implement MapInt 
 - #336 Solve problem ciclic references 
 - #339 Conditionals evaluates whole condition instead of first breaking condition improvement
 - #340 StackOverflow core dumped in deep recursion 

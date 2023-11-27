@@ -32,18 +32,18 @@ int main(int argc, char * argv[]) {
 		bool exit_loop=false;
 		for(;idx_arg  < argc && exit_loop==false; idx_arg++){
 
-			bool is_option=zetscript::zs_strutils::starts_with(argv[idx_arg],"--"); // is option
+			bool is_option=zetscript::String::startsWith(argv[idx_arg],"--"); // is option
 
 			if(is_option){
 
 				if(strcmp(argv[idx_arg],"--no-execute")==0){
-					eval_options |= zetscript::ZS_EVAL_OPTION_NO_EXECUTE;
+					eval_options |= zetscript::EVAL_OPTION_NO_EXECUTE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code")==0){
-					eval_options|=zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE;
+					eval_options|=zetscript::EVAL_OPTION_PRINT_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-all")==0){
-					eval_options|=(zetscript::ZS_EVAL_OPTION_PRINT_BYTE_CODE|zetscript::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE);
+					eval_options|=(zetscript::EVAL_OPTION_PRINT_BYTE_CODE|zetscript::EVAL_OPTION_PRINT_ALL_BYTE_CODE);
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-system")==0){
-					eval_options|=zetscript::ZS_EVAL_OPTION_PRINT_ALL_BYTE_CODE;
+					eval_options|=zetscript::EVAL_OPTION_PRINT_ALL_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--no-execution-time")==0){
 					no_execution_time=true;
 				}else if(strcmp(argv[idx_arg],"--version")==0){
@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
 
 		do{
 			printf("zs>");
-			readed_bytes=zetscript::zs_io::getline(&expression,&expression_len,stdin);
+			readed_bytes=zetscript::Console::::getline(&expression,&expression_len,stdin);
 
 			if(readed_bytes==-1){
 				continue;
@@ -99,7 +99,7 @@ int main(int argc, char * argv[]) {
 
 				try{
 					zs.eval(expression);
-				}catch(zetscript::zs_exception & ex){
+				}catch(zetscript::Exception & ex){
 					fprintf(stderr,"[line %i] %s\n",ex.getLine(),ex.what());
 				}
 			}
@@ -114,17 +114,17 @@ int main(int argc, char * argv[]) {
 
 	}else{ // eval script file
 
-		if(zetscript::zs_file::exists(param_script_filename)){
+		if(zetscript::File::exists(param_script_filename)){
 
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 			try{
 				zs.evalFile(param_script_filename,eval_options,NULL,__FILE__,__LINE__);
-			}catch(zetscript::zs_exception & ex){
-				zetscript::zs_string filename=ex.getFilename();
+			}catch(zetscript::Exception & ex){
+				zetscript::String filename=ex.getFilename();
 				int line=ex.getLine();
 				if(filename !="" && line!=-1){
-					fprintf(stderr,ZS_FORMAT_FILE_LINE" %s\n", filename.c_str(),line,ex.what());
+					fprintf(stderr,ZS_FORMAT_FILE_LINE" %s\n", filename.toConstChar(),line,ex.what());
 				}else if(line!=-1){
 					fprintf(stderr,ZS_FORMAT_LINE" %s\n",line,ex.what());
 				}else{
@@ -135,7 +135,7 @@ int main(int argc, char * argv[]) {
 			if(no_execution_time==false){
 				std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 				std::chrono::duration<double, std::milli> time_span=t2-t1;
-				printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(param_script_filename).c_str(),time_span.count());
+				printf("executed %s %.0fms\n", zetscript::Path::getFilename(param_script_filename).toConstChar(),time_span.count());
 			}
 
 		}else{

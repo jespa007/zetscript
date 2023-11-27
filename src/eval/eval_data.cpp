@@ -5,13 +5,13 @@
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 								if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define IGNORE_BLANKS_AND_GOTO_ON_ERROR(my_goto,aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) goto my_goto
 
-#define RESULT_LITERAL_VALUE 							(number_part[0]+number_part[1]+number_part[2]).c_str()
+#define RESULT_LITERAL_VALUE 							(number_part[0]+number_part[1]+number_part[2]).toConstChar()
 
 #define EVAL_ERROR_FILE_LINE(_file,_line,_str_error,...) \
 	eval_data->error=true;\
 	eval_data->error_file=_file;\
 	eval_data->error_line=_line;\
-	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
 	return 0;
 
 
@@ -23,7 +23,7 @@
 		eval_data->error=true;\
 		eval_data->error_file=file;\
 		eval_data->error_line=line;\
-		eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+		eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
 		goto my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,_str_error)	\
@@ -32,7 +32,7 @@
 
 #define EVAL_ERROR(_str_error,...) \
 	eval_data->error=true;\
-	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
 	return 0;
 
 #define EVAL_ERRORF(file,line,_str_error) \
@@ -47,7 +47,7 @@
 	aux_p=NULL;\
 	eval_data->error_file=_file;\
 	eval_data->error_line=_line;\
-	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
 	goto _my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_str_error)	\
@@ -56,7 +56,7 @@
 #define EVAL_ERROR_BYTE_CODE(_str_error,...)	\
 	eval_data->error=true;\
 	aux_p=NULL;\
-	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
 	goto eval_error_byte_code;
 
 #define EVAL_ERROR_BYTE_CODEF(_str_error) \
@@ -178,9 +178,9 @@ namespace zetscript{
 		PreOperation   					pre_operation; // !,+,-,--,++
 		Operator  						operator_type;
 
-		zs_string 						value; // token value content
+		String 						value; // token value content
 		int 							line;
-		zs_vector<EvalInstruction *> 						eval_instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
+		Vector<EvalInstruction *> 						eval_instructions; // byte code load literal/identifier(can be anonymous function), Vector/struct.
 		bool are_instructions_moved;
 
 		TokenNode(){
@@ -201,13 +201,13 @@ namespace zetscript{
 
 	struct EvalFunction{
 
-		zs_vector<EvalInstruction *>						 		eval_instructions;
-		ScriptFunction 						*  	script_function;
+		Vector<EvalInstruction *>						 		eval_instructions;
+		Function 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
 
 		// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
-		EvalFunction(ScriptFunction	* _script_function){
+		EvalFunction(Function	* _script_function){
 			script_function=_script_function;
 			parsing_loop=0;
 			parsing_switch=0;
@@ -258,34 +258,34 @@ namespace zetscript{
 	} EvalSeparator;
 
 	typedef struct{
-		zs_vector<EvalInstruction *> 						ei_break_jmps;
+		Vector<EvalInstruction *> 						ei_break_jmps;
 		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
 	struct EvalData{
 		ZetScript 						* 		zs;
 		ScopeFactory 					* 		scope_factory;
-		ScriptFunctionFactory 			* 		script_function_factory;
-		ScriptTypeFactory 				* 		script_type_factory;
+		FunctionFactory 			* 		script_function_factory;
+		TypeFactory 				* 		type_factory;
 		EvalFunction					* 		current_function;
-		zs_vector<EvalFunction *>				eval_functions;
+		Vector<EvalFunction *>				eval_functions;
 
-		//zs_vector				 				global_ref_instructions; // Eval Instruction
+		//Vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
 
 		const char *					 		current_parsing_file;
 		bool							  		error;
-		zs_string								str_error;
-		zs_string								error_file;
+		String								str_error;
+		String								error_file;
 		int 									error_line;
 
 		EvalData(ZetScript * _zs){
 			current_parsing_file="";
 			current_function=NULL;
 			this->zs=_zs;
-			this->script_function_factory=zs->getScriptFunctionFactory();
+			this->script_function_factory=zs->getFunctionFactory();
 			this->scope_factory=zs->getScopeFactory();
-			this->script_type_factory=zs->getScriptTypeFactory();
+			this->type_factory=zs->getTypeFactory();
 			error=false;
 			parsing_loop=0;
 			error_line=-1;
@@ -303,8 +303,8 @@ namespace zetscript{
 	bool g_init_eval=false;
 
 	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find);
-	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find);
+	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const String & symbol_to_find);
+	Symbol *eval_find_global_symbol(EvalData *eval_data, const String & symbol_to_find);
 
 	bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 	bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
@@ -548,11 +548,11 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	const char * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
+	const char * get_mapped_name(EvalData *eval_data, const String & _mapped_name){
 		ZS_UNUSUED_PARAM(eval_data);
-		char * key=(char *)eval_data->zs->getCompiledSymbolName()->getKey(_mapped_name.c_str());
+		char * key=(char *)eval_data->zs->getCompiledSymbolName()->getKey(_mapped_name.toConstChar());
 		if(key==NULL){
-			auto node=eval_data->zs->getCompiledSymbolName()->set(_mapped_name.c_str(),0);
+			auto node=eval_data->zs->getCompiledSymbolName()->set(_mapped_name.toConstChar(),0);
 			key=node->key;
 		}
 		return key;
@@ -585,9 +585,9 @@ namespace zetscript{
 		return false;
 	}
 
-	int  check_identifier_name_expression_ok(EvalData *eval_data,const zs_string & symbol, int line){
+	int  check_identifier_name_expression_ok(EvalData *eval_data,const String & symbol, int line){
 
-		char *aux_p = (char *)symbol.c_str();
+		char *aux_p = (char *)symbol.toConstChar();
 		Keyword kw;
 		Operator op;
 
@@ -629,12 +629,12 @@ namespace zetscript{
 		return TRUE;
 	}
 
-	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, zs_string & value){
-		// PRE: a zs_string given...
+	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, String & value){
+		// PRE: a String given...
 		char *aux_p = NULL;
 		bool end=false;
 		int current_part=0;
-		zs_string number_part[3];
+		String number_part[3];
 		//value="";
 		bool is_hexa=false;
 		bool is01s=true;
@@ -693,7 +693,7 @@ namespace zetscript{
 			aux_p++;
 
 			// convert i_char to value...
-			value=zs_strutils::zs_int_to_str(i_char);
+			value=String::intToString(i_char);
 			return aux_p;
 		}
 
@@ -772,7 +772,7 @@ namespace zetscript{
 		// POST: detects integer/binary/fractional/hexa
 	}
 
-	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, zs_string & name, bool _throw_error=true){
+	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, String & name, bool _throw_error=true){
 
 		char *aux_p = (char *)s;
 		name="";
@@ -806,7 +806,7 @@ namespace zetscript{
 			EvalData *_eval_data
 			,const char *_file
 			,int _line
-			,const zs_string & _name
+			,const String & _name
 	){
 		InstructionSourceInfo is=InstructionSourceInfo(_file,_line);
 		is.ptr_str_symbol_name=get_mapped_name(_eval_data,_name);

@@ -12,7 +12,7 @@ int main()
  	);
 
     // It binds 'returnString' as 'const char *(void)'
-    auto returnString=zs.bindScriptFunction<const char *()>("returnString");
+    auto returnString=zs.bindFunction<const char *()>("returnString");
 
     // Calls ZetScript function and prints return value by console.
     printf("result : %s\n",returnString());

@@ -7,32 +7,32 @@
 namespace zetscript{
 
 	//----
-	zs_timespan * 			TimeSpanModule_new(ZetScript *_zs){
+	TimeSpan * 			TimeSpanModule_new(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
-		return new zs_timespan();
+		return new TimeSpan();
 	}
 
-	zs_int 					TimeSpanModule_get_seconds(ZetScript *_zs,zs_timespan *_this){
+	zs_int 					TimeSpanModule_get_seconds(ZetScript *_zs,TimeSpan *_this){
 		ZS_UNUSUED_PARAM(_zs);
-		return  _this->get_seconds();
+		return  _this->getSeconds();
 	}
 
-	zs_int 					TimeSpanModule_get_minutes(ZetScript *_zs,zs_timespan *_this){
+	zs_int 					TimeSpanModule_get_minutes(ZetScript *_zs,TimeSpan *_this){
 		ZS_UNUSUED_PARAM(_zs);
-		return  _this->get_minutes();
+		return  _this->getMinutes();
 	}
 
-	zs_int 					TimeSpanModule_get_hours(ZetScript *_zs,zs_timespan *_this){
+	zs_int 					TimeSpanModule_get_hours(ZetScript *_zs,TimeSpan *_this){
 		ZS_UNUSUED_PARAM(_zs);
-		return  _this->get_hours();
+		return  _this->getHours();
 	}
 
-	zs_int 					TimeSpanModule_get_days(ZetScript *_zs,zs_timespan *_this){
+	zs_int 					TimeSpanModule_get_days(ZetScript *_zs,TimeSpan *_this){
 		ZS_UNUSUED_PARAM(_zs);
-		return  _this->get_days();
+		return  _this->getDays();
 	}
 
-	void 					TimeSpanModule_delete(ZetScript *_zs,zs_timespan *_this){
+	void 					TimeSpanModule_delete(ZetScript *_zs,TimeSpan *_this){
 		ZS_UNUSUED_PARAM(_zs);
 		delete _this;
 	}

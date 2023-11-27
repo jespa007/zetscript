@@ -13,7 +13,7 @@ int main(){
  	);
 
    // It binds 'printAdd' as '(void *)(zs_float, zs_float *)'
-   auto printAdd=zs.bindScriptFunction<void(zs_float *_value1, zs_float *_value2)>("printAdd");
+   auto printAdd=zs.bindFunction<void(zs_float *_value1, zs_float *_value2)>("printAdd");
 
    // Prepare parameter values 
    zs_float value1=3.5;

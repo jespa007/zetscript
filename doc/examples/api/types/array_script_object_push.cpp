@@ -3,12 +3,12 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::ArrayScriptObject;
+using zetscript::ArrayObject;
 
-ArrayScriptObject *returnNewArray(ZetScript *_zs){
+ArrayObject *returnNewArray(ZetScript *_zs){
 
-	// instance new ArrayScriptObject using ZetScript context
-	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
+	// instance new ArrayObject using ZetScript context
+	ArrayObject *array_object=new ArrayObject(_zs);
 
 	// push first value as integer 10
 	array_object->push<zs_int>(10);

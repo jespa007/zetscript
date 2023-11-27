@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ObjectScriptObject;
+using zetscript::ObjectObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::zs_string;
+using zetscript::String;
 
 // print array contents
-void printObject(ZetScript *_zs,ObjectScriptObject *_object){
-	printf("Object contents : %s",_object->toString().c_str());
+void printObject(ZetScript *_zs,ObjectObject *_object){
+	printf("Object contents : %s",_object->toString().toConstChar());
 }
 
 int main(){

@@ -1,11 +1,11 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::zs_string;
+using zetscript::String;
 
 // c function
-void paramString(ZetScript *_zs, zs_string *_string){
-    printf("Result : '%s' (zs_string *)\n",_string->c_str());
+void paramString(ZetScript *_zs, String *_string){
+    printf("Result : '%s' (String *)\n",_string->toConstChar());
 }
 
 int main(){

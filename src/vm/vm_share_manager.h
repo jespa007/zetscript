@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 	struct SharedPointerInfo {
-		ScriptObject 			*ptr_script_object_shared;
+		Object 			*ptr_object_shared;
 		unsigned short 			n_shares;
 		//int						created_idx_call;
 		VM_ScopeBlock			*vm_scope_block_where_created;
@@ -19,7 +19,7 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	};
 
-	void 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
+	void 			vm_share_object(VirtualMachine *vm,Object *_obj);
 
 	void  vm_insert_shared_node(
 		VirtualMachine	 		*	_vm
@@ -27,15 +27,15 @@ namespace zetscript{
 		, InfoSharedPointerNode *	_node
 	);
 
-	void 			vm_create_shared_script_object(
+	void 			vm_create_shared_object(
 			VirtualMachine *vm
-			, ScriptObject *_obj
+			, Object *_obj
 			,VM_ScopeBlock *_vm_scope_block=NULL
 	);
 
-	void vm_unref_shared_script_object(
+	void vm_unref_shared_object(
 		VirtualMachine 	*	_vm
-		, ScriptObject 	*	_obj
+		, Object 	*	_obj
 		,VM_ScopeBlock 	*	_scope_block
 	);
 

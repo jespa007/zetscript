@@ -14,7 +14,7 @@ int main()
  	);
 
     // It binds 'returnFloat' as 'zs_float(void)'
-    auto returnFloat=zs.bindScriptFunction<zs_float()>("returnFloat");
+    auto returnFloat=zs.bindFunction<zs_float()>("returnFloat");
 
     // Calls ZetScript function and prints return value by console.
     printf("result : %f\n",returnFloat());

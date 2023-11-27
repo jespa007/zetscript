@@ -13,7 +13,7 @@ int main(){
  	);
 
     // It binds 'printAdd' as '(void *)(zs_int, zs_int)' (by value)
-    auto printAddByValue=zs.bindScriptFunction<void(zs_int _value1, zs_int _value2)>("printAdd");
+    auto printAddByValue=zs.bindFunction<void(zs_int _value1, zs_int _value2)>("printAdd");
 
     // Calls binded ZetScript function with parameters by value
     printAddByValue(10,10);

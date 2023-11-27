@@ -11,7 +11,7 @@ namespace zetscript{
 
 	struct EvalInstruction{
 		Instruction 					vm_instruction;
-		zs_string						symbol_name;
+		String						symbol_name;
 		Scope							*symbol_scope;
 		InstructionSourceInfo 			instruction_source_info;
 
@@ -45,8 +45,8 @@ namespace zetscript{
 			,const char *s
 			,int & line
 			,  Scope *scope_info
-			, ScriptFunction *sf
-			,ScriptFunctionParam *params
+			, Function *sf
+			,FunctionParam *params
 			, int params_len
 	);
 
@@ -64,25 +64,25 @@ namespace zetscript{
 	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent);
 	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent);
 	void 	eval_check_scope(EvalData *eval_data, Scope *scope, bool _force_push_pop=false);
-	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
+	void 	eval_push_function(EvalData *eval_data,Function *script_function);
 	int 	eval_pop_and_compile_function(EvalData *_eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
 	void    eval_generate_byte_code_field_initializer(
 			EvalData *_eval_data
-			, ScriptFunction *_sf
+			, Function *_sf
 			, int _line
-			,const zs_string & _symbol_name
-			, zs_vector<EvalInstruction *> *_eval_instructions
+			,const String & _symbol_name
+			, Vector<EvalInstruction *> *_eval_instructions
 	);
 
-	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error);
+	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,String & static_error);
 	void 	eval_parse_and_compile(
 			ZetScript *zs
 			,const char * str_code
 			,EvalData *_eval_data_from=NULL
 			, const char *  _filename=""
 			, int _line=1
-			,ScriptFunction *sf=NULL
+			,Function *sf=NULL
 			);
 
 	void	eval_deinit();

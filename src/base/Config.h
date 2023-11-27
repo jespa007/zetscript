@@ -1,0 +1,38 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
+#ifndef ZS_CONFIG_H
+#define ZS_CONFIG_H
+
+#include <cstdint>
+
+namespace zetscript{
+	#if INTPTR_MAX==INT64_MAX
+		typedef double 			zs_float;
+	#elif INTPTR_MAX == INT32_MAX
+		typedef float 			zs_float;
+	#else
+	#error "Environment not 32 or 64-bit."
+	#endif
+	
+	inline zs_float zs_read_intptr_float(intptr_t _value){
+		zs_float *aux=(zs_float*)&_value;
+		return *aux;
+	}
+	
+	inline void zs_write_intptr_float(intptr_t *_dst, zs_float _src){
+		zs_float *dst=(zs_float*)_dst;
+		*dst=_src;
+	}
+}
+
+
+#define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zetscript::zs_float))
+
+#define ZS_READ_INTPTR_FLOAT(_value) zetscript::zs_read_intptr_float(_value)
+#define ZS_WRITE_INTPTR_FLOAT(_dst,_src) zetscript::zs_write_intptr_float(_dst,_src)
+
+#endif /* ZS_CONFIG_H */
+
+

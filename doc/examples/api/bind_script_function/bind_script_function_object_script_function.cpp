@@ -15,7 +15,7 @@ int main()
         "var a=new A();\n"
  	);
 
-    auto a_print=zs.bindScriptFunction<void(void)>("a.print");
+    auto a_print=zs.bindFunction<void(void)>("a.print");
 
     a_print();
 

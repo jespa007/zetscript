@@ -7,9 +7,9 @@
 
 class ClassA{
 	public:
-	 void fun1(const zetscript::zs_string & _s,bool _show_print){
+	 void fun1(const zetscript::String & _s,bool _show_print){
 		 if(_show_print){
-			 printf("from A: %s\n",_s.c_str());
+			 printf("from A: %s\n",_s.toConstChar());
 		 }
 	 }
 };
@@ -56,7 +56,7 @@ void setNumRef(Num *_num){
 }
 
 
-struct ParamA{zetscript::zs_string _s;ParamA(){_s="";}};
+struct ParamA{zetscript::String _s;ParamA(){_s="";}};
 struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
 
 ClassA *ClassA_new(zetscript::ZetScript *_zs){
@@ -66,7 +66,7 @@ ClassA *ClassA_new(zetscript::ZetScript *_zs){
 
 void ClassA_fun1(zetscript::ZetScript *_zs, ClassA *_this, ParamA *_param_a,bool *_show_print){
 	ZS_UNUSUED_PARAM(_zs);
-	_this->fun1(_param_a->_s.c_str(),*_show_print);
+	_this->fun1(_param_a->_s.toConstChar(),*_show_print);
 }
 
 bool ClassA_lt(zetscript::ZetScript *_zs, ClassA *_n1, ClassA *_n2){
@@ -165,7 +165,7 @@ void ClassC_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	delete _this;
 }
 
-bool allCharsTheSame(const zetscript::zs_string & input){
+bool allCharsTheSame(const zetscript::String & input){
 
     for(int i =1; i < input.length(); i++){
         if(input[i-1] != input[i]) return false;
@@ -173,9 +173,9 @@ bool allCharsTheSame(const zetscript::zs_string & input){
     return true;
 }
 
-bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * sov){
+bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayObject * sov){
 	ZS_UNUSUED_PARAM(_zs);
-	zetscript::zs_vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
+	zetscript::Vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
    for(int i =1; i < stk_elements->size(); i++){
 	   zetscript::StackElement *stk_1=stk_elements->get(i-1);
 	   zetscript::StackElement *stk_2=stk_elements->get(i-0);
@@ -184,14 +184,14 @@ bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * s
    return true;
 }
 
-zetscript::zs_vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
+zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
 	ZS_UNUSUED_PARAM(_zs);
 	if(max_number==0 || n_elements==0){
 		throw("max number or n_elements are 0s");
 	}
 		//new throw("invalid number");
 
-	zetscript::zs_vector<zetscript::zs_int> index_rand;// = new int [n_elements];
+	zetscript::Vector<zetscript::zs_int> index_rand;// = new int [n_elements];
 
 	zetscript::zs_int item=0;
 	bool found = false;
@@ -207,18 +207,18 @@ zetscript::zs_vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *
 		 	}
 		}while(found);
 
-		index_rand.push_back(item);
+		index_rand.append(item);
 
 	}
 	return index_rand;
 }
 
-zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject *_input){
+zetscript::ArrayObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ArrayObject *_input){
 
-	zetscript::ArrayScriptObject *output=zetscript::ArrayScriptObject::newArrayScriptObject(_zs);
-	zetscript::zs_vector<zetscript::StackElement *> *input=_input->getStkListElements();
+	zetscript::ArrayObject *output=zetscript::ArrayObject::newArrayObject(_zs);
+	zetscript::Vector<zetscript::StackElement *> *input=_input->getStkListElements();
 	uint16_t input_count=input->size();
-	zetscript::zs_vector<zetscript::zs_int> rand_txt;
+	zetscript::Vector<zetscript::zs_int> rand_txt;
 
     if(allValuesTheSame(_zs,_input)){
           return _input;
@@ -289,7 +289,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 
 		try{
 		_zs->eval(
-			zetscript::zs_strutils::format(
+			zetscript::String::format(
 					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
@@ -346,7 +346,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					,_show_print?"true":"false"
 					,_show_print?"true":"false"
 			)
-		//,ZS_EVAL_OPTION_PRINT_BYTE_CODE
+		//,EVAL_OPTION_PRINT_BYTE_CODE
 
 		);
 
@@ -356,7 +356,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 			fprintf(stderr,"%s\n",ex.what());
 		}
 
-		/*auto ini=new std::function<void(Num *)>(_zs->bindScriptFunction<void (Num *)>("c.ini"));
+		/*auto ini=new std::function<void(Num *)>(_zs->bindFunction<void (Num *)>("c.ini"));
 		(*ini)(&num);
 		delete ini;*/
 

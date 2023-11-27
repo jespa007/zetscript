@@ -8,11 +8,11 @@
 #define ZS_LOAD_OPERANDS_ASSIGN_OPERATION \
 stk_result_op1=--data->vm_stk_current;\
 ZS_EXTRACT_STK_RESULT_PRE_POST_OPERATION \
-if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op1)){ \
+if(STACK_ELEMENT_IS_VAR_REF_OBJECT(stk_result_op1)){ \
 	stk_result_op1=(StackElement *)(ZS_GET_STK_VAR_REF(stk_result_op1)->value); \
 } \
 stk_result_op2=--data->vm_stk_current;\
-if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op2)){ /*src stk*/ \
+if(STACK_ELEMENT_IS_VAR_REF_OBJECT(stk_result_op2)){ /*src stk*/ \
 	stk_result_op2=(StackElement *)((ZS_GET_STK_VAR_REF(stk_result_op2)->value)); \
 }
 

@@ -3,10 +3,10 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::ArrayScriptObject;
-using zetscript::StringScriptObject;
+using zetscript::ArrayObject;
+using zetscript::StringObject;
 
-void modifyArray(ZetScript *_zs,ArrayScriptObject *_array_object){
+void modifyArray(ZetScript *_zs,ArrayObject *_array_object){
 
 	for(int i=0; i < _array_object->length(); i++){
 		switch(i%3){
@@ -17,7 +17,7 @@ void modifyArray(ZetScript *_zs,ArrayScriptObject *_array_object){
 			_array_object->set<zs_float>(i,i*10.2);
 			break;
 		case 2: // set new string
-			_array_object->set<StringScriptObject *>(i,new StringScriptObject(_zs,"Hello"));
+			_array_object->set<StringObject *>(i,new StringObject(_zs,"Hello"));
 			break;
 
 		}

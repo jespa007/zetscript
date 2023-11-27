@@ -6,20 +6,20 @@ namespace zetscript{
 
 	bool vm_load_field(
 		VirtualMachine 	*	_vm
-		,ScriptObject 	*	_this_object
-		,ScriptFunction *	_script_function
+		,Object 	*	_this_object
+		,Function *	_script_function
 		,Instruction 	**	_instruction_it
 	){
 		VirtualMachineData 			*	data=(VirtualMachineData *)_vm->data;
 		Instruction 				*	instruction=(*_instruction_it)-1;
-		ScriptObject 				*	so_aux=NULL;
+		Object 				*	so_aux=NULL;
 		StackElement 				*	stk_result_op1=NULL;
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement 				*	stk_var=NULL;
 		StackElementMemberProperty 		*	stk_mp_aux=NULL;
-		ScriptType					*	script_type=NULL;
+		Type					*	type=NULL;
 		Symbol 						*	symbol_function_member=NULL;
-		MemberFunctionScriptObject	*	somf=NULL;
+		MemberFunctionObject	*	somf=NULL;
 		bool 							instruction_store=false;
 
 		if(
@@ -48,21 +48,21 @@ namespace zetscript{
 			VM_POP_STK_ONE; // get var op1 and symbol op2
 		}
 
-		if((stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)) == 0){
+		if((stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)) == 0){
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
-					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access '.%s' from variable type '%s'"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,data->zs->stackElementToStringTypeOf(stk_result_op1).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 				);
 			}
 		}
@@ -71,7 +71,7 @@ namespace zetscript{
 			so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();
 		}
 		else{
-			so_aux=((ScriptObject *)stk_result_op1->value);
+			so_aux=((Object *)stk_result_op1->value);
 		}
 
 		if(so_aux == NULL){
@@ -84,7 +84,7 @@ namespace zetscript{
 		symbol_function_member=NULL;
 
 		//
-		script_type=so_aux->getScriptType();
+		type=so_aux->getType();
 		// Because BYTE_CODE_LOAD_OBJECT_ITEM it does not use the valueop2, it's used as a cache of the script type of the object
 		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)){
 			symbol_function_member=(Symbol *)instruction->value_op2;
@@ -95,7 +95,7 @@ namespace zetscript{
 		}
 
 		if(symbol_function_member==NULL){
-			symbol_function_member=script_type->getSymbolMemberFunction(str_symbol_aux1);
+			symbol_function_member=type->getSymbolMemberFunction(str_symbol_aux1);
 			instruction->value_op2=(zs_int)symbol_function_member;
 		}
 
@@ -115,34 +115,34 @@ namespace zetscript{
 			// case it has to be saved ...
 			if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0){
 
-				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)symbol_function_member->ref_ptr);
+				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(Function *)symbol_function_member->ref_ptr);
 
-				 vm_create_shared_script_object(_vm,somf);
+				 vm_create_shared_object(_vm,somf);
 
 				data->vm_stk_current->value=(zs_int)somf;
-				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 				data->vm_stk_current++;
 
 			}else{
 
-				if(symbol_function_member->properties & ZS_SYMBOL_PROPERTY_STATIC){
+				if(symbol_function_member->properties & SYMBOL_PROPERTY_STATIC){
 					ZS_VM_STOP_EXECUTE(
 						"Cannot call function member [ ... %s.%s(...) ] because '%s' is type '%s' and function member '%s::%s' is defined as static. The function it has to be invoked as static (i.e '%s::%s(...)')"
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-						,symbol_function_member->name.c_str()
+						,symbol_function_member->name.toConstChar()
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-						,script_type->getTypeName()
-						,script_type->getTypeName()
-						,symbol_function_member->name.c_str()
-						,script_type->getTypeName()
-						,symbol_function_member->name.c_str()
+						,type->getTypeName()
+						,type->getTypeName()
+						,symbol_function_member->name.toConstChar()
+						,type->getTypeName()
+						,symbol_function_member->name.toConstChar()
 
 					);
 				}
 
 				// ... it push object and function into the stack
 				data->vm_stk_current->value=(zs_int)so_aux;
-				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 				data->vm_stk_current++;
 
 				// pass symbol
@@ -162,8 +162,8 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
+					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,str_symbol_aux1
 				);
 			}
@@ -181,16 +181,16 @@ namespace zetscript{
 			 ){
 				// if object is C
 				// exceptions
-				if(script_type->id < SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT || script_type->id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT){
+				if(type->id < TYPE_ID_OBJECT_OBJECT || type->id > TYPE_ID_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
-					if(so_aux->getScriptType()->properties & ZS_SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
+					if(so_aux->getType()->properties & ZS_TYPE_PROPERTY_C_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-							,script_type->id > SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
-							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
+							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+							,type->id > TYPE_ID_OBJECT_OBJECT?"Native type":"Type"
+							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,str_symbol_aux1
 						);
 					}
@@ -207,7 +207,7 @@ namespace zetscript{
 					ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 				){
 					ZS_VM_PUSH_NEW_CONTAINER_SLOT(
-						(ContainerScriptObject *)so_aux
+						(ContainerObject *)so_aux
 						,(zs_int)str_symbol_aux1
 						,stk_var
 					);
@@ -230,10 +230,10 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,(const char *)str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).c_str()
+					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,(const char *)str_symbol_aux1
-					,data->zs->stackElementToStringTypeOf(stk_var).c_str()
+					,data->zs->stackElementToStringTypeOf(stk_var).toConstChar()
 				);
 			}
 
@@ -248,13 +248,13 @@ namespace zetscript{
 				if((stk_mp_aux->member_property->metamethod_members.getter!=NULL) && (instruction_store==false)){
 					ZS_VM_INNER_CALL(
 						stk_mp_aux->so_object
-						,((ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
+						,((Function *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
 						,0
 					);
 
 					if(
-							// If return value is object pass it if  >= TYPE_SCRIPT_OBJECT_CLASS ...
-							STACK_ELEMENT_IS_CLASS_SCRIPT_OBJECT(data->vm_stk_current)
+							// If return value is object pass it if  >= TYPE_OBJECT_CLASS ...
+							STACK_ELEMENT_IS_CLASS_OBJECT(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store
 								(
@@ -309,7 +309,7 @@ namespace zetscript{
 
 			){
 				ZS_VM_PUSH_NEW_CONTAINER_SLOT(
-					(ContainerScriptObject *)so_aux
+					(ContainerObject *)so_aux
 					,(zs_int)str_symbol_aux1
 					,stk_var
 				);
@@ -330,8 +330,8 @@ namespace zetscript{
 
 	StackElement *vm_load_this_element(
 		VirtualMachine	 		*	_vm
-		,ScriptObject			* 	_this_object
-		,ScriptFunction 		* 	_script_function
+		,Object			* 	_this_object
+		,Function 		* 	_script_function
 		,Instruction			*	_instruction
 		,short 						_offset
 	){
@@ -351,7 +351,7 @@ namespace zetscript{
 				data->vm_stk_current++;
 				ZS_VM_INNER_CALL(
 						stk_mp_aux->so_object
-						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr
+						,(Function *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr
 						,0 \
 				);
 				/* restore */
@@ -371,8 +371,8 @@ namespace zetscript{
 
 	bool vm_push_container_item(
 		VirtualMachine 			*	_vm
-		,ScriptObject 			*	_this_object
-		,ScriptFunction 		*	_script_function
+		,Object 			*	_this_object
+		,Function 		*	_script_function
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_local_var
 		,bool						_dst_container_is_object
@@ -380,8 +380,8 @@ namespace zetscript{
 		VirtualMachineData 		*	data=(VirtualMachineData *)_vm->data;
 		StackElement 			*	stk_result_op1=NULL;
 		StackElement 			*	stk_result_op2=NULL;
-		ContainerScriptObject 	*	dst_container=NULL;
-		ScriptObject 			*	so_aux=NULL;
+		ContainerObject 	*	dst_container=NULL;
+		Object 			*	so_aux=NULL;
 		StackElement 				stk_src=k_stk_undefined,
 								*	stk_dst=NULL,
 								*	stk_var=NULL;
@@ -398,28 +398,28 @@ namespace zetscript{
 			VM_POP_STK_TWO; // first must be a string that describes property name and the other the variable itself ...
 
 			stk_var=(data->vm_stk_current-1);
-			if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_var) == 0){
+			if(STACK_ELEMENT_IS_OBJECT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
-			dst_container = (ContainerScriptObject *)stk_var->value;
+			dst_container = (ContainerObject *)stk_var->value;
 
-			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1) == 0){
+			if(STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op1) == 0){
 				ZS_VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 				);
 			}
 
 			if((stk_var =dst_container->setStackElementByKeyName(
-					((StringScriptObject *)stk_result_op1->value)->toString()
+					((StringObject *)stk_result_op1->value)->toString()
 			)
 			)==NULL){
-				ZS_VM_STOP_EXECUTE("Cannot set field '%s'",((StringScriptObject *)stk_result_op1->value)->toString().c_str());
+				ZS_VM_STOP_EXECUTE("Cannot set field '%s'",((StringObject *)stk_result_op1->value)->toString().toConstChar());
 			}
 
-			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
+			id_slot=(zs_int)(((StringObject *)stk_result_op1->value)->getConstChar());
 			stk_dst=stk_var;
 			stk_src=*stk_result_op2;
 
@@ -428,16 +428,16 @@ namespace zetscript{
 			VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
 
 			stk_var=(data->vm_stk_current-1);
-			if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_var) == 0){
+			if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE(
 					"Expected vector but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
-			dst_container = (ContainerScriptObject *)stk_var->value;
-			id_slot=((ArrayScriptObject *)dst_container)->length();
-			stk_dst=((ArrayScriptObject *)dst_container)->newSlot();
+			dst_container = (ContainerObject *)stk_var->value;
+			id_slot=((ArrayObject *)dst_container)->length();
+			stk_dst=((ArrayObject *)dst_container)->newSlot();
 			stk_src=*stk_result_op1;
 		}
 
@@ -445,12 +445,12 @@ namespace zetscript{
 			stk_src=*((StackElement *)stk_src.value);
 		}
 		//------
-		if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(&stk_src)){ \
+		if(STACK_ELEMENT_IS_VAR_REF_OBJECT(&stk_src)){ \
 			stk_src=(*(StackElement *)((ZS_GET_STK_VAR_REF(&stk_src)->value))); \
 		} \
 
 		if(STACK_ELEMENT_IS_CONTAINER_SLOT(&stk_src)){
-			stk_src.properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT; \
+			stk_src.properties=STACK_ELEMENT_PROPERTY_OBJECT; \
 			stk_src.value=(zs_int)((ContainerSlot *)(stk_src.value))->getSrcContainerRef();
 		}
 
@@ -470,18 +470,18 @@ namespace zetscript{
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_BOOL){\
 			stk_dst->properties=STACK_ELEMENT_PROPERTY_BOOL;\
 			*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
-		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
+		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
 			*stk_dst=stk_src;\
-		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT){\
+		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT){\
 
-			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk_src)){\
-				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
-				stk_dst->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;\
-				vm_create_shared_script_object(_vm,so_aux);
-				vm_share_script_object(_vm,so_aux);
-				((StringScriptObject *)(so_aux))->set(((StringScriptObject *)stk_src.value)->get());
+			if(STACK_ELEMENT_IS_STRING_OBJECT(&stk_src)){\
+				stk_dst->value=(zs_int)(so_aux= new StringObject(data->zs));\
+				stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;\
+				vm_create_shared_object(_vm,so_aux);
+				vm_share_object(_vm,so_aux);
+				((StringObject *)(so_aux))->set(((StringObject *)stk_src.value)->get());
 			}else{ \
-				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src.value;
+				ContainerObject *src_container=(ContainerObject *)stk_src.value;
 
 				if(ZS_VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
 					ContainerSlot *container_slot=ContainerSlot::newContainerSlot(
@@ -495,11 +495,11 @@ namespace zetscript{
 				}else{
 					// is not container
 					stk_dst->value=(intptr_t)src_container;\
-					stk_dst->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;\
+					stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;\
 				}
 
 				// share always because it's not possible have cyclic reference of each push item object/vector
-				vm_share_script_object(_vm,src_container);
+				vm_share_object(_vm,src_container);
 			}\
 		}else{\
 			ZS_VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
@@ -517,8 +517,8 @@ lbl_exit_function:
 
 	bool vm_load_vector_item(
 			VirtualMachine 	*_vm
-			,ScriptObject 	*_this_object
-			,ScriptFunction *_script_function
+			,Object 	*_this_object
+			,Function *_script_function
 			,Instruction 	*_instruction
 			,StackElement 	*_stk_local_var
 
@@ -526,7 +526,7 @@ lbl_exit_function:
 		VirtualMachineData 			*	data=(VirtualMachineData *)_vm->data;
 		StackElement 				*	stk_result_op1=NULL;
 		StackElement 				*	stk_result_op2=NULL;
-		ScriptObject 				*	so_aux=NULL;
+		Object 				*	so_aux=NULL;
 		int								index_aux1=0;
 		StackElement				*	stk_var=NULL;
 		const char 					*	str_symbol_aux1=NULL;
@@ -536,27 +536,27 @@ lbl_exit_function:
 		VM_POP_STK_TWO;
 		so_aux=NULL;
 
-		if(STACK_ELEMENT_IS_VAR_REF_SCRIPT_OBJECT(stk_result_op1)){
-			stk_result_op1 = ((VarRefScriptObject *)stk_result_op1->value)->getStackElementPtr();
+		if(STACK_ELEMENT_IS_VAR_REF_OBJECT(stk_result_op1)){
+			stk_result_op1 = ((VarRefObject *)stk_result_op1->value)->getStackElementPtr();
 		}
 
 		stk_var=NULL;
 		// determine object ...
-		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
+		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
 
 			if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();
 			}else{
-				so_aux=(ScriptObject *)stk_result_op1->value;
+				so_aux=(Object *)stk_result_op1->value;
 			}
 
 
-			if(		   so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY
-					|| so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_OBJECT
-					|| so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS
+			if(		   so_aux->type_id == TYPE_ID_OBJECT_ARRAY
+					|| so_aux->type_id == TYPE_ID_OBJECT_OBJECT
+					|| so_aux->type_id >= TYPE_ID_OBJECT_CLASS
 			){
 
-				if(so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_ARRAY){
+				if(so_aux->type_id == TYPE_ID_OBJECT_ARRAY){
 					index_aux1=0;
 
 					if(STACK_ELEMENT_IS_INT(stk_result_op2)){ \
@@ -567,33 +567,33 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Expected index value for array access");
 					}
 
-					if(index_aux1 >= (int)((ArrayScriptObject *)so_aux)->length() || index_aux1 < 0){
+					if(index_aux1 >= (int)((ArrayObject *)so_aux)->length() || index_aux1 < 0){
 						ZS_VM_STOP_EXECUTEF("Error accessing array, index out of bounds");
 					}
 
-					if((stk_var =((ArrayScriptObject *)so_aux)->getStackElementByIndex(index_aux1))==NULL){
+					if((stk_var =((ArrayObject *)so_aux)->getStackElementByIndex(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}
 				else{
 					// is object
-					if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op2)==0){ \
+					if(STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op2)==0){ \
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STACK_ELEMENT_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM
-					stk_var = ((ObjectScriptObject *)so_aux)->getStackElementByKeyName(
-							((StringScriptObject *)(stk_result_op2->value))->get()
+					stk_var = ((ObjectObject *)so_aux)->getStackElementByKeyName(
+							((StringObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_ARRAY_ITEM){
-							if((stk_var =((ObjectScriptObject *)so_aux)->setStackElementByKeyName(
-									((StringScriptObject *)(stk_result_op2->value))->get()
+							if((stk_var =((ObjectObject *)so_aux)->setStackElementByKeyName(
+									((StringObject *)(stk_result_op2->value))->get()
 								)
 							)==NULL){
-								ZS_VM_STOP_EXECUTE("Cannot setPoperty('%s')",((StringScriptObject *)(stk_result_op2->value))->get().c_str());
+								ZS_VM_STOP_EXECUTE("Cannot setPoperty('%s')",((StringObject *)(stk_result_op2->value))->get().toConstChar());
 							}
 						}else{
-							ZS_VM_STOP_EXECUTE("property '%s' not exist in object",((StringScriptObject *)(stk_result_op2->value))->getConstChar());
+							ZS_VM_STOP_EXECUTE("property '%s' not exist in object",((StringObject *)(stk_result_op2->value))->getConstChar());
 						}
 					}
 				}
@@ -608,7 +608,7 @@ lbl_exit_function:
 					){
 
 						ZS_VM_PUSH_NEW_CONTAINER_SLOT(
-							(ContainerScriptObject *)so_aux
+							(ContainerObject *)so_aux
 							,(zs_int)str_symbol_aux1
 							,stk_var
 						);
@@ -619,12 +619,12 @@ lbl_exit_function:
 
 				}
 				goto lbl_exit_ok;
-			}else if(so_aux->script_type_id == SCRIPT_TYPE_ID_SCRIPT_OBJECT_STRING){
+			}else if(so_aux->type_id == TYPE_ID_OBJECT_STRING){
 				if(STACK_ELEMENT_IS_INT(stk_result_op2)==false){ \
 					ZS_VM_STOP_EXECUTEF("Expected integer index for String access");
 				}
 
-				zs_char *ptr_char=(zs_char *)&((StringScriptObject *)so_aux)->str_ptr->c_str()[stk_result_op2->value];
+				zs_char *ptr_char=(zs_char *)&((StringObject *)so_aux)->str_ptr->toConstChar()[stk_result_op2->value];
 				if(instruction->byte_code == BYTE_CODE_LOAD_ARRAY_ITEM){
 					data->vm_stk_current->value=((zs_int)(*ptr_char));
 					data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_INT;

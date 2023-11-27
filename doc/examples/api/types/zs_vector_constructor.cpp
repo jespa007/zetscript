@@ -1,11 +1,11 @@
 #include "zetscript.h"
 
-using zetscript::zs_vector;
+using zetscript::Vector;
 
 int main(){
 	
 	// empty vector of ints
-	zs_vector<int> vector;
+	Vector<int> vector;
 	
 	return 0;
 }

@@ -5,11 +5,11 @@ using zetscript::ZetScript;
 
 class Data{
 public:
-	zetscript::zs_vector<float> data;
+	zetscript::Vector<float> data;
 	Data(){
 		float n[]={0,1,1,10,3,4,6};
 		for(int i=0; i < ZS_ARRAY_SIZE(n); i++){
-			data.push_back(n[i]);
+			data.append(n[i]);
 		}
 	} 
 };

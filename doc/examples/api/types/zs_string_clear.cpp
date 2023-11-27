@@ -1,11 +1,11 @@
 #include "zetscript.h"
-using zetscript::zs_string;
+using zetscript::String;
 int main(){
-	zetscript::zs_string string="Hello World";
+	zetscript::String string="Hello World";
 
 	string.clear();
 
-	printf("string : '%s'\n",string.c_str());
+	printf("string : '%s'\n",string.toConstChar());
 
 	return 0;
 }

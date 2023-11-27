@@ -3,17 +3,17 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::zs_string;
-using zetscript::ArrayScriptObject;
-using zetscript::ObjectScriptObject;
+using zetscript::String;
+using zetscript::ArrayObject;
+using zetscript::ObjectObject;
 
 // Definition of the native function interface returnObject
-ObjectScriptObject *returnObject(ZetScript *_zs){
-	// instance new ObjectScriptObject using ZetScript context
-	ObjectScriptObject *object=_zs->newObjectScriptObject();
+ObjectObject *returnObject(ZetScript *_zs){
+	// instance new ObjectObject using ZetScript context
+	ObjectObject *object=_zs->newObjectObject();
 
-	// instance new ArrayScriptObject using ZetScript context
-	ArrayScriptObject *array=_zs->newArrayScriptObject();
+	// instance new ArrayObject using ZetScript context
+	ArrayObject *array=_zs->newArrayObject();
 
 	// set field "a" as integer 10
 	object->set<zs_int>("a",10);
@@ -32,7 +32,7 @@ ObjectScriptObject *returnObject(ZetScript *_zs){
 		array->push<zs_int>(i);
 	}
 
-	object->set<ArrayScriptObject *>("d",array);
+	object->set<ArrayObject *>("d",array);
 
 	// return object
     return object;

@@ -5,37 +5,37 @@
 namespace zetscript{
 	bool vm_new_object_by_value(
 			VirtualMachine 	*	_vm
-			,ScriptFunction *	_script_function
+			,Function *	_script_function
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		StackElement *stk_result_op1=NULL;
-		ScriptType *sc_aux1=NULL;
+		Type *sc_aux1=NULL;
 		Symbol *symbol_aux=NULL;
-		ScriptObject *so_aux=NULL;
-		ClassScriptObject *so_class_aux1=NULL;
+		Object *so_aux=NULL;
+		ClassObject *so_class_aux1=NULL;
 		Instruction *instruction=_instruction;
 
 		VM_POP_STK_ONE;
 		 if(STACK_ELEMENT_IS_TYPE(stk_result_op1)){
-			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
-			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
+			sc_aux1=data->type_factory->getType(stk_result_op1->value);
+			if(!data->type_factory->isTypeInstanceable(stk_result_op1->value)){
 				ZS_VM_STOP_EXECUTE("'%s' type is not instantiable",sc_aux1->getTypeName());
 			}
 
 			 symbol_aux=NULL;
 
-			 so_aux=NEW_OBJECT_VAR_BY_SCRIPT_TYPE_ID(data->script_type_factory,stk_result_op1->value);
+			 so_aux=NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,stk_result_op1->value);
 
-			vm_create_shared_script_object(_vm,so_aux);
+			vm_create_shared_object(_vm,so_aux);
 
 			data->vm_stk_current->value=(zs_int)so_aux;
-			data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_SCRIPT_OBJECT;
+			data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 			data->vm_stk_current++;
 
-			if(so_aux->script_type_id >= SCRIPT_TYPE_ID_SCRIPT_OBJECT_CLASS){ // custom object by user
+			if(so_aux->type_id >= TYPE_ID_OBJECT_CLASS){ // custom object by user
 
-				so_class_aux1=(ClassScriptObject *)so_aux;
+				so_class_aux1=(ClassObject *)so_aux;
 
 				so_class_aux1->info_function_new=_script_function;
 				so_class_aux1->instruction_new=_instruction;

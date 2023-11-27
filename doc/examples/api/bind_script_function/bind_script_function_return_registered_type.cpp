@@ -1,7 +1,7 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ClassScriptObject;
+using zetscript::ClassObject;
 using zetscript::zs_int;
 
 // Class Number to register
@@ -13,7 +13,7 @@ public:
 	}
 };
 
-// defines new function Number ClassScriptObject
+// defines new function Number ClassObject
 Number *NumberZs_new(ZetScript *_zs){
 	return new  Number();
 }
@@ -22,12 +22,12 @@ void NumberZs_constructor(ZetScript *_zs, Number *_this, zs_int _value){
 	_this->value=_value;
 }
 
-// defines getter property Number::x ClassScriptObject
+// defines getter property Number::x ClassObject
 zs_int NumberZs_get_value(ZetScript *_zs, Number *_this){
 	return _this->value;
 }
 
-// defines delete function Number ClassScriptObject
+// defines delete function Number ClassObject
 void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
@@ -52,22 +52,22 @@ int main(){
 		"}\n"
 	);
 
-	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
-	auto newNumber=zs.bindScriptFunction<ClassScriptObject *()>("newNumber");
+	// It binds 'newNumber' as '(ClassObject *)(void)'
+	auto newNumber=zs.bindFunction<ClassObject *()>("newNumber");
 
-	// Calls ZetScript function which it returns 'ClassScriptObject *' reference
-	auto class_script_object_number=newNumber();
+	// Calls ZetScript function which it returns 'ClassObject *' reference
+	auto class_object_number=newNumber();
 
 	// Prints the contents by console.
-	printf("From zetscript object : %s\n",class_script_object_number->toString().c_str());
+	printf("From zetscript object : %s\n",class_object_number->toString().toConstChar());
 
 	// Cast C++ 'Number' type pointer
-	auto number=class_script_object_number->to<Number *>();
+	auto number=class_object_number->to<Number *>();
 
 	// Prints Number's properties by console.
 	printf("From C++ pointer type : number->value=%f\n",number->value);
 
 	// 'unrefLifetimeObject' it decreases the reference count of script object to tell is not used anymore
-	zs.unrefLifetimeObject(class_script_object_number);
+	zs.unrefLifetimeObject(class_object_number);
  	return 0;
 }

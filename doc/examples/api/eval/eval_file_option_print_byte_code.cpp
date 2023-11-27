@@ -5,6 +5,6 @@ int main(){
 
 	zs.evalFile(
 		"file.zs"
-		,ZS_EVAL_OPTION_PRINT_BYTE_CODE
+		,EVAL_OPTION_PRINT_BYTE_CODE
 	);
 }
