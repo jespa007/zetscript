@@ -203,25 +203,22 @@ endif()
 set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 
 	# Utils
-	util/zs_util.cpp
+	base/@base.cpp
+	
+	# Core
+	#core/@core.cpp 
 	
 	# Modules
-	module/zs_module.cpp
+	#module/zs_module.cpp
 	
 	# Virtual machine
-	vm/vm.cpp
+	#vm/vm.cpp
 	
 	# Eval		
-	eval/eval.cpp
-		
-	# Scope
-	scope/zs_scope.cpp
-			
-	# Core
-	script/zs_script.cpp 
+	#eval/eval.cpp
 
 	# Main api
-	zetscript.cpp
+	#zetscript.cpp
 )
 
 #-------------------------------------------------------------------------------------------------------------------------------------

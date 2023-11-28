@@ -12,14 +12,14 @@
 
 #define STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk) 				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_DICTIONARY_OBJECT))
 #define STACK_ELEMENT_IS_ITERATOR_DICTIONARY_OBJECT(stk)		(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ITERATOR_OBJECT))
-#define STACK_ELEMENT_IS_STRING_OBJECT(stk) 				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_STRING))
-#define STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk)	(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ITERATOR_STRING))
-#define STACK_ELEMENT_IS_ARRAY_OBJECT(stk) 				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ARRAY))
-#define STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk)		(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ITERATOR_ARRAY))
-#define STACK_ELEMENT_IS_CLASS_OBJECT(stk) 				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id>=zetscript::TYPE_ID_OBJECT_CLASS))
-#define STACK_ELEMENT_IS_VAR_REF_OBJECT(stk) 			(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_VAR_REF))
-#define STACK_ELEMENT_IS_MEMBER_FUNCTION_OBJECT(stk)		(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_FUNCTION_MEMBER))
-#define STACK_ELEMENT_IS_ZETDICTIONARY_OBJECT(stk) 	(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ZETSCRIPT))
+#define STACK_ELEMENT_IS_STRING_OBJECT(stk) 					(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_STRING))
+#define STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk)		(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ITERATOR_STRING))
+#define STACK_ELEMENT_IS_ARRAY_OBJECT(stk) 						(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ARRAY))
+#define STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk)				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ITERATOR_ARRAY))
+#define STACK_ELEMENT_IS_CLASS_OBJECT(stk) 						(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id>=zetscript::TYPE_ID_OBJECT_CLASS))
+#define STACK_ELEMENT_IS_VAR_REF_OBJECT(stk) 					(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_VAR_REF))
+#define STACK_ELEMENT_IS_MEMBER_FUNCTION_OBJECT(stk)			(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_FUNCTION_MEMBER))
+#define STACK_ELEMENT_IS_ZETDICTIONARY_OBJECT(stk) 				(((stk)->properties & zetscript::STACK_ELEMENT_PROPERTY_OBJECT) && (((zetscript::Object *)(stk)->value)->type_id==zetscript::TYPE_ID_OBJECT_ZETSCRIPT))
 
 #define ZS_GET_STK_VAR_REF(stk)  								(((VarRefObject *)((stk))->value)->getStackElementPtr())
 
@@ -42,7 +42,7 @@
 #define STACK_ELEMENT_IS_TYPE(stk) 								((stk)->properties & STACK_ELEMENT_PROPERTY_TYPE_ID)
 #define STACK_ELEMENT_IS_MEMBER_PROPERTY(stk) 					((stk)->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY)
 #define STACK_ELEMENT_IS_MEMBER_FUNCTION(stk) 					((stk)->properties & STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION)
-#define STACK_ELEMENT_IS_OBJECT(stk) 					((stk)->properties & STACK_ELEMENT_PROPERTY_OBJECT)
+#define STACK_ELEMENT_IS_OBJECT(stk) 							((stk)->properties & STACK_ELEMENT_PROPERTY_OBJECT)
 
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) 				(((bool)(ptr_result_instruction->value)))
 

@@ -32,7 +32,7 @@ int main(int argc, char * argv[]) {
 		bool exit_loop=false;
 		for(;idx_arg  < argc && exit_loop==false; idx_arg++){
 
-			bool is_option=zetscript::String::startsWith(argv[idx_arg],"--"); // is option
+			bool is_option=zetscript::StringUtils::startsWith(argv[idx_arg],"--"); // is option
 
 			if(is_option){
 
