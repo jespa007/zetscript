@@ -89,7 +89,7 @@ namespace zetscript{
 				}
 
 				if((start_word+1)<aux){ // copy string without double quotes...
-					default_str_value=String::copyFromPtrDiff(start_word+1,aux);
+					default_str_value=eval_copy_const_char_diff(start_word+1,aux);
 				}
 				aux++;
 				value=(zs_int)eval_data->zs->registerStkConstantStringObject(String("\"")+default_str_value+"\"",default_str_value);

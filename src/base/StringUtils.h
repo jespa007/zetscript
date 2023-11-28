@@ -19,15 +19,14 @@ namespace zetscript{
 	public:
     
 		 static bool  		* 	parseBool(const String & );
-		 static zs_int		* 	parseInt(const String & );
-		 static zs_float	* 	parseFloat(const String & );
+
+
 
 
 		 static String 			intToString(zs_int _number, const String & _format = "");
 		 static String 			floatToString(zs_float _number);
 		 static String 			toLower(const String & str);
 		 static String 			toUpper(const String & str);
-		 static char 		*	cloneToCharPtr(const String & _str_in);
 		 static String  		format(const  char  *string_text, ...);
 		 static String			formatFileLine(const char* _file, int _line, const  char* _str_in, ...);
 
@@ -46,13 +45,6 @@ namespace zetscript{
 		 static String 			remove(const String & str_old, char ch_to_remove);
 
 		 static int 			count(const String & s,char c);
-
-		/**
-		 * Given two pointers within that points within a String, this function copies String between its interval.
-		 * @p1:start pointer
-		 * @p2:end pointer
-		 */
-		static String 			copyFromPtrDiff(const char *p1, const char *p2);
 
 
 		static bool 			contains(const String & _str_input, const String & _str_containts,StringComparer sc=StringComparer::Exactly);

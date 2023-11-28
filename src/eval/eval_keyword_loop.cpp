@@ -145,7 +145,7 @@ namespace zetscript{
 			ei_jnt->instruction_source_info.line=line;
 
 
-			start_symbol=String::copyFromPtrDiff(aux_p+1, end_expr);
+			start_symbol=eval_copy_const_char_diff(aux_p+1, end_expr);
 
 			IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 
@@ -265,7 +265,7 @@ namespace zetscript{
 						,&eval_data->current_function->eval_instructions
 						,")"
 				)) != NULL){
-					start_symbol=String::copyFromPtrDiff(aux_p+1, end_expr);
+					start_symbol=eval_copy_const_char_diff(aux_p+1, end_expr);
 				}else{
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected ')'");
 				}

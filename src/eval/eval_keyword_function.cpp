@@ -380,7 +380,7 @@ namespace zetscript{
 				}
 
 				// copy value
-				param_value=String::copyFromPtrDiff(aux_p,end_var);
+				param_value=eval_copy_const_char_diff(aux_p,end_var);
 				// ok register symbol into the object function ...
 				param_info.name=String(param_value);
 

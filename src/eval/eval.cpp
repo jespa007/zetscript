@@ -28,6 +28,37 @@
 
 namespace zetscript{
 
+	/**
+	 * Given two pointers within that points within a String, this function copies String between its interval.
+	 * @p1:start pointer
+	 * @p2:end pointer
+	 */
+
+	String eval_copy_from_const_char_diff(const char *p1, const char *p2){
+
+		char aux_str_copy[ZS_MAX_STR_BUFFER] = {0};
+
+		if(p1 == NULL || p2 == NULL){
+			ZS_THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
+		}
+
+		int var_length=p2-p1;
+
+		if(var_length < 0 || var_length >= (ZS_MAX_STR_BUFFER+1)){
+			ZS_THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,ZS_MAX_STR_BUFFER,var_length);
+		}
+
+		if(p1 == p2){
+			ZS_THROW_RUNTIME_ERRORF("Nothing to copy");
+		}
+
+		strncpy(aux_str_copy,p1,var_length);
+
+		return aux_str_copy;
+
+	}
+
+
 	void eval_parse_and_compile(ZetScript *zs
 			,const char * str_code
 			,EvalData *_eval_data_from
@@ -330,7 +361,7 @@ namespace zetscript{
 
 						end_var=aux;
 
-						str_symbol=String::copyFromPtrDiff(start_var,end_var);
+						str_symbol=eval_copy_const_char_diff(start_var,end_var);
 
 						ZS_LOG_DEBUG("import file: %s",str_symbol.toConstChar());
 
