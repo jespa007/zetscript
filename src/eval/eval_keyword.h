@@ -10,7 +10,7 @@ namespace zetscript{
 
 
 	// function
-	enum:uin16_t{
+	enum:uint16_t{
 		EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS 		=0x0001
 		,EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY 	=0x0002
 	}EvalKeywordFunctionProperty;

@@ -97,7 +97,7 @@ namespace zetscript{
 
 			if((symbol_equals && ((int)irfs->params_len == (_n_args+start_param)))){
 				// Only check native functions
-				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
+				if((irfs->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					TypeId arg_type_id=TYPE_ID_INVALID;
 
@@ -179,7 +179,7 @@ namespace zetscript{
 				?
 				_symbol_to_find
 				:
-				String::format("%s::%s",class_str.toConstChar(),_symbol_to_find.toConstChar());
+				StringUtils::format("%s::%s",class_str.toConstChar(),_symbol_to_find.toConstChar());
 
 			String args_str = "";
 			/* get arguments... */
@@ -237,7 +237,7 @@ namespace zetscript{
 
 				ZS_VM_EXTRACT_FUNCTION_INFO
 
-				if((irfs->name == _symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){
+				if((irfs->name == _symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
@@ -261,7 +261,7 @@ namespace zetscript{
 						}
 
 						str_candidates+=Rtti::demangle(
-							TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
+							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
 						);
 					}
 
@@ -272,7 +272,7 @@ namespace zetscript{
 					str_candidates.append(" -- BIND FUNCTION AS --> ");
 
 					str_candidates.append(Rtti::demangle(
-							TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->return_type_id)
+							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->return_type_id)
 						)
 					);
 
@@ -285,7 +285,7 @@ namespace zetscript{
 						}
 
 						str_candidates.append(Rtti::demangle(
-							TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
+							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
 							)
 						);
 					}
@@ -333,7 +333,7 @@ namespace zetscript{
 		String 			str_aux;
 		Instruction			*	instruction=_instruction;
 
-		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
+		if((_c_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
 			ZS_VM_SET_USER_ERRORF(_vm,"Internal error: Function not native");
 			return;
 		}
@@ -375,7 +375,7 @@ namespace zetscript{
 			ZS_VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",ZS_MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
-		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
+		if((_c_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != FUNCTION_PROPERTY_NATIVE_OBJECT_REF) {
 			ZS_VM_ERROR_AND_RETF("Function is not registered as C");
 		}
 

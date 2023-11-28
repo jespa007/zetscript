@@ -3,6 +3,8 @@
  *  See LICENSE file for details.
  */
 
+#pragma once
+
 #include        <stdlib.h>
 #include        <stdio.h>
 
@@ -61,12 +63,13 @@
 #include "Config.h"
 #include "Common.h"
 
+#include "String.h"
 #include "Exception.h"
 #include "System.h"
 #include "Vector.h"
+#include "StringUtils.h"
 #include "List.h"
 #include "Buffer.h"
-#include "String.h"
 #include "String.h"
 #include "File.h"
 #include "Log.h"

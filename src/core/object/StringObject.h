@@ -8,7 +8,7 @@
 
 
 namespace zetscript{
-
+	class  ArrayObject;
 	class  StringObject: public Object{
 
 	public:

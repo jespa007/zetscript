@@ -170,7 +170,7 @@ namespace zetscript{
 			Function *ptr_function=(Function *)symbol_function->ref_ptr;
 			if((ptr_function->properties & FUNCTION_PROPERTY_STATIC) == 0){
 
-				if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+				if((ptr_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 
 					StackElement result=ZS_VM_EXECUTE(
 							this->vm
@@ -230,7 +230,7 @@ namespace zetscript{
 			 // only erases pointer if basic type or user/auto delete is required ...
 			CALL_DESTRUCTOR_CLASS(zs,script_class_native,created_object);//(*(script_class_native->delete_native_instance))(created_object);
 		}else if(was_created_by_constructor){
-			fprintf(stderr,"%s",String::format(ZS_FORMAT_FILE_LINE" Allocated C pointer not deallocated"
+			fprintf(stderr,"%s",StringUtils::format(ZS_FORMAT_FILE_LINE" Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)
 				).toConstChar()
 			);

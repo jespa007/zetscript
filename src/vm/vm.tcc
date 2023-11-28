@@ -12,7 +12,7 @@ namespace zetscript{
 		Scope *scope=scope_block->scope;\
 		StackElement         * stk_local_vars	=ZS_VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
 		Vector<Symbol *> *scope_symbols=scope->symbol_variables;\
-		int count=(int)scope_symbols->size();\
+		int count=(int)scope_symbols->length();\
 
 		if(count > 0 ){
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->data()[0]->idx_position;\

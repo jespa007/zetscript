@@ -6,7 +6,7 @@
 
 namespace zetscript{
 	
-	void *Memory::zs_malloc(size_t _size,const char *_file, int _line){
+	void *zs_malloc(size_t _size,const char *_file, int _line){
 		void *p=NULL;
 #ifdef __MEMMANAGER__
 		p=MEMMGR_malloc(_size,_file,_line);

@@ -25,5 +25,5 @@ namespace zetscript{
 
 		static void  print(const  char  *file, int  line, int level, bool with_cr, const  char  *string_text, ...);
 
-	}
+	};
 }

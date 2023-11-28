@@ -356,7 +356,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 
-				type=GET_OBJECT_TYPE(eval_data->type_factory,symbol_name);
+				type=ZS_GET_OBJECT_TYPE(eval_data->type_factory,symbol_name);
 
 				// parse expression
 				if(type==NULL){
@@ -486,7 +486,7 @@ namespace zetscript{
 
 					 if(constructor_function!=NULL){
 						 // set idx function found
-						 if((constructor_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
+						 if((constructor_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){  // is a script constructor so only set idx
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 						 }else{// is a native constructor, find a constructor if it passes one or more args
 							 if(n_args > 0){ // we have to find our custom function to call after object is created

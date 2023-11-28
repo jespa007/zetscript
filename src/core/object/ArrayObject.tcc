@@ -7,7 +7,7 @@ namespace zetscript{
 
 	template<typename _T>
 	bool 								ArrayObject::elementInstanceOf(int _pos){
-		if(_pos >= stk_elements.size()){
+		if(_pos >= stk_elements.length()){
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 
@@ -16,7 +16,7 @@ namespace zetscript{
 
 	template<typename _T>
 	_T	ArrayObject::get(int _pos){
-		if(_pos >= stk_elements.size()){
+		if(_pos >= stk_elements.length()){
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 
@@ -25,7 +25,7 @@ namespace zetscript{
 
 	template<typename _T>
 	void	ArrayObject::set(int _pos, _T _element){
-		if(_pos >= stk_elements.size()){
+		if(_pos >= stk_elements.length()){
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 		auto stk=this->zs->toStackElement(_element);

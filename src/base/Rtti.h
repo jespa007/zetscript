@@ -7,7 +7,7 @@
 namespace zetscript{
 	class Rtti{
 	public:
-		String  demangle(const char * name);
+		static String  demangle(const char * name);
 
-	}
+	};
 }

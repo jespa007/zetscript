@@ -43,7 +43,7 @@ namespace zetscript{
 				,METAMETHOD_SYMBOL_NAME_GETTER
 				,&params
 				,params_len
-				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
+				,FUNCTION_PROPERTY_NATIVE_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				, return_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
@@ -86,7 +86,7 @@ namespace zetscript{
 				,_metamethod_name
 				,&params
 				,params_len
-				,FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
+				,FUNCTION_PROPERTY_NATIVE_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				, return_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
@@ -129,7 +129,7 @@ namespace zetscript{
 				 _function_name
 				,&params
 				,params_len
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
+				, FUNCTION_PROPERTY_NATIVE_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				, return_type_id
 				, (zs_int)_ptr_function
 				,_registered_file
@@ -170,7 +170,7 @@ namespace zetscript{
 				 _function_name
 				, &params
 				, params_len
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_NATIVE_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				, return_type_id
 				, (zs_int)_ptr_function
 				,_registered_file

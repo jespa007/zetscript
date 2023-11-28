@@ -391,7 +391,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("Type name '%s' is already defined %s"
 						,_str_type.toConstChar()
 						,main_function_symbol->file!=NULL && strcmp(main_function_symbol->file,"")!=0 && main_function_symbol->line!=-1?
-							String::format("at " ZS_FORMAT_FILE_LINE
+							StringUtils::format("at " ZS_FORMAT_FILE_LINE
 								,Path::getFilename(main_function_symbol->file).toConstChar()
 								,main_function_symbol->line
 							).toConstChar():""
@@ -538,7 +538,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=type->registerMemberFunction(
-					String::format(
+					StringUtils::format(
 						"@__field_initializer_%s_@__"
 						,type->name.toConstChar()
 					)

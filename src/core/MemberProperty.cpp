@@ -24,13 +24,13 @@ namespace zetscript{
 		at++;
 
 		// custom case get...
-		if(String::startsWith(at,METAMETHOD_SYMBOL_NAME_GETTER)){
+		if(StringUtils::startsWith(at,METAMETHOD_SYMBOL_NAME_GETTER)){
 			return true;
 		}
 
 		//
 		while(*it!=0){
-			if(String::startsWith(at,MetamethodHelper::getMetamethodSymbolName(*it))){
+			if(StringUtils::startsWith(at,MetamethodHelper::getMetamethodSymbolName(*it))){
 				return true;
 			}
 			it++;

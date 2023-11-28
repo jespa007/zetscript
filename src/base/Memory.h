@@ -4,12 +4,8 @@
  */
 #pragma once
 
-#define ZS_MALLOC(s) zetscript::Memory::malloc(s,__FILE__,__LINE__)
+#define ZS_MALLOC(s) zetscript::zs_malloc(s,__FILE__,__LINE__)
 
 namespace zetscript{
-	class Memory{
-	public:
-		static void *malloc(size_t _size,const char *_file, int _line);
-	}
-
+	void *zs_malloc(size_t _size,const char *_file, int _line);
 }

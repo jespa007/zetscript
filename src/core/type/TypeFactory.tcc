@@ -40,7 +40,7 @@ namespace zetscript{
 				,params_len
 				,return_type_id
 				,(zs_int)_ptr_function
-				,FUNCTION_PROPERTY_C_OBJECT_REF
+				,FUNCTION_PROPERTY_NATIVE_OBJECT_REF
 			);
 
 		ZS_LOG_DEBUG("Registered function name '%s'",_function_name.toConstChar());
@@ -60,7 +60,7 @@ namespace zetscript{
 
 		Type *type=NULL;
 		const char * native_name = typeid( T *).name();
-		//int size=types->size();
+		//int size=types->length();
 		TypeId type_id=TYPE_ID_INVALID;
 		Scope * scope = NULL;
 
@@ -74,7 +74,7 @@ namespace zetscript{
 			);
 		}
 
-		type_id=(TypeId)types->size();
+		type_id=(TypeId)types->length();
 		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS|ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,name);
 
@@ -86,7 +86,7 @@ namespace zetscript{
 		// allow dynamic constructor in function its parameters ...
 		type->new_native_instance = NULL;
 		type->delete_native_instance = NULL;
-		types->append(type);
+		types->push(type);
 
 
 		if((_new_native_instance != NULL) && (_delete_native_instance != NULL)){ // it can instanced, not static
@@ -97,7 +97,7 @@ namespace zetscript{
 			type->properties|=ZS_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		type->id=types->size()-1;
+		type->id=types->length()-1;
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",name.toConstChar(),Rtti::demangle(native_name).toConstChar());
 
 		return type;
@@ -137,7 +137,7 @@ namespace zetscript{
 		Type *main_class=types->get(register_type_id);
 
 
-		for(int i=0; i < main_class->base_type_ids->size(); i++){
+		for(int i=0; i < main_class->base_type_ids->length(); i++){
 			Type *type=getType(main_class->base_type_ids->get(i)); // get base type...
 			if(type->native_name ==base_class_name_ptr){
 				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
@@ -150,7 +150,7 @@ namespace zetscript{
 		Type *base=(Type *)types->get(base_type_id);
 
 		// search native types that already inherits type B
-		for(int i=0; i < main_class->base_type_ids->size(); i++){
+		for(int i=0; i < main_class->base_type_ids->length(); i++){
 			Type *type=getType(main_class->base_type_ids->get(i)); // get base type...
 			// check whether type inherits inheritates B
 			if(type->extendsFrom(base_type_id)){
@@ -175,7 +175,7 @@ namespace zetscript{
 		}
 
 		Type *this_class = (Type *)types->get(register_type_id);
-		this_class->base_type_ids->append(base_type_id);
+		this_class->base_type_ids->push(base_type_id);
 
 		//----------------------------
 		//
@@ -187,7 +187,7 @@ namespace zetscript{
 		Vector<Symbol *> *base_functions=base_class->scope->symbol_functions;
 
 		// register all c vars symbols ...
-		for(int i = 0; i < base_functions->size(); i++){
+		for(int i = 0; i < base_functions->length(); i++){
 
 			Symbol *src_symbol = (Symbol *)base_functions->get(i);
 
@@ -230,7 +230,7 @@ namespace zetscript{
 		}
 
 
-		for(int i = 0; i < base_vars->size(); i++){
+		for(int i = 0; i < base_vars->length(); i++){
 			Symbol *src_symbol = (Symbol *)base_vars->get(i);
 
 			if(src_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
@@ -292,7 +292,7 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(int h=0; h < mp_info.setters->size(); h++){
+						for(int h=0; h < mp_info.setters->length(); h++){
 
 							StackElement *stk_setter=mp_info.setters->get(h);
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;

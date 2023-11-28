@@ -288,7 +288,7 @@ namespace zetscript{
 				String error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)?String::format(
+					,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)?StringUtils::format(
 							"declaring function member '%s::%s'"
 							,scope_info->owner_type->name.toConstChar()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
@@ -299,7 +299,7 @@ namespace zetscript{
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)?String::format(
+							,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)?StringUtils::format(
 									"declaring function member '%s::%s'"
 									,scope_info->owner_type->name.toConstChar()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
@@ -547,7 +547,7 @@ namespace zetscript{
 				}
 
 				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->owner_type != TYPE_MAIN(eval_data->type_factory)){ // is a function that was created within a member function...
+					if(scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)){ // is a function that was created within a member function...
 						((Function *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}

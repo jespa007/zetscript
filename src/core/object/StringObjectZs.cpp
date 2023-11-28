@@ -120,7 +120,7 @@ namespace zetscript{
 	bool StringObjectZs_startsWith(ZetScript *_zs,StringObject *so,String *prefix){
 		ZS_UNUSUED_PARAM(_zs);
 		String *str=so->str_ptr;
-		return String::startsWith(*str,*prefix);
+		return StringUtils::startsWith(*str,*prefix);
 	}
 
 	bool StringObjectZs_endsWith(ZetScript *_zs,StringObject *so,String *suffix){
@@ -141,7 +141,7 @@ namespace zetscript{
 
 	StringObject * 	StringObjectZs_toLowerCase(ZetScript *_zs,StringObject *so){
 		StringObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
-		str_out->set(String::toLower(so->toString()));
+		str_out->set(StringUtils::toLower(so->toString()));
 		return str_out;
 	}
 

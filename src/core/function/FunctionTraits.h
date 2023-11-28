@@ -177,7 +177,7 @@ namespace zetscript{
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
-		if(args.size()>ZS_MAX_NATIVE_FUNCTION_ARGS){
+		if(args.length()>ZS_MAX_NATIVE_FUNCTION_ARGS){
 			ZS_THROW_RUNTIME_ERROR(
 				"Max arguments reached (max:'%i')"
 				,ZS_MAX_NATIVE_FUNCTION_ARGS
@@ -193,24 +193,24 @@ namespace zetscript{
 		}
 
 		if(_params != NULL){
-			*_params=new FunctionParam[args.size()];
-			*_params_len=args.size();
+			*_params=new FunctionParam[args.length()];
+			*_params_len=args.length();
 
-			if(args.size()==0){
+			if(args.length()==0){
 				ZS_THROW_RUNTIME_ERRORF(
 					"Function to bind has to have 'ZetScript *' as FIRST parameter"
 				);
 			}
 
-			if(args.size()==1 && _type != NULL){
-				error=String::format(
+			if(args.length()==1 && _type != NULL){
+				error=StringUtils::format(
 					"Function to bind has to have '%s' as SECOND parameter for object member reference"
 					,Rtti::demangle(_type->native_name.toConstChar()).toConstChar()
 				);
 
 			}
 
-			for(int i = 0; i < args.size(); i++){
+			for(int i = 0; i < args.length(); i++){
 				const char *str_param=(const char *)args.get(i);
 				TypeId type_id = _script_class_factory->getTypeIdFromTypeNamePtr(str_param);
 
@@ -225,7 +225,7 @@ namespace zetscript{
 
 				if(i==1 && _type!=NULL){
 					if(strcmp(str_param,_type->native_name.toConstChar())!=0){
-						error=String::format(
+						error=StringUtils::format(
 							"SECOND parameter, as object member reference, has to be type '%s' but it was '%s'"
 							,Rtti::demangle(_type->native_name.toConstChar()).toConstChar()
 							,Rtti::demangle(str_param).toConstChar()
@@ -236,7 +236,7 @@ namespace zetscript{
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(type_id==TYPE_ID_FLOAT_C || type_id==TYPE_ID_BOOL_C || type_id == TYPE_ID_ZS_STRING_C){
-					error=String::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
+					error=StringUtils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,Rtti::demangle(str_param).toConstChar()
 							,Rtti::demangle(str_param).toConstChar());
@@ -245,7 +245,7 @@ namespace zetscript{
 
 				if(type_id==TYPE_ID_INVALID){
 
-					error=String::format("Argument %i type '%s' not registered"
+					error=StringUtils::format("Argument %i type '%s' not registered"
 						,i+1
 						,Rtti::demangle(str_param).toConstChar()
 					);
@@ -258,7 +258,7 @@ namespace zetscript{
 
 exit_function_traits:
 
-		if(String::isEmpty(error)==false){
+		if(StringUtils::isEmpty(error)==false){
 
 			if(*_params !=NULL){
 				delete [] *_params;

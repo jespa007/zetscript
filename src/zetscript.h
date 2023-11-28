@@ -6,13 +6,9 @@
 
 #include "base/@base.h"
 #include "core/@core.h"
-
-
-
-#include "scope/scope.h"
-#include "module/@module.h"
 #include "eval/eval.h"
 #include "vm/vm.h"
+#include "module/@module.h"
 
 
 #define ZETSCRIPT_VERSION_MAJOR 2
@@ -28,9 +24,8 @@ namespace zetscript{
 
 	enum:uint16_t{
 		 EVAL_OPTION_NO_EXECUTE				=0x1
-		,EVAL_OPTION_PRINT_BYTE_CODE			=0x2
-		,EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
-
+		,EVAL_OPTION_PRINT_BYTE_CODE		=0x2
+		,EVAL_OPTION_PRINT_ALL_BYTE_CODE	=0x4
 	}EvalOption;
 
 	struct VirtualMachine;
@@ -38,7 +33,6 @@ namespace zetscript{
 	class ZetScript{
 
 	public:
-
 
 		//===================================================================================================
 		//

@@ -4,10 +4,10 @@
  */
 
 
-#include <script/object/ArrayObject.tcc>
-#include <script/object/ClassObject.tcc>
-#include <script/object/DictionaryObject.tcc>
-#include <script/type/TypeFactory.tcc>
+#include "core/object/ArrayObject.tcc"
+#include "core/object/ClassObject.tcc"
+#include "core/object/DictionaryObject.tcc"
+#include "core/type/TypeFactory.tcc"
 
 
 
@@ -1650,7 +1650,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			for(int i = 0; i < params.size(); i++){
+			for(int i = 0; i < params.length(); i++){
 				char *str_param=(char *)params.get(i);
 				TypeId type_id=type_factory->getTypeIdFromTypeNamePtr(str_param);
 
@@ -1703,19 +1703,19 @@ namespace zetscript{
 			std::function<F> return_function=NULL;
 			Function * fun_obj=NULL;
 			Object *calling_obj=NULL;
-			Vector<String> access_var = String::split(function_access,'.');
+			Vector<String> access_var = StringUtils::split(function_access,'.');
 			Function * main_function = type_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;
 
 
 			// 1. some variable in main function ...
-			if(access_var.size()>1){
-				for(int i=0; i < access_var.size()-1; i++){
+			if(access_var.length()>1){
+				for(int i=0; i < access_var.length()-1; i++){
 					const char *symbol_to_find=access_var.get(i).toConstChar();
 					if(i==0){ // get variable through main_class.main_function (global element)
 						Vector<Symbol *> *list_variables=main_function->scope->symbol_variables;
-						for(int j = 0; j < list_variables->size() && calling_obj==NULL; j++){
+						for(int j = 0; j < list_variables->length() && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->get(j);
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == ZS_MAIN_SCOPE(this)){
@@ -1774,7 +1774,7 @@ namespace zetscript{
 					}
 				}
 
-				symbol_sfm=calling_obj->getType()->getSymbolMemberFunction(access_var.get(access_var.size()-1).toConstChar());
+				symbol_sfm=calling_obj->getType()->getSymbolMemberFunction(access_var.get(access_var.length()-1).toConstChar());
 				if(symbol_sfm!=NULL){
 					Function *test_fun=NULL;
 					if(symbol_sfm->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -1790,7 +1790,7 @@ namespace zetscript{
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
 							,function_access.toConstChar()
-							,access_var.get(access_var.size()-1).toConstChar()
+							,access_var.get(access_var.length()-1).toConstChar()
 					);
 				}
 
@@ -1798,7 +1798,7 @@ namespace zetscript{
 				String symbol_to_find=access_var.get(0);
 				Vector<Symbol *> *list_functions=main_function->scope->symbol_functions;
 
-				for(int i = 0; i < list_functions->size() && fun_obj==NULL; i++){
+				for(int i = 0; i < list_functions->length() && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->get(i);
 					Function *aux_fun_obj=(Function *)symbol->ref_ptr;
 					if(	aux_fun_obj->name == symbol_to_find){
@@ -1814,7 +1814,7 @@ namespace zetscript{
 						,line
 						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
 						,function_access.toConstChar()
-						,access_var.get(access_var.size()-1).toConstChar()
+						,access_var.get(access_var.length()-1).toConstChar()
 				);
 			}
 			try{

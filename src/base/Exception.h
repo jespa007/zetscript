@@ -15,7 +15,7 @@ namespace zetscript {
 	class Exception: public std::exception{
 		public:
 
-			Exception(const char *   _file, int _line, const String & _error_description, const char *_error_type);
+			Exception(const char *   _file, int _line, const String & _error_description);
 			virtual const char* what() const noexcept;
 
 			int getLine();

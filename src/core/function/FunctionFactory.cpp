@@ -33,7 +33,7 @@ namespace zetscript{
 		){
 
 		Symbol *symbol=NULL;
-		uint16_t _symbol_check_repeated=_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
+		uint16_t _symbol_check_repeated=_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 
 
 		// try to not check if function name is constructor or is function member but different type scope

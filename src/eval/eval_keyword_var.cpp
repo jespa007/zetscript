@@ -215,7 +215,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?String::format("::%s",type->name.toConstChar()).toConstChar():""
+							,sc_var_member_extension!=NULL?StringUtils::format("::%s",type->name.toConstChar()).toConstChar():""
 							,variable_name.toConstChar());
 				}
 

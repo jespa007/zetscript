@@ -122,11 +122,11 @@ namespace zetscript{
 
 		// Custom user function or classes
 		eval(
-			String::format(
+			StringUtils::format(
 				//------------------------------------------------
 				// String
-				"static String::format(_s,..._args){" // add static function format to String module
-				"	return String::formatNative(_s,_args)"
+				"static StringUtils::format(_s,..._args){" // add static function format to String module
+				"	return StringUtils::formatNative(_s,_args)"
 				"}"
 				//------------------------------------------------
 				// DateTime
@@ -256,13 +256,13 @@ namespace zetscript{
 				Function *local_sf = (Function *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
-						 String::startsWith(local_sf->name,"@_afun_defval")
+						 StringUtils::startsWith(local_sf->name,"@_afun_defval")
 				)){
 					 show_function=false;
 				 }
 
 				if((show_function == true)
-				 &&	(( local_sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF)
+				 &&	(( local_sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != FUNCTION_PROPERTY_NATIVE_OBJECT_REF)
 				){
 					Function::printGeneratedCode(local_sf);
 				}
@@ -637,7 +637,7 @@ namespace zetscript{
 				_error="cannot convert '"
 					+Rtti::demangle(k_str_bool_type_ptr)
 					+"' to '"
-					+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
+					+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
 					+"'";
 				return false;
 			}
@@ -662,7 +662,7 @@ namespace zetscript{
 				_error="cannot convert '"
 					+Rtti::demangle(k_str_float_type_ptr)
 					+"' to '"
-					+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+					+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
 					+"'";
 				return false;
 			}
@@ -677,7 +677,7 @@ namespace zetscript{
 				break;
 			default:
 				_error="cannot convert 'int' to '"
-				+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+				+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
 				+"'";
 				return false;
 			}
@@ -720,7 +720,7 @@ namespace zetscript{
 							_error="cannot convert '"
 									+Rtti::demangle((k_str_string_type_ptr))
 									+"' to '"
-									+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+									+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
 									+"'";
 							return false;
 						}
@@ -742,7 +742,7 @@ namespace zetscript{
 								_error="cannot convert '"
 										+Rtti::demangle(c_class->native_name.toConstChar())
 										+"' to '"
-										+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+										+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
 										+"'";
 								return false;
 							}
@@ -758,14 +758,14 @@ namespace zetscript{
 						_error="cannot convert '"
 							+Rtti::demangle(object->getTypeName())
 							+"' to '"
-							+Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+							+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
 							+"'";
 						return false;
 					}
 				}
 			}else{
-				_error=String::format("Cannot know how to convert type '%s' from '%s'"
-					,Rtti::demangle(TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
+				_error=StringUtils::format("Cannot know how to convert type '%s' from '%s'"
+					,Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
 					,this->stackElementToStringTypeOf(_stack_element).toConstChar()
 				);
 				return false;

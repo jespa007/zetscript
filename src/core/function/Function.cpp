@@ -75,7 +75,7 @@ namespace zetscript{
 		int req_stk;
 
 
-		if(sfo->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+		if(sfo->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
 
@@ -169,30 +169,30 @@ namespace zetscript{
 			default:
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
-				 iload_info=String::format("%s", instruction->getConstantValueOp2ToString().toConstChar());
+				 iload_info=StringUtils::format("%s", instruction->getConstantValueOp2ToString().toConstChar());
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-				 iload_info=String::format("%s['%s']"
+				 iload_info=StringUtils::format("%s['%s']"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-			 	 iload_info=String::format("%s,%s['%s']"
+			 	 iload_info=StringUtils::format("%s,%s['%s']"
 					 ,instruction->getConstantValueOp2ToString().toConstChar()
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
-				 iload_info=String::format("%s['%s'],%s"
+				 iload_info=StringUtils::format("%s['%s'],%s"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().toConstChar()
 				 );
 				break;
 		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
-		   	   iload_info=String::format(
+		   	   iload_info=StringUtils::format(
 		   			 "%s['%s'],%s['%s']"
 		  			 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 		  			 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
@@ -210,7 +210,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,ByteCodeHelper::getByteCodeName(instruction->byte_code)
-					,(int8_t)instruction->value_op1!=ZS_UNDEFINED_IDX?GET_TYPE_NAME(sfo->type_factory,instruction->value_op1):"???"
+					,(int8_t)instruction->value_op1!=ZS_UNDEFINED_IDX?ZS_GET_TYPE_NAME(sfo->type_factory,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -495,7 +495,7 @@ namespace zetscript{
 				if(same_signature){
 					ZS_THROW_EXCEPTION_FILE_LINE(NULL,-1,"Function '%s' with same signature already binded"
 						,function_member->scope!=NULL?
-								String::format("%s::%s"
+								StringUtils::format("%s::%s"
 										,function_member->scope->owner_type->name.toConstChar()
 										,_function_name.toConstChar()).toConstChar()
 								:_function_name.toConstChar()
@@ -624,16 +624,16 @@ namespace zetscript{
 	){
 		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		String current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
-							String::format(ZS_FORMAT_LINE,_line):
-							String::format(ZS_FORMAT_FILE_LINE,Path::getFilename(_file).toConstChar(),_line);
+							StringUtils::format(ZS_FORMAT_LINE,_line):
+							StringUtils::format(ZS_FORMAT_FILE_LINE,Path::getFilename(_file).toConstChar(),_line);
 
 		if(symbol_repeat != NULL){ // symbol found
 
 			Function *sf_repeat=NULL;
 
 			String symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
-					String::format(ZS_FORMAT_LINE,_line):
-					String::format(ZS_FORMAT_FILE_LINE,Path::getFilename(symbol_repeat->file).toConstChar(),_line);
+					StringUtils::format(ZS_FORMAT_LINE,_line):
+					StringUtils::format(ZS_FORMAT_FILE_LINE,Path::getFilename(symbol_repeat->file).toConstChar(),_line);
 
 
 			if(symbol_repeat->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -643,10 +643,10 @@ namespace zetscript{
 			if((sf_repeat == NULL) // repeat symbol is variable
 							||
 			// .. or both are not script neither c ref
-			(sf_repeat->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != (_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)
+			(sf_repeat->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != (_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)
 							||
 			// ... or both are script but not in the same scope
-			((((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_C_OBJECT_REF) == 0) && 	(symbol_repeat->scope != _scope_block) )
+			((((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0) && 	(symbol_repeat->scope != _scope_block) )
 
 			) // repeat symbol are not both c or script funtions
 			{
@@ -660,7 +660,7 @@ namespace zetscript{
 				);
 			}
 
-			if(((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+			if(((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 				// override script function
 				Function *sf = (Function *)symbol_repeat->ref_ptr;
 				sf->clear();
@@ -692,7 +692,7 @@ namespace zetscript{
 		);
 
 		// register num symbols only for c symbols...
-		if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) != 0) && (symbol_repeat!=NULL)){
+		if(((_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != 0) && (symbol_repeat!=NULL)){
 			((Function *)symbol->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 

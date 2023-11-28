@@ -66,7 +66,7 @@ namespace zetscript{
 			script_interface.append(sf->name);
 			script_interface.append("(");
 
-			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+			if(sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){
 				start_idx=2;
 			}
 
@@ -75,12 +75,12 @@ namespace zetscript{
 					script_interface.append(",");
 				}
 
-				if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+				if(sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){
 					script_interface+=Rtti::demangle(
-						TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].type_id)
+						ZS_TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].type_id)
 					);
 				}else{
-					script_interface+=String::format("p%i",a-start_idx+1);
+					script_interface+=StringUtils::format("p%i",a-start_idx+1);
 				}
 			}
 
@@ -89,9 +89,9 @@ namespace zetscript{
 
 			//str_candidates.append(" -- BIND FUNCTION AS --> ");
 
-			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+			if(sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){
 				native_interface.append(Rtti::demangle(
-						TYPE_ID_TO_NATIVE_NAME(this,sf->return_type_id)
+						ZS_TYPE_ID_TO_NATIVE_NAME(this,sf->return_type_id)
 					)
 				);
 
@@ -103,7 +103,7 @@ namespace zetscript{
 						native_interface.append(",");
 					}
 					native_interface.append(Rtti::demangle(
-							TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].type_id)
+							ZS_TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].type_id)
 						)
 					);
 				}
@@ -113,7 +113,7 @@ namespace zetscript{
 			printf("______________________________________________________________\n\n");
 			printf(" -Function: '%s'\n",sf->name.toConstChar());
 			printf(" -Script interface: '%s'\n",script_interface.toConstChar());
-			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+			if(sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){
 				printf(" -Native interface: '%s'\n",native_interface.toConstChar());
 			}
 			printf(" -Type origin: '%s'\n",sf->scope->owner_type->name.toConstChar());
@@ -317,7 +317,7 @@ namespace zetscript{
 		, short _line
 	){
 
-		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+		if((_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
 			//if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){
 				Symbol *existing_symbol=NULL;
@@ -364,7 +364,7 @@ namespace zetscript{
 		sf_current->scope=this->scope;
 
 		// register num function symbols only for c symbols...
-		if(sf_current->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+		if(sf_current->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
 			if((symbol_repeat=this->getSymbolMemberFunction(_function_name.toConstChar(),ZS_NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 				Function *sf_repeat=(Function *)symbol_repeat->ref_ptr;
@@ -406,7 +406,7 @@ namespace zetscript{
 					}
 
 					// native
-					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
+					if((_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){ // if-native
 
 						/*switch(_return_type_id){
 						case TypeId::TYPE_ID_OBJECT_CLASS:
@@ -622,7 +622,7 @@ namespace zetscript{
 
 						info_mp=metamethod_members.getSetterInfo(op);
 
-						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
+						if(((_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
 								&&
 							(info_mp.setters!=NULL && info_mp.setters->size()>0)){
 							// error already set (script functions only can be set once)

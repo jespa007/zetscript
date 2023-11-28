@@ -149,7 +149,7 @@ namespace zetscript{
 	String DateTime::toString(const String& _format) const
 	{
 		String retVal;
-		String format=String::toLower(_format);
+		String format=StringUtils::toLower(_format);
 
 		if (strcmp(format.toConstChar(), "") == 0) {
 			return toString();

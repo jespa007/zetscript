@@ -93,9 +93,9 @@ namespace zetscript{
 				// If is an internal error, fix!
 			}else{
 				if(instruction->byte_code == BYTE_CODE_JE_CASE){
-					error_found=String::format("Unable to perform '==' operator for case conditional");
+					error_found=StringUtils::format("Unable to perform '==' operator for case conditional");
 				}else{
-					error_found=String::format("Type '%s' does not implements metamethod '%s'"
+					error_found=StringUtils::format("Type '%s' does not implements metamethod '%s'"
 						,str_type_object_found.toConstChar()
 						,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					);
@@ -128,7 +128,7 @@ namespace zetscript{
 				,stk_args
 				,n_stk_args
 			)) == NULL){
-				error_found=String::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,operator_str);
+				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -137,19 +137,19 @@ namespace zetscript{
 			Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 			if(symbol == NULL){
-				error_found=String::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,operator_str);
+				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
 			Function *sf=(Function *)symbol->ref_ptr;
 
 			if(_is_static && ((sf->properties & FUNCTION_PROPERTY_STATIC) == 0)){
-				error_found=String::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,operator_str);
+				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
 			if((_is_static==false) && ((sf->properties & FUNCTION_PROPERTY_STATIC) != 0)){
-				error_found=String::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,operator_str);
+				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -159,7 +159,7 @@ namespace zetscript{
 		}
 
 
-		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+		if((ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 			// we have to share any object to avoid be removed on function exit
 			if(_is_static == true){ // the share of the 1st object if static and object
 				if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
@@ -312,7 +312,7 @@ namespace zetscript{
 		}\
 		ptr_function_found=(Function *)((Symbol *)(((StackElement *)setter_info.setters->get(0))->value))->ref_ptr;\
 		/* find function if c */ \
-		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
+		if((ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
 
 			// call_metamethod_set is always non-static, so it shares stk_result_op2 if object to
 			// avoid be removed on function exit stk_result_op1 is always the _this object

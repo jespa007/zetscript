@@ -201,7 +201,7 @@ namespace zetscript{
 					,member_symbol
 			);
 
-			if((*sc=GET_OBJECT_TYPE(eval_data->type_factory,name)) == NULL){
+			if((*sc=ZS_GET_OBJECT_TYPE(eval_data->type_factory,name)) == NULL){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. Type '%s' not defined"
 					,name.toConstChar()
 					,member_symbol.toConstChar()

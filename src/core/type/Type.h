@@ -162,5 +162,5 @@ namespace zetscript{
 	};
 }
 
-#include <script/type/Type.tcc>
+#include "core/type/Type.tcc"
 

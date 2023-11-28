@@ -52,14 +52,14 @@ namespace zetscript{
 
 			// Native check directory it doesn't work with relative path so, relative levels (i.e ..)
 			// has to be translated as absolute path
-			if(String::startsWith(dir,"..")){
+			if(StringUtils::startsWith(dir,"..")){
 				bool end=false;
 				// get current path
 				String path=getCurrentDirectory();
 
 				// ignore relative paths
 				do{
-					end=String::startsWith(dir,"..")==false;
+					end=StringUtils::startsWith(dir,"..")==false;
 					if(!end){
 						int pos=dir.find("\\/");
 						if(pos==String::npos){

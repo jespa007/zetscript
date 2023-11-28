@@ -144,14 +144,14 @@ namespace zetscript{
 						,stk_arg \
 						,1))==NULL){ \
 					if(stk_dst->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){ \
-							data->vm_error_description=String::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
+							data->vm_error_description=StringUtils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
 								,so_aux->getType()->name.toConstChar()\
 								,stk_mp_aux->member_property->property_name.toConstChar()\
 								,data->vm_error_description.toConstChar())
 							;\
 					}else{
 
-						data->vm_error_description=String::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
+						data->vm_error_description=StringUtils::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
 								,so_aux->getType()->name.toConstChar()
 								,data->vm_error_description.toConstChar()
 							);\
@@ -173,7 +173,7 @@ namespace zetscript{
 				}\
 				ptr_function_found=(Function *)symbol_setter->ref_ptr;\
 			}\
-			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
+			if(ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){\
 				vm_execute_native_function(\
 						_vm\
 						,_script_function\

@@ -497,7 +497,7 @@ namespace zetscript{
 				continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,instruction->value_op1);
+				 	so_aux=ZS_NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,instruction->value_op1);
 
 					vm_create_shared_object(_vm,so_aux);
 

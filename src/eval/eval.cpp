@@ -351,7 +351,7 @@ namespace zetscript{
 							eval_data->error=true;\
 							eval_data->error_file=ex.getFilename();
 							eval_data->error_line=ex.getLine();
-							eval_data->str_error=String::format(
+							eval_data->str_error=StringUtils::format(
 									"%s \n"
 									ZS_FORMAT_FILE_LINE" from import '%s'"
 									,ex.what()
@@ -510,7 +510,7 @@ namespace zetscript{
 
 		String static_error;
 		Function *sf = eval_data->current_function->script_function;
-		Type *sc_sf = GET_OBJECT_TYPE(eval_data->type_factory,sf->owner_type_id);
+		Type *sc_sf = ZS_GET_OBJECT_TYPE(eval_data->type_factory,sf->owner_type_id);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 

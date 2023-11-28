@@ -25,7 +25,7 @@ namespace zetscript{
 
 			 symbol_aux=NULL;
 
-			 so_aux=NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,stk_result_op1->value);
+			 so_aux=ZS_NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,stk_result_op1->value);
 
 			vm_create_shared_object(_vm,so_aux);
 

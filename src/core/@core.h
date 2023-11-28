@@ -9,6 +9,11 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
+#include "MetamethodMembers.h"
+#include "MemberProperty.h"
+#include "StackElementMemberProperty.h"
+#include "type/TypeId.h"
+
 #include "object/Object.h"
 #include "object/RefObject.h"
 #include "object/ContainerObject.h"
@@ -36,3 +41,10 @@
 
 #include "type/Type.h"
 #include "type/TypeFactory.h"
+
+
+#include "function/FunctionTraits.h"
+
+
+
+

@@ -11,7 +11,6 @@ namespace zetscript{
 
 	int String::npos=-1;
 
-
 	//--------
 	// MEMBER
 

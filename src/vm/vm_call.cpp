@@ -21,7 +21,7 @@ namespace zetscript{
 		StackElement		*	stk_return=NULL;
 		size_t					n_stk_local_symbols=0;
 
-		if(((_script_function_to_call)->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+		if(((_script_function_to_call)->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 			vm_execute_script_function(
 				_vm
 				,_object
@@ -44,7 +44,7 @@ namespace zetscript{
 		}
 		if(data->vm_error == true){
 
-			data->vm_error_callstack_str+=String::format(
+			data->vm_error_callstack_str+=StringUtils::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
 				, "_iter"
 				,SFI_GET_FILE(_script_function,instruction)
@@ -289,7 +289,7 @@ execute_function:
 
 			// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
 			// call function
-			if((sf_call_script_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+			if((sf_call_script_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){ // if script function...
 
 				// we pass everything by copy (TODO implement ref)
 				if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
@@ -587,12 +587,12 @@ execute_function:
 						str_class_owner=data->type_factory->getType(sf_call_script_function->owner_type_id)->name.toConstChar();
 					}
 					const char * file_src_call=SFI_GET_FILE(_script_function,instruction);
-					data->vm_error_callstack_str+=String::format(
+					data->vm_error_callstack_str+=StringUtils::format(
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
 						,sf_call_script_function->name.toConstChar()
-						,file_src_call?String::format("file:%s ",file_src_call).toConstChar():""
+						,file_src_call?StringUtils::format("file:%s ",file_src_call).toConstChar():""
 						,SFI_GET_LINE(_script_function,instruction)
 					);
 

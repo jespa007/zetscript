@@ -11,7 +11,7 @@
 	eval_data->error=true;\
 	eval_data->error_file=_file;\
 	eval_data->error_line=_line;\
-	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=StringUtils::format(_str_error, __VA_ARGS__);\
 	return 0;
 
 
@@ -23,7 +23,7 @@
 		eval_data->error=true;\
 		eval_data->error_file=file;\
 		eval_data->error_line=line;\
-		eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
+		eval_data->str_error=StringUtils::format(_str_error, __VA_ARGS__);\
 		goto my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,_str_error)	\
@@ -32,7 +32,7 @@
 
 #define EVAL_ERROR(_str_error,...) \
 	eval_data->error=true;\
-	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=StringUtils::format(_str_error, __VA_ARGS__);\
 	return 0;
 
 #define EVAL_ERRORF(file,line,_str_error) \
@@ -47,7 +47,7 @@
 	aux_p=NULL;\
 	eval_data->error_file=_file;\
 	eval_data->error_line=_line;\
-	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=StringUtils::format(_str_error, __VA_ARGS__);\
 	goto _my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_str_error)	\
@@ -56,7 +56,7 @@
 #define EVAL_ERROR_BYTE_CODE(_str_error,...)	\
 	eval_data->error=true;\
 	aux_p=NULL;\
-	eval_data->str_error=String::format(_str_error, __VA_ARGS__);\
+	eval_data->str_error=StringUtils::format(_str_error, __VA_ARGS__);\
 	goto eval_error_byte_code;
 
 #define EVAL_ERROR_BYTE_CODEF(_str_error) \

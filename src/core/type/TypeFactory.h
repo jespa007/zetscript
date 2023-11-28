@@ -5,22 +5,22 @@
 #pragma once
 
 
-#define NEW_OBJECT_VAR_BY_TYPE_ID(type_factory,type_id)		((type_factory)->instanceObjectByTypeId(type_id))
-#define GET_OBJECT_TYPE(type_factory,idx_or_name)							((type_factory)->getType(idx_or_name))
-#define GET_TYPE_NAME(type_factory,type_id) 					((type_factory)->getTypeName(type_id))
-#define TYPE_MAIN(type_factory)										((type_factory)->getType(TYPE_ID_CLASS_MAIN))    // 0 is the main type
+#define ZS_NEW_OBJECT_VAR_BY_TYPE_ID(type_factory,type_id)		((type_factory)->instanceObjectByTypeId(type_id))
+#define ZS_GET_OBJECT_TYPE(type_factory,idx_or_name)			((type_factory)->getType(idx_or_name))
+#define ZS_GET_TYPE_NAME(type_factory,type_id) 					((type_factory)->getTypeName(type_id))
+#define ZS_TYPE_MAIN(type_factory)								((type_factory)->getType(TYPE_ID_CLASS_MAIN))    // 0 is the main type
 
-#define OBJECT_STRING(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_OBJECT_STRING))
-#define OBJECT_ITERATOR_ASSIGNRING(type_factory)						((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_STRING))
-//#define SCRIPT_CLASS_DICTIONARY(type_factory)								((type_factory->type_factory)->getType(TypeId::TYPE_ID_DICTIONARY))
-#define OBJECT_ARRAY(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ARRAY))
-#define OBJECT_ITERATOR_ARRAY(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_ARRAY))
+#define ZS_OBJECT_STRING(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_STRING))
+#define ZS_OBJECT_ITERATOR_ASSIGNRING(type_factory)				((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_STRING))
+//#define SCRIPT_CLASS_DICTIONARY(type_factory)					((type_factory->type_factory)->getType(TypeId::TYPE_ID_DICTIONARY))
+#define ZS_OBJECT_ARRAY(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ARRAY))
+#define ZS_OBJECT_ITERATOR_ARRAY(type_factory)					((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_ARRAY))
 
-#define DICTIONARY_OBJECT(type_factory)									((type_factory)->getType(TypeId::TYPE_ID_DICTIONARY_OBJECT))
-#define OBJECT_ITERATOR_OBJECT(type_factory)							((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_OBJECT))
+#define ZS_DICTIONARY_OBJECT(type_factory)						((type_factory)->getType(TypeId::TYPE_ID_DICTIONARY_OBJECT))
+#define ZS_OBJECT_ITERATOR_OBJECT(type_factory)					((type_factory)->getType(TypeId::TYPE_ID_OBJECT_ITERATOR_OBJECT))
 
-//#define SCRIPT_CLASS_FUNCTOR(type_factory)									((type_factory->type_factory)->getType(TypeId::TYPE_ID_FUNCTION))
-#define TYPE_ID_TO_NATIVE_NAME(type_factory,type_id) 			((type_factory)->getType(type_id)->native_name.toConstChar())
+//#define SCRIPT_CLASS_FUNCTOR(type_factory)					((type_factory->type_factory)->getType(TypeId::TYPE_ID_FUNCTION))
+#define ZS_TYPE_ID_TO_NATIVE_NAME(type_factory,type_id) 		((type_factory)->getType(type_id)->native_name.toConstChar())
 
 
 namespace zetscript{

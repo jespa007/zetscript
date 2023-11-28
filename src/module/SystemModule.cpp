@@ -75,7 +75,7 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		String  name=String::format("__eval@_%i__",n_eval_function++);
+		String  name=StringUtils::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	Function(
 				_zs
 				,ZS_FUNCTION_EVAL_IDX
@@ -170,7 +170,7 @@ namespace zetscript{
 		// modifug
 		if(vm_it_has_error(vm)){
 			String error=vm_get_error(vm);
-			vm_set_error(vm,String::format("eval error: %s",error.toConstChar()).toConstChar());
+			vm_set_error(vm,StringUtils::format("eval error: %s",error.toConstChar()).toConstChar());
 		}
 
 goto_eval_exit:

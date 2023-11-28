@@ -5,7 +5,7 @@
 #define ZS_MAX_REGISTER_LENGTH	128
 
 #define ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(_file,_line,_message,...) \
-	ZS_THROW_EXCEPTION(String::formatFileLine(_file,_line,_message,__VA_ARGS__).toConstChar())
+	ZS_THROW_EXCEPTION(StringUtils::formatFileLine(_file,_line,_message,__VA_ARGS__).toConstChar())
 
 
 #define ZS_EVAL_CONSTANT_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
@@ -209,13 +209,13 @@ namespace zetscript{
 		case BYTE_CODE_ADD: // int & int/int & float/float&float
 
 			if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
-				result_op_str=String::format("%s%s"
+				result_op_str=StringUtils::format("%s%s"
 						,i1->getConstantString().toConstChar()
 						,i2->byte_code==BYTE_CODE_LOAD_STRING?i2->getConstantString().toConstChar():i2->getConstantValueOp2ToString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}
 			else if(i1->isConstant() && i2->byte_code == BYTE_CODE_LOAD_STRING){
-				result_op_str=String::format("%s%s"
+				result_op_str=StringUtils::format("%s%s"
 						,i1->byte_code==BYTE_CODE_LOAD_STRING?i1->getConstantString().toConstChar():i1->getConstantValueOp2ToString().toConstChar()
 						,i2->getConstantString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_STRING;

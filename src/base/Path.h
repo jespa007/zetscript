@@ -10,5 +10,5 @@ namespace zetscript{
 		static String  getDirectory(const String &  _path);
 		static String  getFilename(const String &  _path);
 		static String  getFilenameWithoutExtension(const String & _path);
-	}
+	};
 }

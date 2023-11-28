@@ -370,30 +370,34 @@ endif()
 
 SET(
 	HS
-	# Utils
-	util/DateTime.h
-	util/Directory.h
-	util/File.h
-	util/Console::.h
-	util/Log.h
-	util/MapStringIterator.h
-	util/MapString.h
-	util/MapInt.h
-	util/MapIntIterator.h
-	util/Memory.h
-	util/Path.h
-	util/Rtti.h
-	util/String.h
-	util/String.h
-	util/TimeSpan.h
-	util/zs_util.h
-	util/Vector.h
-	util/Vector.tcc
-	util/List.tcc
-	util/Buffer.h
-	util/System.h
-	util/List.h
-	util/Exception.h
+	# Base
+	base/Common.h
+	base/Config.h
+	base/DateTime.h
+	base/Directory.h
+	base/File.h
+	base/Console.h
+	base/Log.h
+	base/MapStringIterator.h
+	base/MapString.h
+	base/MapInt.h
+	base/MapIntIterator.h
+	base/Memory.h
+	base/Path.h
+	base/Rtti.h
+	base/String.h
+	base/StringUtils.h
+	base/TimeSpan.h
+	base/@base.h
+	base/Vector.h
+	base/Vector.tcc
+	base/List.tcc
+	base/Buffer.h
+	base/System.h
+	base/List.h
+	base/Exception.h
+	
+
 	
 
 	#eval
@@ -409,57 +413,61 @@ SET(
 	module/JsonModule.h
 	module/MathModule.h
 	module/SystemModule.h
-	module/zs_module.h
+	module/@module.h
 	
-	# script
-	script/zs_script.h
-	script/MemberProperty.h
-	script/MetamethodMembers.h
-	script/StackElementMemberProperty.h
-		
-	# script/function	
-	script/script_function/Function.h
-	script/script_function/FunctionFactory.h
-	script/script_function/FunctionParam.h
-	script/script_function/FunctionTraits.h
-	
-	# script/type
-	script/type/Type.h
-	script/type/TypeId.h
-	script/type/Type.tcc
-	script/type/TypeFactory.h
-	script/type/TypeFactory.tcc
-	
-	# script/object
-	script/object/RefObjectObject.h
-	script/object/Object.h
-	script/object/ClassObject.h
-	script/object/ClassObject.tcc
-	script/object/MemberFunctionObject.h
-	script/object/ContainerObject.h
-	script/object/ContainerSlot.h
-	script/object/ContainerSlot.h
-	script/object/DictionaryObject.h
-	script/object/DictionaryObject.tcc
-	script/object/ObjectObjectZs.h
-	script/object/ObjectIteratorObject.h
-	script/object/ObjectIteratorObjectZs.h
-	script/object/StringObject.h
-	script/object/StringObjectZs.h
-	script/object/StringIteratorObject.h
-	script/object/StringIteratorObjectZs.h
-	script/object/VarRefObject.h
-	script/object/ArrayObject.h
-	script/object/ArrayObject.tcc
-	script/object/ArrayObjectZs.h
-	script/object/ArrayIteratorObject.h
-	script/object/ArrayIteratorObjectZs.h
+	# core
+	core/@core.h
+	core/MemberProperty.h
+	core/MetamethodMembers.h
+	core/StackElementMemberProperty.h
+	core/ByteCode.h
+	core/MetamethodHelper.h	
+	core/Metamethod.h
+	core/Instruction.h
+	core/StackElement.h
+	core/Symbol.h
 	
 			
-	# scope
-	scope/Scope.h
-	scope/ScopeFactory.h
-	scope/zs_scope.h
+	# core/function	
+	core/function/Function.h
+	core/function/FunctionFactory.h
+	core/function/FunctionParam.h
+	core/function/FunctionTraits.h
+	
+	# core/type
+	core/type/Type.h
+	core/type/TypeId.h
+	core/type/Type.tcc
+	core/type/TypeFactory.h
+	core/type/TypeFactory.tcc
+	
+	# core/object
+	core/object/RefObjectObject.h
+	core/object/Object.h
+	core/object/ClassObject.h
+	core/object/ClassObject.tcc
+	core/object/MemberFunctionObject.h
+	core/object/ContainerObject.h
+	core/object/ContainerSlot.h
+	script/object/ContainerSlot.h
+	core/object/DictionaryObject.h
+	core/object/DictionaryObject.tcc
+	core/object/ObjectObjectZs.h
+	core/object/ObjectIteratorObject.h
+	core/object/ObjectIteratorObjectZs.h
+	core/object/StringObject.h
+	core/object/StringObjectZs.h
+	core/object/StringIteratorObject.h
+	core/object/StringIteratorObjectZs.h
+	core/object/VarRefObject.h
+	core/object/ArrayObject.h
+	core/object/ArrayObject.tcc
+	core/object/ArrayObjectZs.h
+	core/object/ArrayIteratorObject.h
+	core/object/ArrayIteratorObjectZs.h
+	core/scope/Scope.h
+	core/scope/ScopeFactory.h
+	core/scope/zs_scope.h
 	
 	# vm
 	vm/vm_operation_assign.h
@@ -474,16 +482,6 @@ SET(
 	vm/vm_share_manager.h
 	
 	# main
-	common.h
-	config.h
-	ByteCode.h
-	MetamethodHelper.h	
-	Metamethod.h
-	
-	Instruction.h
-	StackElement.h
-	Symbol.h
-	
 	zetscript.h
 	zetscript.tcc
 )

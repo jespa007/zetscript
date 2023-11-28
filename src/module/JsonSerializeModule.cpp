@@ -123,7 +123,7 @@ namespace zetscript{
 
 								getter_found=true;
 
-								if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+								if((ptr_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 
 									value_from_vm_execute=true;
 
