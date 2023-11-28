@@ -84,10 +84,9 @@ typedef enum:unsigned short {
 namespace zetscript{
 
 #ifndef __arm__
-// Instruction structure is unaligned structure due pragma(1) and in ARM environment it derives a
-// seg fault bus error when converts from float from intptr_t so in ARM platform is disabled. Another
-// option could be align the structure putting value op2 at the beginning of Instruction, to ensure the
-// conversion from float from intptr_t without error.
+// In ARM environment pragma pack(push,1) "Instruction" type is unaligned and i causes a
+// seg fault bus error when tries to convert a float value from op2 (intptr_t).
+// So in ARM platform pragma pack(push,1) disabled.
 #pragma pack(push, 1)
 #endif
 
