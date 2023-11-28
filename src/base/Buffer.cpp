@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "@util.h"
+#include "@base.h"
 
 namespace zetscript{
 	Buffer::Buffer(uint8_t *_ptr,int  _ptr_len){

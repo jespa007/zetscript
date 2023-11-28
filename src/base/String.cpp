@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "@util.h"
+#include "@base.h"
 
 #define ZS_STRING_MAX_ELEMENTS			2000000
 #define ZS_STRING_EXPAND_CHAR_ELEMENTS 	16

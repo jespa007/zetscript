@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "@util.h"
+#include "@base.h"
 
 #define ZS_VAR_LOG(l) ((l) == LOG_LEVEL_ERROR?"ERR": (l)==LOG_LEVEL_WARNING?"WRN": (l) == LOG_LEVEL_INFO ? "INF" : (l) == LOG_LEVEL_DEBUG ? "DBG":"NAN" )
 

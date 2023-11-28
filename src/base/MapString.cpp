@@ -2,7 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "@util.h"
+#include "@base.h"
 
 #define ZS_MAP_KEY_NOT_FOUND 	-1
 #define ZS_MAP_MAX_ITEMS  		1000000

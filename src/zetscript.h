@@ -4,20 +4,13 @@
  */
 #pragma once
 
-#include "util/@util.h"
-
-#include "StackElement.h"
-#include "ByteCode.h"
-#include "ByteCodeHelper.h"
-#include "Metamethod.h"
-#include "MetamethodHelper.h"
-#include "Instruction.h"
-#include "Symbol.h"
+#include "base/@base.h"
+#include "core/@core.h"
 
 
-#include "scope/zs_scope.h"
-#include "module/zs_module.h"
-#include <script/zs_script.h>
+
+#include "scope/scope.h"
+#include "module/@module.h"
 #include "eval/eval.h"
 #include "vm/vm.h"
 
