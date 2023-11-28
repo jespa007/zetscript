@@ -4,24 +4,24 @@
  */
 #pragma once
 
-#define TYPE_NAME_UNDEFINED					"Undefined"
-#define TYPE_NAME_NULL 						"Null"
-#define TYPE_NAME_INT 						"Integer"
-#define TYPE_NAME_BOOL 						"Boolean"
-#define TYPE_NAME_STACK_ELEMENT 				"StackElement"
-#define TYPE_NAME_FLOAT 						"Float"
-#define TYPE_NAME_FUNCTION					"Function"
-#define TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
-#define TYPE_NAME_OBJECT_STRING 				"String"
-#define TYPE_NAME_OBJECT_ARRAY 				"Array"
-#define TYPE_NAME_DICTIONARY_OBJECT 				"Object"
-#define TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
-#define TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
-#define TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
-#define TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING "IteratorString"
-#define TYPE_NAME_OBJECT_ITERATOR_ARRAY 		"IteratorArray"
-#define TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
-#define TYPE_NAME_OBJECT 				"__Object__"
+#define ZS_TYPE_NAME_UNDEFINED					"Undefined"
+#define ZS_TYPE_NAME_NULL 						"Null"
+#define ZS_TYPE_NAME_INT 						"Integer"
+#define ZS_TYPE_NAME_BOOL 						"Boolean"
+#define ZS_TYPE_NAME_STACK_ELEMENT 				"StackElement"
+#define ZS_TYPE_NAME_FLOAT 						"Float"
+#define ZS_TYPE_NAME_FUNCTION					"Function"
+#define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
+#define ZS_TYPE_NAME_OBJECT_STRING 				"String"
+#define ZS_TYPE_NAME_OBJECT_ARRAY 				"Array"
+#define ZS_TYPE_NAME_DICTIONARY_OBJECT 			"Object"
+#define ZS_TYPE_NAME_OBJECT_CLASS 				"ObjectClass"
+#define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
+#define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY 		"IteratorArray"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
+#define ZS_TYPE_NAME_OBJECT 					"__Object__"
 
 namespace zetscript{
 
@@ -44,8 +44,8 @@ namespace zetscript{
 		TYPE_ID_INT_PTR_C,
 		TYPE_ID_CHAR_PTR_C,
 		TYPE_ID_CONST_CHAR_PTR_C,
-		TYPE_ID_ZS_STRING_C,
-		TYPE_ID_ZS_STRING_PTR_C,
+		TYPE_ID_STRING_C,
+		TYPE_ID_STRING_PTR_C,
 		TYPE_ID_BOOL_C,
 		TYPE_ID_BOOL_PTR_C,
 		TYPE_ID_FLOAT_C,

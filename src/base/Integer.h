@@ -9,7 +9,7 @@ namespace zetscript{
 	class Integer{
 	public:
 		 static zs_int		* 	parse(const String & );
-		 static String 			toString(zs_int _number, const String & _format);
+		 static String 			toString(zs_int _number, const String & _format="");
 
 	};
 }

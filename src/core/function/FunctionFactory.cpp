@@ -64,7 +64,7 @@ namespace zetscript{
 			symbol->properties|=SYMBOL_PROPERTY_STATIC;
 		}
 
-		int id = script_functions->size();
+		int id = script_functions->length();
 
 		Function *script_function = new Function(
 				zs
@@ -80,12 +80,12 @@ namespace zetscript{
 		);
 
 		symbol->ref_ptr = (zs_int)script_function;		  // ptr function
-		script_functions->append(script_function);
+		script_functions->push(script_function);
 		return symbol;
 	}
 
 	void	FunctionFactory::setFunction(int idx, Function *sf){
-		if(idx<0 || idx >= script_functions->size()){
+		if(idx<0 || idx >= script_functions->length()){
 			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
@@ -93,7 +93,7 @@ namespace zetscript{
 	}
 
 	Function 	* FunctionFactory::getFunction(int idx){
-		if(idx<0 || idx >= script_functions->size()){
+		if(idx<0 || idx >= script_functions->length()){
 			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 			return NULL;
 		}
@@ -105,7 +105,7 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_UNDEFINED_IDX ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_functions->size()-1;
+			int v=script_functions->length()-1;
 			v > idx_start; // avoid delete main function
 			v--
 		){
@@ -123,12 +123,12 @@ namespace zetscript{
 	}
 
 	void FunctionFactory::saveState(){
-		idx_clear_checkpoint = script_functions->size()-1;
+		idx_clear_checkpoint = script_functions->length()-1;
 	}
 
 	FunctionFactory::~FunctionFactory(){
 		// erases all functions...
-		for(int i = 0;i < script_functions->size();i++){
+		for(int i = 0;i < script_functions->length();i++){
 			Function * info_function = (Function *)script_functions->get(i);
 
 			if (info_function->instructions != NULL) {

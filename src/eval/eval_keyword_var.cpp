@@ -184,11 +184,11 @@ namespace zetscript{
 						if(is_constant){ // make ptr as constant after variable is saved
 
 							// unset last reset stack
-							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.size()-1);
+							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.length()-1);
 							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
-							eval_data->current_function->eval_instructions.append(
+							eval_data->current_function->eval_instructions.push(
 									eval_instruction=new EvalInstruction(
 											is_static?BYTE_CODE_PUSH_STK_GLOBAL:BYTE_CODE_PUSH_STK_LOCAL
 									)
@@ -199,7 +199,7 @@ namespace zetscript{
 							eval_instruction->symbol_name=pre_variable_name+variable_name;
 							eval_instruction->symbol_scope=scope_var;
 
-							eval_data->current_function->eval_instructions.append(
+							eval_data->current_function->eval_instructions.push(
 									new EvalInstruction(
 										BYTE_CODE_STORE_CONST
 										,1
@@ -239,7 +239,7 @@ namespace zetscript{
 		}
 
 error_eval_keyword_var:
-		for(int i=0; i < ei_member_var_init.size(); i++){
+		for(int i=0; i < ei_member_var_init.length(); i++){
 			delete ei_member_var_init.get(i);
 		}
 

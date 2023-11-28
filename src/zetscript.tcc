@@ -127,7 +127,7 @@ namespace zetscript{
 			}
 
 			// particular case return type is string and stk is string script object
-			if(_return_type_id==TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(_stk)){
+			if(_return_type_id==TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(_stk)){
 				Object *so_string=(Object *)_stk->value;
 				this->unrefLifetimeObject(so_string);
 			}
@@ -209,7 +209,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -290,7 +290,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -383,7 +383,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -482,7 +482,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+					if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 						Object *so_string=(Object *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -585,7 +585,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -697,7 +697,7 @@ namespace zetscript{
 					}
 
 					// particular case return type is string and stk is string script object
-					if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+					if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 						Object *so_string=(Object *)stk.value;
 						this->unrefLifetimeObject(so_string);
 					}*/
@@ -812,7 +812,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -989,7 +989,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1177,7 +1177,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1378,7 +1378,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1591,7 +1591,7 @@ namespace zetscript{
 						}
 
 						// particular case return type is string and stk is string script object
-						if(return_type_id==TypeId::TYPE_ID_ZS_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
+						if(return_type_id==TypeId::TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
 							Object *so_string=(Object *)stk.value;
 							this->unrefLifetimeObject(so_string);
 						}*/
@@ -1643,7 +1643,7 @@ namespace zetscript{
 			}
 
 			if(
-					return_type_id == TYPE_ID_ZS_STRING_PTR_C
+					return_type_id == TYPE_ID_STRING_PTR_C
 					|| return_type_id == TYPE_ID_CONST_CHAR_PTR_C
 			){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",Rtti::demangle(return_type).toConstChar());
@@ -1658,7 +1658,7 @@ namespace zetscript{
 				if(
 							type_id == TYPE_ID_FLOAT_C
 						||  type_id == TYPE_ID_BOOL_C
-						||  type_id == TYPE_ID_ZS_STRING_C
+						||  type_id == TYPE_ID_STRING_C
 				){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1

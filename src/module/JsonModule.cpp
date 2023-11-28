@@ -15,7 +15,7 @@ namespace zetscript{
 	void JsonModule_deserialize(ZetScript *_zs,StringObject *str_json){
 		// deserialize ...
 
-		String str=String::unescape(str_json->toString());
+		String str=StringUtils::unescape(str_json->toString());
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		StackElement return_stack_element=k_stk_undefined;
 		json::JsonDeserializeData deserialize_data;

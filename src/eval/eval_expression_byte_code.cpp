@@ -54,7 +54,7 @@ namespace zetscript{
 
 	bool eval_two_last_instruction_are_constants(Vector<EvalInstruction *> *_eval_instructions){
 
-		int size_instructions=_eval_instructions->size();
+		int size_instructions=_eval_instructions->length();
 
 		if(size_instructions >= 2){
 
@@ -143,22 +143,22 @@ namespace zetscript{
 		if((split_node->operator_type == ZS_OPERATOR_LOGIC_AND) && (two_last_instructions_are_constants==false)){
 			custom_insert_instruction=true;
 			// insert JT/acording type of JNT, the jump for next or
-						eval_instructions->append(
+						eval_instructions->push(
 							eval_instruction=new EvalInstruction(
 								BYTE_CODE_JNT
 								,INSTRUCTION_VALUE_OP1_JNT_LOGIC_NEXT_OR
 							)
 						);
-						logical_and_jnt->append(eval_instruction);
+						logical_and_jnt->push(eval_instruction);
 		}else if((split_node->operator_type == ZS_OPERATOR_LOGIC_OR) && (two_last_instructions_are_constants==false)){
 			custom_insert_instruction=true;
-			eval_instructions->append(
+			eval_instructions->push(
 				eval_instruction=new EvalInstruction(
 						BYTE_CODE_JT
 						,INSTRUCTION_VALUE_OP1_JT_LOGIC_OK
 				)
 			);
-			logical_or_jt->append(eval_instruction);
+			logical_or_jt->push(eval_instruction);
 		}
 
 		// perform right side op...
@@ -185,7 +185,7 @@ namespace zetscript{
 			}
 
 			// push to the end
-			eval_instructions->append(
+			eval_instructions->push(
 					eval_instruction
 			);
 		}
@@ -205,7 +205,7 @@ namespace zetscript{
 	}
 
 	void eval_deallocate_ei_assign_loader_instructions_post_expression(Vector<Vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
-		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.size(); i++ ){
+		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.length(); i++ ){
 			delete zs_ei_assign_loader_instructions_post_expression.get(i);
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
@@ -227,7 +227,7 @@ namespace zetscript{
 		char *aux_p=(char *)s;
 		Vector<TokenNode *> assing_token_informations;
 		int idx_start=0;
-		int idx_end=(int)(token_nodes->size()-1);
+		int idx_end=(int)(token_nodes->length()-1);
 		Vector<Vector<EvalInstruction *> *> zs_ei_assign_loader_instructions_post_expression; // Vector<Vector<EvalInstruction *>>
 		Vector<EvalInstruction *> ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
@@ -279,7 +279,7 @@ namespace zetscript{
 				);
 			}
 
-			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1));
+			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.length()-1));
 
 			if(BYTE_CODE_IS_CALL(
 					ei_load_assign_instruction->vm_instruction.byte_code
@@ -291,16 +291,16 @@ namespace zetscript{
 						,"Calling a function in left assignment is not allowed");
 			}
 
-			zs_ei_assign_loader_instructions_post_expression.append(ei_assign_loader_instructions_post_expression=new Vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new Vector<EvalInstruction *>());
+			zs_ei_assign_loader_instructions_post_expression.push(ei_assign_loader_instructions_post_expression=new Vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new Vector<EvalInstruction *>());
 
 			// assign operators: add instructions related about its accessors...
-			for(int j=0;j<token_node_symbol->eval_instructions.size();j++){
+			for(int j=0;j<token_node_symbol->eval_instructions.length();j++){
 				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.get(j);
-				ei_assign_loader_instructions_post_expression->append(token_node_symbol->eval_instructions.get(j));
+				ei_assign_loader_instructions_post_expression->push(token_node_symbol->eval_instructions.get(j));
 			}
 
 			// get last instruction...
-			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->get(ei_assign_loader_instructions_post_expression->size()-1);
+			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->get(ei_assign_loader_instructions_post_expression->length()-1);
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
 			if(eval_is_byte_code_load_var_type(last_load_instruction->byte_code)){
@@ -319,7 +319,7 @@ namespace zetscript{
 			}
 
 			// ... add assign operations to the list to add later after eval all instructions
-			ei_assign_store_instruction_post_expression.append(eval_instruction=new EvalInstruction(
+			ei_assign_store_instruction_post_expression.push(eval_instruction=new EvalInstruction(
 					eval_operator_to_byte_code(operator_type),1
 			));
 
@@ -332,7 +332,7 @@ namespace zetscript{
 
 		// eval tokens
 
-		idx_start_instructions=dst_instructions->size();
+		idx_start_instructions=dst_instructions->length();
 
 		try{
 			eval_expression_tokens_to_byte_code(
@@ -342,7 +342,7 @@ namespace zetscript{
 				, dst_instructions
 				, &logical_and_jnt
 				, &logical_or_jt
-				, dst_instructions->size()
+				, dst_instructions->length()
 				, idx_start
 				, idx_end
 				, properties
@@ -353,13 +353,13 @@ namespace zetscript{
 
 
 		// there's a logical and or logical or that will place a true/false for its final value
-		if(logical_or_jt.size() > 0 || logical_and_jnt.size() > 0){
+		if(logical_or_jt.length() > 0 || logical_and_jnt.length() > 0){
 
-			int idx_jmp_load_true_value=dst_instructions->size();
-			int idx_jmp_load_false_value=dst_instructions->size();
-			int idx_jmp_end=dst_instructions->size();
+			int idx_jmp_load_true_value=dst_instructions->length();
+			int idx_jmp_load_false_value=dst_instructions->length();
+			int idx_jmp_end=dst_instructions->length();
 
-			dst_instructions->append(
+			dst_instructions->push(
 
 				new EvalInstruction(
 					BYTE_CODE_JMP
@@ -369,10 +369,10 @@ namespace zetscript{
 			);
 
 
-			if(logical_or_jt.size() > 0){
+			if(logical_or_jt.length() > 0){
 
-				idx_jmp_load_true_value=dst_instructions->size();
-				dst_instructions->append(
+				idx_jmp_load_true_value=dst_instructions->length();
+				dst_instructions->push(
 					new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_UNDEFINED_IDX
@@ -382,13 +382,13 @@ namespace zetscript{
 
 			}
 
-			if(logical_and_jnt.size()>0){
+			if(logical_and_jnt.length()>0){
 
-				if(logical_or_jt.size() > 0){ // modify jmp instruction
+				if(logical_or_jt.length() > 0){ // modify jmp instruction
 					((EvalInstruction *)dst_instructions->get(idx_jmp_end))->vm_instruction.value_op2=4;
 
 					// to jmp true value space
-					dst_instructions->append(
+					dst_instructions->push(
 						new EvalInstruction(
 							BYTE_CODE_JMP
 							, (uint8_t)ZS_UNDEFINED_IDX
@@ -397,9 +397,9 @@ namespace zetscript{
 					);
 				}
 
-				idx_jmp_load_false_value=dst_instructions->size();
+				idx_jmp_load_false_value=dst_instructions->length();
 
-				dst_instructions->append(
+				dst_instructions->push(
 					new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_UNDEFINED_IDX
@@ -408,13 +408,13 @@ namespace zetscript{
 				);
 			}
 
-			for(int i=idx_start_instructions; i < dst_instructions->size(); i++){
+			for(int i=idx_start_instructions; i < dst_instructions->length(); i++){
 				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->get(i);
 				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== INSTRUCTION_VALUE_OP1_JNT_LOGIC_NEXT_OR)){
 					//logical_and_jnt.append((intptr_t)eval_instruction);
 					// go to next logic or
 					int idx_next_or_found=-1;
-					for(int j=i; j < dst_instructions->size(); j++){
+					for(int j=i; j < dst_instructions->length(); j++){
 						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->get(j);
 						if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== INSTRUCTION_VALUE_OP1_JT_LOGIC_OK)){
 							idx_next_or_found=j;
@@ -448,8 +448,8 @@ namespace zetscript{
 			Instruction *last_instruction=NULL;
 
 			// insert JNT
-			int jnt_instructions_start=dst_instructions->size();
-			dst_instructions->append(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
+			int jnt_instructions_start=dst_instructions->length();
+			dst_instructions->push(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 			ei_ternary_if_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_ternary_if_jnt->instruction_source_info.line=line;
 			int jmp_instructions_start=0;
@@ -472,9 +472,9 @@ namespace zetscript{
 			}
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&(((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction);
-				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
-					unique_call_instructions->append(last_instruction);
+				last_instruction=&(((EvalInstruction *)dst_instructions->get(dst_instructions->length()-1))->vm_instruction);
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->length()==1){
+					unique_call_instructions->push(last_instruction);
 				}
 			}
 
@@ -489,9 +489,9 @@ namespace zetscript{
 			}
 
 
-			jmp_instructions_start=dst_instructions->size();
-			dst_instructions->append(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
-			body_size_if=dst_instructions->size()-jnt_instructions_start; // size body "if" takes jmp as part of it
+			jmp_instructions_start=dst_instructions->length();
+			dst_instructions->push(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
+			body_size_if=dst_instructions->length()-jnt_instructions_start; // size body "if" takes jmp as part of it
 
 
 
@@ -510,12 +510,12 @@ namespace zetscript{
 				goto eval_error_byte_code;
 			}
 
-			body_size_else=dst_instructions->size()-jmp_instructions_start;
+			body_size_else=dst_instructions->length()-jmp_instructions_start;
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
-				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
-					unique_call_instructions->append(last_instruction);
+				last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->length()-1))->vm_instruction;
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->length()==1){
+					unique_call_instructions->push(last_instruction);
 				}
 			}
 
@@ -525,21 +525,21 @@ namespace zetscript{
 
 		}else{
 			if(unique_call_instructions != NULL){
-				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->size()-1))->vm_instruction;
-				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->size()==1){
-					unique_call_instructions->append(last_instruction);
+				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->get(dst_instructions->length()-1))->vm_instruction;
+				if(BYTE_CODE_IS_CALL(last_instruction->byte_code) && token_nodes->length()==1){
+					unique_call_instructions->push(last_instruction);
 				}
 			}
 		}
 		//--------------------------------------------------------------
 
 		// ... finally save store operators
-		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.size()-1); i >=0 ;i--){
+		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.length()-1); i >=0 ;i--){
 			//loaders
 			dst_instructions->concat(*zs_ei_assign_loader_instructions_post_expression.get(i));
 
 			// push back assign operator
-			dst_instructions->append(
+			dst_instructions->push(
 				ei_assign_store_instruction_post_expression.get(i)
 			);
 		}
@@ -551,7 +551,7 @@ namespace zetscript{
 eval_error_byte_code:
 
 		// only delete the new ones
-		for(int i=0; i < ei_assign_store_instruction_post_expression.size(); i++){
+		for(int i=0; i < ei_assign_store_instruction_post_expression.length(); i++){
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.get(i);
 		}
 

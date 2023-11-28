@@ -43,11 +43,11 @@ namespace zetscript{
 
 	int ArrayObject::length(){
 
-		return this->stk_elements.size();
+		return this->stk_elements.length();
 	}
 
 	StackElement	*ArrayObject::setStackElementByIndex(int _idx, StackElement *_stk_src){
-		if(_idx >= stk_elements.size()){
+		if(_idx >= stk_elements.length()){
 			ZS_THROW_EXCEPTION("idx symbol index out of bounds (%i)",_idx);
 		}
 
@@ -62,7 +62,7 @@ namespace zetscript{
 
 
 	StackElement * ArrayObject::getStackElementByIndex(int _idx){
-		if(_idx >= stk_elements.size()){
+		if(_idx >= stk_elements.length()){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
 		}
@@ -74,8 +74,8 @@ namespace zetscript{
 
 		StackElement *si;
 
-		if(idx >= stk_elements.size()){
-			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_elements.size());
+		if(idx >= stk_elements.length()){
+			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_elements.length());
 		}
 
 		si=(StackElement *)stk_elements.get(idx);
@@ -89,7 +89,7 @@ namespace zetscript{
 	}
 
 	void ArrayObject::eraseAllElements(){
-		for(int i=0; i <stk_elements.size(); i++){
+		for(int i=0; i <stk_elements.length(); i++){
 			Object::unrefAndFreeStackElementContainer((StackElement *)stk_elements.get(i));
 		}
 		stk_elements.clear();
@@ -98,7 +98,7 @@ namespace zetscript{
 	StackElement *ArrayObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
-		stk_elements.append(stk);
+		stk_elements.push(stk);
 		return stk;
 	}
 
@@ -112,10 +112,10 @@ namespace zetscript{
 
 	void ArrayObject::pop(){
 		// save last element...
-		StackElement stk_element=*((StackElement *)stk_elements.get(stk_elements.size()-1));
+		StackElement stk_element=*((StackElement *)stk_elements.get(stk_elements.length()-1));
 
 		// erase
-		if(!eraseElementAt(stk_elements.size()-1)){
+		if(!eraseElementAt(stk_elements.length()-1)){
 			return;
 		}
 
@@ -124,7 +124,7 @@ namespace zetscript{
 	}
 
 	void ArrayObject::concat(ArrayObject *_v){
-		for(int i=0; i < _v->stk_elements.size();i++){
+		for(int i=0; i < _v->stk_elements.length();i++){
 			this->pushStackElement((StackElement *)_v->stk_elements.get(i));
 		}
 	}

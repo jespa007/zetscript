@@ -73,7 +73,7 @@ namespace zetscript{
 			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
 			}else if(byte_code==BYTE_CODE_LOAD_INT || (this->properties & INSTRUCTION_PROPERTY_INT)){
-				value_op2_string=String::intToString(this->value_op2);
+				value_op2_string=Integer::toString(this->value_op2);
 			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_FLOAT)){
 				value_op2_string=String::floatToString(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){

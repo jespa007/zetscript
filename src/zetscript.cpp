@@ -330,7 +330,7 @@ namespace zetscript{
 		else if(STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk))
 			result=TYPE_NAME_DICTIONARY_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING;
+			result=TYPE_NAME_OBJECT_ITERATOR_STRING;
 		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk))
 			result=TYPE_NAME_OBJECT_ITERATOR_ARRAY;
 		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_OBJECT(stk))
@@ -396,7 +396,7 @@ namespace zetscript{
 		}else if(stk.properties & STACK_ELEMENT_PROPERTY_CHAR_PTR){
 			result= (const char *)stk.value;
 		}else if(STACK_ELEMENT_IS_INT(&stk)){
-			result= String::intToString((zs_int)stk.value,_format);
+			result= Integer::toString((zs_int)stk.value,_format);
 		}else if(STACK_ELEMENT_IS_FLOAT(&stk)){
 			result= String::floatToString(ZS_READ_INTPTR_FLOAT(stk.value));
 		}else if(STACK_ELEMENT_IS_BOOLEAN(&stk)){
@@ -572,8 +572,8 @@ namespace zetscript{
 				if(object->type_id == TYPE_ID_OBJECT_STRING){ // string
 
 					switch(_type_id_to_convert){
-					case TYPE_ID_ZS_STRING_PTR_C:
-					case TYPE_ID_ZS_STRING_C:
+					case TYPE_ID_STRING_PTR_C:
+					case TYPE_ID_STRING_C:
 					case TYPE_ID_CONST_CHAR_PTR_C:
 						return true;
 					default:
@@ -709,9 +709,9 @@ namespace zetscript{
 				}else{
 
 					if(object->type_id == TYPE_ID_OBJECT_STRING){ // string
-						if(_type_id_to_convert == TYPE_ID_ZS_STRING_PTR_C){
+						if(_type_id_to_convert == TYPE_ID_STRING_PTR_C){
 							val_ret=(zs_int)(((StringObject *)object)->str_ptr);
-						}else if(_type_id_to_convert == TYPE_ID_ZS_STRING_C){
+						}else if(_type_id_to_convert == TYPE_ID_STRING_C){
 							*((String *)_ptr_var)=*(((StringObject *)object)->str_ptr);
 							return true;
 						}else if (_type_id_to_convert == TYPE_ID_CONST_CHAR_PTR_C){
@@ -819,16 +819,16 @@ namespace zetscript{
 				 stk_result={(((bool)ptr_var)),STACK_ELEMENT_PROPERTY_BOOL};
 				 break;
 			 case TYPE_ID_CONST_CHAR_PTR_C:
-			 case TYPE_ID_ZS_STRING_PTR_C:
-			 case TYPE_ID_ZS_STRING_C:
+			 case TYPE_ID_STRING_PTR_C:
+			 case TYPE_ID_STRING_C:
 
 
 				 so=ZS_NEW_STRING_OBJECT(this);
 				 if(ptr_var!=0) { // not null
-					 if(_var_type_id == TYPE_ID_ZS_STRING_PTR_C){
+					 if(_var_type_id == TYPE_ID_STRING_PTR_C){
 						// assing String reference
 						so->str_ptr=(String *)ptr_var;
-					 }else if(_var_type_id == TYPE_ID_ZS_STRING_C){ // String passed as pointer
+					 }else if(_var_type_id == TYPE_ID_STRING_C){ // String passed as pointer
 						 so->set(*((String *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);

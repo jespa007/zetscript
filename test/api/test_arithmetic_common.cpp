@@ -21,7 +21,7 @@ zetscript::String toString(
 zetscript::String toString(
 		zetscript::zs_int _i
 ){
-	return zetscript::String::intToString(_i);
+	return zetscript::Integer::toString(_i);
 }
 
 zetscript::String toString(

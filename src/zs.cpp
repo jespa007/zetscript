@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
 
 		do{
 			printf("zs>");
-			readed_bytes=zetscript::Console::::getline(&expression,&expression_len,stdin);
+			readed_bytes=zetscript::Console::getline(&expression,&expression_len,stdin);
 
 			if(readed_bytes==-1){
 				continue;

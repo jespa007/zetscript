@@ -214,7 +214,7 @@ namespace zetscript{
 		}
 
 		~EvalFunction(){
-			for(int i=0; i< eval_instructions.size(); i++){
+			for(int i=0; i< eval_instructions.length(); i++){
 				delete eval_instructions.get(i);
 			}
 		}
@@ -693,7 +693,7 @@ namespace zetscript{
 			aux_p++;
 
 			// convert i_char to value...
-			value=String::intToString(i_char);
+			value=Integer::toString(i_char);
 			return aux_p;
 		}
 

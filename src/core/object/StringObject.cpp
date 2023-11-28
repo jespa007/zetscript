@@ -107,7 +107,7 @@ namespace zetscript{
 
 		if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			// transform '\"' to '"','\n' to carry returns, etc
-			str_input=String::unescape(((Object *)stk.value)->toString());
+			str_input=StringUtils::unescape(((Object *)stk.value)->toString());
 		}
 		else{
 			str_input=_zs->stackElementToString( &stk);
@@ -181,7 +181,7 @@ namespace zetscript{
 
 						//----------------------------------------------------------
 						// INDEX ...
-						if((ptr_idx_num=String::parseInt(str_num_aux))!=NULL){
+						if((ptr_idx_num=Integer::parse(str_num_aux))!=NULL){
 							idx_num=*ptr_idx_num;
 							delete ptr_idx_num;
 							ptr_idx_num=NULL;
@@ -196,7 +196,7 @@ namespace zetscript{
 									str_num_aux+=*str_begin_padding_it++;
 								}
 
-								if((ptr_idx_num=String::parseInt(str_num_aux))!=NULL){
+								if((ptr_idx_num=Integer::parse(str_num_aux))!=NULL){
 									padding=*ptr_idx_num;
 									delete ptr_idx_num;
 									ptr_idx_num=NULL;
@@ -299,7 +299,7 @@ namespace zetscript{
 	}
 
 	void StringObject::set(const String & _s){
-		*str_ptr = String::unescape(_s);
+		*str_ptr = StringUtils::unescape(_s);
 	}
 
 	const String & StringObject::get(){
@@ -321,7 +321,7 @@ namespace zetscript{
 	StringObject *StringObject::sub(StringObject *s1){
 		//String *str;
 		StringObject *so_string = ZS_NEW_STRING_OBJECT(this->zs);
-		so_string->set(String::replace(this->toString(),s1->toString(),""));
+		so_string->set(StringUtils::replace(this->toString(),s1->toString(),""));
 		return so_string;
 	}
 

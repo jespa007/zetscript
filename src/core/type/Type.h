@@ -44,7 +44,7 @@ namespace zetscript{
 				 ,TypeId _id
 				 , const String & _name
 				 , Scope *_scope
-				 ,const char *  native_name=TYPE_NAME_OBJECT
+				 ,const char *  native_name=ZS_TYPE_NAME_OBJECT
 				 ,uint16_t _properties=0
 		);
 

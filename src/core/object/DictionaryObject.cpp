@@ -118,7 +118,7 @@ namespace zetscript{
 	Vector<String> DictionaryObject::getKeys(){
 		Vector<String> keys;
 		for(auto mi=map_fields->begin();!mi.end();mi.next()){
-				keys.append(mi.key);
+				keys.push(mi.key);
 		}
 		return keys;
 	}

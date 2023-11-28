@@ -144,7 +144,7 @@ namespace zetscript{
 									void *c_object = ((ClassObject *)_obj)->getNativeObject();
 
 									switch(ptr_function->return_type_id){
-									case  TYPE_ID_ZS_STRING_C:
+									case  TYPE_ID_STRING_C:
 										str_aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;

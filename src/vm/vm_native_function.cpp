@@ -148,7 +148,7 @@ namespace zetscript{
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_type_id == TYPE_ID_ZS_STRING_PTR_C && current_arg->value!=0)
+												(	arg_type_id == TYPE_ID_STRING_PTR_C && current_arg->value!=0)
 											  ||	arg_type_id == TYPE_ID_CONST_CHAR_PTR_C;
 										}
 									}else{
@@ -722,7 +722,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(_c_function->return_type_id == TYPE_ID_ZS_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_type_id == TYPE_ID_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:

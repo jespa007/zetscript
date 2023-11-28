@@ -9,7 +9,7 @@ namespace zetscript{
 
 	zs_int ConsoleModule_readChar(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
-		return Console::::readChar();
+		return Console::readChar();
 	}
 
 	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){

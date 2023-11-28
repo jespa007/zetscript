@@ -20,3 +20,6 @@
 #include 	"Console.cpp"
 #include 	"Memory.cpp"
 #include 	"Exception.cpp"
+#include 	"Integer.cpp"
+#include 	"Float.cpp"
+#include 	"Boolean.cpp"

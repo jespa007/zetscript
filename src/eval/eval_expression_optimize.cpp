@@ -346,7 +346,7 @@ namespace zetscript{
 				result_op_bool=strchr(i2->getConstantString().toConstChar(),i1->getConstantInt()) != NULL;
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}else if(INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i1) && INSTRUCTION_BYTE_CODE_IS_LOAD_STRING(i2)){
-				result_op_bool=String::contains(i2->getConstantString().toConstChar(),i1->getConstantString().toConstChar());
+				result_op_bool=StringUtils::contains(i2->getConstantString().toConstChar(),i1->getConstantString().toConstChar());
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}
 			else{
@@ -414,7 +414,7 @@ namespace zetscript{
 			,TokenNode   *token_operation
 			, Vector<EvalInstruction *> *eval_instructions
 	){
-		int size_instructions=eval_instructions->size();
+		int size_instructions=eval_instructions->length();
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;
@@ -558,7 +558,7 @@ namespace zetscript{
 		}
 
 		// erase last two instructions
-		eval_instructions->resize(eval_instructions->size()-n_eval_ops);
+		eval_instructions->resize(eval_instructions->length()-n_eval_ops);
 
 		// and push the new one
 		return instruction;

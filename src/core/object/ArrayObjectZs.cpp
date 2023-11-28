@@ -45,7 +45,7 @@ namespace zetscript{
 		String *ptr_str=so_string->str_ptr;
 		Vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 
-		for(int i=0; i < stk_user_list_elements->size();i++){
+		for(int i=0; i < stk_user_list_elements->length();i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->get(i);
 			if(i>0){
 				ptr_str->append((char)idx);
@@ -82,7 +82,7 @@ namespace zetscript{
 		bool found=false;
 		Vector<StackElement *> *stk_user_list_elements=sv->getStkListElements();
 
-		for(int i=0; i < stk_user_list_elements->size() && found == false;i++){
+		for(int i=0; i < stk_user_list_elements->length() && found == false;i++){
 			StackElement *stk_element=(StackElement *)stk_user_list_elements->get(i);
 			switch(stk_to_compare->properties & stk_element->properties){ // match element
 			case STACK_ELEMENT_PROPERTY_BOOL:
@@ -114,11 +114,11 @@ namespace zetscript{
 		Vector<StackElement *> *stk_user_list_elements_s1=so1->getStkListElements();
 		Vector<StackElement *> *stk_user_list_elements_s2=so2->getStkListElements();
 
-		if(stk_user_list_elements_s1->size() != stk_user_list_elements_s2->size()){
+		if(stk_user_list_elements_s1->length() != stk_user_list_elements_s2->length()){
 			return false;
 		}
 
-		for(int i=0; i < stk_user_list_elements_s1->size() && equal == true;i++){
+		for(int i=0; i < stk_user_list_elements_s1->length() && equal == true;i++){
 			StackElement *stk_element_s1=(StackElement *)stk_user_list_elements_s1->get(i);
 			StackElement *stk_element_s2=(StackElement *)stk_user_list_elements_s2->get(i);
 

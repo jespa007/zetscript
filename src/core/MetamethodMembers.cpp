@@ -188,37 +188,37 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_FUNCTION;
 		switch(_metamethod){
 			case METAMETHOD_SET:
-				setters.append(stk);
+				setters.push(stk);
 				break;
 			case METAMETHOD_ADD_ASSIGN:
-				add_setters.append(stk);
+				add_setters.push(stk);
 				break;
 			case METAMETHOD_SUB_ASSIGN:
-				sub_setters.append(stk);
+				sub_setters.push(stk);
 				break;
 			case METAMETHOD_MUL_ASSIGN:
-				mul_setters.append(stk);
+				mul_setters.push(stk);
 				break;
 			case METAMETHOD_DIV_ASSIGN:
-				div_setters.append(stk);
+				div_setters.push(stk);
 				break;
 			case METAMETHOD_MOD_ASSIGN:
-				mod_setters.append(stk);
+				mod_setters.push(stk);
 				break;
 			case METAMETHOD_AND_ASSIGN:
-				and_setters.append(stk);
+				and_setters.push(stk);
 				break;
 			case METAMETHOD_OR_ASSIGN:
-				or_setters.append(stk);
+				or_setters.push(stk);
 				break;
 			case METAMETHOD_XOR_ASSIGN:
-				xor_setters.append(stk);
+				xor_setters.push(stk);
 				break;
 			case METAMETHOD_SHL_ASSIGN:
-				shl_setters.append(stk);
+				shl_setters.push(stk);
 				break;
 			case METAMETHOD_SHR_ASSIGN:
-				shr_setters.append(stk);
+				shr_setters.push(stk);
 				break;
 			default:
 				ZS_THROW_EXCEPTION("Unexpected to register '%s' setter"
@@ -274,7 +274,7 @@ namespace zetscript{
 		Vector<StackElement *> **it=ptr_vector;
 		while(*it!=NULL){
 
-			for(int i=0;i < (*it)->size(); i++){
+			for(int i=0;i < (*it)->length(); i++){
 				StackElement *stk_el=(StackElement *)(*it)->get(i);
 				free(stk_el);
 			}

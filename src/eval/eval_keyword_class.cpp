@@ -258,7 +258,7 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			eval_instruction = eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.size()-1);
+			eval_instruction = eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.length()-1);
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
@@ -266,8 +266,8 @@ namespace zetscript{
 				eval_instruction->vm_instruction.byte_code=eval_byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->eval_instructions.append(new EvalInstruction(BYTE_CODE_DELETE));
-			eval_data->current_function->eval_instructions.append(new EvalInstruction(BYTE_CODE_RESET_STACK));
+			eval_data->current_function->eval_instructions.push(new EvalInstruction(BYTE_CODE_DELETE));
+			eval_data->current_function->eval_instructions.push(new EvalInstruction(BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}
@@ -419,7 +419,7 @@ namespace zetscript{
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name.toConstChar());
 
 						if(_mp_info.metamethod!=METAMETHOD_INVALID){
-							if(_mp_info.setters->size() == 0){
+							if(_mp_info.setters->length() == 0){
 								mp->metamethod_members.addSetter(_mp_info.metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(

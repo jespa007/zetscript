@@ -41,7 +41,7 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 	zetscript::Scope *main_scope=_zs->getScopeFactory()->getMainScope();
 	for(int i=0; i < main_scope->symbol_variables->size(); i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->get(i);
-		zetscript::String str_to_compare="a"+zetscript::String::intToString(s->idx_position+1);
+		zetscript::String str_to_compare="a"+zetscript::Integer::toString(s->idx_position+1);
 		if(_show_print) printf("%s %i\n",s->name.toConstChar(),(s->idx_position+1));
 		if(s->name != str_to_compare){
 			throw new std::runtime_error(

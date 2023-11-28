@@ -60,7 +60,7 @@ namespace zetscript{
 			, bool _is_block_body_loop=false
 	);
 
-	String  eval_copy_from_const_char_diff(const char *p1, const char *p2);
+	String  eval_copy_const_char_diff(const char *p1, const char *p2);
 	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
 	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent);
 	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent);

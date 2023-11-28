@@ -104,9 +104,9 @@ namespace zetscript{
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.toConstChar(),symbol_ref.toConstChar());
 		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
-		printf(" Stack local vars: %i                                         \n",sfo->local_variables->size());
-		printf(" Total stack required: %i                                     \n",sfo->local_variables->size()+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n\n",sfo->scope->getScopes()->size());
+		printf(" Stack local vars: %i                                         \n",sfo->local_variables->length());
+		printf(" Total stack required: %i                                     \n",sfo->local_variables->length()+sfo->min_code_stack_needed);
+		printf(" Scopes: %i                                                   \n\n",sfo->scope->getScopes()->length());
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
@@ -483,7 +483,7 @@ namespace zetscript{
 
 		ZS_UNUSUED_PARAM(_idx_return_type);
 
-		for(int i=0; i < _scope->symbol_functions->size();i++){
+		for(int i=0; i < _scope->symbol_functions->length();i++){
 			bool same_signature=true;
 			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->get(i);
 			Function *function_member=(Function *)symbol_function_memeber->ref_ptr;
@@ -560,7 +560,7 @@ namespace zetscript{
 			, uint16_t _properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position_aux=(short)local_variables->size();
+		short idx_position_aux=(short)local_variables->length();
 
 		if((symbol=_scope_block->registerSymbolVariable(
 				_file
@@ -574,7 +574,7 @@ namespace zetscript{
 		symbol->properties=_properties;
 		symbol->idx_position = idx_position_aux;
 
-		local_variables->append(symbol);
+		local_variables->push(symbol);
 
 		return symbol;
 	}
@@ -589,7 +589,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position_aux=(short)local_variables->size();
+		short idx_position_aux=(short)local_variables->length();
 
 		if((symbol=_scope_block->registerSymbolVariable(_file,_line, _symbol_name ))==NULL){
 				return NULL;
@@ -600,13 +600,13 @@ namespace zetscript{
 		symbol->idx_position = idx_position_aux;
 
 		if(this==ZS_MAIN_FUNCTION(this)){
-			// if function is main, we must initialize stack element at position local_variables->size()
+			// if function is main, we must initialize stack element at position local_variables->length()
 			// to prevent collect garbage information from previous evaluations where the stack element
 			// was used for temporal operations
-			vm_set_stack_element_at(zs->getVirtualMachine(),local_variables->size(),k_stk_undefined);
+			vm_set_stack_element_at(zs->getVirtualMachine(),local_variables->length(),k_stk_undefined);
 		}
 
-		local_variables->append(symbol);
+		local_variables->push(symbol);
 
 		return symbol;
 	}
@@ -771,11 +771,11 @@ namespace zetscript{
 
 	bool Function::linkUnresolvedSymbols(){
 		Type *sc_found=NULL;
-		if(unresolved_symbols.size() > 0){
+		if(unresolved_symbols.length() > 0){
 
 			const char *str_aux=NULL;
 			int i=0;
-			while(i < unresolved_symbols.size()){
+			while(i < unresolved_symbols.length()){
 				Instruction *unresolved_instruction=&instructions[unresolved_symbols.get(i)];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
@@ -829,7 +829,7 @@ namespace zetscript{
 					if(unresolved_instruction->byte_code==BYTE_CODE_THIS_CALL){
 
 						Type *sc_sf=this->scope->getOwnerType();
-						for(int j = 0; j < sc_sf->scope->symbol_functions->size(); j++){
+						for(int j = 0; j < sc_sf->scope->symbol_functions->length(); j++){
 							Symbol *sv=(Symbol *)sc_sf->scope->symbol_functions->get(j);
 							if(
 								   sv->name==ptr_str_symbol_to_find
@@ -898,11 +898,11 @@ namespace zetscript{
 			}
 		}
 
-		return unresolved_symbols.size()==0;
+		return unresolved_symbols.length()==0;
 	}
 
 	void Function::addUnresolvedSymbol(zs_int instruction){
-		unresolved_symbols.append(instruction);
+		unresolved_symbols.push(instruction);
 	}
 
 	ZetScript *Function::getZetScript(){
@@ -912,7 +912,7 @@ namespace zetscript{
 	Function::~Function(){
 		clear();
 
-		for(int i=0; i < instruction_source_infos.size(); i++){
+		for(int i=0; i < instruction_source_infos.length(); i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.get(i);
 			if(isi != NULL){
 				delete isi;

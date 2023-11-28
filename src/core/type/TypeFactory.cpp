@@ -8,70 +8,70 @@
 #define 				MAX_REGISTER_CLASSES 				100
 #define 				MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
 
-#define SCF_REGISTER_STRUCT(class_type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(class_type));\
+#define SCF_REGISTER_STRUCT(_type_id, _class_type)\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerType<class_type>(ZS_STR(class_type));
+	registerType<_class_type>(ZS_STR(_class_type));
 
 
-#define SCF_REGISTER_CLASS(name_class, class_type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(class_type));\
+#define SCF_REGISTER_CLASS(_type_id, _type_name, _class_type )\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_class_type));\
 		return;\
 	}\
 	PRAGMA_PUSH\
 	PRAGMA_DISABLE_WARNING(4127)\
-	if(id >= TYPE_ID_MAX){\
+	if(_type_id >= TYPE_ID_MAX){\
 		PRAGMA_POP\
-		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(class_type));\
+		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerType<class_type>(name_class,class_type##_New,class_type##_Delete);
+	registerType<_class_type>(_type_name,_class_type##_New,_class_type##_Delete);
 
-#define SCF_REGISTER_SINGLETON_CLASS(class_type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(class_type));\
+#define SCF_REGISTER_SINGLETON_CLASS(_type_id, _class_type )\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerType<class_type>(ZS_STR(class_type));
+	registerType<_class_type>(ZS_STR(_class_type));
 
-#define SCF_REGISTER_SINGLETON_NAME_CLASS(name, class_type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(class_type));\
+#define SCF_REGISTER_SINGLETON_NAME_CLASS(_type_id, _type_name, _native_type )\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_native_type));\
 		return;\
 	}\
-	registerType<class_type>(name);
+	registerType<_native_type>(_type_name);
 
-#define SCF_REGISTER_NATIVE_TYPE(type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(class_type));\
+#define SCF_REGISTER_NATIVE_TYPE(_type_id, _native_type)\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		Type *type=registerType(ZS_STR(type),"",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);\
+		Type *type=registerType(ZS_STR(_native_type),"",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);\
 		type->scope->properties|=ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		type->properties=ZS_TYPE_PROPERTY_C_OBJECT_REF;\
-		type->native_name=(typeid(type).name());\
+		type->native_name=(typeid(_native_type).name());\
 	}
 
-#define SCF_REGISTER_NATIVE_CUSTOM_TYPE(__name__, type, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(class_type));\
+#define SCF_REGISTER_NATIVE_CUSTOM_TYPE(_type_id, _type_name, _native_type)\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		Type *type=registerType(__name__);\
+		Type *type=registerType(_type_name);\
 		type->scope->properties|=ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		type->properties=ZS_TYPE_PROPERTY_C_OBJECT_REF;\
-		type->native_name=(typeid(type).name());\
+		type->native_name=(typeid(_native_type).name());\
 	}
 
-#define SCF_REGISTER_TYPE(name, id)\
-	if(types->size()!=id){\
-		ZS_THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",name);\
+#define SCF_REGISTER_TYPE(_type_id,_type_name)\
+	if(types->length()!=_type_id){\
+		ZS_THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",_type_name);\
 		return;\
 	}else{\
-		registerType(name);\
+		registerType(_type_name);\
 	}
 
 namespace zetscript{
@@ -155,7 +155,7 @@ namespace zetscript{
 	zs_float parseFloat(ZetScript *_zs,String  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
-		zs_float *result_ptr=String::parseFloat(*number_str);
+		zs_float *result_ptr=Float::parse(*number_str);
 
 		if(result_ptr != NULL){
 			result=*result_ptr;
@@ -178,7 +178,7 @@ namespace zetscript{
 	zs_int parseInt(ZetScript *_zs,String  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
-		zs_int *result_ptr=String::parseInt(*number_str);
+		zs_int *result_ptr=Integer::parse(*number_str);
 		if(result_ptr!=NULL){
 			result=*result_ptr;
 			delete result_ptr;
@@ -199,46 +199,46 @@ namespace zetscript{
 		// !!!
 
 		// primitives
-		SCF_REGISTER_TYPE(TYPE_NAME_UNDEFINED,TYPE_ID_UNDEFINED);
-		SCF_REGISTER_TYPE(TYPE_NAME_NULL,TYPE_ID_NULL);
-		SCF_REGISTER_NATIVE_TYPE(void,TYPE_ID_VOID_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_NAME_INT,zs_int,TYPE_ID_INT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_int *,TYPE_ID_INT_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(char *,TYPE_ID_CHAR_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(const char *,TYPE_ID_CONST_CHAR_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(String,TYPE_ID_ZS_STRING_C);
-		SCF_REGISTER_NATIVE_TYPE(String *,TYPE_ID_ZS_STRING_PTR_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_NAME_BOOL,bool,TYPE_ID_BOOL_C);
-		SCF_REGISTER_NATIVE_TYPE(bool *,TYPE_ID_BOOL_PTR_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_NAME_FLOAT,zs_float,TYPE_ID_FLOAT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_float *,TYPE_ID_FLOAT_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(const zs_float *,TYPE_ID_CONST_FLOAT_PTR_C);
+		SCF_REGISTER_TYPE(TYPE_ID_UNDEFINED,ZS_TYPE_NAME_UNDEFINED);
+		SCF_REGISTER_TYPE(TYPE_ID_NULL,ZS_TYPE_NAME_NULL);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_VOID_C,void);
+		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_ID_INT_C,ZS_TYPE_NAME_INT,zs_int);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_INT_PTR_C,zs_int *);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_CHAR_PTR_C,char *);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_CONST_CHAR_PTR_C,const char *);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_STRING_C,String);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_STRING_PTR_C,String *);
+		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_ID_BOOL_C,ZS_TYPE_NAME_BOOL,bool);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_BOOL_PTR_C,bool *);
+		SCF_REGISTER_NATIVE_CUSTOM_TYPE(TYPE_ID_FLOAT_C,ZS_TYPE_NAME_FLOAT,zs_float);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_FLOAT_PTR_C,zs_float *);
+		SCF_REGISTER_NATIVE_TYPE(TYPE_ID_CONST_FLOAT_PTR_C,const zs_float *);
 
 		// estructures
-		SCF_REGISTER_STRUCT(StackElement,TYPE_ID_STACK_ELEMENT);
+		SCF_REGISTER_STRUCT(TYPE_ID_STACK_ELEMENT,StackElement);
 
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS
 		// It self Script object
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_FUNCTION,Function,TYPE_ID_FUNCTION);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_VAR_REF,VarRefObject,TYPE_ID_OBJECT_VAR_REF);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_FUNCTION_MEMBER,MemberFunctionObject,TYPE_ID_OBJECT_FUNCTION_MEMBER);
-		SCF_REGISTER_SINGLETON_CLASS(ZetScript,TYPE_ID_OBJECT_ZETSCRIPT);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_FUNCTION,ZS_TYPE_NAME_FUNCTION,Function);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_VAR_REF,ZS_TYPE_NAME_OBJECT_VAR_REF,VarRefObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_FUNCTION_MEMBER,ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,MemberFunctionObject);
+		SCF_REGISTER_SINGLETON_CLASS(TYPE_ID_OBJECT_ZETSCRIPT,ZetScript);
 
-		SCF_REGISTER_CLASS(TYPE_NAME_OBJECT_STRING,StringObject,TYPE_ID_OBJECT_STRING);
+		SCF_REGISTER_CLASS(TYPE_ID_OBJECT_STRING,ZS_TYPE_NAME_OBJECT_STRING,StringObject);
 
 		// Script object iterators
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_ITERATOR_ASSIGNRING,StringIteratorObject,TYPE_ID_OBJECT_ITERATOR_STRING);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_ITERATOR_ARRAY,ArrayIteratorObject,TYPE_ID_OBJECT_ITERATOR_ARRAY);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_ITERATOR_OBJECT,ObjectIteratorObject,TYPE_ID_OBJECT_ITERATOR_OBJECT);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_ITERATOR_STRING,ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,StringIteratorObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_ITERATOR_ARRAY,ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY,ArrayIteratorObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_ITERATOR_OBJECT,ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ObjectIteratorObject);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		SCF_REGISTER_CLASS(TYPE_NAME_OBJECT_ARRAY,ArrayObject,TYPE_ID_OBJECT_ARRAY);
-		SCF_REGISTER_CLASS(TYPE_NAME_DICTIONARY_OBJECT,DictionaryObject,TYPE_ID_DICTIONARY_OBJECT);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_NAME_OBJECT_CLASS,ClassObject,TYPE_ID_OBJECT_CLASS);
+		SCF_REGISTER_CLASS(TYPE_ID_OBJECT_ARRAY,ZS_TYPE_NAME_OBJECT_ARRAY,ArrayObject);
+		SCF_REGISTER_CLASS(TYPE_ID_DICTIONARY_OBJECT,ZS_TYPE_NAME_DICTIONARY_OBJECT,DictionaryObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(TYPE_ID_OBJECT_CLASS,ZS_TYPE_NAME_OBJECT_CLASS,ClassObject);
 		// it needs script object type to have zetscript reference
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		//------------------------
@@ -254,13 +254,13 @@ namespace zetscript{
 
 		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
 
-		Type *integer_type=this->getType(TYPE_NAME_INT);
+		Type *integer_type=this->getType(ZS_TYPE_NAME_INT);
 		integer_type->registerConstMemberProperty("MAX_VALUE",intMaxValue);
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
 		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,String *)>(parseInt));
 
-		Type *float_type=this->getType(TYPE_NAME_FLOAT);
+		Type *float_type=this->getType(ZS_TYPE_NAME_FLOAT);
 		float_type->registerConstMemberProperty("MAX_VALUE",floatMaxValue);
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
 		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
@@ -296,8 +296,8 @@ namespace zetscript{
 
 		registerMemberFunction<StringObject>("startsWith",StringObjectZs_startsWith);
 		registerMemberFunction<StringObject>("endsWith",StringObjectZs_endsWith);
-		registerMemberFunction<StringObject>("substring",static_cast<StringObject * (*)(ZetScript *_zs,StringObject *so, zs_int,zs_int )>(&StringObjectZs_subassignring));
-		registerMemberFunction<StringObject>("substring",static_cast<StringObject * (*)(ZetScript *_zs,StringObject *so, zs_int )>(&StringObjectZs_subassignring));
+		registerMemberFunction<StringObject>("substring",static_cast<StringObject * (*)(ZetScript *_zs,StringObject *so, zs_int,zs_int )>(&StringObjectZs_substring));
+		registerMemberFunction<StringObject>("substring",static_cast<StringObject * (*)(ZetScript *_zs,StringObject *so, zs_int )>(&StringObjectZs_substring));
 		registerMemberFunction<StringObject>("append",static_cast<void (*)(ZetScript *,StringObject *, StringObject *)>(&StringObjectZs_append));
 		registerMemberFunction<StringObject>("append",static_cast<void (*)(ZetScript *,StringObject *, zs_int )>(&StringObjectZs_append));
 		registerMemberFunction<StringObject>("toLowerCase",StringObjectZs_toLowerCase);
@@ -358,7 +358,7 @@ namespace zetscript{
 	void TypeFactory::clear(short _idx_start){
 		short idx_start = _idx_start == ZS_UNDEFINED_IDX ?  idx_clear_checkpoint:_idx_start;
 		for(
-			int v=types->size()-1;
+			int v=types->length()-1;
 			v > idx_start; // avoid main type
 			v--
 		){
@@ -369,12 +369,12 @@ namespace zetscript{
 	}
 
 	void TypeFactory::saveState(){
-		idx_clear_checkpoint = types->size()-1;
+		idx_clear_checkpoint = types->length()-1;
 	}
 
 	void TypeFactory::checkTypeName(const String & _str_type){
 
-		if(types->size()>=MAX_REGISTER_CLASSES){
+		if(types->length()>=MAX_REGISTER_CLASSES){
 			ZS_THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
@@ -382,7 +382,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
-		if(zs->getFunctionFactory()->getFunctions()->size() > 0){
+		if(zs->getFunctionFactory()->getFunctions()->length() > 0){
 			Symbol *main_function_symbol=NULL;
 			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(
 					_str_type
@@ -414,7 +414,7 @@ namespace zetscript{
 
 		if((new_type_id = getTypeId(_str_type))==ZS_UNDEFINED_IDX){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
-			new_type_id=types->size();
+			new_type_id=types->length();
 
 			// To avoid built-int conflict bool type
 			if(
@@ -433,19 +433,19 @@ namespace zetscript{
 
 			Symbol *symbol=ZS_MAIN_SCOPE(this)->registerSymbolType(_file,_line,_str_type,properties_register_scope);
 
-			type = new Type(this->zs,new_type_id, _str_type, scope_class,TYPE_NAME_OBJECT,_properties);
+			type = new Type(this->zs,new_type_id, _str_type, scope_class,ZS_TYPE_NAME_OBJECT,_properties);
 			scope_class->setTypeOwner(type);
 			symbol->ref_ptr=(zs_int)type;
 
-			//type->native_name = TYPE_NAME_OBJECT;
+			//type->native_name = ZS_TYPE_NAME_OBJECT;
 
-			types->append(type);
+			types->push(type);
 
 			if(_base_class_name != ""){
 
 				Type *base_type=NULL;
 
-				if(type->base_type_ids->size() > 0){
+				if(type->base_type_ids->length() > 0){
 					Type *match_class=getType(type->base_type_ids->get(0));
 					ZS_THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_type.toConstChar()
@@ -466,7 +466,7 @@ namespace zetscript{
 
 				// 1. extend all symbols from base type
 				Vector<Symbol *> *symbol_functions=base_type->scope->symbol_functions;
-				for(int i=0; i < symbol_functions->size(); i++){
+				for(int i=0; i < symbol_functions->length(); i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->get(i);
 					Symbol *symbol_dst=scope_class->registerSymbolFunction(
 							symbol_src->file
@@ -482,11 +482,11 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				type->idx_starting_this_member_functions=type->scope->symbol_functions->size();
+				type->idx_starting_this_member_functions=type->scope->symbol_functions->length();
 
 				// 1. extend all symbols from base type
 				Vector<Symbol *> *symbol_variables=base_type->scope->symbol_variables;
-				for(int i=0; i < symbol_variables->size(); i++){
+				for(int i=0; i < symbol_variables->length(); i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->get(i);
 					Symbol *symbol_dst=scope_class->registerSymbolVariable(
 							symbol_src->file
@@ -514,23 +514,23 @@ namespace zetscript{
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
-							for(int j=0; j < mp_info.setters->size();j++){
+							for(int j=0; j < mp_info.setters->length();j++){
 								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->get(j))->value));
 
 							}
 							it_setters++;
 						}
 
-						type->allocated_member_properties->append(mp_dst);
+						type->allocated_member_properties->push(mp_dst);
 						symbol_dst->ref_ptr=(zs_int)mp_dst;
 					}
 				}
 
 				// set idx starting member
-				type->idx_starting_this_member_variables=type->scope->symbol_variables->size();
+				type->idx_starting_this_member_variables=type->scope->symbol_variables->length();
 
 				// 2. set idx base type...
-				type->base_type_ids->append(base_type->id);
+				type->base_type_ids->push(base_type->id);
 			}
 
 			if(type->id != TYPE_ID_CLASS_MAIN){ // main type has no field initializers and reserve first function as main function
@@ -575,7 +575,7 @@ namespace zetscript{
 
 	Type *TypeFactory::getType(const String & _type_name){
 
-		for(int i = 0; i < types->size(); i++){
+		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
 			if(_type_name == type->name){//metadata_info.object_info.symbol_info.str_native_type){
 				return type;
@@ -586,7 +586,7 @@ namespace zetscript{
 
 	Type *TypeFactory::getTypeFromTypeNamePtr(const String & _type_name_ptr){
 
-		for(int i = 0; i < types->size(); i++){
+		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
 			if(_type_name_ptr == type->native_name){//metadata_info.object_info.symbol_info.str_native_type){
 				return type;
@@ -598,7 +598,7 @@ namespace zetscript{
 
 	TypeId TypeFactory::getTypeId(const String & _type_name){
 
-		for(int i = 0; i < types->size(); i++){
+		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
 			if(_type_name == type->name){
 				return i;
@@ -609,7 +609,7 @@ namespace zetscript{
 
 	TypeId TypeFactory::getTypeIdFromTypeNamePtr(const String & _type_name_ptr){
 		// ok check str_native_type
-		for(int i = 0; i < types->size(); i++){
+		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
 			if(type->native_name == _type_name_ptr){
 				return i;
@@ -685,7 +685,7 @@ namespace zetscript{
 
 		Type *type=(Type *)types->get(_type_id);
 
-		for(int i=0; i < type->base_type_ids->size(); i++){
+		for(int i=0; i < type->base_type_ids->length(); i++){
 			if(scriptTypeInheritsFrom(type->base_type_ids->get(i),_type_id_base)){
 				return true;
 			}
@@ -711,7 +711,7 @@ namespace zetscript{
 
 	TypeFactory::~TypeFactory(){
 		// we have to destroy all allocated constructor/destructor ...
-		for(int i = 0; i < types->size(); i++) {
+		for(int i = 0; i < types->length(); i++) {
 
 			delete (Type *)types->get(i);
 		}

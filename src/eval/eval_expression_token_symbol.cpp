@@ -122,13 +122,13 @@ namespace zetscript{
 			aux_p=aux_p+1;
 
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
-				token_node_symbol->eval_instructions.append(new EvalInstruction(BYTE_CODE_NEG));
+				token_node_symbol->eval_instructions.push(new EvalInstruction(BYTE_CODE_NEG));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
-				token_node_symbol->eval_instructions.append(new EvalInstruction(BYTE_CODE_BWC));
+				token_node_symbol->eval_instructions.push(new EvalInstruction(BYTE_CODE_BWC));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
-				token_node_symbol->eval_instructions.append(new EvalInstruction(BYTE_CODE_NOT));
+				token_node_symbol->eval_instructions.push(new EvalInstruction(BYTE_CODE_NOT));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}
 
@@ -449,7 +449,7 @@ namespace zetscript{
 						}
 
 						// only one argument and is variable
-						if(ei_arg_instruction.size()==1){
+						if(ei_arg_instruction.length()==1){
 							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction.get(0);
 							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
@@ -598,7 +598,7 @@ namespace zetscript{
 					==false){
 
 					// ... we create new instruction
-					token_node_symbol->eval_instructions.append(instruction_token=new EvalInstruction(byte_code));
+					token_node_symbol->eval_instructions.push(instruction_token=new EvalInstruction(byte_code));
 				}
 
 				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
@@ -713,7 +713,7 @@ namespace zetscript{
 			ByteCode byte_code_post_operation= BYTE_CODE_INVALID;
 			//ByteCode byte_code_pre_operation= BYTE_CODE_INVALID;
 
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1)))->vm_instruction;
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.length()-1)))->vm_instruction;
 
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 				EVAL_ERROR_FILE_LINE_GOTO(
@@ -752,14 +752,14 @@ namespace zetscript{
 			   byte_code_post_operation=BYTE_CODE_POST_DEC;
 		   }
 
-			token_node_symbol->eval_instructions.append(
+			token_node_symbol->eval_instructions.push(
 				eval_instruction_post=new EvalInstruction(
 					byte_code_post_operation
 				)
 			);
 
 			// post op instruction
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1);
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.length()-1);
 
 			eval_instruction_post->instruction_source_info=eval_instruction_source_info(
 				eval_data
@@ -832,10 +832,10 @@ namespace zetscript{
 				}
 			}
 
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1);
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.size()-1)))->vm_instruction;
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.length()-1);
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.get(token_node_symbol->eval_instructions.length()-1)))->vm_instruction;
 
-			token_node_symbol->eval_instructions.append(
+			token_node_symbol->eval_instructions.push(
 				eval_instruction_pre=new EvalInstruction(
 					pre_operation == PreOperation::PRE_OPERATION_NEG ? BYTE_CODE_NEG:
 					pre_operation == PreOperation::PRE_OPERATION_BWC ? BYTE_CODE_BWC:
@@ -869,13 +869,13 @@ namespace zetscript{
 		}
 
 		// finally push token node symbol
-		token_nodes->append(token_node_symbol);
+		token_nodes->push(token_node_symbol);
 
 		return aux_p;
 
 error_expression_token_symbol:
 
-		for(int kk=0;kk<token_node_symbol->eval_instructions.size();kk++){
+		for(int kk=0;kk<token_node_symbol->eval_instructions.length();kk++){
 			delete token_node_symbol->eval_instructions.get(kk);
 			token_node_symbol->eval_instructions.set(kk,0);
 		}

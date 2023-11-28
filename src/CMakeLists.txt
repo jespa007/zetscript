@@ -206,16 +206,17 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	base/@base.cpp
 	
 	# Core
-	#core/@core.cpp 
+	core/@core.cpp
 	
-	# Modules
-	#module/zs_module.cpp
-	
+	# Eval		
+	eval/eval.cpp
+	 
 	# Virtual machine
 	#vm/vm.cpp
 	
-	# Eval		
-	#eval/eval.cpp
+	# Modules
+	#module/@module.cpp
+	
 
 	# Main api
 	#zetscript.cpp

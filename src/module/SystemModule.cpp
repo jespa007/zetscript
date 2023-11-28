@@ -112,7 +112,7 @@ namespace zetscript{
 			}
 		}
 
-		str_unescaped_source=String::unescape(so_str_eval->toString());
+		str_unescaped_source=StringUtils::unescape(so_str_eval->toString());
 		str_start=str_unescaped_source.toConstChar();
 
 		// 3. Call zetscript->eval this function

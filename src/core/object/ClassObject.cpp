@@ -40,7 +40,7 @@ namespace zetscript{
 		Vector<Symbol *> *member_vars=type->scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for(int i = 0; i < member_vars->size(); i++){
+		for(int i = 0; i < member_vars->length(); i++){
 
 			Symbol * symbol = (Symbol *)member_vars->get(i);
 
@@ -77,7 +77,7 @@ namespace zetscript{
 		}else {
 			Type *sc=type;
 			// get first type with c inheritance...
-			while((sc->base_type_ids->size()>0) && (script_class_native==NULL)){
+			while((sc->base_type_ids->length()>0) && (script_class_native==NULL)){
 				sc=this->zs->getTypeFactory()->getType(sc->base_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
@@ -115,7 +115,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(sc->base_type_ids->size()>0){
+		if(sc->base_type_ids->length()>0){
 			callConstructorMemberVariables(this->zs->getTypeFactory()->getType(sc->base_type_ids->get(0)));
 		}
 
@@ -193,10 +193,10 @@ namespace zetscript{
 				}else{ // expect return an scriptobjectstring
 					String *str=NULL;
 					switch(ptr_function->return_type_id){
-					case TYPE_ID_ZS_STRING_C:
+					case TYPE_ID_STRING_C:
 							aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
-					case TYPE_ID_ZS_STRING_PTR_C:
+					case TYPE_ID_STRING_PTR_C:
 							str=((String * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");

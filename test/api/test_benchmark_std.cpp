@@ -52,7 +52,7 @@ void test_std_map(){
 
 	printf("=======================================\n");
 	printf("Press any key\n");
-	//zetscript::Console::::readChar();
+	//zetscript::Console::readChar();
 
 
 
@@ -73,7 +73,7 @@ void test_MapString(){
 	int start=zetscript::System::clock();
 
 	for(int i=0; i < 1000000; i++){
-		map.set(std_random_key().toConstChar(),(zetscript::zs_int)(new zetscript::String("a")));
+		map.set(std_random_key().c_str(),(zetscript::zs_int)(new zetscript::String("a")));
 	}
 
 	printf("done!\n");
@@ -84,7 +84,7 @@ void test_MapString(){
 
 	printf("=======================================\n");
 	printf("Press any key\n");
-	zetscript::Console::::readChar();
+	zetscript::Console::readChar();
 
 }
 
@@ -111,7 +111,7 @@ void test_std_string(){
 	printf("Elapsed time %i\n",(int)((zetscript::System::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
-	zetscript::Console::::readChar();
+	zetscript::Console::readChar();
 }
 
 void test_String(){
@@ -135,7 +135,7 @@ void test_String(){
 	printf("Elapsed time %i\n",(int)((zetscript::System::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
-	zetscript::Console::::readChar();
+	zetscript::Console::readChar();
 
 }
 
@@ -149,7 +149,7 @@ void test_std_vector(){
 		int start=zetscript::System::clock();
 
 	for(int i=0; i < 1000000; i++){
-		vec.append(0);
+		vec.push_back(0);
 		if((i%100000)==0){
 			printf("%i\n",i);
 		}
@@ -157,7 +157,7 @@ void test_std_vector(){
 	printf("Elapsed time %i\n",(int)((zetscript::System::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
-	zetscript::Console::::readChar();
+	zetscript::Console::readChar();
 
 }
 
@@ -171,7 +171,7 @@ void test_Vector(){
 		int start=zetscript::System::clock();
 
 	for(int i=0; i < 1000000; i++){
-		vec.append(0);
+		vec.push(0);
 		if((i%100000)==0){
 			printf("%i\n",i);
 		}
@@ -179,7 +179,7 @@ void test_Vector(){
 	printf("Elapsed time %i\n",(int)((zetscript::System::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
-	zetscript::Console::::readChar();
+	zetscript::Console::readChar();
 
 }
 

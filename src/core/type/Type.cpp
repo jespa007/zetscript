@@ -49,7 +49,7 @@ namespace zetscript{
 
 	void Type::printListMemberFunctions(){
 		Scope *scope=this->scope;
-		for(int i=0; i < scope->symbol_functions->size();i++){
+		for(int i=0; i < scope->symbol_functions->length();i++){
 			Symbol *symbol = (Symbol *)scope->symbol_functions->get(i);
 			Function *sf=(Function *)symbol->ref_ptr;
 			int start_idx=0;
@@ -125,7 +125,7 @@ namespace zetscript{
 			return true;
 		}
 
-		for(int i=0; i < this->base_type_ids->size(); i++){
+		for(int i=0; i < this->base_type_ids->length(); i++){
 			if (type_factory->getType(this->base_type_ids->get(i))->extendsFrom(_type_id) == true) {
 				return true;
 			}
@@ -200,7 +200,7 @@ namespace zetscript{
 		symbol_member_property = scope->registerSymbolVariable(file,line,attrib_name);
 		symbol_member_property->ref_ptr=(zs_int)(new MemberProperty(this,attrib_name));
 		symbol_member_property->properties=SYMBOL_PROPERTY_MEMBER_PROPERTY;
-		allocated_member_properties->append((MemberProperty *)symbol_member_property->ref_ptr);
+		allocated_member_properties->push((MemberProperty *)symbol_member_property->ref_ptr);
 
 		return symbol_member_property;
 	}
@@ -410,7 +410,7 @@ namespace zetscript{
 
 						/*switch(_return_type_id){
 						case TypeId::TYPE_ID_OBJECT_CLASS:
-						case TypeId::TYPE_ID_ZS_STRING_C:
+						case TypeId::TYPE_ID_STRING_C:
 						case TypeId::TYPE_ID_INT_C:
 						case TypeId::TYPE_ID_FLOAT_C:
 						case TypeId::TYPE_ID_BOOL_C:
@@ -492,7 +492,7 @@ namespace zetscript{
 							// member metamethod
 							switch(i){
 							case METAMETHOD_TO_STRING:
-								if(_return_type_id != TYPE_ID_ZS_STRING_C){
+								if(_return_type_id != TYPE_ID_STRING_C){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'String' but it was '%s'",
 											this->name.toConstChar(),
 											_function_name.toConstChar(),
@@ -624,7 +624,7 @@ namespace zetscript{
 
 						if(((_function_properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
 								&&
-							(info_mp.setters!=NULL && info_mp.setters->size()>0)){
+							(info_mp.setters!=NULL && info_mp.setters->length()>0)){
 							// error already set (script functions only can be set once)
 							ZS_THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,name.toConstChar()
@@ -696,7 +696,7 @@ namespace zetscript{
 		Vector<Symbol *> *list=this->scope->symbol_variables;
 
 		for(
-				int i = (int)(list->size()-1);
+				int i = (int)(list->length()-1);
 				i >= idx_end
 				; i--
 		){
@@ -714,7 +714,7 @@ namespace zetscript{
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 		Vector<Symbol *> *symbol_functions=this->scope->symbol_functions;
 
-		int i = (int)(symbol_functions->size()-1);
+		int i = (int)(symbol_functions->length()-1);
 
 		while(i >= idx_end){
 			Symbol *member_symbol=symbol_functions->data()[i];
@@ -747,7 +747,7 @@ namespace zetscript{
 
 	Type::~Type(){
 
-		for(int i=0; i < allocated_member_properties->size(); i++){
+		for(int i=0; i < allocated_member_properties->length(); i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->get(i);
 			delete mp;
 		}

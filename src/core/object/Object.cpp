@@ -27,7 +27,7 @@ namespace zetscript{
 			Vector<Symbol *> *symbol_vars=type->scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for(int i = 0; i < symbol_vars->size(); i++){
+			for(int i = 0; i < symbol_vars->length(); i++){
 				Symbol * symbol = (Symbol *)symbol_vars->get(i);
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinField(
@@ -80,7 +80,7 @@ namespace zetscript{
 
 	StackElement *Object::newBuiltinSlot(){
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		stk_builtin_elements.append(stk);
+		stk_builtin_elements.push(stk);
 		return stk;
 	}
 
@@ -161,7 +161,7 @@ namespace zetscript{
 	Symbol 	* Object::getFunctionSymbol(const String & _function_member_name){
 		Type *type=getType();
 		Vector<Symbol *> *s=type->scope->symbol_functions;
-		for(int i=((int)s->size())-1;i>=0;i--){
+		for(int i=((int)s->length())-1;i>=0;i--){
 			Symbol *symbol=(Symbol *)s->get(i);
 			if(symbol->name == _function_member_name){
 				return symbol;
@@ -192,7 +192,7 @@ namespace zetscript{
 	}
 
 	StackElement * Object::getBuiltinField(int idx){
-		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
+		if(idx >= (int)stk_builtin_elements.length() || idx < 0){
 			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
@@ -236,7 +236,7 @@ namespace zetscript{
 
 	Object::~Object(){
 		// deallocate built-in function member objects
-		for(int i=0; i< stk_builtin_elements.size(); i++){
+		for(int i=0; i< stk_builtin_elements.length(); i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.get(i);
 
 			if(stk->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){

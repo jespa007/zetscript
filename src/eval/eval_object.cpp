@@ -48,7 +48,7 @@ namespace zetscript{
 			}
 		}*/
 
-		eval_instructions->append(eval_instruction=new EvalInstruction(
+		eval_instructions->push(eval_instruction=new EvalInstruction(
 				byte_code
 				, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 				,ZS_UNDEFINED_IDX
@@ -163,7 +163,7 @@ namespace zetscript{
 		}
 
 		// instance object ...
-		eval_instructions->append(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
+		eval_instructions->push(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 		// this solve problem void structs...
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -200,7 +200,7 @@ namespace zetscript{
 			 }
 
 			// add instruction...
-			eval_instructions->append(
+			eval_instructions->push(
 					new EvalInstruction(
 					BYTE_CODE_LOAD_STRING
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
@@ -232,7 +232,7 @@ namespace zetscript{
 			 }
 
 			 // push attr (push a element pair)
-			 eval_instructions->append(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ITEM));
+			 eval_instructions->push(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ITEM));
 
 			 v_elements++;
 		}
@@ -254,7 +254,7 @@ namespace zetscript{
 		}
 
 		// declare vector ...
-		eval_instructions->append(new EvalInstruction(BYTE_CODE_NEW_ARRAY));
+		eval_instructions->push(new EvalInstruction(BYTE_CODE_NEW_ARRAY));
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		unsigned v_elements=0;
@@ -287,7 +287,7 @@ namespace zetscript{
 			}
 
 			// vpush
-			eval_instructions->append(new EvalInstruction(BYTE_CODE_PUSH_ARRAY_ITEM));
+			eval_instructions->push(new EvalInstruction(BYTE_CODE_PUSH_ARRAY_ITEM));
 
 			v_elements++;
 		}
@@ -373,7 +373,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					eval_instructions->append(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE));
+					eval_instructions->push(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE));
 					eval_instruction_new_object_by_value->instruction_source_info=eval_instruction_source_info(
 							  eval_data
 							 ,eval_data->current_parsing_file
@@ -396,7 +396,7 @@ namespace zetscript{
 								);
 					}
 
-					eval_instructions->append(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
+					eval_instructions->push(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
 					eval_instruction->vm_instruction.value_op1=type->id;
 				}
 
@@ -410,7 +410,7 @@ namespace zetscript{
 				 }
 
 				 if(eval_instruction_new_object_by_value==NULL){
-					 eval_instructions->append(
+					 eval_instructions->push(
 						ei_load_function_constructor=new EvalInstruction(
 							 BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 						)
@@ -458,7 +458,7 @@ namespace zetscript{
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
-				 eval_instructions->append(
+				 eval_instructions->push(
 							 eval_instruction=new EvalInstruction(
 							  BYTE_CODE_CONSTRUCTOR_CALL
 
@@ -473,7 +473,7 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=type->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=type->scope->symbol_functions->size()-1;
+					 int start_idx_function=type->scope->symbol_functions->length()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)type->scope->symbol_functions->get(i);

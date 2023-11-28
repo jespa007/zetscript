@@ -53,9 +53,9 @@ namespace zetscript{
 	}
 
 	FunctionParam *FunctionParam::createArrayFromArray(const Vector<FunctionParam *> * _script_function_params){
-		FunctionParam *params=new FunctionParam[_script_function_params->size()];
+		FunctionParam *params=new FunctionParam[_script_function_params->length()];
 
-		for(int i=0; i < _script_function_params->size(); i++){
+		for(int i=0; i < _script_function_params->length(); i++){
 			params[i]=*((FunctionParam *)_script_function_params->get(i));
 		}
 

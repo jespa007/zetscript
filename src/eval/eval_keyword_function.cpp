@@ -13,7 +13,7 @@ namespace zetscript{
 	static int k_anonymous_function=0;
 
 	String eval_anonymous_function_name(const String &pre_name="",const String &post_name=""){
-		return "@"+(pre_name==""?"":pre_name)+"_afun_"+(post_name==""?"":post_name+"_")+String::intToString(k_anonymous_function++);
+		return "@"+(pre_name==""?"":pre_name)+"_afun_"+(post_name==""?"":post_name+"_")+Integer::toString(k_anonymous_function++);
 	}
 
 
@@ -25,12 +25,12 @@ namespace zetscript{
 			, Vector<EvalInstruction *> *_eval_instructions
 	){
 
-		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
+		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.length() + 1)
 		PtrInstruction new_instructions=NULL;
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=_eval_instructions->size();
+		int n_elements_to_add=_eval_instructions->length();
 
 		n_elements_to_add=n_elements_to_add+2; // +2 for push_stk + store at the end
 
@@ -53,7 +53,7 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(int i=0; i < _eval_instructions->size(); i++){
+		for(int i=0; i < _eval_instructions->length(); i++){
 			EvalInstruction *eval_instruction = _eval_instructions->get(i);
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
@@ -66,7 +66,7 @@ namespace zetscript{
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
 			// add instruction source information...
-			_sf->instruction_source_infos.append(new InstructionSourceInfo(instruction_info));
+			_sf->instruction_source_infos.push(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
@@ -81,7 +81,7 @@ namespace zetscript{
 			,ZS_UNDEFINED_IDX
 			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
-		_sf->instruction_source_infos.append(new InstructionSourceInfo(
+		_sf->instruction_source_infos.push(new InstructionSourceInfo(
 			eval_instruction_source_info(
 				_eval_data
 				,_eval_data->current_parsing_file
@@ -91,7 +91,7 @@ namespace zetscript{
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
-		_sf->instruction_source_infos.append(NULL);
+		_sf->instruction_source_infos.push(NULL);
 
 		if(_sf->instructions != NULL){
 			free(_sf->instructions); // deallocate last allocated instructions
@@ -107,7 +107,7 @@ namespace zetscript{
 
 		String name=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
-		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
+		size_t instructions_len=(eval_instructions->length()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
 		Symbol * symbol_sf=ZS_MAIN_FUNCTION(eval_data)->registerLocalFunction(
@@ -127,7 +127,7 @@ namespace zetscript{
 
 		sf->instructions_len=instructions_len;
 
-		for(int i=0; i < eval_instructions->size(); i++){
+		for(int i=0; i < eval_instructions->length(); i++){
 			EvalInstruction *instruction = eval_instructions->get(i);
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
@@ -142,7 +142,7 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_infos.append(
+			sf->instruction_source_infos.push(
 				new InstructionSourceInfo(instruction_info)
 			);
 
@@ -155,7 +155,7 @@ namespace zetscript{
 		start_ptr->byte_code=BYTE_CODE_RET;
 		start_ptr->value_op1= INSTRUCTION_VALUE_OP1_NOT_DEFINED;
 		start_ptr->value_op2=ZS_UNDEFINED_IDX;
-		sf->instruction_source_infos.append(NULL);
+		sf->instruction_source_infos.push(NULL);
 
 		eval_instructions->clear();
 
@@ -318,7 +318,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
-				if(script_function_params.size()>0){
+				if(script_function_params.length()>0){
 					if(*aux_p != ','){
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
@@ -425,7 +425,7 @@ namespace zetscript{
 						goto eval_keyword_function_params;
 					}
 
-					if(ei_instructions_default.size() == 0){ // expected expression
+					if(ei_instructions_default.length() == 0){ // expected expression
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
 							,line
@@ -436,7 +436,7 @@ namespace zetscript{
 
 					// copy evaluated instruction
 					// convert instruction to stk_element
-					if(ei_instructions_default.size() == 1){
+					if(ei_instructions_default.length() == 1){
 						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.get(0))->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
@@ -469,13 +469,13 @@ namespace zetscript{
 					}
 
 					// finally delete all evaluated code
-					for(int i=0; i < ei_instructions_default.size(); i++){
+					for(int i=0; i < ei_instructions_default.length(); i++){
 						delete ei_instructions_default.get(i);
 					}
 
 				}
 
-				script_function_params.append(
+				script_function_params.push(
 						new FunctionParam(param_info)
 				);
 			}
@@ -490,10 +490,10 @@ namespace zetscript{
 			}
 
 			params=FunctionParam::createArrayFromArray(&script_function_params);
-			params_len=script_function_params.size();
+			params_len=script_function_params.length();
 
 			// remove collected script function params
-			for(int i=0; i < script_function_params.size(); i++){
+			for(int i=0; i < script_function_params.length(); i++){
 				delete (FunctionParam *)script_function_params.get(i);
 			}
 
@@ -591,7 +591,7 @@ namespace zetscript{
 	// CONTROL ERROR
 	eval_keyword_function_params:
 			// unallocate script function params
-			for(int h=0; h < script_function_params.size(); h++){
+			for(int h=0; h < script_function_params.length(); h++){
 				delete (FunctionParam *)script_function_params.get(h);
 			}
 			script_function_params.clear();
@@ -641,7 +641,7 @@ namespace zetscript{
 
 			// global variables should not deref object references due they are not incs its references through
 			// calling functions
-			if(partial_ex.size()==1){
+			if(partial_ex.length()==1){
 				EvalInstruction *ei_arg=partial_ex.get(0);
 				ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
@@ -664,7 +664,7 @@ namespace zetscript{
 
 		}while(!end);
 
-		eval_data->current_function->eval_instructions.append(
+		eval_data->current_function->eval_instructions.push(
 			new EvalInstruction(BYTE_CODE_RET)
 		);
 

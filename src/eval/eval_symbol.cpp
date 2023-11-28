@@ -33,7 +33,7 @@ namespace zetscript{
 				 ,default_str_value
 		))!=NULL){ // int/bool/float, etc
 
-			if((const_obj=String::parseInt(default_str_value))!=NULL){ // int literal
+			if((const_obj=Integer::parse(default_str_value))!=NULL){ // int literal
 				value = *((zs_int *)const_obj);
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
@@ -46,7 +46,7 @@ namespace zetscript{
 				delete (zs_int *)const_obj;
 				byte_code = BYTE_CODE_LOAD_INT;
 
-			}else if((const_obj=String::parseFloat(default_str_value))!=NULL){ // float literal
+			}else if((const_obj=Float::parse(default_str_value))!=NULL){ // float literal
 				zs_float value_flt = *((zs_float *)const_obj);
 
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){
@@ -110,7 +110,7 @@ namespace zetscript{
 					byte_code=BYTE_CODE_LOAD_UNDEFINED;
 				}else if(default_str_value=="null"){ // null literal
 						byte_code=BYTE_CODE_LOAD_NULL;
-				}else if((const_obj=String::parseBool(default_str_value))!=NULL){ // bool literal
+				}else if((const_obj=Boolean::parse(default_str_value))!=NULL){ // bool literal
 
 					bool value_bool = *((bool *)const_obj);
 					if(pre_operation==PreOperation::PRE_OPERATION_NOT){
@@ -198,7 +198,7 @@ namespace zetscript{
 		 }
 
 		token_node_symbol->value = default_str_value;
-		token_node_symbol->eval_instructions.append(
+		token_node_symbol->eval_instructions.push(
 			eval_instruction=new EvalInstruction(
 				byte_code
 				, INSTRUCTION_VALUE_OP1_NOT_DEFINED
