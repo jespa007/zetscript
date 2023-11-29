@@ -10,7 +10,7 @@ namespace zetscript{
 		class Type;
 		class ZetScript;
 		struct VirtualMachine;
-		class TypeFactory;
+		class TypesFactory;
 		class  ClassObject: public DictionaryObject{
 		public:
 

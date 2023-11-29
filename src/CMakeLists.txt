@@ -439,8 +439,8 @@ SET(
 	core/type/Type.h
 	core/type/TypeId.h
 	core/type/Type.tcc
-	core/type/TypeFactory.h
-	core/type/TypeFactory.tcc
+	core/type/TypesFactory.h
+	core/type/TypesFactory.tcc
 	
 	# core/object
 	core/object/RefObjectObject.h

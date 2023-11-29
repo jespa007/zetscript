@@ -7,7 +7,7 @@
 #include "core/object/ArrayObject.tcc"
 #include "core/object/ClassObject.tcc"
 #include "core/object/DictionaryObject.tcc"
-#include "core/type/TypeFactory.tcc"
+#include "core/type/TypesFactory.tcc"
 
 
 
@@ -45,7 +45,7 @@ namespace zetscript{
 			String error;
 			_C ptr_var;
 			String native_name = typeid(_C).name();
-			TypeFactory *_script_factory=this->getTypeFactory();
+			TypesFactory *_script_factory=this->getTypeFactory();
 			Type *type = _script_factory->getTypeFromTypeNamePtr(native_name);
 
 			if(type == NULL){
@@ -68,7 +68,7 @@ namespace zetscript{
 
 			String error;
 			String native_name = typeid(_C).name();
-			TypeFactory *_script_factory=this->getTypeFactory();
+			TypesFactory *_script_factory=this->getTypeFactory();
 			Type *type = _script_factory->getTypeFromTypeNamePtr(native_name);
 
 			if(type == NULL){
@@ -88,7 +88,7 @@ namespace zetscript{
 
 			String error;
 			String native_name = typeid(_C).name();
-			TypeFactory *_script_factory=this->getTypeFactory();
+			TypesFactory *_script_factory=this->getTypeFactory();
 			Type *type = _script_factory->getTypeFromTypeNamePtr(native_name);
 
 			if(type == NULL){
@@ -140,7 +140,7 @@ namespace zetscript{
 		StackElement	ZetScript::toStackElement( _C _val){
 			String error;
 			String native_name = typeid(_C).name();
-			TypeFactory *_script_factory=this->getTypeFactory();
+			TypesFactory *_script_factory=this->getTypeFactory();
 			Type *type = _script_factory->getTypeFromTypeNamePtr(native_name);
 
 			if(type == NULL){

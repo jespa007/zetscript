@@ -266,7 +266,7 @@ namespace zetscript{
 		ZetScript 						* 		zs;
 		ScopeFactory 					* 		scope_factory;
 		FunctionFactory 			* 		script_function_factory;
-		TypeFactory 				* 		type_factory;
+		TypesFactory 				* 		type_factory;
 		EvalFunction					* 		current_function;
 		Vector<EvalFunction *>				eval_functions;
 

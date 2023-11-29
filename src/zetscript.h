@@ -51,7 +51,7 @@ namespace zetscript{
 		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
 		inline ScopeFactory * getScopeFactory() { return scope_factory;}
 		inline FunctionFactory *getFunctionFactory() { return script_function_factory;}
-		inline TypeFactory *getTypeFactory() { return type_factory;}
+		inline TypesFactory *getTypeFactory() { return type_factory;}
 
 		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	eval(const String & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
@@ -505,7 +505,7 @@ namespace zetscript{
 		VirtualMachine * virtual_machine;
 		ScopeFactory * scope_factory;
 		FunctionFactory *script_function_factory;
-		TypeFactory *type_factory;
+		TypesFactory *type_factory;
 
 		zs_float eval_float;
 		zs_int eval_int;

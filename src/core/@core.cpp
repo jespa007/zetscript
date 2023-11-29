@@ -37,7 +37,7 @@
 #include "function/FunctionParam.cpp"
 #include "function/Function.cpp"
 
-#include "type/TypeFactory.cpp"
+#include "type/TypesFactory.cpp"
 #include "type/Type.cpp"
 
 

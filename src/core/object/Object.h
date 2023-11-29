@@ -10,7 +10,7 @@ namespace zetscript{
 	class RefObjectObject;
 	struct InfoSharedPointerNode;
 	struct VirtualMachine;
-	class TypeFactory;
+	class TypesFactory;
 	struct VM_ScopeBlock;
 	class Function;
 
@@ -74,7 +74,7 @@ namespace zetscript{
 
 		static void 							onDettachRefObjectNode(ListNode<RefObjectObject *> *node);
 		List<RefObjectObject *>	*	ref_objects;
-		TypeFactory					*	getTypeFactory();
+		TypesFactory					*	getTypeFactory();
 
 		virtual StackElement 				* 	newBuiltinSlot();
 		virtual StackElement 				* 	addBuiltinField(const String & symbol_value, StackElement stk=k_stk_undefined);

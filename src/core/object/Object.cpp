@@ -222,7 +222,7 @@ namespace zetscript{
 		ref_objects->remove(_ref_object_node);
 	}
 
-	TypeFactory		*	Object::getTypeFactory(){
+	TypesFactory		*	Object::getTypeFactory(){
 		return zs->getTypeFactory();
 	}
 

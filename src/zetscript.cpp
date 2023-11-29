@@ -30,7 +30,7 @@ namespace zetscript{
 		script_function_factory= new FunctionFactory(this);
 
 		virtual_machine = vm_new(this);
-		type_factory = new TypeFactory(this);
+		type_factory = new TypesFactory(this);
 		type_factory->init();
 		vm_init(virtual_machine,this);
 

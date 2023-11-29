@@ -154,7 +154,7 @@ namespace zetscript{
 	private:
 		ZetScript 				*zs;
 		FunctionFactory 	*script_function_factory;
-		TypeFactory 		*type_factory;
+		TypesFactory 		*type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		Type * 			getType(TypeId _type_id);

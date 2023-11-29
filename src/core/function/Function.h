@@ -23,7 +23,7 @@ typedef enum{
 namespace zetscript{
 
 	class FunctionFactory;
-	class TypeFactory;
+	class TypesFactory;
 	class ScopeFactory;
 	class ZetScript;
 
@@ -157,7 +157,7 @@ namespace zetscript{
 
 		ZetScript 				*zs;
 		FunctionFactory 	*script_function_factory;
-		TypeFactory 		*type_factory;
+		TypesFactory 		*type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 		Vector<zs_int>		unresolved_symbols; // UnresolvedInstructionInfo
 		static String 		formatInstructionLoadType(Function *function,Instruction *instruction);

@@ -188,7 +188,7 @@ namespace zetscript{
 		const Function 				*	current_call_c_function;
 		ZetScript *zs;
 		FunctionFactory 				*	script_function_factory;
-		TypeFactory 					*	type_factory;
+		TypesFactory 					*	type_factory;
 		ScopeFactory 						*	scope_factory;
 		MapInt								cyclic_container_instances;
 

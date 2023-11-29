@@ -49,11 +49,11 @@ namespace zetscript{
 	typedef zs_int (*ConversionType)(zs_int);
 
 
-	class TypeFactory{
+	class TypesFactory{
 
 	public:
 
-		TypeFactory(ZetScript *_zs);
+		TypesFactory(ZetScript *_zs);
 		void init();
 		void setup();
 
@@ -186,7 +186,7 @@ namespace zetscript{
 		void 	saveState();
 
 
-		~TypeFactory();
+		~TypesFactory();
 
 	private:
 

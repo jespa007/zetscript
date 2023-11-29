@@ -40,7 +40,7 @@
 #include "function/FunctionFactory.h"
 
 #include "type/Type.h"
-#include "type/TypeFactory.h"
+#include "type/TypesFactory.h"
 
 
 #include "function/FunctionTraits.h"

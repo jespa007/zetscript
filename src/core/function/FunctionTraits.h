@@ -161,7 +161,7 @@ namespace zetscript{
 
 	template <typename F>
 	TypeId getNativeFunctionRetArgsTypes(
-			 TypeFactory *_script_class_factory
+			 TypesFactory *_script_class_factory
 			,Type * _type
 			,F _ptr_function
 			,FunctionParam **_params

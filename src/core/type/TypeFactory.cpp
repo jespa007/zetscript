@@ -97,7 +97,7 @@ namespace zetscript{
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ArrayObject)
 
-	TypeFactory::TypeFactory(ZetScript *_zs){
+	TypesFactory::TypesFactory(ZetScript *_zs){
 		zs = _zs;
 		vm = _zs->getVirtualMachine();
 		scope_factory = this->zs->getScopeFactory();
@@ -110,7 +110,7 @@ namespace zetscript{
 		idx_clear_checkpoint=0;
 	}
 
-	void TypeFactory::init(){
+	void TypesFactory::init(){
 		String error;
 
 		// FunctionFactory has to be created
@@ -191,7 +191,7 @@ namespace zetscript{
 		return (_stk->properties & (STACK_ELEMENT_PROPERTY_INT | STACK_ELEMENT_PROPERTY_FLOAT)) != 0;
 	}
 
-	void TypeFactory::setup(){
+	void TypesFactory::setup(){
 
 		// !!!
 		// !!! START REGISTER BUILT IN CLASSES AND TYPES
@@ -355,7 +355,7 @@ namespace zetscript{
 		zs->saveState();
 	}
 
-	void TypeFactory::clear(short _idx_start){
+	void TypesFactory::clear(short _idx_start){
 		short idx_start = _idx_start == ZS_UNDEFINED_IDX ?  idx_clear_checkpoint:_idx_start;
 		for(
 			int v=types->length()-1;
@@ -368,11 +368,11 @@ namespace zetscript{
 		}
 	}
 
-	void TypeFactory::saveState(){
+	void TypesFactory::saveState(){
 		idx_clear_checkpoint = types->length()-1;
 	}
 
-	void TypeFactory::checkTypeName(const String & _str_type){
+	void TypesFactory::checkTypeName(const String & _str_type){
 
 		if(types->length()>=MAX_REGISTER_CLASSES){
 			ZS_THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
@@ -400,7 +400,7 @@ namespace zetscript{
 		}
 	}
 
-	Type * TypeFactory::registerType(
+	Type * TypesFactory::registerType(
 			const String & _str_type
 			 ,const String & _base_class_name
 			 ,uint16_t _properties
@@ -561,11 +561,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Vector<Type *> * TypeFactory::getTypes(){
+	Vector<Type *> * TypesFactory::getTypes(){
 		return types;
 	}
 
-	Type 	* TypeFactory::getType(TypeId _type_id){
+	Type 	* TypesFactory::getType(TypeId _type_id){
 		if(_type_id == ZS_UNDEFINED_IDX){
 			ZS_THROW_RUNTIME_ERRORF("Type node out of bound");
 			return NULL;
@@ -573,7 +573,7 @@ namespace zetscript{
 		return (Type *)types->get(_type_id);
 	}
 
-	Type *TypeFactory::getType(const String & _type_name){
+	Type *TypesFactory::getType(const String & _type_name){
 
 		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
@@ -584,7 +584,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Type *TypeFactory::getTypeFromTypeNamePtr(const String & _type_name_ptr){
+	Type *TypesFactory::getTypeFromTypeNamePtr(const String & _type_name_ptr){
 
 		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
@@ -596,7 +596,7 @@ namespace zetscript{
 	}
 
 
-	TypeId TypeFactory::getTypeId(const String & _type_name){
+	TypeId TypesFactory::getTypeId(const String & _type_name){
 
 		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
@@ -607,7 +607,7 @@ namespace zetscript{
 		return TYPE_ID_INVALID;
 	}
 
-	TypeId TypeFactory::getTypeIdFromTypeNamePtr(const String & _type_name_ptr){
+	TypeId TypesFactory::getTypeIdFromTypeNamePtr(const String & _type_name_ptr){
 		// ok check str_native_type
 		for(int i = 0; i < types->length(); i++){
 			Type * type=(Type *)types->get(i);
@@ -618,11 +618,11 @@ namespace zetscript{
 		return TYPE_ID_INVALID;
 	}
 
-	bool TypeFactory::isTypeRegistered(const String & _type_name){
+	bool TypesFactory::isTypeRegistered(const String & _type_name){
 		return getTypeId(_type_name) != ZS_UNDEFINED_IDX;
 	}
 
-	Object *		TypeFactory::instanceObjectByTypeName(const String & _type_name){
+	Object *		TypesFactory::instanceObjectByTypeName(const String & _type_name){
 		 // 0. Search type info ...
 		 Type * type = getType(_type_name);
 
@@ -632,7 +632,7 @@ namespace zetscript{
 		 return NULL;
 	 }
 
-	 Object 		 * TypeFactory::instanceObjectByTypeId(TypeId _type_id, void * value_object){
+	 Object 		 * TypesFactory::instanceObjectByTypeId(TypeId _type_id, void * value_object){
 
 		 Object *so=NULL;
 
@@ -669,7 +669,7 @@ namespace zetscript{
 	 }
 
 
-	const char * TypeFactory::getTypeName(TypeId _type_id){
+	const char * TypesFactory::getTypeName(TypeId _type_id){
 		if(_type_id != ZS_UNDEFINED_IDX){
 			Type *type=(Type *)types->get(_type_id);
 			return type->name.toConstChar();
@@ -677,7 +677,7 @@ namespace zetscript{
 		 return "type_unknow";
 	}
 
-	bool 	TypeFactory::scriptTypeInheritsFrom(TypeId _type_id, TypeId _type_id_base){
+	bool 	TypesFactory::scriptTypeInheritsFrom(TypeId _type_id, TypeId _type_id_base){
 
 		if(_type_id == _type_id_base){
 			return true;
@@ -694,7 +694,7 @@ namespace zetscript{
 		return false;
 	}
 
-	bool	TypeFactory::isTypeInstanceable(TypeId _type_id){
+	bool	TypesFactory::isTypeInstanceable(TypeId _type_id){
 
 		if(
 				_type_id == TYPE_ID_OBJECT_STRING
@@ -709,7 +709,7 @@ namespace zetscript{
 	}
 
 
-	TypeFactory::~TypeFactory(){
+	TypesFactory::~TypesFactory(){
 		// we have to destroy all allocated constructor/destructor ...
 		for(int i = 0; i < types->length(); i++) {
 

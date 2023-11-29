@@ -8,7 +8,7 @@ namespace zetscript{
 	 * Register T function
 	 */
 	template <typename F>
-	void TypeFactory::registerFunction(
+	void TypesFactory::registerFunction(
 		const String &  _function_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -50,7 +50,7 @@ namespace zetscript{
 	 * Register T Class. Return index registered class
 	 */
 	template<class T>
-	Type * TypeFactory::registerType(
+	Type * TypesFactory::registerType(
 		const String & name
 		,T * (*_new_native_instance)(ZetScript *_zs)
 		,void (*_delete_native_instance)(ZetScript *_zs,T *)
@@ -105,7 +105,7 @@ namespace zetscript{
 
 
 	template<class T,class B>
-	void TypeFactory::extends(){
+	void TypesFactory::extends(){
 
 		const char *base_class_name=typeid(B).name();
 		const char * base_class_name_ptr=typeid(B *).name();
@@ -333,7 +333,7 @@ namespace zetscript{
 	 * Register T Member constructor
 	 */
 	template <typename T,typename F>
-	void TypeFactory::registerConstructor(
+	void TypesFactory::registerConstructor(
 		F function_type
 		,const char *registered_file
 		,short registered_line
@@ -348,7 +348,7 @@ namespace zetscript{
 	}
 
 	template <typename T,typename F>
-	void TypeFactory::registerConstMemberProperty(
+	void TypesFactory::registerConstMemberProperty(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -376,7 +376,7 @@ namespace zetscript{
 
 	// register member property shr set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyMetamethod(
+	void TypesFactory::registerMemberPropertyMetamethod(
 		const String & _property_name
 		,const String & _metamethod_name
 		,F _ptr_function
@@ -407,7 +407,7 @@ namespace zetscript{
 	 * register static property getter
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerStaticMemberPropertyGetter(
+	void TypesFactory::registerStaticMemberPropertyGetter(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -447,7 +447,7 @@ namespace zetscript{
 	 * register property member setter
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertySetter(
+	void TypesFactory::registerMemberPropertySetter(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -486,7 +486,7 @@ namespace zetscript{
 	 * register property getter
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyGetter(
+	void TypesFactory::registerMemberPropertyGetter(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -527,7 +527,7 @@ namespace zetscript{
 	 * register property neg
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyNeg(
+	void TypesFactory::registerMemberPropertyNeg(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -566,7 +566,7 @@ namespace zetscript{
 	 * register property neg
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyBwc(
+	void TypesFactory::registerMemberPropertyBwc(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -605,7 +605,7 @@ namespace zetscript{
 	 * register member property  post_increment
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyPostInc(
+	void TypesFactory::registerMemberPropertyPostInc(
 		const String & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -645,7 +645,7 @@ namespace zetscript{
 	 * register member property  post_decrement
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyPostDec(
+	void TypesFactory::registerMemberPropertyPostDec(
 			const String & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -685,7 +685,7 @@ namespace zetscript{
 	 * register member property  pre_increment
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyPreInc(
+	void TypesFactory::registerMemberPropertyPreInc(
 			const String & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -728,7 +728,7 @@ namespace zetscript{
 	 * register member property  pre_decrement
 	 */
 	/*template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyPreDec(
+	void TypesFactory::registerMemberPropertyPreDec(
 			const String & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -769,7 +769,7 @@ namespace zetscript{
 
 	// register member property add set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyAddSetter(
+	void TypesFactory::registerMemberPropertyAddSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -810,7 +810,7 @@ namespace zetscript{
 
 	// register member property  sub set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertySubSetter(
+	void TypesFactory::registerMemberPropertySubSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -851,7 +851,7 @@ namespace zetscript{
 
 	// register member property mul set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyMulSetter(
+	void TypesFactory::registerMemberPropertyMulSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -892,7 +892,7 @@ namespace zetscript{
 
 	// register member property div set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyDivSetter(
+	void TypesFactory::registerMemberPropertyDivSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -933,7 +933,7 @@ namespace zetscript{
 
 	// register member property mod set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyModSetter(
+	void TypesFactory::registerMemberPropertyModSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -974,7 +974,7 @@ namespace zetscript{
 
 	// register member property and set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyAndSetter(
+	void TypesFactory::registerMemberPropertyAndSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1015,7 +1015,7 @@ namespace zetscript{
 
 	// register member property or set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyOrSetter(
+	void TypesFactory::registerMemberPropertyOrSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1056,7 +1056,7 @@ namespace zetscript{
 
 	// register member property xor set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyXorSetter(
+	void TypesFactory::registerMemberPropertyXorSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1097,7 +1097,7 @@ namespace zetscript{
 
 	// register member property shl set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyShlSetter(
+	void TypesFactory::registerMemberPropertyShlSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1138,7 +1138,7 @@ namespace zetscript{
 
 	// register member property shr set operation
 	template <typename T,typename F>
-	void TypeFactory::registerMemberPropertyShrSetter(
+	void TypesFactory::registerMemberPropertyShrSetter(
 			const String & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1183,7 +1183,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type T
 	 */
 	template <typename T, typename F>
-	void TypeFactory::registerStaticMemberFunction(
+	void TypesFactory::registerStaticMemberFunction(
 		const String & name
 		,F ptr_function
 		,const char *registered_file
@@ -1212,7 +1212,7 @@ namespace zetscript{
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
 	template <typename T,typename F>
-	void TypeFactory::registerMemberFunction(
+	void TypesFactory::registerMemberFunction(
 		const String & name
 		,F ptr_function
 		,const char *registered_file
