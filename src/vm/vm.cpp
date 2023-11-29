@@ -146,7 +146,7 @@ namespace zetscript{
 			}
 		}
 
-		data->lifetime_object.append(info);
+		data->lifetime_object.push(info);
 	}
 
 	int vm_find_lifetime_object(
@@ -154,7 +154,7 @@ namespace zetscript{
 			,Object *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		for(int i=0; i < data->lifetime_object.size(); i++){
+		for(int i=0; i < data->lifetime_object.length(); i++){
 			InfoLifetimeObject *info=data->lifetime_object.get(i);
 			if(info->object==_object){
 				return i;
@@ -222,7 +222,7 @@ namespace zetscript{
 
 	StackElement * vm_get_stack_element_at(VirtualMachine *_vm, unsigned _idx_glb_element){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		if(_idx_glb_element < (unsigned)data->main_function_object->local_variables->size()){
+		if(_idx_glb_element < (unsigned)data->main_function_object->local_variables->length()){
 			return &data->vm_stack[_idx_glb_element];
 		}else{
 			ZS_VM_SET_USER_ERRORF(_vm,"getStackElementByKeyName: out of bounds");
@@ -280,12 +280,12 @@ namespace zetscript{
 			}
 
 			stk_start=data->vm_stack;
-			n_stk_params=data->main_function_object->local_variables->size();
+			n_stk_params=data->main_function_object->local_variables->length();
 
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
 			stk_start=data->vm_stk_current;
-			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->size()];
+			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->length()];
 			first_script_call_from_c=false;
 
 			if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
@@ -358,7 +358,7 @@ namespace zetscript{
 
 			throw_exception_file_line(data->vm_error_file.toConstChar(),data->vm_error_line,total_error.toConstChar());
 		}else{
-			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_script_function->local_variables->size());
+			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_script_function->local_variables->length());
 
 			if(n_returned_arguments_from_function > 0){
 
@@ -410,13 +410,13 @@ namespace zetscript{
 
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(data->lifetime_object.size()>0){
+		if(data->lifetime_object.length()>0){
 			String created_at="";
 			String end="";
 			bool some_registers_without_file_line=false;
 
 			String error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
-			for(int i=0; i < data->lifetime_object.size();i++ ){
+			for(int i=0; i < data->lifetime_object.length();i++ ){
 				InfoLifetimeObject *info=data->lifetime_object.get(i);
 				created_at="";
 				end="";
@@ -530,7 +530,7 @@ namespace zetscript{
 		if(current_node != NULL){
 			do{
 				if(_container_to_check==current_node->data->getSrcContainerRef()){
-					_slots->append(current_node);//_count++;
+					_slots->push(current_node);//_count++;
 				}
 				current_node=current_node->next;
 			}while(current_node!=first_node);
@@ -563,12 +563,12 @@ namespace zetscript{
 #endif
 
 			// if n_shares == shared_pointers
-			if(slots.size()>0){
-				if(slots.size()==cso->shared_pointer->data.n_shares){
+			if(slots.length()>0){
+				if(slots.length()==cso->shared_pointer->data.n_shares){
 					cyclic_container_instances_element=true;
 					auto container_slots_intance=cso->getListContainerSlotsRef();
 
-					for(int i=0; i < slots.size();i++){
+					for(int i=0; i < slots.length();i++){
 
 						// for each container slot.
 						// 1. dettach from container slot list

@@ -180,7 +180,7 @@ namespace zetscript{
 				,stk_args
 			);
 
-			n_stk_local_symbols=ptr_function_found->local_variables->size();
+			n_stk_local_symbols=ptr_function_found->local_variables->length();
 		}else{ //
 			vm_execute_native_function(
 					_vm
@@ -306,7 +306,7 @@ namespace zetscript{
 
 		ZS_LOAD_PROPERTIES(_metamethod); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_metamethod);
-		if(setter_info.setters->size()==0){\
+		if(setter_info.setters->length()==0){\
 			ZS_METAMETHOD_OPERATION_NOT_FOUND(_metamethod); \
 			goto lbl_exit_function;
 		}\
@@ -320,7 +320,7 @@ namespace zetscript{
 				vm_share_object(_vm,(Object *)stk_result_op2->value);
 			}
 
-			if(setter_info.setters->size()>1){
+			if(setter_info.setters->length()>1){
 				symbol_setter = so_aux->getType()->getSymbol(str_set_metamethod);
 				if(symbol_setter == NULL){
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"

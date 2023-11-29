@@ -4,13 +4,6 @@
  */
 #include "zetscript.h"
 
-#include "Instruction.cpp"
-#include "StackElement.cpp"
-#include "Symbol.cpp"
-#include "ByteCodeHelper.cpp"
-#include "MetamethodHelper.cpp"
-
-
 namespace zetscript{
 
 	ZetScript::ZetScript(){
@@ -125,8 +118,8 @@ namespace zetscript{
 			StringUtils::format(
 				//------------------------------------------------
 				// String
-				"static StringUtils::format(_s,..._args){" // add static function format to String module
-				"	return StringUtils::formatNative(_s,_args)"
+				"static String::format(_s,..._args){" // add static function format to String module
+				"	return String::formatNative(_s,_args)"
 				"}"
 				//------------------------------------------------
 				// DateTime
@@ -248,7 +241,7 @@ namespace zetscript{
 		 Function::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(int j =0; j < symbol_functions->size(); j++){
+		 for(int j =0; j < symbol_functions->length(); j++){
 			Symbol *symbol=(Symbol *)symbol_functions->get(j);
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -269,7 +262,7 @@ namespace zetscript{
 			}
 		}
 
-		 for(int i = 1; i < script_classes->size(); i++){
+		 for(int i = 1; i < script_classes->length(); i++){
 			 Type *sc=(Type *)script_classes->get(i);
 			 bool show_class=true;
 
@@ -291,7 +284,7 @@ namespace zetscript{
 
 			 if(show_class){
 				 symbol_functions=sc->scope->symbol_functions;
-				 for(int f = 0; f < symbol_functions->size(); f++){
+				 for(int f = 0; f < symbol_functions->length(); f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->get(f);
 
@@ -312,29 +305,29 @@ namespace zetscript{
 		StackElement *stk=_stk;
 		String result="unknow";
 		if(STACK_ELEMENT_IS_UNDEFINED(stk))
-			result=TYPE_NAME_UNDEFINED; //"undefined";
+			result=ZS_TYPE_NAME_UNDEFINED; //"undefined";
 		else if(STACK_ELEMENT_IS_NULL(stk))
-			result=TYPE_NAME_NULL; //"null";
+			result=ZS_TYPE_NAME_NULL; //"null";
 		else if(STACK_ELEMENT_IS_INT(stk))
-			result=TYPE_NAME_INT;
+			result=ZS_TYPE_NAME_INT;
 		else if(STACK_ELEMENT_IS_FLOAT(stk))
-			result=TYPE_NAME_FLOAT;
+			result=ZS_TYPE_NAME_FLOAT;
 		else if(STACK_ELEMENT_IS_BOOLEAN(stk))
-			result=TYPE_NAME_BOOL;
+			result=ZS_TYPE_NAME_BOOL;
 		else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk))
 			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getTypeName();
 		else if(STACK_ELEMENT_IS_STRING_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_STRING;
+			result=ZS_TYPE_NAME_OBJECT_STRING;
 		else if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_ARRAY;
+			result=ZS_TYPE_NAME_OBJECT_ARRAY;
 		else if(STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk))
-			result=TYPE_NAME_DICTIONARY_OBJECT;
+			result=ZS_TYPE_NAME_DICTIONARY_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_ITERATOR_STRING;
+			result=ZS_TYPE_NAME_OBJECT_ITERATOR_STRING;
 		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_ITERATOR_ARRAY;
+			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY;
 		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_OBJECT(stk))
-			result=TYPE_NAME_OBJECT_ITERATOR_OBJECT;
+			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STACK_ELEMENT_IS_FUNCTION(stk))
 			result=String("fun@")+((Function *)(((Symbol *)stk->value)->ref_ptr))->name;
 		else if(STACK_ELEMENT_IS_TYPE(stk)) // is a type
@@ -390,15 +383,15 @@ namespace zetscript{
 		StackElement stk=unwrapStackElement(*_stk);
 
 		if(STACK_ELEMENT_IS_UNDEFINED(&stk)){
-			result=TYPE_NAME_UNDEFINED;
+			result=ZS_TYPE_NAME_UNDEFINED;
 		}else if(STACK_ELEMENT_IS_NULL(&stk)){
-			result=TYPE_NAME_NULL;
+			result=ZS_TYPE_NAME_NULL;
 		}else if(stk.properties & STACK_ELEMENT_PROPERTY_CHAR_PTR){
 			result= (const char *)stk.value;
 		}else if(STACK_ELEMENT_IS_INT(&stk)){
 			result= Integer::toString((zs_int)stk.value,_format);
 		}else if(STACK_ELEMENT_IS_FLOAT(&stk)){
-			result= String::floatToString(ZS_READ_INTPTR_FLOAT(stk.value));
+			result= Float::toString(ZS_READ_INTPTR_FLOAT(stk.value));
 		}else if(STACK_ELEMENT_IS_BOOLEAN(&stk)){
 			result= stk.value?"true":"false";
 		}else if(STACK_ELEMENT_IS_MEMBER_PROPERTY(&stk)){
@@ -874,7 +867,7 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const String & filename){
-		for(int i = 0; i < parsed_files.size(); i++){
+		for(int i = 0; i < parsed_files.length(); i++){
 			if(((ParsedFile *)parsed_files.get(i))->filename==filename){
 				return true;
 			}
@@ -1062,9 +1055,9 @@ namespace zetscript{
 			ParsedFile *ps=new ParsedFile();
 			String current_directory="";
 			ps->filename = _filename;
-			parsed_files.append(ps);
+			parsed_files.push(ps);
 			const char * const_file_char=ps->filename.toConstChar();
-			//idx_file=parsed_files.size()-1;
+			//idx_file=parsed_files.length()-1;
 
 			buf_tmp=File::readText(_filename);
 
@@ -1127,7 +1120,7 @@ namespace zetscript{
 		Vector<Symbol *> *local_variables=main_function_object->local_variables;
 		Vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
-		int v=local_variables->size()-1;
+		int v=local_variables->length()-1;
 
 
 		// Because all symbols are ordered by scope, have G as global symbols and L local symbols the disposition is the following,
@@ -1138,7 +1131,7 @@ namespace zetscript{
 		vm_deref_cyclic_references(this->virtual_machine);
 
 		// remove all shared 0 pointers
-		if(local_variables->size() > 0){
+		if(local_variables->length() > 0){
 
 			// remove cyclic container instances
 			for (
@@ -1180,9 +1173,9 @@ namespace zetscript{
 			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(ZS_VM_STACK_MAX-idx_start_variable));
 
 			// erase global elements that they weren't saved...
-			int resize=local_variables->size()-(local_variables->size()-idx_start_variable);
+			int resize=local_variables->length()-(local_variables->length()-idx_start_variable);
 			local_variables->resize(resize);
-			global_symbol_variables->resize(global_symbol_variables->size()-n_global_symbol_found);
+			global_symbol_variables->resize(global_symbol_variables->length()-n_global_symbol_found);
 		}
 
 		// remove any temporal memory pointers
@@ -1210,7 +1203,7 @@ namespace zetscript{
 
 
 	void ZetScript::resetParsedFiles(){
-		for(int i=0;i<parsed_files.size();i++){
+		for(int i=0;i<parsed_files.length();i++){
 			delete ((ParsedFile *)parsed_files.get(i));
 		}
 		parsed_files.clear();
@@ -1224,7 +1217,7 @@ namespace zetscript{
 		// clearGlobalFunctions
 		Scope *main_scope=ZS_MAIN_SCOPE(this);
 		Vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
-		int v=global_symbol_functions->size()-1;
+		int v=global_symbol_functions->length()-1;
 		// remove all shared 0 pointers
 		if(v >= idx_current_global_function_checkpoint){
 			for (
@@ -1237,14 +1230,14 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=global_symbol_functions->size()-(global_symbol_functions->size()-idx_current_global_function_checkpoint);
+			int resize=global_symbol_functions->length()-(global_symbol_functions->length()-idx_current_global_function_checkpoint);
 			global_symbol_functions->resize(resize);
 		}
 
 
 		// clearTypes
 		Vector<Symbol *> *types= main_scope->symbol_types;
-		v=types->size()-1;
+		v=types->length()-1;
 		// remove all shared 0 pointers
 		if(v >=idx_current_types_checkpoint){
 			for (
@@ -1257,7 +1250,7 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=types->size()-(types->size()-idx_current_types_checkpoint);
+			int resize=types->length()-(types->length()-idx_current_types_checkpoint);
 			types->resize(resize);
 		}
 
@@ -1275,9 +1268,9 @@ namespace zetscript{
 	void ZetScript::saveState(){
 		Function *main_function_object=type_factory->getMainFunction();
 		Scope *main_scope=ZS_MAIN_SCOPE(this);
-		idx_current_global_variable_checkpoint=main_function_object->local_variables->size();
-		idx_current_global_function_checkpoint=main_scope->symbol_functions->size();
-		idx_current_types_checkpoint=main_scope->symbol_types->size();
+		idx_current_global_variable_checkpoint=main_function_object->local_variables->length();
+		idx_current_global_function_checkpoint=main_scope->symbol_functions->length();
+		idx_current_types_checkpoint=main_scope->symbol_types->length();
 
 		scope_factory->saveState();
 		script_function_factory->saveState();
@@ -1285,7 +1278,7 @@ namespace zetscript{
 	}
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(Function *_sf){
-		for(int i=0;i < functions_with_unresolved_symbols.size(); i++){
+		for(int i=0;i < functions_with_unresolved_symbols.length(); i++){
 			if(functions_with_unresolved_symbols.get(i)==_sf){
 				return true;
 			}
@@ -1297,14 +1290,14 @@ namespace zetscript{
 
 	void ZetScript::addUnresolvedSymbol(Function *_sf, zs_int idx_instruction){
 		if(getFunctionWithUnresolvedSymbolExists(_sf) ==false){
-			functions_with_unresolved_symbols.append(_sf);
+			functions_with_unresolved_symbols.push(_sf);
 		}
 		_sf->addUnresolvedSymbol(idx_instruction);
 	}
 
 	void ZetScript::link(){
 		int i=0;
-		while(i<functions_with_unresolved_symbols.size()){
+		while(i<functions_with_unresolved_symbols.length()){
 			Function *_sf=(Function *)functions_with_unresolved_symbols.get(i);
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
 				functions_with_unresolved_symbols.erase(i);

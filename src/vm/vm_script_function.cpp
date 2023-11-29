@@ -65,7 +65,7 @@ namespace zetscript{
 		uint32_t 					msk_properties=0;
 
 		Instruction 			*	instruction_it=_script_function->instructions;
-		StackElement 			*	stk_start=_stk_local_var+_script_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..
+		StackElement 			*	stk_start=_stk_local_var+_script_function->local_variables->length();   // <-- here starts stk for aux vars for operations ..
 
 		if (ZS_IDX_VM_CURRENT_SCOPE_FUNCTION >= ZS_VM_FUNCTION_CALL_MAX) {
 			ZS_VM_ERROR_AND_RETF("Reached max stack");
@@ -92,7 +92,7 @@ namespace zetscript{
 		// init local variables symbols (except arguments) as undefined
 		if((_script_function->id != ZS_IDX_FUNCTION_MAIN)){
 			ZS_VM_PUSH_SCOPE(_script_function->scope);
-			for(int i=_script_function->params_len; i <(int)_script_function->local_variables->size(); i++){
+			for(int i=_script_function->params_len; i <(int)_script_function->local_variables->length(); i++){
 				STACK_ELEMENT_SET_UNDEFINED(_stk_local_var+ i);
 			}
 		}

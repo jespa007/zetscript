@@ -27,7 +27,7 @@ zetscript::String toString(
 zetscript::String toString(
 		zetscript::zs_float _f
 ){
-	return zetscript::String::floatToString(_f);
+	return zetscript::Float::toString(_f);
 }
 
 zetscript::String toString(

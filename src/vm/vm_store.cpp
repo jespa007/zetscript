@@ -71,13 +71,13 @@ namespace zetscript{
 		if(STACK_ELEMENT_IS_CLASS_OBJECT(stk_dst)){
 			if((store_lst_setter_functions=((ClassObject *)stk_dst->value)->getSetterList(METAMETHOD_SET))!=NULL){
 
-				if(store_lst_setter_functions->size() == 0){
+				if(store_lst_setter_functions->length() == 0){
 					store_lst_setter_functions=NULL;
 				}
 			}
 		}else if(stk_dst->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){
 			stk_mp_aux=(StackElementMemberProperty *)stk_dst->value;\
-			if(stk_mp_aux->member_property!=NULL && stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
+			if(stk_mp_aux->member_property!=NULL && stk_mp_aux->member_property->metamethod_members.setters.length() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
@@ -118,7 +118,7 @@ namespace zetscript{
 
 				}else{
 
-					if(stk_mp_aux->member_property->metamethod_members.setters.size()==0){
+					if(stk_mp_aux->member_property->metamethod_members.setters.length()==0){
 						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 								,so_aux->getType()->name.toConstChar()\
 								,stk_mp_aux->member_property->property_name.toConstChar()\
@@ -160,7 +160,7 @@ namespace zetscript{
 					}
 					goto lbl_exit_function;
 				}\
-			}else if(store_lst_setter_functions->size()>1){ // it has overrided metamethods
+			}else if(store_lst_setter_functions->length()>1){ // it has overrided metamethods
 				Symbol * symbol_setter = so_aux->getType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 				if(symbol_setter == NULL){\
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\

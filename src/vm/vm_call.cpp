@@ -29,7 +29,7 @@ namespace zetscript{
 				,stk_def_afun_start
 			);
 
-			n_stk_local_symbols=_script_function_to_call->local_variables->size();
+			n_stk_local_symbols=_script_function_to_call->local_variables->length();
 		}else{
 			vm_execute_native_function(
 					_vm
@@ -449,7 +449,7 @@ execute_function:
 					);
 				}
 
-				sf_call_n_local_symbols=sf_call_script_function->local_variables->size();
+				sf_call_n_local_symbols=sf_call_script_function->local_variables->length();
 			}
 			else{ // C function
 				if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){

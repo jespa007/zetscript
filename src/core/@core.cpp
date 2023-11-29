@@ -7,6 +7,11 @@
 
 #include "MetamethodMembers.cpp"
 #include "MemberProperty.cpp"
+#include "Instruction.cpp"
+#include "StackElement.cpp"
+#include "MetamethodHelper.cpp"
+#include "ByteCodeHelper.cpp"
+#include "Symbol.cpp"
 
 
 #include "scope/Scope.cpp"

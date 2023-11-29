@@ -49,7 +49,7 @@
 		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		Type *type=registerType(ZS_STR(_native_type),"",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);\
+		Type *type=registerType(typeid(_native_type).name(),"",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);\
 		type->scope->properties|=ZS_SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		type->properties=ZS_TYPE_PROPERTY_C_OBJECT_REF;\
 		type->native_name=(typeid(_native_type).name());\

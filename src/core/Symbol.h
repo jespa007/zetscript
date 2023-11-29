@@ -10,7 +10,7 @@
 namespace zetscript{
 
 	//typedef tInfoStatementOp *PInfoStatementOp;
-	enum:uint16_t  {
+	typedef enum:uint16_t  {
 		SYMBOL_PROPERTY_NATIVE_OBJECT_REF 			= 0x0001,// ref_ptr holds C object
 		SYMBOL_PROPERTY_STATIC 					= 0x0002,// C function or C++ static functions
 		SYMBOL_PROPERTY_TYPE						= 0x0004,// symbol is type

@@ -59,7 +59,7 @@ namespace zetscript{
 					for(auto it=fields->begin(); !it.end(); it.next()){
 						StackElement *stk=((StackElement *)it.value);
 						function_params[i]=FunctionParam(it.key);
-						stk_params.append(stk);
+						stk_params.push(stk);
 
 						if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 							// inc number of ref as standard in pass object args
@@ -154,7 +154,7 @@ namespace zetscript{
 
 		// 4. Call function passing all arg parameter
 		// pass data to vm_stk_current
-		stk_n_params=(uint8_t)stk_params.size();
+		stk_n_params=(uint8_t)stk_params.length();
 		stk_start=stk_start_arg_call;//vm data->vm_stk_current;
 		stk_params_data=stk_params.data();
 		for(int i = 0; i < stk_n_params; i++){

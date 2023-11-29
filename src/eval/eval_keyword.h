@@ -10,13 +10,13 @@ namespace zetscript{
 
 
 	// function
-	enum:uint16_t{
+	typedef enum :uint16_t{
 		EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS 		=0x0001
 		,EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY 	=0x0002
 	}EvalKeywordFunctionProperty;
 
 	// variable
-	enum:uint16_t{
+	typedef enum:uint16_t{
 		EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR	=0x0001
 	}EvalKeywordVariableProperty;
 

@@ -176,7 +176,7 @@ bool allCharsTheSame(const zetscript::String & input){
 bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayObject * sov){
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::Vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
-   for(int i =1; i < stk_elements->size(); i++){
+   for(int i =1; i < stk_elements->length(); i++){
 	   zetscript::StackElement *stk_1=stk_elements->get(i-1);
 	   zetscript::StackElement *stk_2=stk_elements->get(i-0);
        if(stk_1->value != stk_2->value) return false;
@@ -207,7 +207,7 @@ zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs
 		 	}
 		}while(found);
 
-		index_rand.append(item);
+		index_rand.push(item);
 
 	}
 	return index_rand;
@@ -217,7 +217,7 @@ zetscript::ArrayObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zet
 
 	zetscript::ArrayObject *output=zetscript::ArrayObject::newArrayObject(_zs);
 	zetscript::Vector<zetscript::StackElement *> *input=_input->getStkListElements();
-	uint16_t input_count=input->size();
+	uint16_t input_count=input->length();
 	zetscript::Vector<zetscript::zs_int> rand_txt;
 
     if(allValuesTheSame(_zs,_input)){

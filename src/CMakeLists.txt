@@ -210,16 +210,16 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	
 	# Eval		
 	eval/eval.cpp
-	 
-	# Virtual machine
-	#vm/vm.cpp
 	
 	# Modules
-	#module/@module.cpp
+	module/@module.cpp
+	 
+	# Virtual machine
+	vm/vm.cpp
 	
 
 	# Main api
-	#zetscript.cpp
+	zetscript.cpp
 )
 
 #-------------------------------------------------------------------------------------------------------------------------------------

@@ -78,11 +78,11 @@ namespace zetscript{
 		int start_param=0;
 
 		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope->symbol_functions->data();// vector of symbols
-		size_t stk_elements_builtin_len=  data->main_function_object->scope->symbol_functions->size();// vector of symbols
+		size_t stk_elements_builtin_len=  data->main_function_object->scope->symbol_functions->length();// vector of symbols
 
 		if(_class_obj_type != NULL){
 			stk_elements_builtin_ptr=_class_obj_type->scope->symbol_functions->data();
-			stk_elements_builtin_len=_class_obj_type->scope->symbol_functions->size();
+			stk_elements_builtin_len=_class_obj_type->scope->symbol_functions->length();
 		}
 
 		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
