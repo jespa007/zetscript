@@ -5,7 +5,7 @@
 #pragma once
 
 
-#define ZS_NEW_OBJECT_SCRIPT_OBJECT(zs) (DictionaryScriptObject::newDictionaryScriptObject(zs))
+#define ZS_NEW_DICTIONARY_SCRIPT_OBJECT(zs) (DictionaryScriptObject::newDictionaryScriptObject(zs))
 
 namespace zetscript{
 

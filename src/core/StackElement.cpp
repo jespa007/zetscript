@@ -35,13 +35,13 @@ namespace zetscript{
 		}else if(STACK_ELEMENT_IS_NULL(stk)){
 			result.value=SCRIPT_TYPE_ID_NULL;
 		}else if(STACK_ELEMENT_IS_INT(stk)){
-			result.value=SCRIPT_TYPE_ID_INT_C;
+			result.value=SCRIPT_TYPE_ID_INT;
 		}else if(STACK_ELEMENT_IS_FLOAT(stk)){
-			result.value=SCRIPT_TYPE_ID_FLOAT_C;
+			result.value=SCRIPT_TYPE_ID_FLOAT;
 		}else if(STACK_ELEMENT_IS_BOOLEAN(stk)){
-			result.value=SCRIPT_TYPE_ID_BOOL_C;
+			result.value=SCRIPT_TYPE_ID_BOOL;
 		}else if(STACK_ELEMENT_IS_FUNCTION(stk)){
-			result.value=SCRIPT_TYPE_ID_FUNCTION;
+			result.value=SCRIPT_TYPE_ID_SCRIPT_FUNCTION;
 		}else if(STACK_ELEMENT_IS_TYPE(stk)){
 			result=*stk;
 		}else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk)){

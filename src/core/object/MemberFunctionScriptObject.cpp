@@ -16,7 +16,7 @@ namespace zetscript{
 			, ScriptObject *_so_ref
 			, ScriptFunction *_sf_ref
 	):RefDictionaryScriptObject(_zs, _so_ref){
-		script_type_id=SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT;
+		script_type_id=SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT;
 		this->sf_ref=_sf_ref;
 	}
 

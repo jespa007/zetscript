@@ -170,7 +170,7 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 
 To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 *Syntax*
 
@@ -191,7 +191,7 @@ Where,
 
 - __zs_ : ZetScript context.
 - __this_: The current instance.
-- __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[built-in type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+- __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
 
 After the constructor function is defined it has to be registered with _ZetScript::registerConstructor_. _registerConstructor_ it has the following signature,
 
@@ -264,7 +264,7 @@ include::../examples/api/register_type/register_instantiable_type_with_construct
 
 To register a member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type.
 
@@ -288,7 +288,7 @@ Where,
 
 - __zs_ : ZetScript context
 - __this_: The current instance
-- __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[built-in types] or a pointer of a registered type.
+- __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
 
 After the member function is defined it has to be registered with _ZetScript::registerMemberFunction_. _ZetScript::registerMemberFunction_ it has the following signature,
@@ -360,7 +360,7 @@ include::../examples/api/register_type/register_member_function_out.txt[]
 
 To register a static member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[built-in type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type.
 
@@ -383,7 +383,7 @@ Where,
 [.underline]#Parameters# 
 
 - __zs_ : ZetScript context
-- __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[built-in types] or a pointer of a registered type.
+- __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
 
 After the constructor function is defined it has to be registered with _ZetScript::registerStaticMemberFunction_. _ZetScript::registerStaticMemberFunction_ it has the following signature,

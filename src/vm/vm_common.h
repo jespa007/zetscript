@@ -139,7 +139,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 	(\
 		(_container->script_type_id == SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT) \
 				   || \
-		(_container->script_type_id == SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT) \
+		(_container->script_type_id == SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT) \
 					|| \
 		(((_container->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT) && _container->isNativeObject())==false) \
 	)

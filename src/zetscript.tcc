@@ -127,7 +127,7 @@ namespace zetscript{
 			}
 
 			// particular case return type is string and stk is string script object
-			if(_return_script_type_id==SCRIPT_TYPE_ID_STRING_C && STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk)){
+			if(_return_script_type_id==SCRIPT_TYPE_ID_STRING && STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk)){
 				ScriptObject *so_string=(ScriptObject *)_stk->value;
 				this->unrefLifetimeObject(so_string);
 			}
@@ -148,8 +148,8 @@ namespace zetscript{
 			}
 
 			// particular case for zs_float
-			if(type->id == SCRIPT_TYPE_ID_FLOAT_C){
-				return this->toStackElement((zs_int)&_val,SCRIPT_TYPE_ID_FLOAT_PTR_C);
+			if(type->id == SCRIPT_TYPE_ID_FLOAT){
+				return this->toStackElement((zs_int)&_val,SCRIPT_TYPE_ID_FLOAT_PTR);
 			}
 			return this->toStackElement((zs_int)_val,type->id);
 		}
@@ -1643,8 +1643,8 @@ namespace zetscript{
 			}
 
 			if(
-					return_script_type_id == SCRIPT_TYPE_ID_STRING_PTR_C
-					|| return_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C
+					return_script_type_id == SCRIPT_TYPE_ID_STRING_PTR
+					|| return_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR
 			){
 				ZS_THROW_RUNTIME_ERROR("Return type '%s' is not supported",Rtti::demangle(return_type).toConstChar());
 				return NULL;
@@ -1656,9 +1656,9 @@ namespace zetscript{
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(
-							script_type_id == SCRIPT_TYPE_ID_FLOAT_C
-						||  script_type_id == SCRIPT_TYPE_ID_BOOL_C
-						||  script_type_id == SCRIPT_TYPE_ID_STRING_C
+							script_type_id == SCRIPT_TYPE_ID_FLOAT
+						||  script_type_id == SCRIPT_TYPE_ID_BOOL
+						||  script_type_id == SCRIPT_TYPE_ID_STRING
 				){
 					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1

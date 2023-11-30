@@ -235,7 +235,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(script_type_id==SCRIPT_TYPE_ID_FLOAT_C || script_type_id==SCRIPT_TYPE_ID_BOOL_C || script_type_id == SCRIPT_TYPE_ID_STRING_C){
+				if(script_type_id==SCRIPT_TYPE_ID_FLOAT || script_type_id==SCRIPT_TYPE_ID_BOOL || script_type_id == SCRIPT_TYPE_ID_STRING){
 					error=StringUtils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,Rtti::demangle(str_param).toConstChar()

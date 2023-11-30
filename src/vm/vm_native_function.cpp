@@ -118,24 +118,24 @@ namespace zetscript{
 									break;
 								case STACK_ELEMENT_PROPERTY_INT:
 									all_check=
-											arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
-										  ||arg_script_type_id == SCRIPT_TYPE_ID_INT_C
-										  ||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C;
+											arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_INT
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR;
 									break;
 								case STACK_ELEMENT_PROPERTY_FLOAT:
-									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C
-											||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_C
-											||arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
-											||arg_script_type_id == SCRIPT_TYPE_ID_INT_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR
+											||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT;
 									break;
 								case STACK_ELEMENT_PROPERTY_BOOL:
-									all_check=arg_script_type_id == SCRIPT_TYPE_ID_BOOL_PTR_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_BOOL_PTR;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION:
-									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION:
-									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FUNCTION;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_SCRIPT_FUNCTION;
 									break;
 								// decoment to not allow nulls
 								/*case STACK_ELEMENT_PROPERTY_NULL:
@@ -148,8 +148,8 @@ namespace zetscript{
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_script_type_id == SCRIPT_TYPE_ID_STRING_PTR_C && current_arg->value!=0)
-											  ||	arg_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C;
+												(	arg_script_type_id == SCRIPT_TYPE_ID_STRING_PTR && current_arg->value!=0)
+											  ||	arg_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
@@ -404,7 +404,7 @@ namespace zetscript{
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(
@@ -422,7 +422,7 @@ namespace zetscript{
 			}
 		}
 
-		if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_VOID){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 1:
@@ -522,7 +522,7 @@ namespace zetscript{
 					break;
 			}
 
-		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_BOOL){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -620,7 +620,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_FLOAT){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -722,7 +722,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_STRING){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:

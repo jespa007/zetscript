@@ -49,7 +49,7 @@ namespace zetscript{
 	}
 
 	DictionaryIteratorScriptObject * DictionaryScriptObjectZs_iter(ZetScript *_zs,DictionaryScriptObject *_oo){
-		return ZS_NEW_OBJECT_ITERATOR_SCRIPT_OBJECT(_zs,_oo);
+		return ZS_NEW_DICTIONARY_ITERATOR_SCRIPT_OBJECT(_zs,_oo);
 	}
 
 	void						 	DictionaryScriptObjectZs_extend(ZetScript *_zs,DictionaryScriptObject *o1,DictionaryScriptObject *o2){

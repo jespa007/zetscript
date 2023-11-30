@@ -11,15 +11,15 @@
 #define ZS_TYPE_MAIN(script_types_factory)										((script_types_factory)->getScriptType(SCRIPT_TYPE_ID_CLASS_MAIN))    // 0 is the main type
 
 #define ZS_OBJECT_STRING(script_types_factory)									((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT))
-#define ZS_STRING_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_OBJECT_ITERATOR_STRING))
+#define ZS_STRING_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT))
 //#define SCRIPT_CLASS_DICTIONARY(script_types_factory)							((script_types_factory->script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY))
 #define ZS_OBJECT_ARRAY(script_types_factory)									((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT))
 #define ZS_ARRAY_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT))
 
-#define ZS_OBJECT_SCRIPT_OBJECT(script_types_factory)							((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT))
-#define ZS_OBJECT_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT))
+#define ZS_DICTIONARY_SCRIPT_OBJECT(script_types_factory)							((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT))
+#define ZS_DICTIONARY_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT))
 
-//#define SCRIPT_CLASS_FUNCTOR(script_types_factory)					((script_types_factory->script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_FUNCTION))
+//#define SCRIPT_CLASS_FUNCTOR(script_types_factory)					((script_types_factory->script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_FUNCTION))
 #define ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(script_types_factory,script_type_id) 		((script_types_factory)->getScriptType(script_type_id)->native_name.toConstChar())
 
 

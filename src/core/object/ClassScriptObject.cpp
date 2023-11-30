@@ -193,10 +193,10 @@ namespace zetscript{
 				}else{ // expect return an scriptobjectstring
 					String *str=NULL;
 					switch(ptr_function->return_script_type_id){
-					case SCRIPT_TYPE_ID_STRING_C:
+					case SCRIPT_TYPE_ID_STRING:
 							aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
-					case SCRIPT_TYPE_ID_STRING_PTR_C:
+					case SCRIPT_TYPE_ID_STRING_PTR:
 							str=((String * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");

@@ -5,9 +5,6 @@
 #pragma once
 
 
-
-
-
 namespace zetscript{
 
 	typedef enum{
@@ -48,7 +45,7 @@ namespace zetscript{
 				 ,ScriptTypeId _id
 				 , const String & _name
 				 , ScriptScope *_scope
-				 ,const char *  native_name=ZS_SCRIPT_TYPE_NAME_OBJECT
+				 ,const char *  native_name=ZS_SCRIPT_TYPE_NAME_UNKNOWN
 				 ,uint16_t _properties=0
 		);
 

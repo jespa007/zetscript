@@ -161,7 +161,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_SCRIPT_OBJECT;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_DICTIONARY_SCRIPT_OBJECT;
 
 			}else if(keyword_type == Keyword::KEYWORD_NEW){
 
@@ -342,7 +342,7 @@ namespace zetscript{
 			if((
 				   token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
-				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_SCRIPT_OBJECT
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_DICTIONARY_SCRIPT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_ARRAY
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.get(0))->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.get(0))->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')

@@ -317,17 +317,17 @@ namespace zetscript{
 		else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk))
 			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptTypeName();
 		else if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_OBJECT_STRING;
+			result=ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ARRAY;
-		else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT;
-		else if(STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_STRING;
+			result=ZS_SCRIPT_TYPE_NAME_ARRAY_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_DICTIONARY_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_STRING_ITERATOR_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_STRING_ITERATOR_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT;
-		else if(STACK_ELEMENT_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_DICTIONARY_ITERATOR_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_FUNCTION(stk))
 			result=String("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name;
 		else if(STACK_ELEMENT_IS_TYPE(stk)) // is a type
@@ -417,7 +417,7 @@ namespace zetscript{
 		}else{
 			if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
-				if(so->script_type_id==SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT){
+				if(so->script_type_id==SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT){
 					MemberFunctionObject *somf=(MemberFunctionObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= String("member_function<")+st->name+"::"+somf->sf_ref->name+">";
@@ -438,7 +438,7 @@ namespace zetscript{
 		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 		if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			ScriptObject *so=(ScriptObject *)stk.value;
-			if(so->script_type_id!=SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT){
+			if(so->script_type_id!=SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT){
 				result="ScriptObject::"+String(so->getScriptTypeName());
 			}
 		}
@@ -509,8 +509,8 @@ namespace zetscript{
 			break;
 		case STACK_ELEMENT_PROPERTY_BOOL:
 			switch(_script_type_id_to_convert){
-			case SCRIPT_TYPE_ID_BOOL_C:
-			case SCRIPT_TYPE_ID_BOOL_PTR_C:
+			case SCRIPT_TYPE_ID_BOOL:
+			case SCRIPT_TYPE_ID_BOOL_PTR:
 				return true;
 				break;
 			default:
@@ -519,10 +519,10 @@ namespace zetscript{
 			break;
 		case STACK_ELEMENT_PROPERTY_FLOAT:
 			switch(_script_type_id_to_convert){
-			case SCRIPT_TYPE_ID_FLOAT_C:
-			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
+			case SCRIPT_TYPE_ID_FLOAT:
+			case SCRIPT_TYPE_ID_FLOAT_PTR:
 				return true;
-			case SCRIPT_TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT:
 				return _strict == false;
 				break;
 			default:
@@ -532,11 +532,11 @@ namespace zetscript{
 			break;
 		case STACK_ELEMENT_PROPERTY_INT:
 			switch(_script_type_id_to_convert){
-			case SCRIPT_TYPE_ID_INT_C:
-			case SCRIPT_TYPE_ID_INT_PTR_C:
+			case SCRIPT_TYPE_ID_INT:
+			case SCRIPT_TYPE_ID_INT_PTR:
 				return true;
-			case SCRIPT_TYPE_ID_FLOAT_C:
-			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
+			case SCRIPT_TYPE_ID_FLOAT:
+			case SCRIPT_TYPE_ID_FLOAT_PTR:
 				return _strict == false;
 				break;
 			default:
@@ -565,9 +565,9 @@ namespace zetscript{
 				if(object->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){ // string
 
 					switch(_script_type_id_to_convert){
-					case SCRIPT_TYPE_ID_STRING_PTR_C:
-					case SCRIPT_TYPE_ID_STRING_C:
-					case SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
+					case SCRIPT_TYPE_ID_STRING_PTR:
+					case SCRIPT_TYPE_ID_STRING:
+					case SCRIPT_TYPE_ID_CONST_CHAR_PTR:
 						return true;
 					default:
 						break;
@@ -622,9 +622,9 @@ namespace zetscript{
 		case STACK_ELEMENT_PROPERTY_NULL:
 			break;
 		case STACK_ELEMENT_PROPERTY_BOOL:
-			if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_C){// *ScriptType::k_str_bool_type){
+			if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL){// *ScriptType::k_str_bool_type){
 				val_ret=(zs_int)(_stack_element->value);
-			}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
+			}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_PTR){//*ScriptType::k_str_bool_type_ptr){
 				val_ret=(zs_int)(&_stack_element->value);
 			}else{
 				_error="cannot convert '"
@@ -638,13 +638,13 @@ namespace zetscript{
 			break;
 		case STACK_ELEMENT_PROPERTY_FLOAT:
 			switch(_script_type_id_to_convert){
-			case SCRIPT_TYPE_ID_FLOAT_C:
+			case SCRIPT_TYPE_ID_FLOAT:
 				ZS_FLOAT_COPY(&val_ret,&_stack_element->value);
 				break;
-			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
+			case SCRIPT_TYPE_ID_FLOAT_PTR:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
-			case SCRIPT_TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT:
 				{
 					zs_int *aux_dst = ((zs_int *)&val_ret);
 					zs_float *aux_src=(zs_float *)&_stack_element->value;
@@ -662,10 +662,10 @@ namespace zetscript{
 			break;
 		case STACK_ELEMENT_PROPERTY_INT:
 			switch(_script_type_id_to_convert){
-			case SCRIPT_TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT:
 				val_ret=(zs_int)(_stack_element->value);
 				break;
-			case SCRIPT_TYPE_ID_INT_PTR_C:
+			case SCRIPT_TYPE_ID_INT_PTR:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
 			default:
@@ -702,12 +702,12 @@ namespace zetscript{
 				}else{
 
 					if(object->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){ // string
-						if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING_PTR_C){
+						if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING_PTR){
 							val_ret=(zs_int)(((StringScriptObject *)object)->str_ptr);
-						}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING_C){
+						}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING){
 							*((String *)_ptr_var)=*(((StringScriptObject *)object)->str_ptr);
 							return true;
-						}else if (_script_type_id_to_convert == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C){
+						}else if (_script_type_id_to_convert == SCRIPT_TYPE_ID_CONST_CHAR_PTR){
 							val_ret=(zs_int)(((StringScriptObject *)object)->getConstChar());
 						}else{
 							_error="cannot convert '"
@@ -767,7 +767,7 @@ namespace zetscript{
 		}
 
 		// prevent to
-		if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_C){
+		if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL){
 			*((bool *)_ptr_var) = val_ret;
 		}else{
 			*_ptr_var = val_ret;
@@ -786,42 +786,42 @@ namespace zetscript{
 			//int idx_builtin_type=getScriptTypeIdFromNamePtr(typeid(T).name());
 			// save return type ...
 			switch(_var_script_type_id){
-			 case SCRIPT_TYPE_ID_VOID_C:
+			 case SCRIPT_TYPE_ID_VOID:
 				break;
-			 case SCRIPT_TYPE_ID_INT_PTR_C:
+			 case SCRIPT_TYPE_ID_INT_PTR:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((zs_int *)ptr_var)),STACK_ELEMENT_PROPERTY_INT};
 				 break;
-			 case SCRIPT_TYPE_ID_INT_C:
+			 case SCRIPT_TYPE_ID_INT:
 				 stk_result={(((zs_int)ptr_var)),STACK_ELEMENT_PROPERTY_INT};
 				 break;
-			 case SCRIPT_TYPE_ID_FLOAT_C:
+			 case SCRIPT_TYPE_ID_FLOAT:
 				 stk_result.properties=STACK_ELEMENT_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
 				 break;
-			 case SCRIPT_TYPE_ID_FLOAT_PTR_C:
+			 case SCRIPT_TYPE_ID_FLOAT_PTR:
 				 if(ptr_var==0) return stk_result;
 				 stk_result.properties=STACK_ELEMENT_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
 				 break;
-			 case SCRIPT_TYPE_ID_BOOL_PTR_C:
+			 case SCRIPT_TYPE_ID_BOOL_PTR:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((bool *)ptr_var)),STACK_ELEMENT_PROPERTY_BOOL};
 				 break;
-			 case SCRIPT_TYPE_ID_BOOL_C:
+			 case SCRIPT_TYPE_ID_BOOL:
 				 stk_result={(((bool)ptr_var)),STACK_ELEMENT_PROPERTY_BOOL};
 				 break;
-			 case SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
-			 case SCRIPT_TYPE_ID_STRING_PTR_C:
-			 case SCRIPT_TYPE_ID_STRING_C:
+			 case SCRIPT_TYPE_ID_CONST_CHAR_PTR:
+			 case SCRIPT_TYPE_ID_STRING_PTR:
+			 case SCRIPT_TYPE_ID_STRING:
 
 
 				 so=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 				 if(ptr_var!=0) { // not null
-					 if(_var_script_type_id == SCRIPT_TYPE_ID_STRING_PTR_C){
+					 if(_var_script_type_id == SCRIPT_TYPE_ID_STRING_PTR){
 						// assing String reference
 						so->str_ptr=(String *)ptr_var;
-					 }else if(_var_script_type_id == SCRIPT_TYPE_ID_STRING_C){ // String passed as pointer
+					 }else if(_var_script_type_id == SCRIPT_TYPE_ID_STRING){ // String passed as pointer
 						 so->set(*((String *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
@@ -836,11 +836,11 @@ namespace zetscript{
 				 break;
 			 case SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT:
-			 case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT:
-			 case SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT:
-			 case SCRIPT_TYPE_ID_OBJECT_ITERATOR_STRING:
+			 case SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT:
 				 if(ptr_var==0) return stk_result;
 				stk_result = {
 					 (intptr_t)ptr_var

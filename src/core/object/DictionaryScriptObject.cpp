@@ -16,7 +16,7 @@ namespace zetscript{
 
 	DictionaryScriptObject * DictionaryScriptObject::concat(ZetScript *zs,DictionaryScriptObject *o1,DictionaryScriptObject *o2){
 		//String error;
-		DictionaryScriptObject *obj = ZS_NEW_OBJECT_SCRIPT_OBJECT(zs);
+		DictionaryScriptObject *obj = ZS_NEW_DICTIONARY_SCRIPT_OBJECT(zs);
 
 		// get properties from object o1
 		MapString *map=o1->getMapStringFields();
@@ -50,7 +50,7 @@ namespace zetscript{
 
 	DictionaryScriptObject::DictionaryScriptObject(
 			ZetScript	*_zs
-	):ContainerScriptObject(_zs, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
+	):ContainerScriptObject(_zs, SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT){
 		map_fields=new MapString();
 	}
 

@@ -251,16 +251,16 @@ namespace zetscript{
 				case ZS_UNDEFINED_IDX:
 					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
-				case SCRIPT_TYPE_ID_INT_C:
+				case SCRIPT_TYPE_ID_INT:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT)!=0);
 					break;
-				case SCRIPT_TYPE_ID_FLOAT_C:
+				case SCRIPT_TYPE_ID_FLOAT:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FLOAT)!=0);
 					break;
-				case SCRIPT_TYPE_ID_BOOL_C:
+				case SCRIPT_TYPE_ID_BOOL:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)!=0);
 					break;
-				case SCRIPT_TYPE_ID_FUNCTION:
+				case SCRIPT_TYPE_ID_SCRIPT_FUNCTION:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
@@ -525,7 +525,7 @@ namespace zetscript{
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
-				 	so_aux=ZS_NEW_OBJECT_SCRIPT_OBJECT(data->zs);
+				 	so_aux=ZS_NEW_DICTIONARY_SCRIPT_OBJECT(data->zs);
 					vm_create_shared_object(_vm,so_aux);
 					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 					continue;

@@ -144,11 +144,11 @@ namespace zetscript{
 									void *c_object = ((ClassScriptObject *)_obj)->getNativeObject();
 
 									switch(ptr_function->return_script_type_id){
-									case  SCRIPT_TYPE_ID_STRING_C:
+									case  SCRIPT_TYPE_ID_STRING:
 										str_aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;
-									case  SCRIPT_TYPE_ID_FLOAT_C:
+									case  SCRIPT_TYPE_ID_FLOAT:
 										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
@@ -251,7 +251,7 @@ namespace zetscript{
 					break;
 				default:
 					if(
-						obj->script_type_id>=SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
+						obj->script_type_id>=SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT
 					){
 						if(_this_object != obj){ // avoid recursivity
 							serialize_object(_zs,_this_object,_str_result,(DictionaryScriptObject *)obj,_ident,_is_formatted,_strict_json_format);
@@ -271,7 +271,7 @@ namespace zetscript{
 
 			if(
 					(_stk->properties & STACK_ELEMENT_PROPERTY_OBJECT)
-				&& (((ScriptObject *)(_stk->value))->script_type_id>=SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT)
+				&& (((ScriptObject *)(_stk->value))->script_type_id>=SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT)
 			){
 				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(DictionaryScriptObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{

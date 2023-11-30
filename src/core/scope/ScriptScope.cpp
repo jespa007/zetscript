@@ -155,7 +155,7 @@ namespace zetscript{
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & SCRIPT_SCOPE_REGISTER_PROPERTY_NO_CHECK_CLASS_SYMBOLS)==0){
 			if(zs->getScriptTypesFactory()->getScriptTypeId(symbol_name) != ZS_UNDEFINED_IDX){
-				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.toConstChar());
+				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved word or script type",symbol_name.toConstChar());
 			}
 		}
 

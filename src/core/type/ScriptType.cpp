@@ -492,7 +492,7 @@ namespace zetscript{
 							// member metamethod
 							switch(i){
 							case METAMETHOD_TO_STRING:
-								if(_return_script_type_id != SCRIPT_TYPE_ID_STRING_C){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_STRING){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'String' but it was '%s'",
 											this->name.toConstChar(),
 											_function_name.toConstChar(),
@@ -504,7 +504,7 @@ namespace zetscript{
 							case METAMETHOD_NOT:
 							case METAMETHOD_IN:
 
-								if(_return_script_type_id != SCRIPT_TYPE_ID_BOOL_C){
+								if(_return_script_type_id != SCRIPT_TYPE_ID_BOOL){
 									ZS_THROW_RUNTIME_ERROR("Error registering member metamethod '%s::%s'. Expected return 'bool' but it was '%s'",
 											this->name.toConstChar(),
 											_function_name.toConstChar(),

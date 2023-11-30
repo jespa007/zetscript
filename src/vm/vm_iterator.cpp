@@ -183,7 +183,7 @@ namespace zetscript{
 				)
 			);
 			break;
-			case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT: // check key value exists...
+			case SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				String str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(

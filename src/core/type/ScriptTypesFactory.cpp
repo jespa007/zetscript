@@ -43,19 +43,20 @@
 		return;\
 	}\
 	registerScriptType<_native_type>(_script_type_name);
-
+/*
 #define SCF_REGISTER_NATIVE_TYPE(_script_type_id, _native_type)\
 	if(types->length()!=_script_type_id){\
 		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		ScriptType *type=registerScriptType(typeid(_native_type).name(),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
-		type->scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
-		type->properties=SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF;\
-		type->native_name=(typeid(_native_type).name());\
+		ScriptType *script_type=registerScriptType(ZS_STR(_native_type),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
+		script_type->scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
+		script_type->properties=SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF;\
+		script_type->native_name=(typeid(_native_type).name());\
 	}
+*/
 
-#define SCF_REGISTER_NATIVE_CUSTOM_TYPE(_script_type_id, _script_type_name, _native_type)\
+#define SCF_REGISTER_NATIVE_TYPE(_script_type_id, _script_type_name, _native_type)\
 	if(types->length()!=_script_type_id){\
 		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
@@ -199,20 +200,20 @@ namespace zetscript{
 		// !!!
 
 		// primitives
-		SCF_REGISTER_TYPE(SCRIPT_TYPE_ID_UNDEFINED,ZS_SCRIPT_TYPE_NAME_UNDEFINED);
-		SCF_REGISTER_TYPE(SCRIPT_TYPE_ID_NULL,ZS_SCRIPT_TYPE_NAME_NULL);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_VOID_C,void);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(SCRIPT_TYPE_ID_INT_C,ZS_SCRIPT_TYPE_NAME_INT,zs_int);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_INT_PTR_C,zs_int *);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CHAR_PTR_C,char *);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CONST_CHAR_PTR_C,const char *);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_STRING_C,String);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_STRING_PTR_C,String *);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(SCRIPT_TYPE_ID_BOOL_C,ZS_SCRIPT_TYPE_NAME_BOOL,bool);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_BOOL_PTR_C,bool *);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(SCRIPT_TYPE_ID_FLOAT_C,ZS_SCRIPT_TYPE_NAME_FLOAT,zs_float);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_FLOAT_PTR_C,zs_float *);
-		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CONST_FLOAT_PTR_C,const zs_float *);
+		SCF_REGISTER_TYPE(SCRIPT_TYPE_ID_UNDEFINED				,ZS_SCRIPT_TYPE_NAME_UNDEFINED);
+		SCF_REGISTER_TYPE(SCRIPT_TYPE_ID_NULL					,ZS_SCRIPT_TYPE_NAME_NULL);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_VOID			,ZS_SCRIPT_TYPE_NAME_VOID,void);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_INT				,ZS_SCRIPT_TYPE_NAME_INT,zs_int);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_INT_PTR			,ZS_SCRIPT_TYPE_NAME_INT_PTR,zs_int *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CHAR_PTR		,ZS_SCRIPT_TYPE_NAME_CHAR_PTR,char *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CONST_CHAR_PTR	,ZS_SCRIPT_TYPE_NAME_CONST_CHAR_PTR,const char *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_STRING			,ZS_SCRIPT_TYPE_NAME_STRING,String);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_STRING_PTR		,ZS_SCRIPT_TYPE_NAME_STRING_PTR,String *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_BOOL			,ZS_SCRIPT_TYPE_NAME_BOOL,bool);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_BOOL_PTR		,ZS_SCRIPT_TYPE_NAME_BOOL_PTR,bool *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_FLOAT			,ZS_SCRIPT_TYPE_NAME_FLOAT,zs_float);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_FLOAT_PTR		,ZS_SCRIPT_TYPE_NAME_FLOAT_PTR,zs_float *);
+		SCF_REGISTER_NATIVE_TYPE(SCRIPT_TYPE_ID_CONST_FLOAT_PTR	,ZS_SCRIPT_TYPE_NAME_CONST_FLOAT_PTR,const zs_float *);
 
 		// estructures
 		SCF_REGISTER_STRUCT(SCRIPT_TYPE_ID_STACK_ELEMENT,StackElement);
@@ -220,25 +221,25 @@ namespace zetscript{
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS
 		// It self Script object
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_FUNCTION,ZS_SCRIPT_TYPE_NAME_FUNCTION,ScriptFunction);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_VAR_REF,VarRefObject);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_FUNCTION_MEMBER,MemberFunctionObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_SCRIPT_FUNCTION,ZS_SCRIPT_TYPE_NAME_SCRIPT_FUNCTION,ScriptFunction);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_VAR_REF_SCRIPT_OBJECT,VarRefObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_MEMBER_FUNCTION_SCRIPT_OBJECT,MemberFunctionObject);
 		SCF_REGISTER_SINGLETON_CLASS(SCRIPT_TYPE_ID_ZETSCRIPT_SCRIPT_OBJECT,ZetScript);
 
-		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_STRING,StringScriptObject);
+		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT,StringScriptObject);
 
 		// Script object iterators
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_OBJECT_ITERATOR_STRING,ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_STRING,StringIteratorScriptObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_STRING_ITERATOR_SCRIPT_OBJECT,StringIteratorScriptObject);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT,ArrayIteratorScriptObject);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT,DictionaryIteratorScriptObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_DICTIONARY_ITERATOR_SCRIPT_OBJECT,DictionaryIteratorScriptObject);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_ARRAY,ArrayScriptObject);
-		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT,DictionaryScriptObject);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_CLASS,ClassScriptObject);
+		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_ARRAY_SCRIPT_OBJECT,ArrayScriptObject);
+		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_DICTIONARY_SCRIPT_OBJECT,DictionaryScriptObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_CLASS_SCRIPT_OBJECT,ClassScriptObject);
 		// it needs script object type to have zetscript reference
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		//------------------------
@@ -372,24 +373,24 @@ namespace zetscript{
 		idx_clear_checkpoint = types->length()-1;
 	}
 
-	void ScriptTypesFactory::checkTypeName(const String & _str_type){
+	void ScriptTypesFactory::checkTypeName(const String & _script_type_name){
 
 		if(types->length()>=MAX_REGISTER_CLASSES){
 			ZS_THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
-		if(_str_type.empty()){
+		if(_script_type_name.empty()){
 			ZS_THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
 		if(zs->getScriptFunctionsFactory()->getFunctions()->length() > 0){
 			Symbol *main_function_symbol=NULL;
 			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(
-					_str_type
+					_script_type_name
 					,ZS_NO_PARAMS_SYMBOL_ONLY,SCRIPT_SCOPE_REGISTER_PROPERTY_CHECK_REPEATED_SYMBOLS_DOWN
 			))!=NULL){
 				ZS_THROW_RUNTIME_ERROR("ScriptType name '%s' is already defined %s"
-						,_str_type.toConstChar()
+						,_script_type_name.toConstChar()
 						,main_function_symbol->file!=NULL && strcmp(main_function_symbol->file,"")!=0 && main_function_symbol->line!=-1?
 							StringUtils::format("at " ZS_FORMAT_FILE_LINE
 								,Path::getFilename(main_function_symbol->file).toConstChar()
@@ -401,8 +402,8 @@ namespace zetscript{
 	}
 
 	ScriptType * ScriptTypesFactory::registerScriptType(
-			const String & _str_type
-			 ,const String & _base_class_name
+			const String & _script_type_name
+			 ,const String & _base_script_type_name
 			 ,uint16_t _properties
 			 ,const char * _file
 			 , short _line
@@ -410,19 +411,19 @@ namespace zetscript{
 		ScriptTypeId  new_script_type_id;
 		ScriptType *type=NULL;
 
-		checkTypeName(_str_type);
+		checkTypeName(_script_type_name);
 
-		if((new_script_type_id = getScriptTypeId(_str_type))==ZS_UNDEFINED_IDX){ // check whether is local var registered scope ...
+		if((new_script_type_id = getScriptTypeId(_script_type_name))==ZS_UNDEFINED_IDX){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=SCRIPT_SCOPE_REGISTER_PROPERTY_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 			new_script_type_id=types->length();
 
 			// To avoid built-int conflict bool type
 			if(
-					new_script_type_id == SCRIPT_TYPE_ID_BOOL_C
+					new_script_type_id == SCRIPT_TYPE_ID_BOOL
 					|| new_script_type_id == SCRIPT_TYPE_ID_UNDEFINED
 					|| new_script_type_id == SCRIPT_TYPE_ID_NULL
-					|| new_script_type_id == SCRIPT_TYPE_ID_INT_C
-					|| new_script_type_id == SCRIPT_TYPE_ID_FLOAT_C
+					|| new_script_type_id == SCRIPT_TYPE_ID_INT
+					|| new_script_type_id == SCRIPT_TYPE_ID_FLOAT
 			){
 				properties_register_scope|=SCRIPT_SCOPE_REGISTER_PROPERTY_NO_CHECK_CLASS_SYMBOLS;
 			}
@@ -431,9 +432,17 @@ namespace zetscript{
 
 			// register symbol on main scope...
 
-			Symbol *symbol=ZS_MAIN_SCOPE(this)->registerSymbolType(_file,_line,_str_type,properties_register_scope);
+			Symbol *symbol=ZS_MAIN_SCOPE(this)->registerSymbolType(_file,_line,_script_type_name,properties_register_scope);
 
-			type = new ScriptType(this->zs,new_script_type_id, _str_type, scope_class,ZS_SCRIPT_TYPE_NAME_OBJECT,_properties);
+			type = new ScriptType(
+				this->zs
+				,new_script_type_id
+				, _script_type_name
+				, scope_class
+				, ZS_SCRIPT_TYPE_NAME_UNKNOWN
+				,_properties
+			);
+
 			scope_class->setTypeOwner(type);
 			symbol->ref_ptr=(zs_int)type;
 
@@ -441,19 +450,19 @@ namespace zetscript{
 
 			types->push(type);
 
-			if(_base_class_name != ""){
+			if(_base_script_type_name != ""){
 
 				ScriptType *base_type=NULL;
 
 				if(type->base_script_type_ids->length() > 0){
 					ScriptType *match_class=getScriptType(type->base_script_type_ids->get(0));
 					ZS_THROW_RUNTIME_ERROR("ScriptType '%s' already is inherited from '%s'"
-							,_str_type.toConstChar()
+							,_script_type_name.toConstChar()
 							,match_class->name.toConstChar());
 				}
 
-				if((base_type = getScriptType(_base_class_name)) == NULL){
-					ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",_base_class_name.toConstChar());
+				if((base_type = getScriptType(_base_script_type_name)) == NULL){
+					ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",_base_script_type_name.toConstChar());
 				}
 
 				/*if(base_type->isStatic()){
@@ -556,7 +565,7 @@ namespace zetscript{
 
 			return type;
 		}else{
-			ZS_THROW_RUNTIME_ERROR("ScriptType '%s' already registered",_str_type.toConstChar());
+			ZS_THROW_RUNTIME_ERROR("ScriptType '%s' already registered",_script_type_name.toConstChar());
 		}
 		return NULL;
 	}
@@ -649,7 +658,7 @@ namespace zetscript{
 				so=ArrayScriptObject::newArrayScriptObject(zs);
 				break;
 			// ScriptObject
-			case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT: //  ScriptObject {}
+			case SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT: //  ScriptObject {}
 				so=DictionaryScriptObject::newDictionaryScriptObject(zs);
 				break;
 
@@ -699,7 +708,7 @@ namespace zetscript{
 		if(
 				_script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT
 				|| _script_type_id == SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT
-				|| _script_type_id == SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
+				|| _script_type_id == SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT
 				|| _script_type_id >= SCRIPT_TYPE_ID_MAX
 		){
 			return ((ScriptType *)types->get(_script_type_id))->isNonInstantiable()==false;

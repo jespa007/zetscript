@@ -11,8 +11,8 @@ To make a ZetScript function callable from C&#43;&#43; is done through _ZetScrip
 
 [.underline]#Parameters#
 
- - _ReturnType_: It can be void, a xref:api_types#_types[built-in type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
- - _ParamTypeX_: It can be a pointer of xref:api_types#_types[built-in type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+ - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
+ - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
  - __script_function_: _ZetScript::String_ or _Function *_ as the name or the script function reference to be registered.
 
 

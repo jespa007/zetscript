@@ -55,9 +55,9 @@ namespace zetscript{
 					vm_create_shared_object(_vm,object);\
 					ZS_VM_PUSH_STK_OBJECT(object);\
 					return true;
-			}else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
+			}else if(STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				object=DictionaryScriptObject::concat(\
 							data->zs\
