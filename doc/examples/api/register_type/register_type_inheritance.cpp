@@ -46,13 +46,13 @@ int main(){
 	ZetScript zs; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
-	zs.registerType<MyCppType>("MyCppType");
+	zs.registerScriptType<MyCppType>("MyCppType");
 
 	// Register MyCppType::function1
  	zs.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
 
 	// Register MyCppTypeExtend as MyCppTypeExtend in script side as instantiable
-	zs.registerType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
+	zs.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
 
 	// Tells MyCppTypeExtends extends from MyCppType
 	zs.extends< MyCppTypeExtend,MyCppType >();

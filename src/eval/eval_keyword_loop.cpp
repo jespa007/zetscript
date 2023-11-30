@@ -37,7 +37,7 @@ namespace zetscript{
 		}
 	}
 
-	char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+	char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, ScriptScope *scope_info){
 		ZS_UNUSUED_PARAM(scope_info);
 
 
@@ -66,7 +66,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+	char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, ScriptScope *scope_info){
 		ZS_UNUSUED_PARAM(scope_info);
 		char *aux_p = (char *)s;
 		Keyword key_w;
@@ -97,7 +97,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char * eval_keyword_while(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
+	char * eval_keyword_while(EvalData *eval_data,const char *s,int & line, ScriptScope *scope_info){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -195,7 +195,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_do_while(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
+	char * eval_keyword_do_while(EvalData *eval_data,const char *s,int & line, ScriptScope *scope_info){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -311,7 +311,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_for(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -344,8 +344,8 @@ namespace zetscript{
 		idx_instruction_for_start=eval_data->current_function->eval_instructions.length();
 
 		// save scope pointer ...
-		Scope *new_scope_body=NULL;
-		Scope *new_scope_init =eval_new_scope_block(eval_data,scope_info); // push current scope
+		ScriptScope *new_scope_body=NULL;
+		ScriptScope *new_scope_init =eval_new_scope_block(eval_data,scope_info); // push current scope
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 

@@ -8,20 +8,20 @@ namespace zetscript{
 
 
 
-	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, Type *sc	);
+	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptType *sc	);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
 	//
 	// CLASS
 	//
 
-	char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
+	char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, ScriptScope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
 		String name;
 		String base_class_name="";
-		Type *sc;
+		ScriptType *sc;
 		Keyword key_w;
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -66,7 +66,7 @@ namespace zetscript{
 
 		// register type
 		try{
-			sc=eval_data->type_factory->registerType(
+			sc=eval_data->script_types_factory->registerScriptType(
 				 name
 				,base_class_name
 				,0
@@ -172,7 +172,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,Type **sc,String & member_symbol){
+	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,String & member_symbol){
 
 		char *aux_p = (char *)s;
 		String name;
@@ -201,8 +201,8 @@ namespace zetscript{
 					,member_symbol
 			);
 
-			if((*sc=ZS_GET_OBJECT_TYPE(eval_data->type_factory,name)) == NULL){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. Type '%s' not defined"
+			if((*sc=ZS_GET_OBJECT_TYPE(eval_data->script_types_factory,name)) == NULL){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. ScriptType '%s' not defined"
 					,name.toConstChar()
 					,member_symbol.toConstChar()
 					,name.toConstChar()
@@ -214,7 +214,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		String symbol_value;
@@ -279,7 +279,7 @@ namespace zetscript{
 			EvalData *eval_data
 			, const char *s
 			, int & line
-			, Type *sc
+			, ScriptType *sc
 		){
 
 		char *aux_p = (char *)s;
@@ -287,7 +287,7 @@ namespace zetscript{
 		int attrib_start_line;
 		char *end_var = NULL;
 		String class_property_name=sc->name;
-		Scope *scope_info=sc->scope;
+		ScriptScope *scope_info=sc->scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -336,7 +336,7 @@ namespace zetscript{
 			}
 
 			mp=(MemberProperty *)symbol_attrib->ref_ptr;
-			//Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
+			//ScriptScope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
 

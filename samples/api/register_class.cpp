@@ -15,10 +15,10 @@ int main(){
 	zetscript::ZetScript zs;
 
 	// register MyClass with name MyClass in script side.
-	zs.registerType<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);
+	zs.registerScriptType<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);
 
 	 // register MyClassExtend with name MyClassExtend in script side.
-	zs.registerType<MyClassExtend>("MyClassExtend",MyClassExtendZs_new,MyClassExtendZs_delete);
+	zs.registerScriptType<MyClassExtend>("MyClassExtend",MyClassExtendZs_new,MyClassExtendZs_delete);
 
 	// register data1 named data1 in script side as variable member and read/write.
 	zs.registerMemberPropertyMetamethod<MyClass>("data1","_set",&MyClassZs_set_data1);

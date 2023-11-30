@@ -1,7 +1,7 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringObject;
+using zetscript::StringScriptObject;
 
 int main()
 {
@@ -14,10 +14,10 @@ int main()
       "}\n"
  	);
 
-  // It binds 'returnString' as 'StringObject *(void)'
-  auto returnString=zs.bindFunction<StringObject *()>("returnString");
+  // It binds 'returnString' as 'StringScriptObject *(void)'
+  auto returnString=zs.bindFunction<StringScriptObject *()>("returnString");
 
-  // Calls ZetScript function which it returns 'StringObject *' reference
+  // Calls ZetScript function which it returns 'StringScriptObject *' reference
   auto object=returnString();
 
   // Prints its value by console.

@@ -24,7 +24,7 @@
 #define ZS_MAX_NATIVE_FUNCTION_ARGS				10
 
 #define ZS_GET_METAMETHOD(m)											((this->zs))->getMetamethod(m)
-#define ZS_IS_TYPE_ID_INSTANCEOF(zs,id,idx_type_instance)		((this->type_factory))->scriptTypeInheritsFrom(id,idx_type_instance)
+#define ZS_IS_SCRIPT_TYPE_ID_INSTANCEOF(zs,id,idx_type_instance)		((this->script_types_factory))->scriptTypeInheritsFrom(id,idx_type_instance)
 
 #ifndef TRUE
 #define TRUE 1

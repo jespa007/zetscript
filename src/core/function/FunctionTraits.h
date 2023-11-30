@@ -14,7 +14,7 @@ namespace zetscript{
 
 
 	//------------------------------------------------------------
-	// Function traits for typedef function
+	// ScriptFunction traits for typedef function
 
 	// function without args ...
 	template<class R>
@@ -48,7 +48,7 @@ namespace zetscript{
 
 
 	//------------------------------------------------------------
-	// Function traits typedef C pointer function
+	// ScriptFunction traits typedef C pointer function
 	template<class R, class... Args>
 	struct FunctionTraits<R(*)(Args...)> : public FunctionTraits<R(Args...)>
 	{
@@ -65,13 +65,13 @@ namespace zetscript{
 	};
 
 	//------------------------------------------------------------
-	// Function traits member object pointer
+	// ScriptFunction traits member object pointer
 	template<class C, class R>
 	struct FunctionTraits<R(C::*)> : public FunctionTraits<R(C&)>
 	{};
 
 	//------------------------------------------------------------
-	// Function traits typedef function member pointer function
+	// ScriptFunction traits typedef function member pointer function
 
 	template<class C, class R, class... Args>
 	struct FunctionTraits<R(C::*)(Args...)> : public FunctionTraits<R(C&,Args...)>
@@ -160,15 +160,15 @@ namespace zetscript{
 	}
 
 	template <typename F>
-	TypeId getNativeFunctionRetArgsTypes(
-			 TypesFactory *_script_class_factory
-			,Type * _type
+	ScriptTypeId getNativeFunctionRetArgsTypes(
+			 ScriptTypesFactory *_script_class_factory
+			,ScriptType * _type
 			,F _ptr_function
 			,FunctionParam **_params
 			,int *_params_len
 			, const char **_str_return_type=NULL
 	){
-		TypeId return_type_id=TYPE_ID_INVALID;
+		ScriptTypeId return_script_type_id=SCRIPT_TYPE_ID_INVALID;
 		const char * return_type;
 		Vector<zs_int> args;
 		String error="";
@@ -185,7 +185,7 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((return_type_id=_script_class_factory->getTypeIdFromTypeNamePtr(return_type)) == -1){
+		if((return_script_type_id=_script_class_factory->getScriptTypeIdFromNamePtr(return_type)) == -1){
 			ZS_THROW_RUNTIME_ERROR(
 				"Return type '%s' not registered"
 				,Rtti::demangle(return_type).toConstChar()
@@ -198,13 +198,13 @@ namespace zetscript{
 
 			if(args.length()==0){
 				ZS_THROW_RUNTIME_ERRORF(
-					"Function to bind has to have 'ZetScript *' as FIRST parameter"
+					"ScriptFunction to bind has to have 'ZetScript *' as FIRST parameter"
 				);
 			}
 
 			if(args.length()==1 && _type != NULL){
 				error=StringUtils::format(
-					"Function to bind has to have '%s' as SECOND parameter for object member reference"
+					"ScriptFunction to bind has to have '%s' as SECOND parameter for object member reference"
 					,Rtti::demangle(_type->native_name.toConstChar()).toConstChar()
 				);
 
@@ -212,10 +212,10 @@ namespace zetscript{
 
 			for(int i = 0; i < args.length(); i++){
 				const char *str_param=(const char *)args.get(i);
-				TypeId type_id = _script_class_factory->getTypeIdFromTypeNamePtr(str_param);
+				ScriptTypeId script_type_id = _script_class_factory->getScriptTypeIdFromNamePtr(str_param);
 
 				if(i==0){
-					if(type_id!=TYPE_ID_OBJECT_ZETSCRIPT){
+					if(script_type_id!=SCRIPT_TYPE_ID_ZETSCRIPT_SCRIPT_OBJECT){
 						ZS_THROW_RUNTIME_ERROR(
 							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
 							,Rtti::demangle(str_param).toConstChar()
@@ -235,7 +235,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(type_id==TYPE_ID_FLOAT_C || type_id==TYPE_ID_BOOL_C || type_id == TYPE_ID_STRING_C){
+				if(script_type_id==SCRIPT_TYPE_ID_FLOAT_C || script_type_id==SCRIPT_TYPE_ID_BOOL_C || script_type_id == SCRIPT_TYPE_ID_STRING_C){
 					error=StringUtils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,Rtti::demangle(str_param).toConstChar()
@@ -243,7 +243,7 @@ namespace zetscript{
 					goto exit_function_traits;
 				}
 
-				if(type_id==TYPE_ID_INVALID){
+				if(script_type_id==SCRIPT_TYPE_ID_INVALID){
 
 					error=StringUtils::format("Argument %i type '%s' not registered"
 						,i+1
@@ -252,7 +252,7 @@ namespace zetscript{
 					goto exit_function_traits;
 				}
 
-				(*_params)[i]=FunctionParam(type_id,str_param);
+				(*_params)[i]=FunctionParam(script_type_id,str_param);
 			}
 		}
 
@@ -275,7 +275,7 @@ exit_function_traits:
 			*_str_return_type=return_type;
 		}
 
-		return return_type_id;
+		return return_script_type_id;
 
 	}
 

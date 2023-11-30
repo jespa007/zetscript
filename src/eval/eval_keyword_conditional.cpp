@@ -15,7 +15,7 @@ namespace zetscript{
 	//
 	// CONDITIONALS
 	//
-	char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -165,7 +165,7 @@ namespace zetscript{
 		*_ei_jmp_default=NULL;
 	}
 
-	char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 
 		char *aux_p = (char *)s;
 		String val;

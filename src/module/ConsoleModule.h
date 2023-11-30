@@ -6,8 +6,8 @@
 
 namespace zetscript{
 
-	class StringObject;
-	class ArrayObject;
+	class StringScriptObject;
+	class ArrayScriptObject;
 	class StringMod;
 
 	zs_int 	ConsoleModule_readChar(ZetScript *_zs);

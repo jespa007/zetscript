@@ -12,7 +12,7 @@ namespace zetscript{
 	struct EvalInstruction{
 		Instruction 					vm_instruction;
 		String						symbol_name;
-		Scope							*symbol_scope;
+		ScriptScope							*symbol_scope;
 		InstructionSourceInfo 			instruction_source_info;
 
 		EvalInstruction(){
@@ -44,8 +44,8 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			,int & line
-			,  Scope *scope_info
-			, Function *sf
+			,  ScriptScope *scope_info
+			, ScriptFunction *sf
 			,FunctionParam *params
 			, int params_len
 	);
@@ -55,22 +55,22 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			,int & line
-			,  Scope *scope_info
-			, Scope *_new_scope=NULL
+			,  ScriptScope *scope_info
+			, ScriptScope *_new_scope=NULL
 			, bool _is_block_body_loop=false
 	);
 
 	String  eval_copy_const_char_diff(const char *p1, const char *p2);
-	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
-	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent);
-	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent);
-	void 	eval_check_scope(EvalData *eval_data, Scope *scope, bool _force_push_pop=false);
-	void 	eval_push_function(EvalData *eval_data,Function *script_function);
+	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, ScriptScope *scope_info, bool return_on_break_or_case=false);
+	ScriptScope * eval_new_scope_function(EvalData *eval_data, ScriptScope *scope_parent);
+	ScriptScope * eval_new_scope_block(EvalData *eval_data, ScriptScope *scope_parent);
+	void 	eval_check_scope(EvalData *eval_data, ScriptScope *scope, bool _force_push_pop=false);
+	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
 	int 	eval_pop_and_compile_function(EvalData *_eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
 	void    eval_generate_byte_code_field_initializer(
 			EvalData *_eval_data
-			, Function *_sf
+			, ScriptFunction *_sf
 			, int _line
 			,const String & _symbol_name
 			, Vector<EvalInstruction *> *_eval_instructions
@@ -83,7 +83,7 @@ namespace zetscript{
 			,EvalData *_eval_data_from=NULL
 			, const char *  _filename=""
 			, int _line=1
-			,Function *sf=NULL
+			,ScriptFunction *sf=NULL
 			);
 
 	void	eval_deinit();

@@ -5,7 +5,7 @@
 namespace zetscript{
 	bool vm_call_metamethod(
 		VirtualMachine 		*		_vm
-		,Function 	*		_script_function
+		,ScriptFunction 	*		_script_function
 		,Instruction 		*		_instruction
 		,Metamethod 	_metamethod
 		,StackElement 		*		_stk_result_op1
@@ -18,12 +18,12 @@ namespace zetscript{
 		String 				str_stk_result_op1_full_definition="";
 		String 				str_stk_result_op2_full_definition="";
 		StackElement 		*	stk_vm_current_backup,*stk_args;
-		Function 		*	ptr_function_found=NULL;
+		ScriptFunction 		*	ptr_function_found=NULL;
 		StackElement 			ret_obj;
 		const char 			*	operator_str=MetamethodHelper::getMetamethodOperatorName(_metamethod);
 		const char 			*	str_symbol_metamethod=MetamethodHelper::getMetamethodSymbolName(_metamethod);
 		String 				error_found="";
-		Object 		*	object=NULL;
+		ScriptObject 		*	object=NULL;
 		String 				str_type_object_found="";
 		int 					n_stk_args=MetamethodHelper::getMetamethodNumberArguments(_metamethod);//_is_static?2:1;
 		size_t 					n_stk_local_symbols=0;
@@ -35,34 +35,34 @@ namespace zetscript{
 
 
 		if(_metamethod == METAMETHOD_ADD){
-			if(		STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op1)\
+			if(		STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)\
 						||\
-					STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-					StringObject *so_string=StringObject::newStringObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
+					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
 					vm_create_shared_object(_vm,so_string);\
 					ZS_VM_PUSH_STK_OBJECT(so_string);\
 					return true;
-			}else if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk_result_op1)\
+			}else if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STACK_ELEMENT_IS_ARRAY_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				object=ArrayObject::concat(\
+				object=ArrayScriptObject::concat(\
 							data->zs\
-							,(ArrayObject *)stk_result_op1->value\
-							,(ArrayObject *)stk_result_op2->value\
+							,(ArrayScriptObject *)stk_result_op1->value\
+							,(ArrayScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_object(_vm,object);\
 					ZS_VM_PUSH_STK_OBJECT(object);\
 					return true;
-			}else if(STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk_result_op1)\
+			}else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				object=DictionaryObject::concat(\
+				object=DictionaryScriptObject::concat(\
 							data->zs\
-							,(DictionaryObject *)stk_result_op1->value\
-							,(DictionaryObject *)stk_result_op2->value\
+							,(DictionaryScriptObject *)stk_result_op1->value\
+							,(DictionaryScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_object(_vm,object);\
 					ZS_VM_PUSH_STK_OBJECT(object);\
@@ -79,11 +79,11 @@ namespace zetscript{
 		// op1/op2 should be the object that have the metamethod
 
 		if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
-			object=(Object *)stk_result_op1->value;
-			str_type_object_found=object->getTypeName();
+			object=(ScriptObject *)stk_result_op1->value;
+			str_type_object_found=object->getScriptTypeName();
 		}else if ((_is_static==true) && (stk_result_op2!=NULL && (stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT))){
-			object=(Object *)stk_result_op2->value;
-			str_type_object_found=object->getTypeName();
+			object=(ScriptObject *)stk_result_op2->value;
+			str_type_object_found=object->getScriptTypeName();
 		}
 
 
@@ -95,7 +95,7 @@ namespace zetscript{
 				if(instruction->byte_code == BYTE_CODE_JE_CASE){
 					error_found=StringUtils::format("Unable to perform '==' operator for case conditional");
 				}else{
-					error_found=StringUtils::format("Type '%s' does not implements metamethod '%s'"
+					error_found=StringUtils::format("ScriptType '%s' does not implements metamethod '%s'"
 						,str_type_object_found.toConstChar()
 						,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					);
@@ -120,7 +120,7 @@ namespace zetscript{
 		if(object->isNativeObject()){ // because isNativeObject it can have more than one setter
 			if((ptr_function_found = vm_find_native_function(
 				_vm
-				,data->type_factory->getType(object->type_id)
+				,data->script_types_factory->getScriptType(object->script_type_id)
 				,_script_function
 				,instruction
 				,false
@@ -133,7 +133,7 @@ namespace zetscript{
 			}
 
 		}else{ // get first item...
-			Type *sc=object->getType();
+			ScriptType *sc=object->getScriptType();
 			Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 			if(symbol == NULL){
@@ -141,35 +141,35 @@ namespace zetscript{
 				goto apply_metamethod_error;
 			}
 
-			Function *sf=(Function *)symbol->ref_ptr;
+			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 
-			if(_is_static && ((sf->properties & FUNCTION_PROPERTY_STATIC) == 0)){
+			if(_is_static && ((sf->properties & SCRIPT_FUNCTION_PROPERTY_STATIC) == 0)){
 				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
-			if((_is_static==false) && ((sf->properties & FUNCTION_PROPERTY_STATIC) != 0)){
+			if((_is_static==false) && ((sf->properties & SCRIPT_FUNCTION_PROPERTY_STATIC) != 0)){
 				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
 
-			ptr_function_found=(Function *)symbol->ref_ptr;
+			ptr_function_found=(ScriptFunction *)symbol->ref_ptr;
 
 		}
 
 
-		if((ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
+		if((ptr_function_found->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
 			// we have to share any object to avoid be removed on function exit
 			if(_is_static == true){ // the share of the 1st object if static and object
 				if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-					vm_share_object(_vm,(Object *)stk_result_op1->value);
+					vm_share_object(_vm,(ScriptObject *)stk_result_op1->value);
 				}
 			}
 
 			if(stk_result_op2!=NULL){
 				if(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-					vm_share_object(_vm,(Object *)stk_result_op2->value);
+					vm_share_object(_vm,(ScriptObject *)stk_result_op2->value);
 				}
 			}
 
@@ -256,7 +256,7 @@ namespace zetscript{
 
 	bool vm_call_metamethod_set(
 			VirtualMachine 			*		_vm
-			,Function 		*		_script_function
+			,ScriptFunction 		*		_script_function
 			,Instruction 			*		_instruction
 			,StackElement 			*		_stk_result_op1
 			,StackElement 			*		_stk_result_op2
@@ -265,31 +265,31 @@ namespace zetscript{
 		VirtualMachineData 			*			data=(VirtualMachineData *)_vm->data;
 		MemberProperty 				*			member_property=NULL;
 		Symbol 						*			symbol_setter=NULL;
-		Object 				*			so_aux=NULL;
+		ScriptObject 				*			so_aux=NULL;
 		//StackElement 				*			stk_var=NULL;
 		StackElement 							stk_aux1;
 		StackElement 				*			stk_result_op1=_stk_result_op1;
 		StackElement 				*			stk_result_op2=_stk_result_op2;
 		StackElementMemberProperty 	*			stk_mp_aux=NULL;
 		MetamethodMembers 			*			ptr_metamethod_members_aux=NULL;
-		Function 				*			ptr_function_found=NULL;
+		ScriptFunction 				*			ptr_function_found=NULL;
 		MetamethodMemberSetterInfo 				setter_info;
 		const char 					*			str_set_metamethod=MetamethodHelper::getMetamethodSymbolName(_metamethod);
 		const char 					*			str_aka_set_metamethod=MetamethodHelper::getMetamethodOperatorName(_metamethod);
 		Instruction					*			instruction=_instruction;
 
 		if(_metamethod == METAMETHOD_ADD_ASSIGN){
-			if(	STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op1)){\
-				(((StringObject *)stk_result_op1->value)->str_ptr)->append(\
-						(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT)?(((Object *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
+			if(	STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
+				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
+						(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
 				);\
 				ZS_VM_PUSH_STK_OBJECT(stk_result_op1->value);\
 				return true;
-			}else if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk_result_op1)\
+			}else if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STACK_ELEMENT_IS_ARRAY_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				DictionaryObject::append(data->zs, (DictionaryObject *)stk_result_op1->value,(DictionaryObject *)stk_result_op1->value);\
+				DictionaryScriptObject::append(data->zs, (DictionaryScriptObject *)stk_result_op1->value,(DictionaryScriptObject *)stk_result_op1->value);\
 				ZS_VM_PUSH_STK_OBJECT(stk_result_op1->value);\
 				return true;
 			}
@@ -310,31 +310,31 @@ namespace zetscript{
 			ZS_METAMETHOD_OPERATION_NOT_FOUND(_metamethod); \
 			goto lbl_exit_function;
 		}\
-		ptr_function_found=(Function *)((Symbol *)(((StackElement *)setter_info.setters->get(0))->value))->ref_ptr;\
+		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->get(0))->value))->ref_ptr;\
 		/* find function if c */ \
-		if((ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
+		if((ptr_function_found->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
 
 			// call_metamethod_set is always non-static, so it shares stk_result_op2 if object to
 			// avoid be removed on function exit stk_result_op1 is always the _this object
 			if(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-				vm_share_object(_vm,(Object *)stk_result_op2->value);
+				vm_share_object(_vm,(ScriptObject *)stk_result_op2->value);
 			}
 
 			if(setter_info.setters->length()>1){
-				symbol_setter = so_aux->getType()->getSymbol(str_set_metamethod);
+				symbol_setter = so_aux->getScriptType()->getSymbol(str_set_metamethod);
 				if(symbol_setter == NULL){
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"
 						,str_set_metamethod
 						,str_aka_set_metamethod
 					);
 				}
-				if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){
+				if((symbol_setter->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function"
 						,str_set_metamethod
 						,str_aka_set_metamethod
 					);\
 				}
-				ptr_function_found=(Function *)symbol_setter->ref_ptr;
+				ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;
 			}
 		}else{ /* because object is native, we can have more than one _setter */ \
 			if(member_property==NULL){
@@ -351,7 +351,7 @@ namespace zetscript{
 			}
 			if((ptr_function_found=vm_find_native_function( \
 				_vm \
-				,data->type_factory->getType(so_aux->type_id)\
+				,data->script_types_factory->getScriptType(so_aux->script_type_id)\
 				,_script_function\
 				,_instruction\
 				,false\
@@ -361,14 +361,14 @@ namespace zetscript{
 			){ \
 				if(member_property!=NULL){ \
 					ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s' or doesn't match its parameter argument types. \nDetail : %s\n"\
-							,so_aux->getType()->name.toConstChar()\
+							,so_aux->getScriptType()->name.toConstChar()\
 							,member_property->property_name.toConstChar()\
 							,str_set_metamethod\
 							,data->vm_error_description.toConstChar()\
 					);\
 				}else{\
-					ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod  or doesn't match its parameter argument types. \nDetail : %s" \
-							,so_aux->getType()->name.toConstChar() \
+					ZS_VM_STOP_EXECUTE("ScriptType '%s' does not implement '%s' metamethod  or doesn't match its parameter argument types. \nDetail : %s" \
+							,so_aux->getScriptType()->name.toConstChar() \
 							,str_set_metamethod\
 							,data->vm_error_description.toConstChar()\
 					);\
@@ -386,7 +386,7 @@ namespace zetscript{
 			/* call _neg */\
 				ZS_VM_INNER_CALL(\
 					so_aux\
-					,(Function *)ptr_metamethod_members_aux->getter->ref_ptr\
+					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
 			);\
 		}else{ /* store object */ \
@@ -408,13 +408,13 @@ namespace zetscript{
 
 	bool vm_call_metamethod_operation_pre_post(
 		VirtualMachine 				*		_vm
-		,Function 			*		_script_function
+		,ScriptFunction 			*		_script_function
 		,Instruction 				*		_instruction
 		,StackElement 				*		_stk_result_op1
 		,Metamethod 			_metamethod
 	){
 
-		Object 				*	so_aux=NULL;
+		ScriptObject 				*	so_aux=NULL;
 		StackElement				*	stk_result_op1=_stk_result_op1;
 		MetamethodMembers 			*	ptr_metamethod_members_aux=NULL;
 		Symbol 						*	symbol_metamethod_pre=NULL;
@@ -453,7 +453,7 @@ namespace zetscript{
 				,_script_function
 				,instruction
 				,so_aux
-				,(Function *)symbol_metamethod_pre->ref_ptr
+				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr
 				,0
 				,true
 		)==false){\

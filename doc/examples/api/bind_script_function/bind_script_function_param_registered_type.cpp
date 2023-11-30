@@ -33,7 +33,7 @@ int main()
 	ZetScript zs;
 
    // Register class Number
-	zs.registerType<Number>("Number");
+	zs.registerScriptType<Number>("Number");
 
 	// register property getter Number::x
 	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
@@ -46,7 +46,7 @@ int main()
         "}\n"
  	);
 
-    // It binds 'concat' as '(void *)(ArrayObject *, ArrayObject *)'
+    // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
     auto paramNumber=zs.bindFunction<void(Number * _number)>("paramNumber");
 
     // Prepare parameters

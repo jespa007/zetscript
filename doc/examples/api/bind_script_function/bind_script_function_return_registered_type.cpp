@@ -1,7 +1,7 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ClassObject;
+using zetscript::ClassScriptObject;
 using zetscript::zs_int;
 
 // Class Number to register
@@ -13,7 +13,7 @@ public:
 	}
 };
 
-// defines new function Number ClassObject
+// defines new function Number ClassScriptObject
 Number *NumberZs_new(ZetScript *_zs){
 	return new  Number();
 }
@@ -22,12 +22,12 @@ void NumberZs_constructor(ZetScript *_zs, Number *_this, zs_int _value){
 	_this->value=_value;
 }
 
-// defines getter property Number::x ClassObject
+// defines getter property Number::x ClassScriptObject
 zs_int NumberZs_get_value(ZetScript *_zs, Number *_this){
 	return _this->value;
 }
 
-// defines delete function Number ClassObject
+// defines delete function Number ClassScriptObject
 void NumberZs_delete(ZetScript *_zs, Number *_this){
 	delete _this;
 }
@@ -36,7 +36,7 @@ int main(){
 	ZetScript zs;
 
 	// Register class 'Number' as instantiable
-	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
+	zs.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register constructor
 	zs.registerConstructor<Number>(NumberZs_constructor);
@@ -52,10 +52,10 @@ int main(){
 		"}\n"
 	);
 
-	// It binds 'newNumber' as '(ClassObject *)(void)'
-	auto newNumber=zs.bindFunction<ClassObject *()>("newNumber");
+	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
+	auto newNumber=zs.bindFunction<ClassScriptObject *()>("newNumber");
 
-	// Calls ZetScript function which it returns 'ClassObject *' reference
+	// Calls ZetScript function which it returns 'ClassScriptObject *' reference
 	auto class_object_number=newNumber();
 
 	// Prints the contents by console.

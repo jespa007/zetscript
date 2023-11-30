@@ -9,7 +9,7 @@ namespace zetscript{
 
 	ContainerSlot *ContainerSlot::newContainerSlot(
 			// container dst reference to store
-			ContainerObject	 	*	_dst_container_ref
+			ContainerScriptObject	 	*	_dst_container_ref
 			// id slot dst stored
 			,zs_int 						_id_slot
 
@@ -28,7 +28,7 @@ namespace zetscript{
 	}
 
 	void ContainerSlot::deleteContainerSlot(ContainerSlot * _container_slot, bool _remove_container_slot){
-		ContainerObject *cso= _container_slot->getSrcContainerRef();
+		ContainerScriptObject *cso= _container_slot->getSrcContainerRef();
 		if(cso!=NULL && _remove_container_slot==true){
 			cso->removeContainerSlot(_container_slot, NULL);
 		}
@@ -36,7 +36,7 @@ namespace zetscript{
 	}
 
 	ContainerSlot::ContainerSlot(
-			ContainerObject 		*	_dst_container_ref
+			ContainerScriptObject 		*	_dst_container_ref
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 	){
@@ -50,7 +50,7 @@ namespace zetscript{
 		//ptr_stk->properties=STACK_ELEMENT_PROPERTY_CONTAINER_SLOT;
 	}
 
-	void ContainerSlot::setSrcContainerRef(ContainerObject *_src_container_ref){
+	void ContainerSlot::setSrcContainerRef(ContainerScriptObject *_src_container_ref){
 
 		if(src_container_ref!=_src_container_ref){
 			//detach current
@@ -75,7 +75,7 @@ namespace zetscript{
 	}
 
 
-	/*void	ContainerSlot::countReferencesRecursive(ContainerObject *_so_container_ref, int & _count ){
+	/*void	ContainerSlot::countReferencesRecursive(ContainerScriptObject *_so_container_ref, int & _count ){
 		if(this->so_container_ref == _so_container_ref){
 			_count++;
 		}
@@ -85,7 +85,7 @@ namespace zetscript{
 		}
 	}
 
-	int	ContainerSlot::countReferences(ContainerObject *_so_container_ref){
+	int	ContainerSlot::countReferences(ContainerScriptObject *_so_container_ref){
 		int count=0;
 		countReferencesRecursive(_so_container_ref,count);
 		return count;
@@ -100,11 +100,11 @@ namespace zetscript{
 	}
 
 
-	ContainerObject *ContainerSlot::getSrcContainerRef(){
+	ContainerScriptObject *ContainerSlot::getSrcContainerRef(){
 		return src_container_ref;
 	}
 
-	ContainerObject *ContainerSlot::getDstContainerRef(){
+	ContainerScriptObject *ContainerSlot::getDstContainerRef(){
 		return dst_container_ref;
 	}
 

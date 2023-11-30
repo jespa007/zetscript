@@ -11,8 +11,8 @@ namespace zetscript{
 
 
 	/*String		StackElement::toString(){
-		if(STACK_ELEMENT_IS_STRING_OBJECT(this)){
-			return ((StringObject *)this->value)->toString();
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(this)){
+			return ((StringScriptObject *)this->value)->toString();
 		}
 		return stk_utils::stk_to_str(NULL,this);
 
@@ -31,23 +31,23 @@ namespace zetscript{
 		}
 
 		if(STACK_ELEMENT_IS_UNDEFINED(stk)){
-			result.value=TYPE_ID_UNDEFINED;
+			result.value=SCRIPT_TYPE_ID_UNDEFINED;
 		}else if(STACK_ELEMENT_IS_NULL(stk)){
-			result.value=TYPE_ID_NULL;
+			result.value=SCRIPT_TYPE_ID_NULL;
 		}else if(STACK_ELEMENT_IS_INT(stk)){
-			result.value=TYPE_ID_INT_C;
+			result.value=SCRIPT_TYPE_ID_INT_C;
 		}else if(STACK_ELEMENT_IS_FLOAT(stk)){
-			result.value=TYPE_ID_FLOAT_C;
+			result.value=SCRIPT_TYPE_ID_FLOAT_C;
 		}else if(STACK_ELEMENT_IS_BOOLEAN(stk)){
-			result.value=TYPE_ID_BOOL_C;
+			result.value=SCRIPT_TYPE_ID_BOOL_C;
 		}else if(STACK_ELEMENT_IS_FUNCTION(stk)){
-			result.value=TYPE_ID_FUNCTION;
+			result.value=SCRIPT_TYPE_ID_FUNCTION;
 		}else if(STACK_ELEMENT_IS_TYPE(stk)){
 			result=*stk;
 		}else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk)){
-			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getType()->id;
+			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->id;
 		}else if(STACK_ELEMENT_IS_OBJECT(stk)){
-			result.value=((DictionaryObject *)stk->value)->getType()->id;
+			result.value=((DictionaryScriptObject *)stk->value)->getScriptType()->id;
 		}
 
 		return result;

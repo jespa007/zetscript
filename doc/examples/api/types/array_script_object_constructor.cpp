@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ArrayObject;
+using zetscript::ArrayScriptObject;
 
-ArrayObject *returnNewArrayObject(ZetScript *_zs){
+ArrayScriptObject *returnNewArrayScriptObject(ZetScript *_zs){
 
-	// instance new StringObject using ZetScript context
-	ArrayObject *array_object=new ArrayObject(_zs);
+	// instance new StringScriptObject using ZetScript context
+	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
 
 	//...
 
@@ -16,11 +16,11 @@ ArrayObject *returnNewArrayObject(ZetScript *_zs){
 int main(){
 	zetscript::ZetScript zs;
 
-	// Registers returnNewArrayObject
-	zs.registerFunction("returnNewArrayObject",returnNewArrayObject);
+	// Registers returnNewArrayScriptObject
+	zs.registerFunction("returnNewArrayScriptObject",returnNewArrayScriptObject);
 
 	// prints the contents of new array object (empty)
-	zs.eval("Console::outln(returnNewArrayObject())");
+	zs.eval("Console::outln(returnNewArrayScriptObject())");
 	
 	return 0;
 }

@@ -64,7 +64,7 @@ namespace zetscript{
 			,EvalData *_eval_data_from
 			, const char *  _filename
 			, int _line
-			, Function *_sf
+			, ScriptFunction *_sf
 	){
 		EvalData *eval_data=_eval_data_from;//new EvalData(zs);
 		if(_eval_data_from==NULL){
@@ -77,14 +77,14 @@ namespace zetscript{
 		String str_error="";
 		String error_file="";
 		int error_line=-1;
-		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
+		ScriptScope *scope_info=ZS_MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
-		Function *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
+		ScriptFunction *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
 		sf->removeUnusuedScopes();
 		sf->clearFunctionLastCalls();
 
 		if(sf != ZS_MAIN_FUNCTION(eval_data)){ // remove/reset old code
-			scope_info =sf->scope;// ZS_NEW_SCOPE(eval_data,sf->id,ZS_MAIN_SCOPE(eval_data),ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+			scope_info =sf->scope;// ZS_NEW_SCOPE(eval_data,sf->id,ZS_MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 		}
 
 		if(_eval_data_from == NULL){
@@ -130,12 +130,12 @@ namespace zetscript{
 		}
 	}
 
-	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent){
-		Scope *new_scope = ZS_NEW_SCOPE(
+	ScriptScope * eval_new_scope_function(EvalData *eval_data, ScriptScope *scope_parent){
+		ScriptScope *new_scope = ZS_NEW_SCOPE(
 				eval_data
 				,eval_data->current_function->script_function->id
 				,scope_parent
-				,ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION
+				,SCOPE_PROPERTY_IS_SCOPE_FUNCTION
 		);
 
 		new_scope->offset_instruction_push_scope=0;
@@ -143,19 +143,19 @@ namespace zetscript{
 		return new_scope;
 	}
 
-	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent){
-		Scope *new_scope = ZS_NEW_SCOPE(
+	ScriptScope * eval_new_scope_block(EvalData *eval_data, ScriptScope *scope_parent){
+		ScriptScope *new_scope = ZS_NEW_SCOPE(
 				eval_data
 				,eval_data->current_function->script_function->id
 				,scope_parent
-				,ZS_SCOPE_PROPERTY_IS_SCOPE_BLOCK
+				,SCOPE_PROPERTY_IS_SCOPE_BLOCK
 		);
 
 		new_scope->offset_instruction_push_scope=(int)eval_data->current_function->eval_instructions.length();
 		return new_scope;
 	}
 
-	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _is_block_body_loop){
+	void eval_check_scope(EvalData *eval_data, ScriptScope *scope, bool _is_block_body_loop){
 		if(scope->symbol_variables->length() > 0 || _is_block_body_loop==true){
 			// if there's local symbols insert push/pop scope
 			if(scope->offset_instruction_push_scope!=ZS_UNDEFINED_IDX){
@@ -181,8 +181,8 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			,int & line
-			,  Scope *scope_info
-			, Scope *_new_scope
+			,  ScriptScope *scope_info
+			, ScriptScope *_new_scope
 	){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
@@ -192,8 +192,8 @@ namespace zetscript{
 		if(*aux_p == '{'){
 			aux_p++;
 
-			if(scope_info->numInnerScopes() >= ZS_MAX_INNER_SCOPES_FUNCTION){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",ZS_MAX_INNER_SCOPES_FUNCTION);
+			if(scope_info->numInnerScopes() >= ZS_SCOPE_MAX_INNER_SCOPES_FUNCTION){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",ZS_SCOPE_MAX_INNER_SCOPES_FUNCTION);
 			}
 
 			if((aux_p = eval_parse_and_compile_recursive(
@@ -218,11 +218,11 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			,int & line
-			,  Scope *scope_info
-			, Scope *_new_scope
+			,  ScriptScope *scope_info
+			, ScriptScope *_new_scope
 			, bool _is_block_body_loop
 	){
-		Scope *new_scope=_new_scope;
+		ScriptScope *new_scope=_new_scope;
 
 		if(new_scope==NULL){
 			new_scope = eval_new_scope_block(eval_data,scope_info);
@@ -251,14 +251,14 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			,int & line
-			,  Scope *scope_info
-			, Function *sf
+			,  ScriptScope *scope_info
+			, ScriptFunction *sf
 			,FunctionParam *params
 			, int params_len
 	){
 
 
-		Scope *new_scope = eval_new_scope_function(eval_data,scope_info);
+		ScriptScope *new_scope = eval_new_scope_function(eval_data,scope_info);
 
 
 		// set scope to the function
@@ -292,7 +292,7 @@ namespace zetscript{
 		);
 	}
 
-	char * eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case){
+	char * eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, ScriptScope *scope_info, bool return_on_break_or_case){
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 		bool custom_quit = false;
 		const char *current_parsing_file=NULL;
@@ -439,20 +439,20 @@ namespace zetscript{
 		return aux;
 	}
 
-	void eval_push_function(EvalData *eval_data,Function *script_function){
+	void eval_push_function(EvalData *eval_data,ScriptFunction *script_function){
 		eval_data->eval_functions.push(
 				eval_data->current_function=new EvalFunction(script_function)
 		);
 	}
 
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const String & symbol_to_find){
+	Symbol *eval_find_local_symbol(EvalData *eval_data,ScriptScope *scope, const String & symbol_to_find){
 		ZS_UNUSUED_PARAM(eval_data);
-		return scope->getSymbol(symbol_to_find, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+		return scope->getSymbol(symbol_to_find, ZS_NO_PARAMS_SYMBOL_ONLY,SCRIPT_SCOPE_REGISTER_PROPERTY_CHECK_REPEATED_SYMBOLS_DOWN);
 	}
 
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const String & symbol_to_find){
 		// try find global variable...
-		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
+		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,SCRIPT_SCOPE_REGISTER_PROPERTY_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
 	}
 
 	void eval_pop_current_function(EvalData *eval_data){
@@ -467,7 +467,7 @@ namespace zetscript{
 
 	}
 
-	bool eval_all_local_variables_in_scopes_already_sorted(Scope  *current_scope,  int & idx_local_variable){
+	bool eval_all_local_variables_in_scopes_already_sorted(ScriptScope  *current_scope,  int & idx_local_variable){
 		for(int i=0; i < current_scope->symbol_variables->length(); i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->get(i);
 			if(s->idx_position!=idx_local_variable++){
@@ -477,8 +477,8 @@ namespace zetscript{
 
 		auto scopes=current_scope->getScopes();
 		for(int i=0; i < scopes->length(); i++){
-			Scope *scope=(Scope *)scopes->get(i);
-			if((scope->properties & (ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION | ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+			ScriptScope *scope=(ScriptScope *)scopes->get(i);
+			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
 
 				if(ok == false){
@@ -490,7 +490,7 @@ namespace zetscript{
 		return true;
 	}
 
-	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,Vector<zs_int> *order_local_vars){
+	void eval_fill_lookup_local_variable(ScriptScope  *current_scope, short *lookup_table, int & n_variable,Vector<zs_int> *order_local_vars){
 		for(int i=0; i < current_scope->symbol_variables->length(); i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->get(i);
 			lookup_table[s->idx_position]=n_variable++;
@@ -500,8 +500,8 @@ namespace zetscript{
 		auto scopes=current_scope->getScopes();
 
 		for(int i=0; i < scopes->length(); i++){
-			Scope *scope=(Scope *)scopes->get(i);
-			if((scope->properties & (ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION | ZS_SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+			ScriptScope *scope=(ScriptScope *)scopes->get(i);
+			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
 			}
 		}
@@ -509,7 +509,7 @@ namespace zetscript{
 
 	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,Vector<zs_int> *order_local_vars){
 
-		Function *sf = eval_data->current_function->script_function;
+		ScriptFunction *sf = eval_data->current_function->script_function;
 
 		int n_local_variable=0;
 		if(eval_all_local_variables_in_scopes_already_sorted(sf->scope,n_local_variable) == true){
@@ -529,7 +529,7 @@ namespace zetscript{
 		}
 
 		short *lookup_linear_stk=(short *)ZS_MALLOC(sizeof(short)*n_var_fun);
-		Scope *current_scope=sf->scope;
+		ScriptScope *current_scope=sf->scope;
 		n_local_variable=0;
 
 		eval_fill_lookup_local_variable(current_scope,lookup_linear_stk,n_local_variable,order_local_vars);
@@ -540,8 +540,8 @@ namespace zetscript{
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
 		String static_error;
-		Function *sf = eval_data->current_function->script_function;
-		Type *sc_sf = ZS_GET_OBJECT_TYPE(eval_data->type_factory,sf->owner_type_id);
+		ScriptFunction *sf = eval_data->current_function->script_function;
+		ScriptType *sc_sf = ZS_GET_OBJECT_TYPE(eval_data->script_types_factory,sf->owner_script_type_id);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
@@ -593,7 +593,7 @@ namespace zetscript{
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
 					Symbol *symbol_member = (Symbol *)sc_sf->scope->symbol_functions->get(j);
-					Function *sf_member=(Function *)symbol_member->ref_ptr;
+					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name == sf->name;
 					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_NATIVE_OBJECT_REF?match_names:true);
 					if(

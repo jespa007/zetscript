@@ -1,22 +1,22 @@
 #include "zetscript.h"
 
-using zetscript::DictionaryObject;
+using zetscript::DictionaryScriptObject;
 
 int main()
 {
 	zetscript::ZetScript zs;
 
-    // Evaluates ZetScript function 'returnObject' that returns 'Object' value
+    // Evaluates ZetScript function 'returnObject' that returns 'ScriptObject' value
     zs.eval(
  		"function returnObject(){\n"
         "    return {a:1,b:true,c:\"String\"};\n"
         "}\n"
  	);
 
-    // It binds 'returnObject' as 'DictionaryObject *(void)'
-    auto returnObject=zs.bindFunction<DictionaryObject *()>("returnObject");
+    // It binds 'returnObject' as 'DictionaryScriptObject *(void)'
+    auto returnObject=zs.bindFunction<DictionaryScriptObject *()>("returnObject");
 
-    // Calls ZetScript function which it returns 'DictionaryObject *' reference
+    // Calls ZetScript function which it returns 'DictionaryScriptObject *' reference
     auto object_object=returnObject();
 
     // Prints its value by console.

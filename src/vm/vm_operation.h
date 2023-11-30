@@ -45,8 +45,8 @@
 		ptr_metamethod_members_aux= &member_property->metamethod_members;\
 		so_aux = stk_mp_aux->so_object;\
 	}else if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){\
-		so_aux= (Object *)stk_result_op1->value;\
-		ptr_metamethod_members_aux= &so_aux->getType()->metamethod_members;\
+		so_aux= (ScriptObject *)stk_result_op1->value;\
+		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
 	else{\
 		ZS_VM_MAIN_ERROR(\
@@ -178,9 +178,9 @@
 			PRAGMA_DISABLE_WARNING(4127)\
 			if(__METAMETHOD_ID_OPERATION__ == METAMETHOD_EQU || __METAMETHOD_ID_OPERATION__ == METAMETHOD_NEQU){\
 				PRAGMA_POP\
-				if((stk_result_op1->value == TYPE_ID_UNDEFINED) && (stk_result_op1->properties == TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_EQU)){\
+				if((stk_result_op1->value == SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties == SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_EQU)){\
 					ZS_VM_PUSH_STK_BOOLEAN(true);\
-				}else if((stk_result_op1->value == TYPE_ID_UNDEFINED) && (stk_result_op1->properties != TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_NEQU)){\
+				}else if((stk_result_op1->value == SCRIPT_TYPE_ID_UNDEFINED) && (stk_result_op1->properties != SCRIPT_TYPE_ID_UNDEFINED) && (__METAMETHOD_ID_OPERATION__ ==METAMETHOD_NEQU)){\
 					ZS_VM_PUSH_STK_BOOLEAN(true);\
 				}else{\
 					ZS_VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ stk_result_op2->value);\
@@ -188,7 +188,7 @@
 			}else{\
 				ZS_VM_PUSH_STK_BOOLEAN(false);\
 			}\
-		}else if( STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op1) && STACK_ELEMENT_IS_STRING_OBJECT(stk_result_op2)){\
+		}else if( STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1) && STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op2)){\
 			vm_push_stk_boolean_equal_strings(_vm,stk_result_op1,stk_result_op2,__METAMETHOD_ID_OPERATION__);\
 		}else if(  (stk_result_op1->properties==STACK_ELEMENT_PROPERTY_UNDEFINED || stk_result_op2->properties==STACK_ELEMENT_PROPERTY_UNDEFINED)\
 				&& (__METAMETHOD_ID_OPERATION__ == METAMETHOD_EQU || __METAMETHOD_ID_OPERATION__ == METAMETHOD_NEQU)\

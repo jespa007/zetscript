@@ -5,8 +5,8 @@
 namespace zetscript{
 	bool vm_iterator_init(
 			VirtualMachine 		*	_vm
-			,Object 		*	_this_object
-			,Function 	*	_script_function
+			,ScriptObject 		*	_this_object
+			,ScriptFunction 	*	_script_function
 			,Instruction 		*	_instruction
 			,StackElement 		*	_stk_local_var
 	){
@@ -16,8 +16,8 @@ namespace zetscript{
 		Symbol 				*	symbol_iter;
 		StackElement 		*	stk_result_op1=NULL;
 		StackElement 		*	stk_result_op2=NULL;
-		Object 		*	obj=NULL;
-		Type 			*	sc=NULL;
+		ScriptObject 		*	obj=NULL;
+		ScriptType 			*	sc=NULL;
 		Instruction			* 	instruction=_instruction;
 
 		VM_POP_STK_TWO;
@@ -46,25 +46,25 @@ namespace zetscript{
 		// ok vm_stk_current holds the iter object
 		if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			// get iterator object and references +1
-			obj=(Object *)stk_result_op1->value;
+			obj=(ScriptObject *)stk_result_op1->value;
 		}else{ // slot container
 			// get iterator object and references +1
 			obj=((ContainerSlot *)(stk_result_op1->value))->getSrcContainerRef();
 		}
 
 
-		sc=obj->getType();
+		sc=obj->getScriptType();
 
 		symbol_iter=sc->getSymbolMemberFunction("_iter");
 
 		if(symbol_iter != NULL){
 
-			Function *so_function=(Function *)symbol_iter->ref_ptr;
-			Object *so_object=obj;
+			ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
+			ScriptObject *so_object=obj;
 
 			int n_args=0;
 
-			// DictionaryObject uses static method in order to call iter (i.e Object::iter(o)
+			// DictionaryScriptObject uses static method in order to call iter (i.e ScriptObject::iter(o)
 			if((symbol_iter->properties & SYMBOL_PROPERTY_STATIC)!= 0){ //is static
 				n_args=1;
 
@@ -78,13 +78,13 @@ namespace zetscript{
 			// ok vm_stk_current holds the iter object
 			if(data->vm_stk_current->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				// get iterator object and references +1
-				obj=(Object *)data->vm_stk_current->value;
+				obj=(ScriptObject *)data->vm_stk_current->value;
 			}else{
 				// get iterator object and references +1
 				if(data->vm_stk_current->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					obj=((ContainerSlot *)(data->vm_stk_current->value))->getSrcContainerRef();
 				}else{
-					ZS_VM_ERROR("Object '%s' does not returns an iterator object",obj->getTypeName());
+					ZS_VM_ERROR("ScriptObject '%s' does not returns an iterator object",obj->getScriptTypeName());
 					return false;
 				}
 			}
@@ -92,21 +92,21 @@ namespace zetscript{
 
 			vm_share_object(_vm,obj);
 
-			sc=obj->getType();
+			sc=obj->getScriptType();
 
 			// check all functions...
 			if(sc->getSymbolMemberFunction("_get")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement '_get' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_get' function",obj->getScriptTypeName());
 				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("_next")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getScriptTypeName());
 				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("_end")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement '_end' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_end' function",obj->getScriptTypeName());
 				return false;
 			}
 
@@ -114,7 +114,7 @@ namespace zetscript{
 			*stk_result_op2=*data->vm_stk_current;
 		}
 		else{
-			ZS_VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());
+			ZS_VM_ERROR("ScriptObject '%s' not implements 'iter'",obj->getScriptTypeName());
 			return false;
 		}
 
@@ -129,8 +129,8 @@ namespace zetscript{
 
 	bool vm_perform_in_operator(
 			VirtualMachine 	*_vm
-			,Object 	*_this_object
-			,Function *_script_function
+			,ScriptObject 	*_this_object
+			,ScriptFunction *_script_function
 			,Instruction 	*_instruction
 			,StackElement 	*_stk_local_var
 	){
@@ -151,44 +151,44 @@ namespace zetscript{
 
 
 		if(stk_result_op2_aux.properties & STACK_ELEMENT_PROPERTY_OBJECT){
-			Object *so_aux=(Object *)stk_result_op2_aux.value;
+			ScriptObject *so_aux=(ScriptObject *)stk_result_op2_aux.value;
 
-			switch(so_aux->type_id){
-			case TYPE_ID_OBJECT_STRING: // check whether 'char' or 'string' exists
+			switch(so_aux->script_type_id){
+			case SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT){
 				ZS_VM_PUSH_STK_BOOLEAN(
-					StringObjectZs_contains(
+					StringScriptObjectZs_contains(
 						data->zs
-						,((StringObject *)so_aux)
+						,((StringScriptObject *)so_aux)
 						,(zs_int)stk_result_op1->value
 					)
 				);
-			}else if(STACK_ELEMENT_IS_STRING_OBJECT(&stk_result_op1_aux)){
-				String str_op1=((StringObject *)stk_result_op1_aux.value)->toString();
+			}else if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk_result_op1_aux)){
+				String str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
-					StringObjectZs_contains(
+					StringScriptObjectZs_contains(
 						data->zs
-						,(StringObject *)so_aux
+						,(StringScriptObject *)so_aux
 						,&str_op1)
 				);
 			}else{
-				error="operand is not 'zs_int' or 'StringObject' type";
+				error="operand is not 'zs_int' or 'StringScriptObject' type";
 			}
 			break;
-			case TYPE_ID_OBJECT_ARRAY: // check whether value exists...
-			//PUSH_STK_BOOLEAN(((ArrayObject *)so_aux)->exists(stk_result_op1));
+			case SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT: // check whether value exists...
+			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				ZS_VM_PUSH_STK_BOOLEAN(
-				ArrayObjectZs_contains(
-					data->zs,(ArrayObject *)so_aux,&stk_result_op1_aux
+				ArrayScriptObjectZs_contains(
+					data->zs,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
 				)
 			);
 			break;
-			case TYPE_ID_DICTIONARY_OBJECT: // check key value exists...
+			case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-				String str_op1=((StringObject *)stk_result_op1_aux.value)->toString();
+				String str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
-					ObjectObjectZs_contains(
-						data->zs,(DictionaryObject *)so_aux,&str_op1
+					DictionaryScriptObjectZs_contains(
+						data->zs,(DictionaryScriptObject *)so_aux,&str_op1
 					)
 				);
 

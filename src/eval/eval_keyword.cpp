@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 		char *aux_p = (char *)s;
 		Keyword key_w;
 
@@ -32,7 +32,7 @@ namespace zetscript{
 	}
 
 
-	char *eval_keyword(EvalData *eval_data,const char *s, int & line, Scope *scope_info, Keyword keyw){
+	char *eval_keyword(EvalData *eval_data,const char *s, int & line, ScriptScope *scope_info, Keyword keyw){
 		// check if condition...
 		if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
 

@@ -13,7 +13,7 @@ namespace zetscript{
 	//  VAR/FUNCTION
 	//
 
-	char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, uint16_t properties){
+	char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info, uint16_t properties){
 		// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 		// check for keyword ...
 		char *aux_p = (char *)s;
@@ -25,12 +25,12 @@ namespace zetscript{
 				 is_class_scope=false,
 				 end=false;
 
-			Scope *scope_var=scope_info;
+			ScriptScope *scope_var=scope_info;
 
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			bool is_static=scope_info==ZS_MAIN_SCOPE(eval_data);
-			Type *type=NULL;
+			ScriptType *type=NULL;
 			String s_aux="",variable_name="";
 			String error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
@@ -40,7 +40,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check type scope...
-			if(scope_var->owner_type->id != TYPE_ID_CLASS_MAIN
+			if(scope_var->owner_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
@@ -56,8 +56,8 @@ namespace zetscript{
 				start_line=line;
 				end_var=NULL;
 				String pre_variable_name="";
-				Function *sf_field_initializer=NULL;
-				Type *sc_var_member_extension=type;
+				ScriptFunction *sf_field_initializer=NULL;
+				ScriptType *sc_var_member_extension=type;
 
 				if(sc_var_member_extension==NULL){
 					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )

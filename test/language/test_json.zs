@@ -21,9 +21,9 @@ System::assert(typeof json_obj.d[0]==Float	,"deserialize json_obj.d[0] != typeof
 System::assert(typeof json_obj.d[1]==Boolean,"deserialize json_obj.d[1] != typeof Boolean");
 System::assert(typeof json_obj.d[2]==String	,"deserialize json_obj.d[2] != typeof String");
 
-System::assert(typeof json_obj.e==Object	,"deserialize json_obj.e != typeof Object");
+System::assert(typeof json_obj.e==ScriptObject	,"deserialize json_obj.e != typeof ScriptObject");
 
-System::assert(Object::keys(json_obj.e).length==4,"deserialize Object::keys(json_obj.e).length != 4");
+System::assert(ScriptObject::keys(json_obj.e).length==4,"deserialize ScriptObject::keys(json_obj.e).length != 4");
 
 System::assert(typeof json_obj.e.a==Float		,"deserialize json_obj.e.a != typeof Float");
 System::assert(typeof json_obj.e.b==Boolean		,"deserialize json_obj.e.b != typeof Boolean");

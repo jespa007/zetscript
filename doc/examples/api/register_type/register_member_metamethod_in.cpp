@@ -35,7 +35,7 @@ int main(){
 
 	data=new Data();
 
-	zs.registerType<Data>("Data");
+	zs.registerScriptType<Data>("Data");
 	zs.registerFunction("getData",getData);
 	zs.registerMemberFunction<Data>("_in",DataZs_in);
 

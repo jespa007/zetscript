@@ -19,27 +19,27 @@ var obj1={a:1,b:2}
 var obj2={c:3,d:4}
 
 // get object keys for iteration...
-var key1=Object::keys(obj1);
-var key2=Object::keys(obj2);
+var key1=ScriptObject::keys(obj1);
+var key2=ScriptObject::keys(obj2);
 
 for(var i=0; i < key1.length; i++){
 	Console::outln(key1[i]);
 }
 
-if(Object::contains(obj1,"a")){
+if(ScriptObject::contains(obj1,"a")){
 	Console::outln("a exist")
 }
 
 var obj3=obj1+obj2;
-var key3=Object::keys(obj3);
+var key3=ScriptObject::keys(obj3);
 
 for(var i=0; i < key3.length; i++){
 	Console::outln(key3[i]);
 }
 
-Object::clear(obj3)
+ScriptObject::clear(obj3)
 
-key3=Object::keys(obj3);
+key3=ScriptObject::keys(obj3);
 
 for(var i=0; i < key3.length; i++){
 	Console::outln(key3[i]);

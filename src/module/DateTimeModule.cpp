@@ -40,11 +40,11 @@ namespace zetscript{
 		return dt;
 	}*/
 
-	ClassObject * 			DateTimeModule_sub(ZetScript *_zs,DateTime *dt1,DateTime *dt2){
+	ClassScriptObject * 			DateTimeModule_sub(ZetScript *_zs,DateTime *dt1,DateTime *dt2){
 		ZS_UNUSUED_PARAM(_zs);
 		TimeSpan *ts=new TimeSpan;
 		*ts=*dt1-*dt2;
-		return _zs->newClassObject(ts);
+		return _zs->newClassScriptObject(ts);
 	}
 
 	void 					DateTimeModule_setUtc(ZetScript *_zs,DateTime *_this){

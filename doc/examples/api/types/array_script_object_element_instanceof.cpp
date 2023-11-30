@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ArrayObject;
+using zetscript::ArrayScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 
 // Check whether the array element is type integer, float or string
-void testArrayElementInstanceOf(ZetScript *_zs,ArrayObject *_array_object){
+void testArrayElementInstanceOf(ZetScript *_zs,ArrayScriptObject *_array_object){
 
 	for(int i=0; i < _array_object->length(); i++){
                

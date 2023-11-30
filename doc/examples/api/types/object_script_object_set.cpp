@@ -3,10 +3,10 @@
 using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
-using zetscript::DictionaryObject;
-using zetscript::StringObject;
+using zetscript::DictionaryScriptObject;
+using zetscript::StringScriptObject;
 
-void modifyObject(ZetScript *_zs,DictionaryObject *_object){
+void modifyObject(ZetScript *_zs,DictionaryScriptObject *_object){
 
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.size(); i++){
@@ -18,7 +18,7 @@ void modifyObject(ZetScript *_zs,DictionaryObject *_object){
 			_object->set<zs_float>(keys.get(i),i*10.2);
 			break;
 		case 2: // set new string
-			_object->set<StringObject *>(keys.get(i),new StringObject(_zs,"Hello"));
+			_object->set<StringScriptObject *>(keys.get(i),new StringScriptObject(_zs,"Hello"));
 			break;
 
 		}

@@ -1,17 +1,17 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::ArrayObject;
+using zetscript::ArrayScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 
 
 // Definition of the native function interface returnArray
-ArrayObject *returnArray(ZetScript *_zs){
+ArrayScriptObject *returnArray(ZetScript *_zs){
 
-	// instance new ArrayObject using ZetScript context
-	ArrayObject *array=_zs->newArrayObject();
+	// instance new ArrayScriptObject using ZetScript context
+	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
 	// push first value as integer 10
 	array->push<zs_int>(10);

@@ -13,7 +13,7 @@ namespace zetscript{
 	}
 
 	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
-		StringObject *str_out=StringObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().toConstChar());
 			fflush(stdout);
@@ -23,7 +23,7 @@ namespace zetscript{
 
 
 	void ConsoleModule_out(ZetScript *zs,StackElement *str, StackElement *args){
-		StringObject *str_out=StringObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s",str_out->toString().toConstChar());
 			fflush(stdout);
@@ -38,7 +38,7 @@ namespace zetscript{
 			return;
 		}
 
-		StringObject *str_out=StringObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s\n",str_out->toString().toConstChar());
 			fflush(stderr);
@@ -52,7 +52,7 @@ namespace zetscript{
 			return;
 		}
 
-		StringObject *str_out=StringObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s",str_out->toString().toConstChar());
 			fflush(stderr);

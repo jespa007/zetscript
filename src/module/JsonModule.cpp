@@ -12,7 +12,7 @@ namespace zetscript{
 
 
 
-	void JsonModule_deserialize(ZetScript *_zs,StringObject *str_json){
+	void JsonModule_deserialize(ZetScript *_zs,StringScriptObject *str_json){
 		// deserialize ...
 
 		String str=StringUtils::unescape(str_json->toString());
@@ -28,7 +28,7 @@ namespace zetscript{
 		if(json::deserialize(&deserialize_data,deserialize_data.str_start,line,&return_stack_element)==NULL){
 			vm_set_error(vm,(String("Error deserialize:")+deserialize_data.str_error).toConstChar());
 			//if(return_stack_element.properties & STACK_ELEMENT_PROPERTY_OBJECT){
-				//Object *so=(Object *)return_stack_element.value;
+				//ScriptObject *so=(ScriptObject *)return_stack_element.value;
 				//vm_unref_shared_object(vm,so,NULL);
 			//}
 			return_stack_element=k_stk_undefined;
@@ -37,12 +37,12 @@ namespace zetscript{
 		vm_push_stack_element(vm,return_stack_element);
 	}
 
-	StringObject * JsonModule_serialize(ZetScript *zs,StackElement  *stk,bool *minimized){
+	StringScriptObject * JsonModule_serialize(ZetScript *zs,StackElement  *stk,bool *minimized){
 		// iterate for all elements in the obj
-		return StringObject::newStringObject(zs,json::serialize(zs,stk,*minimized).toConstChar());
+		return StringScriptObject::newStringScriptObject(zs,json::serialize(zs,stk,*minimized).toConstChar());
 	}
 
-	StringObject * JsonModule_serialize(ZetScript *zs,StackElement *stk){
+	StringScriptObject * JsonModule_serialize(ZetScript *zs,StackElement *stk){
 		// iterate for all elements in the obj
 		bool minimize=false;
 		return JsonModule_serialize(zs,stk,&minimize);

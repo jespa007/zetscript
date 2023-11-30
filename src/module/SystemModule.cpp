@@ -18,14 +18,14 @@ namespace zetscript{
 		return System::clock();
 	}
 
-	void SystemModule_eval(ZetScript *_zs,StringObject *_so_str_eval,DictionaryObject *_oo_param){
-		StringObject *so_str_eval=NULL;
-		DictionaryObject *oo_param=NULL;
+	void SystemModule_eval(ZetScript *_zs,StringScriptObject *_so_str_eval,DictionaryScriptObject *_oo_param){
+		StringScriptObject *so_str_eval=NULL;
+		DictionaryScriptObject *oo_param=NULL;
 		FunctionParam *function_params=NULL;
 		FunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
 		String str_param_name;
-		Function *sf_eval=NULL;
+		ScriptFunction *sf_eval=NULL;
 		Vector<StackElement *> stk_params;
 		StackElement **stk_params_data=NULL;
 		const char *str_start=NULL;
@@ -45,7 +45,7 @@ namespace zetscript{
 		// 0. setup scope and parameters
 		if(_oo_param != NULL){//->properties != 0){
 
-			oo_param=_oo_param;//(DictionaryObject *)stk_oo_param->value;
+			oo_param=_oo_param;//(DictionaryScriptObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
@@ -63,7 +63,7 @@ namespace zetscript{
 
 						if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 							// inc number of ref as standard in pass object args
-							((Object *)stk->value)->shared_pointer->data.n_shares++;
+							((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
 						}
 
 						i++;
@@ -76,21 +76,21 @@ namespace zetscript{
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
 		String  name=StringUtils::format("__eval@_%i__",n_eval_function++);
-		sf_eval=new	Function(
+		sf_eval=new	ScriptFunction(
 				_zs
 				,ZS_FUNCTION_EVAL_IDX
-				,TYPE_ID_CLASS_MAIN
+				,SCRIPT_TYPE_ID_CLASS_MAIN
 				,-1
 				,name
 				,function_params_ptr
 				,function_params_len
-				,TYPE_ID_INVALID
+				,SCRIPT_TYPE_ID_INVALID
 				,0
 				,0
 		);
 
-		Scope *main_scope=((((_zs)->getScopeFactory())))->getMainScope();
-		sf_eval->scope=(((_zs)->getScopeFactory()))->newScope(sf_eval->id,main_scope,ZS_SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		ScriptScope *main_scope=((((_zs)->getScriptScopesFactory())))->getMainScope();
+		sf_eval->scope=(((_zs)->getScriptScopesFactory()))->newScope(sf_eval->id,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 
 		//--------------------------------------
 		// 2. register arg symbols
@@ -189,7 +189,7 @@ goto_eval_exit:
 
 		 sf_eval->scope->removeChildrenBlockTypes();
 		 sf_eval->scope->markAsUnusued();
-		 _zs->getScopeFactory()->clearUnusuedScopes();
+		 _zs->getScriptScopesFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;
 
@@ -212,12 +212,12 @@ goto_eval_exit:
 		data->vm_stk_current=stk_start_arg_call+n_ret_args;
 	}
 
-	void 	SystemModule_eval(ZetScript *_zs, StringObject *_so_str_eval){
+	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){
 		SystemModule_eval(_zs,_so_str_eval,NULL);
 	}
 
 	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
-		StringObject *str_out=StringObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		vm_set_error(zs->getVirtualMachine(),str_out->toString().toConstChar());
 		delete str_out;
 

@@ -21,7 +21,7 @@ var test_instanceof=[
 	,"new B() instanceof A"
 	,"new B() instanceof B"
 	,"new C() instanceof B"
-	,"{a:0,b:1} instanceof Object"
+	,"{a:0,b:1} instanceof ScriptObject"
 	
 ];
 

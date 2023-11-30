@@ -1,10 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringObject;
+using zetscript::StringScriptObject;
 
-StringObject *returnString(ZetScript *_zs){
-	StringObject *string_object = new StringObject(_zs);
+StringScriptObject *returnString(ZetScript *_zs){
+	StringScriptObject *string_object = new StringScriptObject(_zs);
 	string_object->set("Hello World!");
 	return string_object;
 }

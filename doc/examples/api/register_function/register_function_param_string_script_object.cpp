@@ -1,11 +1,11 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringObject;
+using zetscript::StringScriptObject;
 
 // c function
-void paramString(ZetScript *_zs, StringObject *_string){
-    printf("String : '%s' (StringObject *)\n",_string->get().toConstChar());
+void paramString(ZetScript *_zs, StringScriptObject *_string){
+    printf("String : '%s' (StringScriptObject *)\n",_string->get().toConstChar());
 }
 
 int main(){

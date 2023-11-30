@@ -15,7 +15,7 @@ namespace zetscript{
 
 	struct VM_Foreach{
 		StackElement 		   	*key; // iterator element can be String or integer...
-		DictionaryObject		*ptr; // can be struct or Vector...
+		DictionaryScriptObject		*ptr; // can be struct or Vector...
 		unsigned int 		   	idx_current;
 	};
 
@@ -66,14 +66,14 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		// script type factory should be created and initialized
-		data->script_function_factory=_zs->getFunctionFactory();
-		data->type_factory=_zs->getTypeFactory();
-		data->scope_factory = _zs->getScopeFactory();
+		data->script_function_factory=_zs->getScriptFunctionsFactory();
+		data->script_types_factory=_zs->getScriptTypesFactory();
+		data->scope_factory = _zs->getScriptScopesFactory();
 		data->main_function_object = ZS_MAIN_FUNCTION(data);
-		data->main_class_object = ZS_TYPE_MAIN(data->type_factory);
+		data->main_class_object = ZS_TYPE_MAIN(data->script_types_factory);
 	}
 
-	const Function * vm_get_current_native_function_call(
+	const ScriptFunction * vm_get_current_native_function_call(
 			VirtualMachine *_vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -131,7 +131,7 @@ namespace zetscript{
 			VirtualMachine *_vm
 			, const char *_file
 			, int _line
-			, Object *_object
+			, ScriptObject *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		InfoLifetimeObject *info = (InfoLifetimeObject *)ZS_MALLOC(sizeof(InfoLifetimeObject));
@@ -151,7 +151,7 @@ namespace zetscript{
 
 	int vm_find_lifetime_object(
 			VirtualMachine *_vm
-			,Object *_object
+			,ScriptObject *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		for(int i=0; i < data->lifetime_object.length(); i++){
@@ -166,7 +166,7 @@ namespace zetscript{
 
 	void vm_unref_lifetime_object(
 			VirtualMachine *_vm
-			,Object *_object
+			,ScriptObject *_object
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		int idx = ZS_UNDEFINED_IDX;
@@ -242,15 +242,15 @@ namespace zetscript{
 
 	StackElement vm_execute(
 		VirtualMachine 		*	_vm
-		 ,Object 		*	_this_object
-		 ,Function 	*	_script_function
+		 ,ScriptObject 		*	_this_object
+		 ,ScriptFunction 	*	_script_function
 		 ,StackElement 		*  	_stk_params
 		 ,unsigned	char  		_n_stk_params
 		 ,unsigned short		_properties
 		 ,const char 		*	_file
 		 ,int 					_line
 	){
-		Object *deref_native_args[ZS_MAX_NATIVE_FUNCTION_ARGS];
+		ScriptObject *deref_native_args[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		int n_deref_native_args=0;
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		int n_stk_params=_n_stk_params;
@@ -307,7 +307,7 @@ namespace zetscript{
 			StackElement *stk_it=stk_start;
 			for(int i = 0; i < n_stk_params; i++){
 				if(_stk_params[i].properties & STACK_ELEMENT_PROPERTY_OBJECT){
-					Object *so=(Object *)_stk_params[i].value;
+					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
 						vm_create_shared_object(_vm,so);
@@ -373,7 +373,7 @@ namespace zetscript{
 						_vm
 						,_file
 						,_line
-						,(DictionaryObject *)stk_return.value
+						,(DictionaryScriptObject *)stk_return.value
 					);
 				}
 
@@ -384,7 +384,7 @@ namespace zetscript{
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					/*StackElement stk_ret=ptr_stk_return[i];
 					if(stk_ret.properties & STACK_ELEMENT_PROPERTY_OBJECT){
-						delete (Object *)stk_ret.value;
+						delete (ScriptObject *)stk_ret.value;
 					}*/
 					// deinit vm variable...
 					ptr_stk_return[i].setUndefined();
@@ -433,7 +433,7 @@ namespace zetscript{
 
 			if(some_registers_without_file_line==true){
 				error+="\n\nSome lifetimes objects were returned/created from unknown file/line. Tip: Pass pass the file and line to all 'eval' function that it's calling from c++ in order to give you a clue where the 'lifetime object' was returned/created. For example,\n\n\n"
-						"\tStackElement var_from_script=zs->eval(\"return new Object()\",__FILE__,__LINE__)\n";
+						"\tStackElement var_from_script=zs->eval(\"return new ScriptObject()\",__FILE__,__LINE__)\n";
 			}
 
 			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";
@@ -451,25 +451,25 @@ namespace zetscript{
 	void vm_log_container_slot(
 		VirtualMachine* _vm
 		, ContainerSlot* _container_slot
-		, ContainerObject* _src_container_ref
+		, ContainerScriptObject* _src_container_ref
 	) {
 
 		VirtualMachineData* data = (VirtualMachineData*)_vm->data;
 
 		StackElement* stk_obj = NULL;
-		ContainerObject* dst_container_ref = _container_slot->getDstContainerRef();
+		ContainerScriptObject* dst_container_ref = _container_slot->getDstContainerRef();
 		zs_int dst_container_slot_id = _container_slot->getIdSlot();
 
 		// More tests would be needed see issue #336
-		if (dst_container_ref->type_id == TYPE_ID_OBJECT_ARRAY) {
-			stk_obj = ((ArrayObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
+		if (dst_container_ref->script_type_id == SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT) {
+			stk_obj = ((ArrayScriptObject*)dst_container_ref)->getStackElementByIndex((int)dst_container_slot_id);
 
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getType()->name.toConstChar()
+				, _src_container_ref->getScriptType()->name.toConstChar()
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
-				, dst_container_ref->getType()->name.toConstChar()
+				, dst_container_ref->getScriptType()->name.toConstChar()
 				, data->zs->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
@@ -480,10 +480,10 @@ namespace zetscript{
 			stk_obj = dst_container_ref->getStackElementByKeyName((const char*)dst_container_slot_id);
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 				, (void*)_src_container_ref
-				, _src_container_ref->getType()->name.toConstChar()
+				, _src_container_ref->getScriptType()->name.toConstChar()
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
-				, dst_container_ref->getType()->name.toConstChar()
+				, dst_container_ref->getScriptType()->name.toConstChar()
 				, data->zs->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
@@ -495,7 +495,7 @@ namespace zetscript{
 	void vm_assign_container_slot(
 			VirtualMachine *_vm
 			, ContainerSlot *_container_slot
-			, ContainerObject *_src_container_ref
+			, ContainerScriptObject *_src_container_ref
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
@@ -517,12 +517,12 @@ namespace zetscript{
 
 	}
 
-	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerObject *_csso){
+	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerScriptObject *_csso){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		data->cyclic_container_instances.erase((zs_int)_csso);
 	}
 
-	void vm_count_cyclic_references(ContainerObject *_current,ContainerObject *_container_to_check, Vector<ListNode<ContainerSlot *> *> *_slots){
+	void vm_count_cyclic_references(ContainerScriptObject *_current,ContainerScriptObject *_container_to_check, Vector<ListNode<ContainerSlot *> *> *_slots){
 		ListNode<ContainerSlot *> *first_node=NULL,* current_node=NULL;
 
 		current_node=first_node=_current->getListContainerSlotsRef()->first;
@@ -549,7 +549,7 @@ namespace zetscript{
 
 		for(size_t it=0; it < data->cyclic_container_instances.count();){
 			// count reference number
-			ContainerObject *cso=(ContainerObject *)(data->cyclic_container_instances.getValueByIdx(it));
+			ContainerScriptObject *cso=(ContainerScriptObject *)(data->cyclic_container_instances.getValueByIdx(it));
 			bool cyclic_container_instances_element=false;
 
 			vm_count_cyclic_references(cso,cso,&slots);

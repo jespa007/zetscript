@@ -9,12 +9,12 @@ void test_call_script_function(){
 	zetscript::ZetScript zs;
 
 	zs.eval(
-		// Function 'say_hello'
+		// ScriptFunction 'say_hello'
 		"function say_hello(){\n"
 		"	Console::outln(\"hello from 'say_hello'!\")\n"
 		"}\n"
 		"\n"
-		// Type 'Test' declaration
+		// ScriptType 'Test' declaration
 		"class Test{\n"
 		// Member function 'say_hello'
 		"	say_hello(arg){\n"

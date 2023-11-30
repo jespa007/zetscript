@@ -26,7 +26,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *_str_expression
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char
 			, uint16_t _properties
@@ -244,7 +244,7 @@ eval_error_sub_expression:
 			EvalData *eval_data
 			,const char *_str_expression
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> 	* dst_instructions
 			, const char *expected_ending_char
 			, uint16_t _properties
@@ -332,13 +332,13 @@ eval_error_sub_expression:
 				only_load_left_expression&=eval_check_all_instruction_only_load_op((Vector<EvalInstruction *> *)zs_ei_left_sub_expressions.get(0));
 
 				if(aux_p != NULL && *aux_p != 0 && *aux_p=='=' && (only_load_left_expression==true)){ // assignment op, start left assigments
-					if(zs_ei_left_sub_expressions.length() >= FUNCTION_RETURN_COUNT_MAX){
+					if(zs_ei_left_sub_expressions.length() >= ZS_SCRIPT_FUNCTION_RETURN_COUNT_MAX){
 						EVAL_ERROR_FILE_LINE_GOTO(
 							eval_data->current_parsing_file
 							,line
 							,eval_error_expression_delete_left_right_sub_expressions
 							,"Reached max assigment count (max: %i)"
-							,FUNCTION_RETURN_COUNT_MAX
+							,ZS_SCRIPT_FUNCTION_RETURN_COUNT_MAX
 						);
 					}
 					idx++; //--> start next

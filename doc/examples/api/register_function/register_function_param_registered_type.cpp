@@ -43,7 +43,7 @@ int main(){
 	ZetScript zs;
 
 	// Register class Number
-	zs.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
+	zs.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register property setter Number::x
 	zs.registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_set_value);

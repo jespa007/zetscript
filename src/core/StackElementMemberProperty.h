@@ -8,14 +8,14 @@
 namespace zetscript{
 
 	class MemberProperty;
-	class Object;
+	class ScriptObject;
 	struct StackElementMemberProperty{
 	public:
 		MemberProperty 		*member_property;
-		Object		*so_object;
+		ScriptObject		*so_object;
 
 		StackElementMemberProperty(
-				Object		*_so_object
+				ScriptObject		*_so_object
 				,MemberProperty 	*_member_property){
 			so_object = _so_object;
 			member_property= _member_property;

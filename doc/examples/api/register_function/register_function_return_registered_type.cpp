@@ -35,7 +35,7 @@ int main(){
 	_number->value=10;
 
 	// Registers class Number as non instantiable type
-	zs.registerType<Number>("Number");
+	zs.registerScriptType<Number>("Number");
 
 	// registers property getter Number::value
 	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);

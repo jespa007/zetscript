@@ -18,16 +18,16 @@ namespace zetscript{
 		script_filenames_by_ref=NULL;
 
 		eval_init();
-		scope_factory = new ScopeFactory(this);
+		scope_factory = new ScriptScopesFactory(this);
 		scope_factory->init();
-		script_function_factory= new FunctionFactory(this);
+		script_function_factory= new ScriptFunctionsFactory(this);
 
 		virtual_machine = vm_new(this);
-		type_factory = new TypesFactory(this);
-		type_factory->init();
+		script_types_factory = new ScriptTypesFactory(this);
+		script_types_factory->init();
 		vm_init(virtual_machine,this);
 
-		type_factory->setup();
+		script_types_factory->setup();
 
 		script_filenames_by_ref=new MapString();
 		stk_constants=new MapString();
@@ -36,7 +36,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// Math mod
-		Type *cl=type_factory->registerType("Math","",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);
+		ScriptType *cl=script_types_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
 		cl->registerConstMemberProperty("PI",MathModule_PI);
 		cl->registerStaticMemberFunction("sin",MathModule_sin);
@@ -53,7 +53,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("round",MathModule_round);
 
 		// Console mod
-		cl=type_factory->registerType("Console","",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_types_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("readChar",ConsoleModule_readChar);
 		cl->registerStaticMemberFunction("outNative",ConsoleModule_out);
 		cl->registerStaticMemberFunction("outlnNative",ConsoleModule_outln);
@@ -61,21 +61,21 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
-		cl=type_factory->registerType("System","",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_types_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringObject *)>(SystemModule_eval));
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringObject *,DictionaryObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,DictionaryScriptObject *)>(SystemModule_eval));
 		//cl->registerStaticMemberFunction("assertNative",SystemModule_assert);
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
-		cl=type_factory->registerType("Json","",ZS_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl=script_types_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan
-		cl=registerType<TimeSpan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
+		cl=registerScriptType<TimeSpan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
 		registerMemberPropertyMetamethod<TimeSpan>("days","_get",TimeSpanModule_get_days);
 		registerMemberPropertyMetamethod<TimeSpan>("hour","_get",TimeSpanModule_get_hours);
 		registerMemberPropertyMetamethod<TimeSpan>("minute","_get",TimeSpanModule_get_minutes);
@@ -83,7 +83,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// DateTime
-		cl=registerType<DateTime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
+		cl=registerScriptType<DateTime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 		registerConstructor<DateTime>(DateTimeModule_constructor);
 		/*registerStaticMemberFunction<DateTime>("_add",DateTimeModule_add);*/
 		registerStaticMemberFunction<DateTime>("_sub",DateTimeModule_sub);
@@ -191,17 +191,17 @@ namespace zetscript{
 				"bool:%i\n"
 				"ZetScript:%i\n"
 				"VirtualMachineData:%i\n"
-				"Type:%i\n"
-				"Function:%i\n"
+				"ScriptType:%i\n"
+				"ScriptFunction:%i\n"
 				"Instruction:%i\n"
 				"StackElement:%i\n"
 				"Symbol:%i\n"
-				"Scope:%i\n"
-				"Object:%i\n"
-				"StringObject:%i\n"
-				"ArrayObject:%i\n"
-				"DictionaryObject:%i\n"
-				"ClassObject:%i\n"
+				"ScriptScope:%i\n"
+				"ScriptObject:%i\n"
+				"StringScriptObject:%i\n"
+				"ArrayScriptObject:%i\n"
+				"DictionaryScriptObject:%i\n"
+				"ClassScriptObject:%i\n"
 				"ContainerSlot:%i\n"
 				,(int)sizeof(zs_char)
 				,(int)sizeof(zs_int)
@@ -213,32 +213,32 @@ namespace zetscript{
 				,(int)sizeof(bool)
 				,(int)sizeof(ZetScript)
 				, (int)sizeof(VirtualMachineData)
-				, (int)sizeof(Type)
-				, (int)sizeof(Function)
+				, (int)sizeof(ScriptType)
+				, (int)sizeof(ScriptFunction)
 				, (int)sizeof(Instruction)
 				, (int)sizeof(StackElement)
 				, (int)sizeof(Symbol)
-				, (int)sizeof(Scope)
-				, (int)sizeof(Object)
-				, (int)sizeof(StringObject)
-				, (int)sizeof(ArrayObject)
-				, (int)sizeof(DictionaryObject)
-				, (int)sizeof(ClassObject)
+				, (int)sizeof(ScriptScope)
+				, (int)sizeof(ScriptObject)
+				, (int)sizeof(StringScriptObject)
+				, (int)sizeof(ArrayScriptObject)
+				, (int)sizeof(DictionaryScriptObject)
+				, (int)sizeof(ClassScriptObject)
 				, (int)sizeof(ContainerSlot)
 			);
 	}
 
 	void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 Vector<Type *> *script_classes=type_factory->getTypes();
+		 Vector<ScriptType *> *script_classes=script_types_factory->getScriptTypes();
 		 // for all classes print code...
-		 Function *sf_main=ZS_MAIN_FUNCTION(this);
+		 ScriptFunction *sf_main=ZS_MAIN_FUNCTION(this);
 
 		 // list functions
 		 Vector<Symbol *> *symbol_functions=sf_main->scope->symbol_functions;
 
 		 // print main function
-		 Function::printGeneratedCode(sf_main);
+		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
 		 for(int j =0; j < symbol_functions->length(); j++){
@@ -246,7 +246,7 @@ namespace zetscript{
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
-				Function *local_sf = (Function *)symbol->ref_ptr;
+				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
 						 StringUtils::startsWith(local_sf->name,"@_afun_defval")
@@ -255,15 +255,15 @@ namespace zetscript{
 				 }
 
 				if((show_function == true)
-				 &&	(( local_sf->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != FUNCTION_PROPERTY_NATIVE_OBJECT_REF)
+				 &&	(( local_sf->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)
 				){
-					Function::printGeneratedCode(local_sf);
+					ScriptFunction::printGeneratedCode(local_sf);
 				}
 			}
 		}
 
 		 for(int i = 1; i < script_classes->length(); i++){
-			 Type *sc=(Type *)script_classes->get(i);
+			 ScriptType *sc=(ScriptType *)script_classes->get(i);
 			 bool show_class=true;
 
 			 // ignore builtin implementations if not chosen ...
@@ -271,7 +271,7 @@ namespace zetscript{
 					   sc->name == "System"
 					|| sc->name == "String"
 					|| sc->name == "IteratorString"
-					|| sc->name == "Object"
+					|| sc->name == "ScriptObject"
 					|| sc->name == "IteratorObject"
 					|| sc->name == "Console"
 					|| sc->name == "DateTime"
@@ -289,7 +289,7 @@ namespace zetscript{
 					 Symbol *symbol=(Symbol *)symbol_functions->get(f);
 
 					 if(show_function){
-						 Function::printGeneratedCode((Function *)symbol->ref_ptr,sc);
+						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
 					 }
 
 				 }
@@ -305,39 +305,39 @@ namespace zetscript{
 		StackElement *stk=_stk;
 		String result="unknow";
 		if(STACK_ELEMENT_IS_UNDEFINED(stk))
-			result=ZS_TYPE_NAME_UNDEFINED; //"undefined";
+			result=ZS_SCRIPT_TYPE_NAME_UNDEFINED; //"undefined";
 		else if(STACK_ELEMENT_IS_NULL(stk))
-			result=ZS_TYPE_NAME_NULL; //"null";
+			result=ZS_SCRIPT_TYPE_NAME_NULL; //"null";
 		else if(STACK_ELEMENT_IS_INT(stk))
-			result=ZS_TYPE_NAME_INT;
+			result=ZS_SCRIPT_TYPE_NAME_INT;
 		else if(STACK_ELEMENT_IS_FLOAT(stk))
-			result=ZS_TYPE_NAME_FLOAT;
+			result=ZS_SCRIPT_TYPE_NAME_FLOAT;
 		else if(STACK_ELEMENT_IS_BOOLEAN(stk))
-			result=ZS_TYPE_NAME_BOOL;
+			result=ZS_SCRIPT_TYPE_NAME_BOOL;
 		else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk))
-			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getTypeName();
-		else if(STACK_ELEMENT_IS_STRING_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_STRING;
-		else if(STACK_ELEMENT_IS_ARRAY_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_ARRAY;
-		else if(STACK_ELEMENT_IS_DICTIONARY_OBJECT(stk))
-			result=ZS_TYPE_NAME_DICTIONARY_OBJECT;
+			result=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptTypeName();
+		else if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_STRING;
+		else if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ARRAY;
+		else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ASSIGNRING_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_ITERATOR_STRING;
-		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_ITERATOR_ARRAY;
-		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_OBJECT(stk))
-			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_STRING;
+		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_FUNCTION(stk))
-			result=String("fun@")+((Function *)(((Symbol *)stk->value)->ref_ptr))->name;
+			result=String("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name;
 		else if(STACK_ELEMENT_IS_TYPE(stk)) // is a type
-			result=String("type@")+this->getTypeFactory()->getTypeName((TypeId)stk->value);
+			result=String("type@")+this->getScriptTypesFactory()->getScriptTypeName((ScriptTypeId)stk->value);
 		else if(STACK_ELEMENT_IS_MEMBER_PROPERTY(stk)){
 			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk->value;
 			result="prop@"+String(ma->member_property->type->name)+"::"+String(ma->member_property->property_name);
 		}else if(STACK_ELEMENT_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
-			Function *sf=(Function *)symbol->ref_ptr;
+			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			result="fun@"+String(sf->scope->owner_type->name)+"::"+sf->name;
 		}else{
 			if(stk->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -345,7 +345,7 @@ namespace zetscript{
 			}
 
 			if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-				result=((Object *)stk->value)->getTypeName();
+				result=((ScriptObject *)stk->value)->getScriptTypeName();
 			}
 		}
 
@@ -383,9 +383,9 @@ namespace zetscript{
 		StackElement stk=unwrapStackElement(*_stk);
 
 		if(STACK_ELEMENT_IS_UNDEFINED(&stk)){
-			result=ZS_TYPE_NAME_UNDEFINED;
+			result=ZS_SCRIPT_TYPE_NAME_UNDEFINED;
 		}else if(STACK_ELEMENT_IS_NULL(&stk)){
-			result=ZS_TYPE_NAME_NULL;
+			result=ZS_SCRIPT_TYPE_NAME_NULL;
 		}else if(stk.properties & STACK_ELEMENT_PROPERTY_CHAR_PTR){
 			result= (const char *)stk.value;
 		}else if(STACK_ELEMENT_IS_INT(&stk)){
@@ -399,8 +399,8 @@ namespace zetscript{
 			result="prop@"+String(ma->member_property->type->name)+"::"+String(ma->member_property->property_name);
 		}else if(STACK_ELEMENT_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
-			Type *owner_type=symbol->scope->getOwnerType();
-			if( owner_type->id == TYPE_ID_CLASS_MAIN ){
+			ScriptType *owner_type=symbol->scope->getOwnerType();
+			if( owner_type->id == SCRIPT_TYPE_ID_CLASS_MAIN ){
 				result= String("fun@")+symbol->name;
 			}else{
 				String s="";
@@ -413,13 +413,13 @@ namespace zetscript{
 				result=s+owner_type->name+"::"+symbol->name;
 			}
 		}else if(STACK_ELEMENT_IS_TYPE(&stk)){
-			result= String("type")+"@"+this->getTypeFactory()->getTypeName((TypeId)stk.value);
+			result= String("type")+"@"+this->getScriptTypesFactory()->getScriptTypeName((ScriptTypeId)stk.value);
 		}else{
 			if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
-				Object *so=(Object *)stk.value;
-				if(so->type_id==TYPE_ID_OBJECT_FUNCTION_MEMBER){
+				ScriptObject *so=(ScriptObject *)stk.value;
+				if(so->script_type_id==SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT){
 					MemberFunctionObject *somf=(MemberFunctionObject *)so;
-					Type *st=somf->getRefObject()->getType();
+					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= String("member_function<")+st->name+"::"+somf->sf_ref->name+">";
 				}else{
 					result=so->toString();
@@ -437,9 +437,9 @@ namespace zetscript{
 
 		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 		if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
-			Object *so=(Object *)stk.value;
-			if(so->type_id!=TYPE_ID_OBJECT_FUNCTION_MEMBER){
-				result="Object::"+String(so->getTypeName());
+			ScriptObject *so=(ScriptObject *)stk.value;
+			if(so->script_type_id!=SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT){
+				result="ScriptObject::"+String(so->getScriptTypeName());
 			}
 		}
 
@@ -465,12 +465,12 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(_stk_dst->properties&STACK_ELEMENT_PROPERTY_OBJECT){
-			Object *so=(Object *)_stk_dst->value;
+			ScriptObject *so=(ScriptObject *)_stk_dst->value;
 			VirtualMachine *vm=this->getVirtualMachine();
 
 			// create new if constant
-			if(so->type_id == TYPE_ID_OBJECT_STRING && (so->properties & OBJECT_PROPERTY_CONSTANT)){
-				StringObject *sc=ZS_NEW_STRING_OBJECT(this);
+			if(so->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so->properties & OBJECT_PROPERTY_CONSTANT)){
+				StringScriptObject *sc=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 				vm_create_shared_object(
 						vm
 						,sc
@@ -489,7 +489,7 @@ namespace zetscript{
 
 	bool ZetScript::canStackElementCastTo(
 		StackElement * _stack_element
-		, TypeId _type_id_to_convert
+		, ScriptTypeId _script_type_id_to_convert
 		, bool _strict
 	){
 		zs_int val_ret=0;
@@ -499,7 +499,7 @@ namespace zetscript{
 			_stack_element=((StackElement *)_stack_element->value);
 		}
 
-		if(_type_id_to_convert == TYPE_ID_STACK_ELEMENT){
+		if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STACK_ELEMENT){
 			return true;
 		}
 
@@ -508,9 +508,9 @@ namespace zetscript{
 			return true;
 			break;
 		case STACK_ELEMENT_PROPERTY_BOOL:
-			switch(_type_id_to_convert){
-			case TYPE_ID_BOOL_C:
-			case TYPE_ID_BOOL_PTR_C:
+			switch(_script_type_id_to_convert){
+			case SCRIPT_TYPE_ID_BOOL_C:
+			case SCRIPT_TYPE_ID_BOOL_PTR_C:
 				return true;
 				break;
 			default:
@@ -518,11 +518,11 @@ namespace zetscript{
 			}
 			break;
 		case STACK_ELEMENT_PROPERTY_FLOAT:
-			switch(_type_id_to_convert){
-			case TYPE_ID_FLOAT_C:
-			case TYPE_ID_FLOAT_PTR_C:
+			switch(_script_type_id_to_convert){
+			case SCRIPT_TYPE_ID_FLOAT_C:
+			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				return true;
-			case TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT_C:
 				return _strict == false;
 				break;
 			default:
@@ -531,12 +531,12 @@ namespace zetscript{
 			}
 			break;
 		case STACK_ELEMENT_PROPERTY_INT:
-			switch(_type_id_to_convert){
-			case TYPE_ID_INT_C:
-			case TYPE_ID_INT_PTR_C:
+			switch(_script_type_id_to_convert){
+			case SCRIPT_TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT_PTR_C:
 				return true;
-			case TYPE_ID_FLOAT_C:
-			case TYPE_ID_FLOAT_PTR_C:
+			case SCRIPT_TYPE_ID_FLOAT_C:
+			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				return _strict == false;
 				break;
 			default:
@@ -544,49 +544,49 @@ namespace zetscript{
 
 			}
 			break;
-		// it expects the Function directly
+		// it expects the ScriptFunction directly
 		case STACK_ELEMENT_PROPERTY_FUNCTION:
 			return true;
 			break;
 		default:
 			// script variable by default ...
 			if(_stack_element->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
-				Object *object=NULL;
+				ScriptObject *object=NULL;
 				if(_stack_element->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
 				}else{
-					object=(Object *)_stack_element->value;
+					object=(ScriptObject *)_stack_element->value;
 				}
 
-				if(_type_id_to_convert==object->type_id){
+				if(_script_type_id_to_convert==object->script_type_id){
 					return true;
 				}
 
-				if(object->type_id == TYPE_ID_OBJECT_STRING){ // string
+				if(object->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){ // string
 
-					switch(_type_id_to_convert){
-					case TYPE_ID_STRING_PTR_C:
-					case TYPE_ID_STRING_C:
-					case TYPE_ID_CONST_CHAR_PTR_C:
+					switch(_script_type_id_to_convert){
+					case SCRIPT_TYPE_ID_STRING_PTR_C:
+					case SCRIPT_TYPE_ID_STRING_C:
+					case SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
 						return true;
 					default:
 						break;
 					}
 
-				}else if(object->type_id >= TYPE_ID_OBJECT_CLASS){
-					ClassObject *object_class = NULL;
-					Type *c_class=NULL;
+				}else if(object->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT){
+					ClassScriptObject *object_class = NULL;
+					ScriptType *c_class=NULL;
 					// trivial case
 					if(
-						_type_id_to_convert != TYPE_ID_OBJECT_CLASS
+						_script_type_id_to_convert != SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT
 					){
-						object_class = (ClassObject *)object;
+						object_class = (ClassScriptObject *)object;
 						c_class=object_class->getNativeScriptClass(); // get the pointer directly ...
 					}
 
 					if(c_class != NULL){
 						if((val_ret=c_class->extendsFrom(
-								_type_id_to_convert
+								_script_type_id_to_convert
 							))==true
 						){
 							return true;
@@ -603,17 +603,17 @@ namespace zetscript{
 		return false;
 	}
 
-	bool ZetScript::stackElementTo(StackElement * _stack_element, TypeId _type_id_to_convert, zs_int *_ptr_var, String  & _error){
+	bool ZetScript::stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id_to_convert, zs_int *_ptr_var, String  & _error){
 		zs_int val_ret=0;
 
-		Object *object=NULL;
+		ScriptObject *object=NULL;
 
 		// save return type ...
 		if(_stack_element->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 			_stack_element=((StackElement *)_stack_element->value);
 		}
 
-		if(_type_id_to_convert == TYPE_ID_STACK_ELEMENT){
+		if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STACK_ELEMENT){
 			*_ptr_var=(zs_int)_stack_element;
 			return true;
 		}
@@ -622,29 +622,29 @@ namespace zetscript{
 		case STACK_ELEMENT_PROPERTY_NULL:
 			break;
 		case STACK_ELEMENT_PROPERTY_BOOL:
-			if(_type_id_to_convert == TYPE_ID_BOOL_C){// *Type::k_str_bool_type){
+			if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_C){// *ScriptType::k_str_bool_type){
 				val_ret=(zs_int)(_stack_element->value);
-			}else if(_type_id_to_convert == TYPE_ID_BOOL_PTR_C){//*Type::k_str_bool_type_ptr){
+			}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
 				val_ret=(zs_int)(&_stack_element->value);
 			}else{
 				_error="cannot convert '"
 					+Rtti::demangle(k_str_bool_type_ptr)
 					+"' to '"
-					+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
+					+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert)).toConstChar()
 					+"'";
 				return false;
 			}
 
 			break;
 		case STACK_ELEMENT_PROPERTY_FLOAT:
-			switch(_type_id_to_convert){
-			case TYPE_ID_FLOAT_C:
+			switch(_script_type_id_to_convert){
+			case SCRIPT_TYPE_ID_FLOAT_C:
 				ZS_FLOAT_COPY(&val_ret,&_stack_element->value);
 				break;
-			case TYPE_ID_FLOAT_PTR_C:
+			case SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
-			case TYPE_ID_INT_C:
+			case SCRIPT_TYPE_ID_INT_C:
 				{
 					zs_int *aux_dst = ((zs_int *)&val_ret);
 					zs_float *aux_src=(zs_float *)&_stack_element->value;
@@ -655,27 +655,27 @@ namespace zetscript{
 				_error="cannot convert '"
 					+Rtti::demangle(k_str_float_type_ptr)
 					+"' to '"
-					+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+					+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert))
 					+"'";
 				return false;
 			}
 			break;
 		case STACK_ELEMENT_PROPERTY_INT:
-			switch(_type_id_to_convert){
-			case TYPE_ID_INT_C:
+			switch(_script_type_id_to_convert){
+			case SCRIPT_TYPE_ID_INT_C:
 				val_ret=(zs_int)(_stack_element->value);
 				break;
-			case TYPE_ID_INT_PTR_C:
+			case SCRIPT_TYPE_ID_INT_PTR_C:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
 			default:
 				_error="cannot convert 'int' to '"
-				+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+				+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert))
 				+"'";
 				return false;
 			}
 			break;
-		// it expects the Function directly
+		// it expects the ScriptFunction directly
 		case STACK_ELEMENT_PROPERTY_FUNCTION:
 			val_ret=((Symbol *)_stack_element->value)->ref_ptr;
 			break;
@@ -686,10 +686,10 @@ namespace zetscript{
 				if(_stack_element->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
 				}else{
-					object=(Object *)_stack_element->value;
+					object=(ScriptObject *)_stack_element->value;
 				}
 
-				Type *c_class=NULL;
+				ScriptType *c_class=NULL;
 				val_ret=(zs_int)object;
 
 				if(object==NULL){
@@ -697,45 +697,45 @@ namespace zetscript{
 					return false;
 				}
 
-				if(_type_id_to_convert==object->type_id){
+				if(_script_type_id_to_convert==object->script_type_id){
 					val_ret=(zs_int)object->getNativeObject();
 				}else{
 
-					if(object->type_id == TYPE_ID_OBJECT_STRING){ // string
-						if(_type_id_to_convert == TYPE_ID_STRING_PTR_C){
-							val_ret=(zs_int)(((StringObject *)object)->str_ptr);
-						}else if(_type_id_to_convert == TYPE_ID_STRING_C){
-							*((String *)_ptr_var)=*(((StringObject *)object)->str_ptr);
+					if(object->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){ // string
+						if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING_PTR_C){
+							val_ret=(zs_int)(((StringScriptObject *)object)->str_ptr);
+						}else if(_script_type_id_to_convert == SCRIPT_TYPE_ID_STRING_C){
+							*((String *)_ptr_var)=*(((StringScriptObject *)object)->str_ptr);
 							return true;
-						}else if (_type_id_to_convert == TYPE_ID_CONST_CHAR_PTR_C){
-							val_ret=(zs_int)(((StringObject *)object)->getConstChar());
+						}else if (_script_type_id_to_convert == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C){
+							val_ret=(zs_int)(((StringScriptObject *)object)->getConstChar());
 						}else{
 							_error="cannot convert '"
 									+Rtti::demangle((k_str_string_type_ptr))
 									+"' to '"
-									+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+									+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert))
 									+"'";
 							return false;
 						}
-					}else if(object->type_id >= TYPE_ID_OBJECT_CLASS){
-						ClassObject *object_class = NULL;
+					}else if(object->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT){
+						ClassScriptObject *object_class = NULL;
 						// trivial case
 						if(
-							_type_id_to_convert != TYPE_ID_OBJECT_CLASS
+							_script_type_id_to_convert != SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT
 						){
-							object_class = (ClassObject *)object;
+							object_class = (ClassScriptObject *)object;
 							c_class=object_class->getNativeScriptClass(); // get the pointer directly ...
 						}
 
 						if(c_class != NULL){
 							if((val_ret=c_class->extendsFrom(
-									_type_id_to_convert
+									_script_type_id_to_convert
 								))==0
 							){//c_class->id==idx_builtin_type){
 								_error="cannot convert '"
 										+Rtti::demangle(c_class->native_name.toConstChar())
 										+"' to '"
-										+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+										+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert))
 										+"'";
 								return false;
 							}
@@ -743,22 +743,22 @@ namespace zetscript{
 						}else{ // Is script class, set directly
 							val_ret=_stack_element->value;
 							/*error = " Error calling function, no C-object parameter! Unexpected script variable (";
-							error.append(Rtti::demangle(object->getTypeName().toConstChar()));
+							error.append(Rtti::demangle(object->getScriptTypeName().toConstChar()));
 							error.append(")");
 							return false;*/
 						}
 					}else{ // cannot convert...
 						_error="cannot convert '"
-							+Rtti::demangle(object->getTypeName())
+							+Rtti::demangle(object->getScriptTypeName())
 							+"' to '"
-							+Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert))
+							+Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert))
 							+"'";
 						return false;
 					}
 				}
 			}else{
 				_error=StringUtils::format("Cannot know how to convert type '%s' from '%s'"
-					,Rtti::demangle(ZS_TYPE_ID_TO_NATIVE_NAME(this->getTypeFactory(),_type_id_to_convert)).toConstChar()
+					,Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert)).toConstChar()
 					,this->stackElementToStringTypeOf(_stack_element).toConstChar()
 				);
 				return false;
@@ -767,7 +767,7 @@ namespace zetscript{
 		}
 
 		// prevent to
-		if(_type_id_to_convert == TYPE_ID_BOOL_C){
+		if(_script_type_id_to_convert == SCRIPT_TYPE_ID_BOOL_C){
 			*((bool *)_ptr_var) = val_ret;
 		}else{
 			*_ptr_var = val_ret;
@@ -778,50 +778,50 @@ namespace zetscript{
 	}
 
 	// Helpers...
-	 StackElement ZetScript::toStackElement(zs_int ptr_var, TypeId _var_type_id){
+	 StackElement ZetScript::toStackElement(zs_int ptr_var, ScriptTypeId _var_script_type_id){
 		//zs_int ptr_var = (zs_int)input_var;
 			StackElement stk_result=k_stk_undefined;
-			StringObject *so=NULL;
+			StringScriptObject *so=NULL;
 
-			//int idx_builtin_type=getTypeIdFromTypeNamePtr(typeid(T).name());
+			//int idx_builtin_type=getScriptTypeIdFromNamePtr(typeid(T).name());
 			// save return type ...
-			switch(_var_type_id){
-			 case TYPE_ID_VOID_C:
+			switch(_var_script_type_id){
+			 case SCRIPT_TYPE_ID_VOID_C:
 				break;
-			 case TYPE_ID_INT_PTR_C:
+			 case SCRIPT_TYPE_ID_INT_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((zs_int *)ptr_var)),STACK_ELEMENT_PROPERTY_INT};
 				 break;
-			 case TYPE_ID_INT_C:
+			 case SCRIPT_TYPE_ID_INT_C:
 				 stk_result={(((zs_int)ptr_var)),STACK_ELEMENT_PROPERTY_INT};
 				 break;
-			 case TYPE_ID_FLOAT_C:
+			 case SCRIPT_TYPE_ID_FLOAT_C:
 				 stk_result.properties=STACK_ELEMENT_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
 				 break;
-			 case TYPE_ID_FLOAT_PTR_C:
+			 case SCRIPT_TYPE_ID_FLOAT_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result.properties=STACK_ELEMENT_PROPERTY_FLOAT;//{};
 				 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
 				 break;
-			 case TYPE_ID_BOOL_PTR_C:
+			 case SCRIPT_TYPE_ID_BOOL_PTR_C:
 				 if(ptr_var==0) return stk_result;
 				 stk_result={(*((bool *)ptr_var)),STACK_ELEMENT_PROPERTY_BOOL};
 				 break;
-			 case TYPE_ID_BOOL_C:
+			 case SCRIPT_TYPE_ID_BOOL_C:
 				 stk_result={(((bool)ptr_var)),STACK_ELEMENT_PROPERTY_BOOL};
 				 break;
-			 case TYPE_ID_CONST_CHAR_PTR_C:
-			 case TYPE_ID_STRING_PTR_C:
-			 case TYPE_ID_STRING_C:
+			 case SCRIPT_TYPE_ID_CONST_CHAR_PTR_C:
+			 case SCRIPT_TYPE_ID_STRING_PTR_C:
+			 case SCRIPT_TYPE_ID_STRING_C:
 
 
-				 so=ZS_NEW_STRING_OBJECT(this);
+				 so=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 				 if(ptr_var!=0) { // not null
-					 if(_var_type_id == TYPE_ID_STRING_PTR_C){
+					 if(_var_script_type_id == SCRIPT_TYPE_ID_STRING_PTR_C){
 						// assing String reference
 						so->str_ptr=(String *)ptr_var;
-					 }else if(_var_type_id == TYPE_ID_STRING_C){ // String passed as pointer
+					 }else if(_var_script_type_id == SCRIPT_TYPE_ID_STRING_C){ // String passed as pointer
 						 so->set(*((String *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
@@ -830,17 +830,17 @@ namespace zetscript{
 
 				 stk_result={(intptr_t)so,STACK_ELEMENT_PROPERTY_OBJECT};
 				 break;
-			 case TYPE_ID_STACK_ELEMENT:
+			 case SCRIPT_TYPE_ID_STACK_ELEMENT:
 				 if(ptr_var==0) return stk_result;
 				 stk_result=*((StackElement *)ptr_var);
 				 break;
-			 case TYPE_ID_OBJECT_ARRAY:
-			 case TYPE_ID_OBJECT_ITERATOR_ARRAY:
-			 case TYPE_ID_DICTIONARY_OBJECT:
-			 case TYPE_ID_OBJECT_CLASS:
-			 case TYPE_ID_OBJECT_ITERATOR_OBJECT:
-			 case TYPE_ID_OBJECT_STRING:
-			 case TYPE_ID_OBJECT_ITERATOR_STRING:
+			 case SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_OBJECT_ITERATOR_STRING:
 				 if(ptr_var==0) return stk_result;
 				stk_result = {
 					 (intptr_t)ptr_var
@@ -854,7 +854,7 @@ namespace zetscript{
 					 stk_result={0,STACK_ELEMENT_PROPERTY_NULL};
 				 }else{
 					 stk_result = {
-						 (intptr_t)this->getTypeFactory()->instanceObjectByTypeId(_var_type_id,(void *)ptr_var)
+						 (intptr_t)this->getScriptTypesFactory()->instanceObjectByScriptTypeId(_var_script_type_id,(void *)ptr_var)
 						 ,STACK_ELEMENT_PROPERTY_OBJECT
 					 };
 				 }
@@ -890,7 +890,7 @@ namespace zetscript{
 			stk_ret=vm_execute(
 					virtual_machine
 					,NULL
-					,type_factory->getMainFunction()
+					,script_types_factory->getMainFunction()
 					,NULL
 					,0
 					,0
@@ -956,7 +956,7 @@ namespace zetscript{
 		);
 
 		StackElement *stk=vm_get_stack_element_at(this->virtual_machine,symbol_variable->idx_position);
-		StringObject *so=ZS_NEW_STRING_OBJECT(this);
+		StringScriptObject *so=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 		so->set(_value);
 
 		// create and share pointer
@@ -965,7 +965,7 @@ namespace zetscript{
 
 		stk->value=(zs_int)so;
 		stk->properties=STACK_ELEMENT_PROPERTY_OBJECT|STACK_ELEMENT_PROPERTY_READ_ONLY;
-		//*stk=*(this->registerStkConstantStringObject(_key,_value));
+		//*stk=*(this->registerStkConstantStringScriptObject(_key,_value));
 	}
 
 	void ZetScript::registerConstant(const String & _key, const char * _value, const char *registered_file, short registered_line){
@@ -977,19 +977,19 @@ namespace zetscript{
 	//
 	// STK REGISTER OBJECT
 	//
-	StackElement * ZetScript::registerStkConstantStringObject(const String & _key,const String & _value){
+	StackElement * ZetScript::registerStkConstantStringScriptObject(const String & _key,const String & _value){
 
 		StackElement *stk=NULL;
-		StringObject *so=NULL;
+		StringScriptObject *so=NULL;
 
-		if((stk = getStkConstantStringObject(_key))!=NULL){
+		if((stk = getStkConstantStringScriptObject(_key))!=NULL){
 			if(stk->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_READ_ONLY)){
 				return stk;
 			}
 			else{
 				// throw
 				ZS_THROW_RUNTIME_ERROR(
-					"Cannot register constant '%s' as 'StringObject', because is already registered as '%s'"
+					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
 					,_key.toConstChar()
 					,this->stackElementToStringTypeOf(stk).toConstChar()
 				);
@@ -1000,7 +1000,7 @@ namespace zetscript{
 
 		stk_constants->set(_key.toConstChar(),(zs_int)stk);
 
-		so=ZS_NEW_STRING_OBJECT(this);
+		so=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 		so->properties=OBJECT_PROPERTY_CONSTANT;
 
 		// swap values stk_ref/value
@@ -1011,7 +1011,7 @@ namespace zetscript{
 		return stk;
 	}
 
-	StackElement *ZetScript::getStkConstantStringObject(const String & _key){
+	StackElement *ZetScript::getStkConstantStringScriptObject(const String & _key){
 		return (StackElement *)stk_constants->get(_key.toConstChar());
 	}
 
@@ -1021,16 +1021,16 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-	DictionaryObject * ZetScript::newObjectObject(){
-		return DictionaryObject::newObjectObject(this);
+	DictionaryScriptObject * ZetScript::newDictionaryScriptObject(){
+		return DictionaryScriptObject::newDictionaryScriptObject(this);
 	}
 
-	StringObject * ZetScript::newStringObject(const String & _str){
-		return StringObject::newStringObject(this,_str);
+	StringScriptObject * ZetScript::newStringScriptObject(const String & _str){
+		return StringScriptObject::newStringScriptObject(this,_str);
 	}
 
-	ArrayObject * ZetScript::newArrayObject(){
-		return ArrayObject::newArrayObject(this);
+	ArrayScriptObject * ZetScript::newArrayScriptObject(){
+		return ArrayScriptObject::newArrayScriptObject(this);
 	}
 
 	StackElement ZetScript::eval(const String & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
@@ -1115,8 +1115,8 @@ namespace zetscript{
 		ZS_UNUSUED_PARAM(_idx_start_function);
 		String global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_UNDEFINED_IDX ?  idx_current_global_variable_checkpoint:_idx_start_variable;
-		Function *main_function_object=type_factory->getMainFunction();
-		Scope *main_scope=ZS_MAIN_SCOPE(this);
+		ScriptFunction *main_function_object=script_types_factory->getMainFunction();
+		ScriptScope *main_scope=ZS_MAIN_SCOPE(this);
 		Vector<Symbol *> *local_variables=main_function_object->local_variables;
 		Vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
@@ -1143,14 +1143,14 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)local_variables->get(v);
 
 
-				Object *object = NULL;
+				ScriptObject *object = NULL;
 
 				if(symbol != NULL && symbol->scope == main_scope){ // if variable in global scope
 
 					if(
 							(vm_stk_element->properties & STACK_ELEMENT_PROPERTY_OBJECT)
 					){
-						object =((Object *)(vm_stk_element->value));
+						object =((ScriptObject *)(vm_stk_element->value));
 						if(object!=NULL){
 							if(object->shared_pointer != NULL){
 								vm_unref_shared_object(this->virtual_machine,object,NULL);
@@ -1215,7 +1215,7 @@ namespace zetscript{
 		clearGlobalVariables();
 
 		// clearGlobalFunctions
-		Scope *main_scope=ZS_MAIN_SCOPE(this);
+		ScriptScope *main_scope=ZS_MAIN_SCOPE(this);
 		Vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
 		int v=global_symbol_functions->length()-1;
 		// remove all shared 0 pointers
@@ -1258,7 +1258,7 @@ namespace zetscript{
 
 		scope_factory->clear();
 		script_function_factory->clear();
-		type_factory->clear();
+		script_types_factory->clear();
 
 		resetParsedFiles();
 
@@ -1266,18 +1266,18 @@ namespace zetscript{
 	}
 
 	void ZetScript::saveState(){
-		Function *main_function_object=type_factory->getMainFunction();
-		Scope *main_scope=ZS_MAIN_SCOPE(this);
+		ScriptFunction *main_function_object=script_types_factory->getMainFunction();
+		ScriptScope *main_scope=ZS_MAIN_SCOPE(this);
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->length();
 		idx_current_global_function_checkpoint=main_scope->symbol_functions->length();
 		idx_current_types_checkpoint=main_scope->symbol_types->length();
 
 		scope_factory->saveState();
 		script_function_factory->saveState();
-		type_factory->saveState();
+		script_types_factory->saveState();
 	}
 
-	bool ZetScript::getFunctionWithUnresolvedSymbolExists(Function *_sf){
+	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
 		for(int i=0;i < functions_with_unresolved_symbols.length(); i++){
 			if(functions_with_unresolved_symbols.get(i)==_sf){
 				return true;
@@ -1288,7 +1288,7 @@ namespace zetscript{
 
 	}
 
-	void ZetScript::addUnresolvedSymbol(Function *_sf, zs_int idx_instruction){
+	void ZetScript::addUnresolvedSymbol(ScriptFunction *_sf, zs_int idx_instruction){
 		if(getFunctionWithUnresolvedSymbolExists(_sf) ==false){
 			functions_with_unresolved_symbols.push(_sf);
 		}
@@ -1298,7 +1298,7 @@ namespace zetscript{
 	void ZetScript::link(){
 		int i=0;
 		while(i<functions_with_unresolved_symbols.length()){
-			Function *_sf=(Function *)functions_with_unresolved_symbols.get(i);
+			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.get(i);
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
 				functions_with_unresolved_symbols.erase(i);
 			}else{ // next function
@@ -1307,11 +1307,11 @@ namespace zetscript{
 		}
 	}
 
-	void ZetScript::unrefLifetimeObject(Object *so){
+	void ZetScript::unrefLifetimeObject(ScriptObject *so){
 		vm_unref_lifetime_object(this->virtual_machine,so);
 	}
 
-	void ZetScript::makeObjectShared(Object *so){
+	void ZetScript::makeObjectShared(ScriptObject *so){
 		if(so->shared_pointer != NULL){
 			// share this variable++
 			vm_create_shared_object(virtual_machine,so);
@@ -1329,7 +1329,7 @@ namespace zetscript{
 		vm_delete(virtual_machine);
 		
 		delete script_function_factory;
-		delete type_factory;
+		delete script_types_factory;
 		delete scope_factory;
 
 		virtual_machine=NULL;
@@ -1360,7 +1360,7 @@ namespace zetscript{
 			for(auto it=stk_constants->begin(); !it.end();it.next()){
 				StackElement *stk=(StackElement *)(it.value);
 				if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-					delete (StringObject *)stk->value;
+					delete (StringScriptObject *)stk->value;
 				}
 				delete stk;
 			}

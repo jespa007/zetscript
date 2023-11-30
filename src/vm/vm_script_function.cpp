@@ -27,7 +27,7 @@ namespace zetscript{
 
 	void vm_throw_error_cannot_find_symbol(
 			VirtualMachine *_vm
-			,Function *_script_function
+			,ScriptFunction *_script_function
 			,Instruction *_instruction
 	);
 
@@ -42,8 +42,8 @@ namespace zetscript{
 
 	void vm_execute_script_function(
 			VirtualMachine			* _vm,
-			Object			* _this_object,
-			Function 			* _script_function,
+			ScriptObject			* _this_object,
+			ScriptFunction 			* _script_function,
 			StackElement 		  	* _stk_local_var
 	    ){
 		// This is the main script function body, and due there's a lot of code, is important to reuse as many variables as possible
@@ -53,13 +53,13 @@ namespace zetscript{
 		// generic vars for management
 		VirtualMachineData 		*	data = (VirtualMachineData*)_vm->data;
 		Instruction 			*	instruction=_script_function->instructions; // starting instruction
-		Object 			*	so_aux=NULL;
+		ScriptObject 			*	so_aux=NULL;
 		StackElement 			*	stk_result_op1=NULL;
 		StackElement 			*	stk_result_op2=NULL;
 		StackElement 				stk_aux1,stk_aux2;
 		StackElement 			*	stk_var=NULL;
 		Symbol 		 			*	symbol_aux=NULL;
-		ClassObject		*	so_class_aux1=NULL;
+		ClassScriptObject		*	so_class_aux1=NULL;
 		zs_float 				*	zs_float_aux;
 
 		uint32_t 					msk_properties=0;
@@ -251,22 +251,22 @@ namespace zetscript{
 				case ZS_UNDEFINED_IDX:
 					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
-				case TYPE_ID_INT_C:
+				case SCRIPT_TYPE_ID_INT_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT)!=0);
 					break;
-				case TYPE_ID_FLOAT_C:
+				case SCRIPT_TYPE_ID_FLOAT_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FLOAT)!=0);
 					break;
-				case TYPE_ID_BOOL_C:
+				case SCRIPT_TYPE_ID_BOOL_C:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)!=0);
 					break;
-				case TYPE_ID_FUNCTION:
+				case SCRIPT_TYPE_ID_FUNCTION:
 					ZS_VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
 					if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-						ZS_VM_PUSH_STK_BOOLEAN(data->type_factory->scriptTypeInheritsFrom(			//
-								((DictionaryObject *)(stk_result_op1->value))->type_id // A
+						ZS_VM_PUSH_STK_BOOLEAN(data->script_types_factory->scriptTypeInheritsFrom(			//
+								((DictionaryScriptObject *)(stk_result_op1->value))->script_type_id // A
 								,instruction->value_op2		// B
 						));
 					}else{
@@ -497,12 +497,12 @@ namespace zetscript{
 				continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	so_aux=ZS_NEW_OBJECT_VAR_BY_TYPE_ID(data->type_factory,instruction->value_op1);
+				 	so_aux=ZS_NEW_OBJECT_VAR_BY_TYPE_ID(data->script_types_factory,instruction->value_op1);
 
 					vm_create_shared_object(_vm,so_aux);
 
-					if(so_aux->type_id >= TYPE_ID_OBJECT_CLASS){
-						so_class_aux1=(ClassObject *)so_aux;
+					if(so_aux->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT){
+						so_class_aux1=(ClassScriptObject *)so_aux;
 						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
 					}
@@ -518,14 +518,14 @@ namespace zetscript{
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_ARRAY: // Create new vector...
-					so_aux=ZS_NEW_ARRAY_OBJECT(data->zs);
+					so_aux=ZS_NEW_ARRAY_SCRIPT_OBJECT(data->zs);
 					vm_create_shared_object(_vm,so_aux);
 					data->vm_stk_current->value=(zs_int)so_aux;
 					data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
-				 	so_aux=ZS_NEW_DICTIONARY_OBJECT(data->zs);
+				 	so_aux=ZS_NEW_OBJECT_SCRIPT_OBJECT(data->zs);
 					vm_create_shared_object(_vm,so_aux);
 					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 					continue;
@@ -612,16 +612,16 @@ namespace zetscript{
 					}
 					continue;
 				case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-					symbol_aux=(Symbol *)_this_object->getType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name.toConstChar());
+					symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name.toConstChar());
 					if(symbol_aux==NULL){ // it calls overrided function (top-most)
 						 ZS_VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
 								,((Symbol *)instruction->value_op2)->name.toConstChar()
-								,_this_object->getType()->name.toConstChar()
+								,_this_object->getScriptType()->name.toConstChar()
 								,((Symbol *)instruction->value_op2)->name.toConstChar()
 						);
 					 }
 
-					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,_this_object,(Function *)(symbol_aux->ref_ptr));
+					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,_this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
 
 					 vm_create_shared_object(_vm,so_aux);
 					 data->vm_stk_current->value=(zs_int)so_aux;
@@ -629,11 +629,11 @@ namespace zetscript{
 					 data->vm_stk_current++;
 					continue;
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-					so_aux=(ClassObject *)((data->vm_stk_current-1)->value);
+					so_aux=(ClassScriptObject *)((data->vm_stk_current-1)->value);
 					if(instruction->value_op2 == ZS_UNDEFINED_IDX){
 						ZS_VM_PUSH_STK_UNDEFINED;
 					}else{
-						data->vm_stk_current->value=(zs_int) so_aux->getType()->scope->symbol_functions->get(instruction->value_op2);
+						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope->symbol_functions->get(instruction->value_op2);
 						data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION;
 						data->vm_stk_current++;
 					}
@@ -702,16 +702,16 @@ namespace zetscript{
 		String str1="@@@STR1_NOT_INIT@@@@";
 		String str2="@@@STR2_NOT_INIT@@@@";
 
-		if(STACK_ELEMENT_IS_STRING_OBJECT(_stk1)){
-			str1=((StringObject *)(_stk1->value))->get();
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk1)){
+			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
 			str1=data->zs->stackElementToString(_stk1);
 		}
 
 
 
-		if(STACK_ELEMENT_IS_STRING_OBJECT(_stk2)){
-			str2=((StringObject *)(_stk2->value))->get();
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk2)){
+			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
 			str2=data->zs->stackElementToString( _stk2);
 		}
@@ -748,7 +748,7 @@ namespace zetscript{
 
 	void vm_print_main_error(
 		VirtualMachine 			*		_vm
-		,Function 		*		_script_function
+		,ScriptFunction 		*		_script_function
 		,Instruction 			*		_instruction
 		,VM_MainError 					_error
 		,StackElement 			*		_stk
@@ -808,7 +808,7 @@ namespace zetscript{
 					strncpy(name,__STR_PTR_SYMBOL_TO_FIND__,__STR_PTR_END_CLASS__-__STR_PTR_SYMBOL_TO_FIND__);
 
 
-					if(data->zs->getTypeFactory()->getType(name) == NULL){
+					if(data->zs->getScriptTypesFactory()->getScriptType(name) == NULL){
 						vm_set_file_line_error(\
 								_vm \
 								,SFI_GET_FILE(_script_function,instruction)\
@@ -859,12 +859,12 @@ namespace zetscript{
 			, StackElement *stk_var
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		Object *so_aux=(Object *)stk_var->value;
+		ScriptObject *so_aux=(ScriptObject *)stk_var->value;
 
 		//special case for constant string object (they don't are shared elements)
-		if(so_aux->type_id == TYPE_ID_OBJECT_STRING && (so_aux->properties & OBJECT_PROPERTY_CONSTANT)){
+		if(so_aux->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_aux->properties & OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
-			so_aux=ZS_NEW_STRING_OBJECT(data->zs,so_aux->toString());
+			so_aux=ZS_NEW_STRING_SCRIPT_OBJECT(data->zs,so_aux->toString());
 			stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
@@ -892,8 +892,8 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		StackElement *stk_result_op1=NULL;
-		Object *so_aux=NULL;
-		ClassObject *so_class_aux1=NULL;
+		ScriptObject *so_aux=NULL;
+		ClassScriptObject *so_class_aux1=NULL;
 
 		VM_POP_STK_ONE;
 		//script_var
@@ -904,13 +904,13 @@ namespace zetscript{
 		if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			so_class_aux1=NULL;
 
-			so_aux = (Object *)(stk_result_op1)->value;
+			so_aux = (ScriptObject *)(stk_result_op1)->value;
 
 			vm_unref_shared_object(_vm,so_aux,NULL);
 
-			if(so_aux->type_id >= TYPE_ID_OBJECT_CLASS)
+			if(so_aux->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT)
 			{ // max ...
-				so_class_aux1=(ClassObject *)so_aux;
+				so_class_aux1=(ClassScriptObject *)so_aux;
 
 				if(so_class_aux1->isCreatedByContructor()){
 					so_class_aux1->deleteNativeObjectOnDestroy(true);
@@ -926,10 +926,10 @@ namespace zetscript{
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		Object 		*	so_aux=NULL;
+		ScriptObject 		*	so_aux=NULL;
 
 
-		so_aux= StringObject::newStringObject(data->zs,_instruction->getConstantValueOp2ToString(false));
+		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
 		vm_create_shared_object(_vm,so_aux);
 		(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 	}

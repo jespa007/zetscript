@@ -14,7 +14,7 @@ namespace zetscript{
 			|| k_str_const_char_type_ptr == symbol->str_native_type
 			|| k_str_string_type_ptr == symbol->str_native_type
 			) {
-			StringObject *s = ZS_NEW_STRING_OBJECT(zs);
+			StringScriptObject *s = ZS_NEW_STRING_SCRIPT_OBJECT(zs);
 
 
 			if (k_str_string_type_ptr == symbol->str_native_type) {
@@ -44,7 +44,7 @@ namespace zetscript{
 		}*/
 		
 		// it should be script object
-		Type *registered_class_type = zs->getTypeFactory()->getTypeFromTypeNamePtr(symbol->str_native_type);//  Type::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+		ScriptType *registered_class_type = zs->getScriptTypesFactory()->getScriptTypeFromNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 		if (registered_class_type == NULL) {
 			ZS_THROW_RUNTIME_ERROR(
@@ -54,7 +54,7 @@ namespace zetscript{
 			);
 		}
 
-		ClassObject *var = ClassObject::newClassObject(zs, registered_class_type->id, ptr_variable);
+		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, registered_class_type->id, ptr_variable);
 
 		return{
 				(zs_int)var,

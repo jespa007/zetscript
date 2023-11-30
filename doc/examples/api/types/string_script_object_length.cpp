@@ -1,9 +1,9 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringObject;
+using zetscript::StringScriptObject;
 
-void checkStringLength(ZetScript *_zs,StringObject *_string_object){
+void checkStringLength(ZetScript *_zs,StringScriptObject *_string_object){
 	printf("The length of '%s' is %i\n",_string_object->toString().toConstChar(),_string_object->length());
 }
 

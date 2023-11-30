@@ -173,7 +173,7 @@ bool allCharsTheSame(const zetscript::String & input){
     return true;
 }
 
-bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayObject * sov){
+bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * sov){
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::Vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
    for(int i =1; i < stk_elements->length(); i++){
@@ -213,9 +213,9 @@ zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs
 	return index_rand;
 }
 
-zetscript::ArrayObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ArrayObject *_input){
+zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject *_input){
 
-	zetscript::ArrayObject *output=zetscript::ArrayObject::newArrayObject(_zs);
+	zetscript::ArrayScriptObject *output=zetscript::ArrayScriptObject::newArrayScriptObject(_zs);
 	zetscript::Vector<zetscript::StackElement *> *input=_input->getStkListElements();
 	uint16_t input_count=input->length();
 	zetscript::Vector<zetscript::zs_int> rand_txt;
@@ -407,14 +407,14 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->registerType<ClassA>("ClassA", ClassA_new, ClassA_delete);
-	_zs->registerType<ClassB>("ClassB",ClassB_new,ClassB_delete);
-	_zs->registerType<ClassC>("ClassC",ClassC_new,ClassC_delete);
-	_zs->registerType<Num>("Num");
-	_zs->registerType<ClassD>("ClassD");
+	_zs->registerScriptType<ClassA>("ClassA", ClassA_new, ClassA_delete);
+	_zs->registerScriptType<ClassB>("ClassB",ClassB_new,ClassB_delete);
+	_zs->registerScriptType<ClassC>("ClassC",ClassC_new,ClassC_delete);
+	_zs->registerScriptType<Num>("Num");
+	_zs->registerScriptType<ClassD>("ClassD");
 
-	_zs->registerType<ParamA>("ParamA",ParamA_new,ParamA_delete);
-	_zs->registerType<ParamB>("ParamB",ParamB_new,ParamB_delete);
+	_zs->registerScriptType<ParamA>("ParamA",ParamA_new,ParamA_delete);
+	_zs->registerScriptType<ParamB>("ParamB",ParamB_new,ParamB_delete);
 
 
 	_zs->registerFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);

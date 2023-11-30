@@ -59,10 +59,10 @@
 
 namespace zetscript{
 
-	Function * vm_find_native_function(
+	ScriptFunction * vm_find_native_function(
 			VirtualMachine 		*	_vm
-			,Type 		*	_class_obj_type // if NULL is MainClass
-			,Function 	*	_script_function
+			,ScriptType 		*	_class_obj_type // if NULL is MainClass
+			,ScriptFunction 	*	_script_function
 			,Instruction 		* 	_instruction // call instruction
 			,bool 					_is_constructor
 			,const String 	& 	_symbol_to_find
@@ -73,7 +73,7 @@ namespace zetscript{
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		Instruction	*instruction=_instruction;
-		Function * ptr_function_found=NULL;
+		ScriptFunction * ptr_function_found=NULL;
 		String aux_string;
 		int start_param=0;
 
@@ -86,7 +86,7 @@ namespace zetscript{
 		}
 
 		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-			Function *irfs = NULL;
+			ScriptFunction *irfs = NULL;
 			start_param=1;
 
 			ZS_VM_EXTRACT_FUNCTION_INFO
@@ -97,15 +97,15 @@ namespace zetscript{
 
 			if((symbol_equals && ((int)irfs->params_len == (_n_args+start_param)))){
 				// Only check native functions
-				if((irfs->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){ /* C! Must match all args...*/
+				if((irfs->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
-					TypeId arg_type_id=TYPE_ID_INVALID;
+					ScriptTypeId arg_script_type_id=SCRIPT_TYPE_ID_INVALID;
 
 					for( unsigned k = 0; k < _n_args && all_check;k++){ // ignore first parameter due expects zetscript
 						StackElement *current_arg=&_stk_arg[k];
-						arg_type_id=irfs->params[k+start_param].type_id;
+						arg_script_type_id=irfs->params[k+start_param].script_type_id;
 
-						if(arg_type_id != TYPE_ID_STACK_ELEMENT){
+						if(arg_script_type_id != SCRIPT_TYPE_ID_STACK_ELEMENT){
 							//unsigned short var_type = STACK_ELEMENT_TYPE_PROPERTIES(current_arg->properties);
 							if(current_arg->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 								current_arg=(StackElement *)current_arg->value;
@@ -118,24 +118,24 @@ namespace zetscript{
 									break;
 								case STACK_ELEMENT_PROPERTY_INT:
 									all_check=
-											arg_type_id == TYPE_ID_INT_PTR_C
-										  ||arg_type_id == TYPE_ID_INT_C
-										  ||arg_type_id == TYPE_ID_FLOAT_PTR_C;
+											arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_INT_C
+										  ||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_FLOAT:
-									all_check=arg_type_id == TYPE_ID_FLOAT_PTR_C
-											||arg_type_id == TYPE_ID_FLOAT_C
-											||arg_type_id == TYPE_ID_INT_PTR_C
-											||arg_type_id == TYPE_ID_INT_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_FLOAT_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT_PTR_C
+											||arg_script_type_id == SCRIPT_TYPE_ID_INT_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_BOOL:
-									all_check=arg_type_id == TYPE_ID_BOOL_PTR_C;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_BOOL_PTR_C;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION:
-									all_check=arg_type_id == TYPE_ID_OBJECT_FUNCTION_MEMBER;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FUNCTION_MEMBER_SCRIPT_OBJECT;
 									break;
 								case STACK_ELEMENT_PROPERTY_FUNCTION:
-									all_check=arg_type_id == TYPE_ID_FUNCTION;
+									all_check=arg_script_type_id == SCRIPT_TYPE_ID_FUNCTION;
 									break;
 								// decoment to not allow nulls
 								/*case STACK_ELEMENT_PROPERTY_NULL:
@@ -143,19 +143,19 @@ namespace zetscript{
 									break;*/
 								case STACK_ELEMENT_PROPERTY_OBJECT:
 
-									if(STACK_ELEMENT_IS_STRING_OBJECT(current_arg)){
-										all_check=arg_type_id == TYPE_ID_OBJECT_STRING; // if string object --> direct
+									if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(current_arg)){
+										all_check=arg_script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_type_id == TYPE_ID_STRING_PTR_C && current_arg->value!=0)
-											  ||	arg_type_id == TYPE_ID_CONST_CHAR_PTR_C;
+												(	arg_script_type_id == SCRIPT_TYPE_ID_STRING_PTR_C && current_arg->value!=0)
+											  ||	arg_script_type_id == SCRIPT_TYPE_ID_CONST_CHAR_PTR_C;
 										}
 									}else{
-										Object *var_object = NULL;
-										var_object=((Object *)current_arg->value);
-										aux_string=var_object->getTypeName();
-										all_check=var_object->getType()->extendsFrom(arg_type_id);
+										ScriptObject *var_object = NULL;
+										var_object=((ScriptObject *)current_arg->value);
+										aux_string=var_object->getScriptTypeName();
+										all_check=var_object->getScriptType()->extendsFrom(arg_script_type_id);
 									}
 									break;
 							}
@@ -171,7 +171,7 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			String class_str=_class_obj_type==NULL?"":_class_obj_type->id != TYPE_ID_CLASS_MAIN?_class_obj_type->name:"";
+			String class_str=_class_obj_type==NULL?"":_class_obj_type->id != SCRIPT_TYPE_ID_CLASS_MAIN?_class_obj_type->name:"";
 			int n_candidates=0;
 			String str_candidates="";
 			String function_name_not_found=
@@ -217,7 +217,7 @@ namespace zetscript{
 					aux_string="null";
 					break;
 				case STACK_ELEMENT_PROPERTY_OBJECT:
-					aux_string = ((Object *)current_arg->value)->getType()->native_name;
+					aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->native_name;
 					break;
 				}
 
@@ -233,11 +233,11 @@ namespace zetscript{
 
 			for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				start_param=1;
-				Function *irfs=NULL;
+				ScriptFunction *irfs=NULL;
 
 				ZS_VM_EXTRACT_FUNCTION_INFO
 
-				if((irfs->name == _symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){
+				if((irfs->name == _symbol_to_find) && (irfs->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
@@ -245,7 +245,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// type if not main
-					if(_class_obj_type!=NULL && _class_obj_type->id != TYPE_ID_CLASS_MAIN){
+					if(_class_obj_type!=NULL && _class_obj_type->id != SCRIPT_TYPE_ID_CLASS_MAIN){
 						str_candidates.append(_class_obj_type->name);
 						str_candidates.append("::");
 					}
@@ -261,7 +261,7 @@ namespace zetscript{
 						}
 
 						str_candidates+=Rtti::demangle(
-							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
+							ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_types_factory,irfs->params[a].script_type_id)
 						);
 					}
 
@@ -272,7 +272,7 @@ namespace zetscript{
 					str_candidates.append(" -- BIND FUNCTION AS --> ");
 
 					str_candidates.append(Rtti::demangle(
-							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->return_type_id)
+							ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_types_factory,irfs->return_script_type_id)
 						)
 					);
 
@@ -285,7 +285,7 @@ namespace zetscript{
 						}
 
 						str_candidates.append(Rtti::demangle(
-							ZS_TYPE_ID_TO_NATIVE_NAME(data->type_factory,irfs->params[a].type_id)
+							ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(data->script_types_factory,irfs->params[a].script_type_id)
 							)
 						);
 					}
@@ -296,7 +296,7 @@ namespace zetscript{
 			}
 
 			if(n_candidates == 0){
-				ZS_VM_ERROR("Cannot call native %s '%s(%s)'. Function not registered\n\n"
+				ZS_VM_ERROR("Cannot call native %s '%s(%s)'. ScriptFunction not registered\n\n"
 					,_is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.toConstChar()
 					,args_str.toConstChar()
@@ -320,10 +320,10 @@ namespace zetscript{
 
 	void  vm_execute_native_function(
 			VirtualMachine 			*	_vm,
-			const Function 	*	_script_function,
+			const ScriptFunction 	*	_script_function,
 			Instruction 			*	_instruction,
-			Object  			* 	_this_object,
-			const Function 	*	_c_function,
+			ScriptObject  			* 	_this_object,
+			const ScriptFunction 	*	_c_function,
 			StackElement 			*	_stk_arg_c_function,
 			uint8_t		 				_n_args
 	){
@@ -333,12 +333,12 @@ namespace zetscript{
 		String 			str_aux;
 		Instruction			*	instruction=_instruction;
 
-		if((_c_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
-			ZS_VM_SET_USER_ERRORF(_vm,"Internal error: Function not native");
+		if((_c_function->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){
+			ZS_VM_SET_USER_ERRORF(_vm,"Internal error: ScriptFunction not native");
 			return;
 		}
 
-		TypeId return_type_id=_c_function->return_type_id;
+		ScriptTypeId return_script_type_id=_c_function->return_script_type_id;
 		zs_int converted_param[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		zs_float aux_float[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
@@ -356,15 +356,15 @@ namespace zetscript{
 		// special case that this is passed in static ref function
 		if(_this_object!=NULL){
 			if(
-				(_c_function->properties&FUNCTION_PROPERTY_MEMBER_FUNCTION)
+				(_c_function->properties&SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)
 			){
 				idx_arg_start++;
 				n_args++;
 				converted_param[1]=(zs_int)_this_object->getNativeObject();
-			}else if(_this_object->type_id != TYPE_ID_CLASS_MAIN){
-				ZS_VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
+			}else if(_this_object->script_type_id != SCRIPT_TYPE_ID_CLASS_MAIN){
+				ZS_VM_ERROR_AND_RET("ScriptFunction '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
 						,_c_function->name.toConstChar()
-						,_this_object->getType()->name.toConstChar()
+						,_this_object->getScriptType()->name.toConstChar()
 						,_c_function->name.toConstChar()
 						,_c_function->name.toConstChar()
 						);
@@ -375,8 +375,8 @@ namespace zetscript{
 			ZS_VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",ZS_MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
-		if((_c_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != FUNCTION_PROPERTY_NATIVE_OBJECT_REF) {
-			ZS_VM_ERROR_AND_RETF("Function is not registered as C");
+		if((_c_function->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF) != SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF) {
+			ZS_VM_ERROR_AND_RETF("ScriptFunction is not registered as C");
 		}
 
 		if(fun_ptr==0){
@@ -404,16 +404,16 @@ namespace zetscript{
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].type_id == TYPE_ID_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!data->zs->stackElementTo(
 					&_stk_arg_c_function[i-idx_arg_start]
-					,_c_function->params[i].type_id
+					,_c_function->params[i].script_type_id
 					,(zs_int *)&converted_param[i]
 					,data->vm_error_description
 				)){
-					ZS_VM_ERROR_AND_RET("Function '%s', param %i: %s",
+					ZS_VM_ERROR_AND_RET("ScriptFunction '%s', param %i: %s",
 						_c_function->name.toConstChar(),
 						i,
 						data->vm_error_description.toConstChar()
@@ -422,7 +422,7 @@ namespace zetscript{
 			}
 		}
 
-		if(_c_function->return_type_id == TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 1:
@@ -522,7 +522,7 @@ namespace zetscript{
 					break;
 			}
 
-		}else if(_c_function->return_type_id == TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -620,7 +620,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(_c_function->return_type_id == TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -722,7 +722,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(_c_function->return_type_id == TYPE_ID_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->return_script_type_id == SCRIPT_TYPE_ID_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:
@@ -929,7 +929,7 @@ namespace zetscript{
 
 		// check for return values through stack
 
-		*data->vm_stk_current++=data->zs->toStackElement(result,return_type_id);
+		*data->vm_stk_current++=data->zs->toStackElement(result,return_script_type_id);
 
 		StackElement *sf_call_stk_return=(_stk_arg_c_function+_n_args); // +1 points to starting return...
 		int sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;

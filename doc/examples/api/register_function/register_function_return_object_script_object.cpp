@@ -4,16 +4,16 @@ using zetscript::ZetScript;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
-using zetscript::ArrayObject;
-using zetscript::DictionaryObject;
+using zetscript::ArrayScriptObject;
+using zetscript::DictionaryScriptObject;
 
 // Definition of the native function interface returnObject
-DictionaryObject *returnObject(ZetScript *_zs){
-	// instance new DictionaryObject using ZetScript context
-	DictionaryObject *object=_zs->newObjectObject();
+DictionaryScriptObject *returnObject(ZetScript *_zs){
+	// instance new DictionaryScriptObject using ZetScript context
+	DictionaryScriptObject *object=_zs->newDictionaryScriptObject();
 
-	// instance new ArrayObject using ZetScript context
-	ArrayObject *array=_zs->newArrayObject();
+	// instance new ArrayScriptObject using ZetScript context
+	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
 	// set field "a" as integer 10
 	object->set<zs_int>("a",10);
@@ -32,7 +32,7 @@ DictionaryObject *returnObject(ZetScript *_zs){
 		array->push<zs_int>(i);
 	}
 
-	object->set<ArrayObject *>("d",array);
+	object->set<ArrayScriptObject *>("d",array);
 
 	// return object
     return object;

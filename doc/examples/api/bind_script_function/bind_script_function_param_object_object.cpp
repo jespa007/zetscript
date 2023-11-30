@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::DictionaryObject;
+using zetscript::DictionaryScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
@@ -16,12 +16,12 @@ int main()
         "}\n"
  	);
 
-    // It binds 'printConcat' as '(void *)(ArrayObject *, ArrayObject *)'
-    auto printConcat=zs.bindFunction<void(DictionaryObject * _value1, DictionaryObject * _value2)>("printConcat");
+    // It binds 'printConcat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
+    auto printConcat=zs.bindFunction<void(DictionaryScriptObject * _value1, DictionaryScriptObject * _value2)>("printConcat");
 
     // Prepare param values
-    auto object1=zs.newObjectObject();
-    auto object2=zs.newObjectObject();
+    auto object1=zs.newDictionaryScriptObject();
+    auto object2=zs.newDictionaryScriptObject();
     
     // push values for object1
     object1->set<bool>("a",true);

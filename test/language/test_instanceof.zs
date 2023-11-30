@@ -21,7 +21,7 @@ System::assert(new A() instanceof A == true,"new A() instanceof A != true")
 System::assert(new B() instanceof A == true,"new B() instanceof A != true")
 System::assert(new B() instanceof B ==true,"new B() instanceof B !=true")
 System::assert(new C() instanceof B == false,"new C() instanceof B != false")
-System::assert({a:0,b:1} instanceof Object == true,"{a:0,b:1} instanceof Object != true")
+System::assert({a:0,b:1} instanceof ScriptObject == true,"{a:0,b:1} instanceof ScriptObject != true")
 	
 
 

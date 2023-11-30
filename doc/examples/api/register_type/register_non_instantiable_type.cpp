@@ -15,7 +15,7 @@ int main(){
 	
 	zetscript::ZetScript zs;
 
-	zs.registerType<Number>("Number");
+	zs.registerScriptType<Number>("Number");
 	
 	// create new 'Number'
 	number=new Number();

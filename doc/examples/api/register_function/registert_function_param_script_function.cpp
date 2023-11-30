@@ -1,10 +1,10 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::Function;
+using zetscript::ScriptFunction;
 
 // c function
-void paramFunction(ZetScript *_zs, Function *_script_function){
+void paramFunction(ZetScript *_zs, ScriptFunction *_script_function){
 
 	// bind script function to be callable from C
     auto function=_zs->bindFunction<void(void)>(_script_function);

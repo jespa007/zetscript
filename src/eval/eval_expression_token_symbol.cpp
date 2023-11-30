@@ -58,7 +58,7 @@ namespace zetscript{
 			EvalData *eval_data
 			, char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<TokenNode *> *token_nodes
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
@@ -74,7 +74,7 @@ namespace zetscript{
 		int last_accessor_line=line;
 		int last_line_ok=line;
 		String static_error;
-		Type *token_node_symbol_type=NULL;
+		ScriptType *token_node_symbol_type=NULL;
 
 		// check pre operator (-,+,!,-- or ++)
 		switch(pre_operation=is_pre_operation(aux_p)){
@@ -161,7 +161,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_DICTIONARY_OBJECT;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_SCRIPT_OBJECT;
 
 			}else if(keyword_type == Keyword::KEYWORD_NEW){
 
@@ -220,7 +220,7 @@ namespace zetscript{
 						String class_element;
 						Symbol *member_symbol=NULL;
 
-						Type *sc=eval_data->zs->getTypeFactory()->getType(token_node_symbol->value);
+						ScriptType *sc=eval_data->zs->getScriptTypesFactory()->getScriptType(token_node_symbol->value);
 
 						//do{
 						IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+2,line);
@@ -285,7 +285,7 @@ namespace zetscript{
 
 					}else{ // check if only gets the type
 
-						token_node_symbol_type=eval_data->type_factory->getType(token_node_symbol->value);
+						token_node_symbol_type=eval_data->script_types_factory->getScriptType(token_node_symbol->value);
 						EvalInstruction *ei_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.get(0);
 						if(token_node_symbol_type != NULL){ // byte code it will be a type
 							ei_instruction->vm_instruction.byte_code= BYTE_CODE_LOAD_TYPE;
@@ -342,7 +342,7 @@ namespace zetscript{
 			if((
 				   token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
-				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_DICTIONARY_OBJECT
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_SCRIPT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_ARRAY
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.get(0))->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.get(0))->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
@@ -394,7 +394,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->owner_type->id == TYPE_ID_CLASS_MAIN){
+								&& scope_info->owner_type->id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -559,7 +559,7 @@ namespace zetscript{
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
 						instruction_token=ei_first_token_node;
 
-						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
+						if(eval_data->current_function->script_function->properties & SCRIPT_FUNCTION_PROPERTY_STATIC){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -568,7 +568,7 @@ namespace zetscript{
 							);
 						}
 
-						if(scope_info->owner_type->id == TYPE_ID_CLASS_MAIN){
+						if(scope_info->owner_type->id == SCRIPT_TYPE_ID_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -679,7 +679,7 @@ namespace zetscript{
 
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
-				if(eval_data->current_function->script_function->owner_type_id == TYPE_ID_CLASS_MAIN){
+				if(eval_data->current_function->script_function->owner_script_type_id == SCRIPT_TYPE_ID_CLASS_MAIN){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line
@@ -822,7 +822,7 @@ namespace zetscript{
 				}
 			}else{
 				// check is not type
-				if(eval_data->type_factory->getType(token_node_symbol->value)!=NULL){
+				if(eval_data->script_types_factory->getScriptType(token_node_symbol->value)!=NULL){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line

@@ -1,16 +1,16 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::StringObject;
+using zetscript::StringScriptObject;
 
 // ZetScript C++ interface function
-StringObject *returnString(ZetScript *_zs){
+StringScriptObject *returnString(ZetScript *_zs){
 
-	// instance new StringObject using ZetScript context
-	StringObject *string=_zs->newStringObject();
+	// instance new StringScriptObject using ZetScript context
+	StringScriptObject *string=_zs->newStringScriptObject();
 
-    // set string value "Hello world (StringObject)"
-    string->set("Hello world (StringObject)");
+    // set string value "Hello world (StringScriptObject)"
+    string->set("Hello world (StringScriptObject)");
 
     return string;
 }

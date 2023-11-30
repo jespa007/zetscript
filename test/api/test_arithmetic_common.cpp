@@ -572,15 +572,15 @@ void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expe
 
 	try{
 		zetscript::StackElement stk = _zs->eval(zetscript::String("return ")+str_expr);
-		if(STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
-			zetscript::StringObject *so=(zetscript::StringObject *)stk.value;
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
+			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::String(expected_value)) {
 				throw std::runtime_error(zetscript::StringUtils::format("error test '%s' expected '%s' but it was '%s'!\n", str_expr, expected_value, so->toString().toConstChar()).toConstChar());
 			}
 		}else{
 			throw std::runtime_error(
 					zetscript::StringUtils::format(
-							"error test '%s' expected 'StringObject' but it was '%s'!\n"
+							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
 							,str_expr
 							,_zs->stackElementToString(&stk).toConstChar()
 					).toConstChar()
@@ -596,8 +596,8 @@ void test_arithmetitoConstCharing_expression(zetscript::ZetScript *_zs,const zet
 
 	try{\
 		zetscript::StackElement stk = _zs->eval(zetscript::String("return ")+str_expr,__FILE__,__LINE__);
-		if(STACK_ELEMENT_IS_STRING_OBJECT(&stk)){
-			zetscript::StringObject *so=(zetscript::StringObject *)stk.value;
+		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
+			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::String(expected_value)) {
 				fprintf(stderr,"error test '%s' expected %s but it was %s!\n",str_expr, expected_value.toConstChar(), so->toString().toConstChar()); \
 				exit(-1); \
@@ -607,7 +607,7 @@ void test_arithmetitoConstCharing_expression(zetscript::ZetScript *_zs,const zet
 		}else{
 			throw std::runtime_error(
 					zetscript::StringUtils::format(
-							"error test '%s' expected 'StringObject' but it was '%s'!\n"
+							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
 							,str_expr,_zs->stackElementToString(&stk).toConstChar()
 					).toConstChar()
 			);

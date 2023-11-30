@@ -10,7 +10,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
@@ -21,7 +21,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
@@ -30,7 +30,7 @@ namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------------------------------------
 
-	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *_scope_info, TokenNode *token_node){
+	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  ScriptScope *_scope_info, TokenNode *token_node){
 		ZS_UNUSUED_PARAM(_scope_info);
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
@@ -39,11 +39,11 @@ namespace zetscript{
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
 		ByteCode byte_code = BYTE_CODE_LOAD_FUNCTION;
-		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
+		ScriptScope *scope_info=ZS_MAIN_SCOPE(eval_data);
 
 		/*if(scope_info->scope_parent!=NULL){// is within function ?
 
-			if(scope_info->type->id != TypeId::TYPE_ID_CLASS_MAIN){ // function object as function member because it will use this inside
+			if(scope_info->type->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){ // function object as function member because it will use this inside
 				byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
 		}*/
@@ -150,7 +150,7 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, Vector<EvalInstruction *>	*	eval_instructions){
+	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info, Vector<EvalInstruction *>	*	eval_instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		String symbol_value;
@@ -190,13 +190,13 @@ namespace zetscript{
 			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
 			if(symbol_value.empty()){
-				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error ScriptObject: expected property name");
 			}
 
 			 // register constant...
 			str_key=String("\"")+symbol_value+"\"";
-			if((stk_key_object = eval_data->zs->getStkConstantStringObject(str_key))==NULL){
-				stk_key_object=eval_data->zs->registerStkConstantStringObject(str_key,symbol_value);
+			if((stk_key_object = eval_data->zs->getStkConstantStringScriptObject(str_key))==NULL){
+				stk_key_object=eval_data->zs->registerStkConstantStringScriptObject(str_key,symbol_value);
 			 }
 
 			// add instruction...
@@ -210,13 +210,13 @@ namespace zetscript{
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			 if(*aux_p != ':'){ // expected : ...
-				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
+				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error ScriptObject: expected ':' after property name");
 			 }
 
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			 if(*aux_p == '}'){
-				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: unexpected '}' ");
+				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error ScriptObject: unexpected '}' ");
 			 }
 
 
@@ -244,7 +244,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  Vector<EvalInstruction *> * eval_instructions){
+	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info,  Vector<EvalInstruction *> * eval_instructions){
 		// Inline vector: [0,1,2,3][0]+23
 		char * aux_p=NULL;
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -299,11 +299,11 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, Vector<EvalInstruction *>	*	eval_instructions){
+	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info, Vector<EvalInstruction *>	*	eval_instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		String symbol_name;
-		Type *type=NULL;
+		ScriptType *type=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
@@ -356,7 +356,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 
-				type=ZS_GET_OBJECT_TYPE(eval_data->type_factory,symbol_name);
+				type=ZS_GET_OBJECT_TYPE(eval_data->script_types_factory,symbol_name);
 
 				// parse expression
 				if(type==NULL){
@@ -384,15 +384,15 @@ namespace zetscript{
 					is_native_type=type->isNativeType();
 					symbol_constructor_function_name=type->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
-					if(!eval_data->type_factory->isTypeInstanceable(type->id)){
+					if(!eval_data->script_types_factory->isTypeInstanceable(type->id)){
 						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
 								,"Cannot create object type '%s' because it has been defined as not instantiable. "
 								"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-								,type->getTypeName()
-								,type->getTypeName()
-								,type->getTypeName()
+								,type->getScriptTypeName()
+								,type->getScriptTypeName()
+								,type->getScriptTypeName()
 								);
 					}
 
@@ -477,7 +477,7 @@ namespace zetscript{
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)type->scope->symbol_functions->get(i);
-							Function *sf_member=(Function *)symbol_member->ref_ptr;
+							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 							if(sf_member->name== ZS_CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
 							}
@@ -486,7 +486,7 @@ namespace zetscript{
 
 					 if(constructor_function!=NULL){
 						 // set idx function found
-						 if((constructor_function->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){  // is a script constructor so only set idx
+						 if((constructor_function->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF)==0){  // is a script constructor so only set idx
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 						 }else{// is a native constructor, find a constructor if it passes one or more args
 							 if(n_args > 0){ // we have to find our custom function to call after object is created
@@ -496,7 +496,7 @@ namespace zetscript{
 								 }
 								 // override idx
 								 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-								 constructor_function->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+								 constructor_function->properties|=SCRIPT_FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
 								 ei_load_function_constructor->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_AND_PARAMETER_COUNT(1,n_args+1);
 							 }
 						 }

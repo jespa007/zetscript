@@ -217,7 +217,7 @@ namespace zetscript{
 				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				Object *so=StringObject::newStringObject(data->zs, str_aux.toConstChar());
+				ScriptObject *so=StringScriptObject::newStringScriptObject(data->zs, str_aux.toConstChar());
 				vm_create_shared_object(data->zs->getVirtualMachine(),so);
 
 				//
@@ -260,7 +260,7 @@ namespace zetscript{
 						delete number_value;
 					}
 				}else{
-					json_deserialize_error(data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Array or Object");
+					json_deserialize_error(data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Array or ScriptObject");
 					return NULL;
 				}
 			}
@@ -275,7 +275,7 @@ namespace zetscript{
 				){
 			char *str_current = (char *)str_start;
 			String error;
-			ArrayObject *vo;
+			ArrayScriptObject *vo;
 			StackElement *stk_element=NULL;
 
 
@@ -288,7 +288,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=ArrayObject::newArrayObject(data->zs);
+				vo=ArrayScriptObject::newArrayScriptObject(data->zs);
 				vm_create_shared_object(data->zs->getVirtualMachine(),vo);
 
 				if(stk_json_element != data->first_element){
@@ -333,7 +333,7 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			String variable_name,key_id;
 			String error;
-			DictionaryObject *so;
+			DictionaryScriptObject *so;
 			StackElement *stk_element=NULL;
 
 			str_current = eval_ignore_blanks(str_current, line);
@@ -349,7 +349,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=DictionaryObject::newObjectObject(data->zs);
+				so=DictionaryScriptObject::newDictionaryScriptObject(data->zs);
 				vm_create_shared_object(data->zs->getVirtualMachine(),so);
 
 				if(stk_json_element != data->first_element){

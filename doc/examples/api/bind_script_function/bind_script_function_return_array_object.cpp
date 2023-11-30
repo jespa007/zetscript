@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ArrayObject;
+using zetscript::ArrayScriptObject;
 
 int main()
 {
@@ -13,10 +13,10 @@ int main()
       "}\n"
   );
 
-  // It binds 'returnArray' as 'ArrayObject *(void)'
-  auto returnArray=zs.bindFunction<ArrayObject *()>("returnArray");
+  // It binds 'returnArray' as 'ArrayScriptObject *(void)'
+  auto returnArray=zs.bindFunction<ArrayScriptObject *()>("returnArray");
 
-  // Calls ZetScript function which it returns 'ArrayObject *' reference
+  // Calls ZetScript function which it returns 'ArrayScriptObject *' reference
   auto array_object=returnArray();
 
   // Prints its value by console.

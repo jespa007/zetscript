@@ -1,11 +1,11 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::Function;
+using zetscript::ScriptFunction;
 
 
 // The C function to register that binds and calls the script function passed by parameter
-void paramFunction(ZetScript *_zs, Function *_script_function){
+void paramFunction(ZetScript *_zs, ScriptFunction *_script_function){
 
     // bind script function to make it callable
     auto script_function=_zs->bindFunction<void ()>(_script_function);

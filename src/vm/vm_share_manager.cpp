@@ -6,7 +6,7 @@ namespace zetscript{
 
 	void vm_create_shared_object(
 		VirtualMachine *_vm
-		,Object *_obj
+		,ScriptObject *_obj
 		,VM_ScopeBlock *_vm_scope_block
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -68,7 +68,7 @@ namespace zetscript{
 
 	void vm_share_object(
 		VirtualMachine *_vm
-		,Object *_obj
+		,ScriptObject *_obj
 	){
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
@@ -98,7 +98,7 @@ namespace zetscript{
 
 	void vm_unref_shared_object(
 			VirtualMachine 	*	_vm
-			, Object 	*	_obj
+			, ScriptObject 	*	_obj
 			,VM_ScopeBlock 	*	_scope_block
 	){
 		if(_obj->properties  & OBJECT_PROPERTY_CONSTANT){

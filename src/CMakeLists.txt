@@ -430,44 +430,44 @@ SET(
 	
 			
 	# core/function	
-	core/function/Function.h
-	core/function/FunctionFactory.h
+	core/function/ScriptFunction.h
+	core/function/ScriptFunctionsFactory.h
 	core/function/FunctionParam.h
 	core/function/FunctionTraits.h
 	
 	# core/type
-	core/type/Type.h
-	core/type/TypeId.h
-	core/type/Type.tcc
-	core/type/TypesFactory.h
-	core/type/TypesFactory.tcc
+	core/type/ScriptType.h
+	core/type/ScriptTypeId.h
+	core/type/ScriptType.tcc
+	core/type/ScriptTypesFactory.h
+	core/type/ScriptTypesFactory.tcc
 	
 	# core/object
-	core/object/RefObjectObject.h
-	core/object/Object.h
-	core/object/ClassObject.h
-	core/object/ClassObject.tcc
+	core/object/RefDictionaryScriptObject.h
+	core/object/ScriptObject.h
+	core/object/ClassScriptObject.h
+	core/object/ClassScriptObject.tcc
 	core/object/MemberFunctionObject.h
-	core/object/ContainerObject.h
+	core/object/ContainerScriptObject.h
 	core/object/ContainerSlot.h
 	script/object/ContainerSlot.h
-	core/object/DictionaryObject.h
-	core/object/DictionaryObject.tcc
-	core/object/ObjectObjectZs.h
-	core/object/ObjectIteratorObject.h
-	core/object/ObjectIteratorObjectZs.h
-	core/object/StringObject.h
-	core/object/StringObjectZs.h
-	core/object/StringIteratorObject.h
-	core/object/StringIteratorObjectZs.h
+	core/object/DictionaryScriptObject.h
+	core/object/DictionaryScriptObject.tcc
+	core/object/DictionaryScriptObjectZs.h
+	core/object/DictionaryIteratorScriptObject.h
+	core/object/DictionaryIteratorScriptObjectZs.h
+	core/object/StringScriptObject.h
+	core/object/StringScriptObjectZs.h
+	core/object/StringIteratorScriptObject.h
+	core/object/StringIteratorScriptObjectZs.h
 	core/object/VarRefObject.h
-	core/object/ArrayObject.h
-	core/object/ArrayObject.tcc
-	core/object/ArrayObjectZs.h
-	core/object/ArrayIteratorObject.h
+	core/object/ArrayScriptObject.h
+	core/object/ArrayScriptObject.tcc
+	core/object/ArrayScriptObjectZs.h
+	core/object/ArrayIteratorScriptObject.h
 	core/object/ArrayIteratorObjectZs.h
-	core/scope/Scope.h
-	core/scope/ScopeFactory.h
+	core/scope/ScriptScope.h
+	core/scope/ScriptScopesFactory.h
 	core/scope/zs_scope.h
 	
 	# vm

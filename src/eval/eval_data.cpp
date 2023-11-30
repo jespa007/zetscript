@@ -124,7 +124,7 @@ namespace zetscript{
 		TOKEN_TYPE_OPERATOR, // +,-,%, ...
 		TOKEN_TYPE_SUBEXPRESSION,
 		TOKEN_TYPE_OBJECT_ARRAY,
-		TOKEN_TYPE_DICTIONARY_OBJECT,
+		TOKEN_TYPE_OBJECT_SCRIPT_OBJECT,
 		TOKEN_TYPE_OBJECT_FUNCTION,
 		TOKEN_TYPE_NEW_OBJECT, // =new ob(); | op (new obj()) op
 		TOKEN_TYPE_MAX
@@ -202,12 +202,12 @@ namespace zetscript{
 	struct EvalFunction{
 
 		Vector<EvalInstruction *>						 		eval_instructions;
-		Function 						*  	script_function;
+		ScriptFunction 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
 
 		// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
-		EvalFunction(Function	* _script_function){
+		EvalFunction(ScriptFunction	* _script_function){
 			script_function=_script_function;
 			parsing_loop=0;
 			parsing_switch=0;
@@ -230,7 +230,7 @@ namespace zetscript{
 	typedef struct {
 		Keyword id;
 		const char *str;
-		char * (* eval_fun)(EvalData *eval_data,const char *, int &, Scope *);
+		char * (* eval_fun)(EvalData *eval_data,const char *, int &, ScriptScope *);
 	} EvalKeyword;
 
 	typedef struct {
@@ -264,9 +264,9 @@ namespace zetscript{
 
 	struct EvalData{
 		ZetScript 						* 		zs;
-		ScopeFactory 					* 		scope_factory;
-		FunctionFactory 			* 		script_function_factory;
-		TypesFactory 				* 		type_factory;
+		ScriptScopesFactory 					* 		scope_factory;
+		ScriptFunctionsFactory 			* 		script_function_factory;
+		ScriptTypesFactory 				* 		script_types_factory;
 		EvalFunction					* 		current_function;
 		Vector<EvalFunction *>				eval_functions;
 
@@ -283,9 +283,9 @@ namespace zetscript{
 			current_parsing_file="";
 			current_function=NULL;
 			this->zs=_zs;
-			this->script_function_factory=zs->getFunctionFactory();
-			this->scope_factory=zs->getScopeFactory();
-			this->type_factory=zs->getTypeFactory();
+			this->script_function_factory=zs->getScriptFunctionsFactory();
+			this->scope_factory=zs->getScriptScopesFactory();
+			this->script_types_factory=zs->getScriptTypesFactory();
 			error=false;
 			parsing_loop=0;
 			error_line=-1;
@@ -302,8 +302,8 @@ namespace zetscript{
 
 	bool g_init_eval=false;
 
-	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const String & symbol_to_find);
+	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  ScriptScope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
+	Symbol *eval_find_local_symbol(EvalData *eval_data,ScriptScope *scope, const String & symbol_to_find);
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const String & symbol_to_find);
 
 	bool	is_operator_ternary_if(const char *s)				{return *s=='?';}

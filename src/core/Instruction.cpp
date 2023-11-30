@@ -25,7 +25,7 @@ namespace zetscript{
 
 
 		String Instruction::getConstantString(){
-			Object *obj=NULL;
+			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
 			if((this->byte_code == BYTE_CODE_LOAD_STRING)
@@ -34,7 +34,7 @@ namespace zetscript{
 			){
 
 				stk=(StackElement *)this->value_op2;
-				obj = (Object *)stk->value;
+				obj = (ScriptObject *)stk->value;
 
 			}else{
 				ZS_THROW_EXCEPTION("instruction is not constant string");

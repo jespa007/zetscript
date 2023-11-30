@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	class ClassObject;
+	class ClassScriptObject;
 
 	// member functions
 	DateTime * 		DateTimeModule_new(ZetScript *_zs);
@@ -22,7 +22,7 @@ namespace zetscript{
 	);
 	/*DateTime * 		DateTimeModule_add(DateTime *dt1,DateTime *dt2);*/
 
-	ClassObject * 		DateTimeModule_sub(ZetScript *_zs,DateTime *dt1,DateTime *dt2);
+	ClassScriptObject * 		DateTimeModule_sub(ZetScript *_zs,DateTime *dt1,DateTime *dt2);
 
 	void 				DateTimeModule_setUtc(ZetScript *_zs,DateTime *_this);
 

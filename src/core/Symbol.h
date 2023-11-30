@@ -22,13 +22,13 @@ namespace zetscript{
 	}SymbolProperty;
 
 	class	ZetScript;
-	class 	Scope;
+	class 	ScriptScope;
 	struct Symbol {
 		const char *file;   // file where symbol was registered
 		short  line;		// line where symbol was registered
 		int   idx_position;  // used as position where local var/function is located VM (VM reserves space required for all vars)
 
-		Scope *scope;		// scope where symbol was registered
+		ScriptScope *scope;		// scope where symbol was registered
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
 		String name; 	// symbol name

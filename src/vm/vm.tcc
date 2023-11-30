@@ -9,7 +9,7 @@ namespace zetscript{
 	{\
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		VM_ScopeBlock *scope_block=--ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
-		Scope *scope=scope_block->scope;\
+		ScriptScope *scope=scope_block->scope;\
 		StackElement         * stk_local_vars	=ZS_VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
 		Vector<Symbol *> *scope_symbols=scope->symbol_variables;\
 		int count=(int)scope_symbols->length();\
@@ -18,7 +18,7 @@ namespace zetscript{
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->data()[0]->idx_position;\
 			while(count--){\
 				if((stk_local_var->properties & STACK_ELEMENT_PROPERTY_OBJECT)){\
-					Object *so=(Object *)(stk_local_var->value);\
+					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 					if(so != NULL && so->shared_pointer!=NULL){\
 						 vm_unref_shared_object(vm,so,NULL);\
 					}\

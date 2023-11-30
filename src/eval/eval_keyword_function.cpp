@@ -19,7 +19,7 @@ namespace zetscript{
 
 	void eval_generate_byte_code_field_initializer(
 			EvalData *_eval_data
-			, Function *_sf
+			, ScriptFunction *_sf
 			, int _line
 			,const String & _symbol_name
 			, Vector<EvalInstruction *> *_eval_instructions
@@ -117,9 +117,9 @@ namespace zetscript{
 			, name
 		);
 
-		Function *sf=(Function *)symbol_sf->ref_ptr;
+		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
-		Scope *new_scope_info = eval_new_scope_function(eval_data,ZS_MAIN_SCOPE(eval_data));
+		ScriptScope *new_scope_info = eval_new_scope_function(eval_data,ZS_MAIN_SCOPE(eval_data));
 		sf->scope=new_scope_info;
 
 		// fill all instructions
@@ -167,7 +167,7 @@ namespace zetscript{
 			EvalData *eval_data
 			, const char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
 			, Symbol ** result_symbol_function
 			, const String & custom_symbol_name
@@ -175,7 +175,7 @@ namespace zetscript{
 		){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-		Type *sc=NULL; // if NULL it suposes is the main
+		ScriptType *sc=NULL; // if NULL it suposes is the main
 		char *aux_p = (char *)s;
 		Keyword key_w=eval_is_keyword(aux_p);
 		bool is_static = false;
@@ -192,7 +192,7 @@ namespace zetscript{
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->owner_type->id != TYPE_ID_CLASS_MAIN
+		if(scope_info->owner_type->id != SCRIPT_TYPE_ID_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -228,7 +228,7 @@ namespace zetscript{
 			String conditional_str;
 			Symbol *symbol_sf=NULL;
 			String name="";
-			Function *sf = NULL;
+			ScriptFunction *sf = NULL;
 
 			// advance keyword...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -288,7 +288,7 @@ namespace zetscript{
 				String error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)?StringUtils::format(
+					,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?StringUtils::format(
 							"declaring function member '%s::%s'"
 							,scope_info->owner_type->name.toConstChar()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
@@ -299,7 +299,7 @@ namespace zetscript{
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)?StringUtils::format(
+							,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?StringUtils::format(
 									"declaring function member '%s::%s'"
 									,scope_info->owner_type->name.toConstChar()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
@@ -514,8 +514,8 @@ namespace zetscript{
 							name
 							,&params
 							,params_len
-							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
-							,TYPE_ID_CLASS_MAIN
+							,is_static?SCRIPT_FUNCTION_PROPERTY_STATIC:SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION
+							,SCRIPT_TYPE_ID_CLASS_MAIN
 							,0
 							,eval_data->current_parsing_file
 							,line
@@ -547,16 +547,16 @@ namespace zetscript{
 				}
 
 				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->owner_type != ZS_TYPE_MAIN(eval_data->type_factory)){ // is a function that was created within a member function...
-						((Function *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
+					if(scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)){ // is a function that was created within a member function...
+						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}
 			}
 
 			//-------------------------
 			// IMPORTANT NOTE:
-			// Due params var is NULL here because it was marked as assigned at Function::updateParams. Reassign params variable again ...
-			params=((Function *)symbol_sf->ref_ptr)->params;
+			// Due params var is NULL here because it was marked as assigned at ScriptFunction::updateParams. Reassign params variable again ...
+			params=((ScriptFunction *)symbol_sf->ref_ptr)->params;
 			//
 			//-------------------------
 
@@ -564,7 +564,7 @@ namespace zetscript{
 				*result_symbol_function=symbol_sf;
 			}
 
-			sf=(Function *)symbol_sf->ref_ptr;
+			sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
 			eval_push_function(eval_data,sf);
 
@@ -603,7 +603,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char *  eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char *  eval_keyword_return(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		Keyword key_w;

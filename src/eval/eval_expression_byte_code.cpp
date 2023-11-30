@@ -44,7 +44,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char
 			, uint16_t properties // uint16_t properties
@@ -70,7 +70,7 @@ namespace zetscript{
 	// eval operator expression only evaluates expression with normal operators (+,-,>>,<<,etc) respecting always its preference. Assign operators (=,+=,-=,etc) should be extracted
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
-			, Scope *scope
+			, ScriptScope *scope
 			, Vector<TokenNode *> 			* 	token_nodes
 			, Vector<EvalInstruction *> 		*	eval_instructions
 			, Vector<EvalInstruction *>     	*   logical_and_jnt
@@ -217,7 +217,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info
+			, ScriptScope *scope_info
 			, Vector<EvalInstruction *> *dst_instructions
 			, Vector<TokenNode *> * token_nodes
 			, uint16_t properties

@@ -122,7 +122,7 @@ namespace zetscript{
 		return 0;
 	}
 
-	bool eval_expression_get_register(EvalData *eval_data, Scope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
+	bool eval_expression_get_register(EvalData *eval_data, ScriptScope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
 		Symbol *symbol_found=NULL;
 
 		 if(!BYTE_CODE_IS_LOAD_VARIABLE_IMMEDIATE(i1->vm_instruction.byte_code)){
@@ -130,7 +130,7 @@ namespace zetscript{
 		 }
 
 		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
-		 if(eval_data->type_factory->getType(i1->symbol_name)!=NULL){
+		 if(eval_data->script_types_factory->getScriptType(i1->symbol_name)!=NULL){
 			return false;
 		}
 
@@ -150,10 +150,10 @@ namespace zetscript{
 			}
 		}else if(i1->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
 			if(load_value_op2 == ZS_UNDEFINED_IDX){
-				Type *sc=NULL;
+				ScriptType *sc=NULL;
 				if(
-					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
-					&& (	scope->owner_type->id != TYPE_ID_CLASS_MAIN)
+					   ( eval_data->current_function->script_function->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
+					&& (	scope->owner_type->id != SCRIPT_TYPE_ID_CLASS_MAIN)
 					   // is function member
 					){ // type members are defined as functions
 					sc=scope->owner_type;
@@ -393,7 +393,7 @@ namespace zetscript{
 			result_instruction=new EvalInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
-					,(zs_int)eval_data->zs->registerStkConstantStringObject(str_constant_key,result_op_str)
+					,(zs_int)eval_data->zs->registerStkConstantStringScriptObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:
@@ -410,7 +410,7 @@ namespace zetscript{
 
 	EvalInstruction *eval_expression_optimize(
 			EvalData *eval_data
-			,Scope *scope_info
+			,ScriptScope *scope_info
 			,TokenNode   *token_operation
 			, Vector<EvalInstruction *> *eval_instructions
 	){

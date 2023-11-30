@@ -7,7 +7,7 @@ namespace zetscript{
 
 	bool vm_store(
 			VirtualMachine 	*	_vm
-			,Function *	_script_function
+			,ScriptFunction *	_script_function
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData 			*		data=(VirtualMachineData *)_vm->data;
@@ -17,9 +17,9 @@ namespace zetscript{
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
-		Object 				*		so_aux=NULL;
+		ScriptObject 				*		so_aux=NULL;
 		StackElementMemberProperty 	*		stk_mp_aux=NULL;
-		Function 				*		ptr_function_found=NULL;
+		ScriptFunction 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
 		Instruction					*		instruction=_instruction;
 		bool								unref_old_stk_object=true;
@@ -69,7 +69,7 @@ namespace zetscript{
 		store_lst_setter_functions=NULL;
 
 		if(STACK_ELEMENT_IS_CLASS_OBJECT(stk_dst)){
-			if((store_lst_setter_functions=((ClassObject *)stk_dst->value)->getSetterList(METAMETHOD_SET))!=NULL){
+			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(METAMETHOD_SET))!=NULL){
 
 				if(store_lst_setter_functions->length() == 0){
 					store_lst_setter_functions=NULL;
@@ -81,7 +81,7 @@ namespace zetscript{
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
-					,stk_mp_aux->member_property->type->getTypeName()
+					,stk_mp_aux->member_property->type->getScriptTypeName()
 					,stk_mp_aux->member_property->property_name.toConstChar()
 				);
 			}
@@ -99,19 +99,19 @@ namespace zetscript{
 				stk_mp_aux=(StackElementMemberProperty *)(stk_dst->value);
 				so_aux=stk_mp_aux->so_object;\
 			}else{
-				so_aux=(ClassObject *)stk_dst->value;
+				so_aux=(ClassScriptObject *)stk_dst->value;
 			}
-			ptr_function_found=(Function *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
+			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->get(0)))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter different parameter types
 
 				Symbol * symbol_setter = NULL;
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
-					symbol_setter = so_aux->getType()->getSymbol(__STR_SETTER_METAMETHOD__);
+					symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__);
 
 					if(symbol_setter == NULL){\
-						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
-								,so_aux->getType()->name.toConstChar() \
+						ZS_VM_STOP_EXECUTE("ScriptType '%s' does not implement '%s' metamethod" \
+								,so_aux->getScriptType()->name.toConstChar() \
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}\
@@ -120,7 +120,7 @@ namespace zetscript{
 
 					if(stk_mp_aux->member_property->metamethod_members.setters.length()==0){
 						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getType()->name.toConstChar()\
+								,so_aux->getScriptType()->name.toConstChar()\
 								,stk_mp_aux->member_property->property_name.toConstChar()\
 								,__STR_SETTER_METAMETHOD__\
 						);\
@@ -136,7 +136,7 @@ namespace zetscript{
 
 				if((ptr_function_found=vm_find_native_function( \
 						_vm \
-						,data->type_factory->getType(so_aux->type_id)\
+						,data->script_types_factory->getScriptType(so_aux->script_type_id)\
 						,_script_function\
 						,instruction\
 						,false\
@@ -145,14 +145,14 @@ namespace zetscript{
 						,1))==NULL){ \
 					if(stk_dst->properties & STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY){ \
 							data->vm_error_description=StringUtils::format("Property '%s::%s': Error executing '_set' (a.k.a '=' assignment operator).\n\n %s"\
-								,so_aux->getType()->name.toConstChar()\
+								,so_aux->getScriptType()->name.toConstChar()\
 								,stk_mp_aux->member_property->property_name.toConstChar()\
 								,data->vm_error_description.toConstChar())
 							;\
 					}else{
 
-						data->vm_error_description=StringUtils::format("Type '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
-								,so_aux->getType()->name.toConstChar()
+						data->vm_error_description=StringUtils::format("ScriptType '%s': Error executing '_set' (a.k.a '=' assignment operator). \n\n%s" \
+								,so_aux->getScriptType()->name.toConstChar()
 								,data->vm_error_description.toConstChar()
 							);\
 
@@ -161,19 +161,19 @@ namespace zetscript{
 					goto lbl_exit_function;
 				}\
 			}else if(store_lst_setter_functions->length()>1){ // it has overrided metamethods
-				Symbol * symbol_setter = so_aux->getType()->getSymbol(__STR_SETTER_METAMETHOD__); \
+				Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 				if(symbol_setter == NULL){\
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
 							,__STR_SETTER_METAMETHOD__\
 							,__STR_AKA_SETTER_METAMETHOD__\
 					);\
 				}\
-				if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
+				if((symbol_setter->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
 					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function",__STR_SETTER_METAMETHOD__,__STR_AKA_SETTER_METAMETHOD__);\
 				}\
-				ptr_function_found=(Function *)symbol_setter->ref_ptr;\
+				ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 			}\
-			if(ptr_function_found->properties & FUNCTION_PROPERTY_NATIVE_OBJECT_REF){\
+			if(ptr_function_found->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF){\
 				vm_execute_native_function(\
 						_vm\
 						,_script_function\
@@ -188,7 +188,7 @@ namespace zetscript{
 				// if argument is a script object should share, because on returning
 				// it does pop and it could deallocate twice
 				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-					vm_share_object(_vm,(Object *)stk_arg->value);
+					vm_share_object(_vm,(ScriptObject *)stk_arg->value);
 				}
 
 				vm_execute_script_function(\
@@ -235,18 +235,18 @@ namespace zetscript{
 			}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
-				STACK_ELEMENT_IS_STRING_OBJECT(stk_src)
+				STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_src)
 							||
 				(stk_src_properties & (STACK_ELEMENT_PROPERTY_CHAR_PTR))
 
 			){
-				StringObject *str_object=NULL;
+				StringScriptObject *str_object=NULL;
 
-				if(STACK_ELEMENT_IS_STRING_OBJECT(stk_dst)){ // dst is string reload
-					str_object=(StringObject *)stk_dst->value;
+				if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_dst)){ // dst is string reload
+					str_object=(StringScriptObject *)stk_dst->value;
 					unref_old_stk_object=false;
 				}else{ // Generates a String var
-					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
+					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_SCRIPT_OBJECT(data->zs));
 					stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					// create shared ptr
 					vm_create_shared_object(_vm,str_object);
@@ -258,7 +258,7 @@ namespace zetscript{
 				if(stk_src_properties & (STACK_ELEMENT_PROPERTY_CHAR_PTR)){
 					str_object->set((const char *)stk_src->value);
 				}else{
-					str_object->set(((StringObject *)(stk_src->value))->get());
+					str_object->set(((StringScriptObject *)(stk_src->value))->get());
 				}
 
 
@@ -268,7 +268,7 @@ namespace zetscript{
 					so_aux=((ContainerSlot *)stk_src->value)->getSrcContainerRef();
 				}
 				else{
-					so_aux=(Object *)stk_src->value;
+					so_aux=(ScriptObject *)stk_src->value;
 				}
 
 				// if dst and src don't references same object
@@ -288,7 +288,7 @@ namespace zetscript{
 						   (dst_container_slot!=NULL)
 					){
 
-						vm_assign_container_slot(_vm,dst_container_slot, (ContainerObject *)so_aux);
+						vm_assign_container_slot(_vm,dst_container_slot, (ContainerScriptObject *)so_aux);
 
 					}else{ // assign object
 
@@ -307,7 +307,7 @@ namespace zetscript{
 							,SFI_GET_FILE(_script_function,instruction)\
 							,SFI_GET_LINE(_script_function,instruction)\
 							,(void *)so_aux
-							,so_aux->getType()->name.toConstChar()
+							,so_aux->getScriptType()->name.toConstChar()
 					);
 #endif
 				}
@@ -324,7 +324,7 @@ namespace zetscript{
 								&&
 					unref_old_stk_object==true
 			){
-				Object  *old_so=(Object  *)old_stk_dst.value;
+				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
 
 				vm_unref_shared_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK);
 			}else if(
@@ -343,7 +343,7 @@ namespace zetscript{
 
 		// check whether dst_container_slot is not referenced
 		if(
-				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=TypeId::TYPE_ID_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
+				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->id>=ScriptTypeId::SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;

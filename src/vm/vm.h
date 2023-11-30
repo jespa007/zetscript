@@ -24,7 +24,7 @@ namespace zetscript{
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 
-	void 			vm_unref_lifetime_object(VirtualMachine *vm,Object *object);
+	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
 
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm);
@@ -56,8 +56,8 @@ namespace zetscript{
 
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm
-		,Object 	*	_this_object
-		,Function *	_script_function
+		,ScriptObject 	*	_this_object
+		,ScriptFunction *	_script_function
 		,StackElement 	*  	_stk_params=NULL
 		,unsigned char		_n_stk_params=0
 		,unsigned short 	_properties=0
@@ -67,25 +67,25 @@ namespace zetscript{
 
 	void vm_execute_script_function(
 			VirtualMachine			* _vm,
-			Object			* _this_object,
-			Function 			* _script_function,
+			ScriptObject			* _this_object,
+			ScriptFunction 			* _script_function,
 			StackElement 		  	* _stk_local_var
 	);
 
 	void  vm_execute_native_function(
 		VirtualMachine 			*	_vm,
-		const Function 	*	_script_function,
+		const ScriptFunction 	*	_script_function,
 		Instruction 			*	_instruction,
-		Object  			* 	_this_object,
-		const Function 	*	_c_function,
+		ScriptObject  			* 	_this_object,
+		const ScriptFunction 	*	_c_function,
 		StackElement 			*	_stk_arg_c_function,
 		unsigned char 				_n_args
 	);
 
 	void vm_execute_script_function(
 		VirtualMachine 		*	_vm,
-		Object		* 	_this_object,
-		Function 		* 	_script_function,
+		ScriptObject		* 	_this_object,
+		ScriptFunction 		* 	_script_function,
 		StackElement 		*	_stk_local_var
 	);
 
