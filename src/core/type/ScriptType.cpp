@@ -80,7 +80,7 @@ namespace zetscript{
 						ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this,sf->params[a].script_type_id)
 					);
 				}else{
-					script_interface+=StringUtils::format("p%i",a-start_idx+1);
+					script_interface+=String::format("p%i",a-start_idx+1);
 				}
 			}
 

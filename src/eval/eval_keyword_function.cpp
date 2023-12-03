@@ -288,7 +288,7 @@ namespace zetscript{
 				String error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?StringUtils::format(
+					,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?String::format(
 							"declaring function member '%s::%s'"
 							,scope_info->owner_type->name.toConstChar()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()
@@ -299,7 +299,7 @@ namespace zetscript{
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?StringUtils::format(
+							,scope_info->owner_type != ZS_TYPE_MAIN(eval_data->script_types_factory)?String::format(
 									"declaring function member '%s::%s'"
 									,scope_info->owner_type->name.toConstChar()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name.toConstChar()

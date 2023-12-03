@@ -289,7 +289,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 
 		try{
 		_zs->eval(
-			zetscript::StringUtils::format(
+			zetscript::String::format(
 					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"

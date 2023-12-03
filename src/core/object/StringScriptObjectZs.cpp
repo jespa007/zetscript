@@ -13,9 +13,8 @@ namespace zetscript{
 
 	bool StringScriptObjectZs_contains(ZetScript *_zs,StringScriptObject *so, String *str){
 		ZS_UNUSUED_PARAM(_zs);
-		return StringUtils::contains(
-				*(so->str_ptr)
-				,*str
+		return (*so->str_ptr).contains(
+				*str
 		);
 	}
 
@@ -31,7 +30,7 @@ namespace zetscript{
 
 	StringScriptObject *StringScriptObjectZs_replace(ZetScript *_zs,StringScriptObject *str_in,String *str_old, String *str_new){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(StringUtils::replace(*(str_in->str_ptr),*str_old,*str_new));
+		str_out->set((str_in->str_ptr)->replace(*str_old,*str_new));
 		return str_out;
 	}
 
@@ -57,7 +56,7 @@ namespace zetscript{
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		ArrayScriptObject *sv=ZS_NEW_ARRAY_SCRIPT_OBJECT(_zs);
 
-		auto v=StringUtils::split(so->toString(),ch_delim);
+		auto v=so->toString().split(ch_delim);
 
 		for(int i=0; i<v.length(); i++){
 
@@ -80,7 +79,7 @@ namespace zetscript{
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		ArrayScriptObject *sv=ZS_NEW_ARRAY_SCRIPT_OBJECT(_zs);
 
-		auto v=StringUtils::split(so->toString(),*str_token);
+		auto v=so->toString().split(*str_token);
 
 		for(int i=0; i<v.length(); i++){
 			StackElement *stk=sv->newSlot();
@@ -107,26 +106,25 @@ namespace zetscript{
 		String *str=so->str_ptr;
 		String pattern="";
 		pattern+=(char)+search;
-		return StringUtils::indexOf(*str,pattern);
+		return str->indexOf(pattern);
 		//str->indexOf
 	}
 
 	zs_int StringScriptObjectZs_indexOf(ZetScript *_zs,StringScriptObject *so,String *search){
 		ZS_UNUSUED_PARAM(_zs);
 		String *str=so->str_ptr;
-		return StringUtils::indexOf(*str,*search);
+		return str->indexOf(*search);
 	}
 
 	bool StringScriptObjectZs_startsWith(ZetScript *_zs,StringScriptObject *so,String *prefix){
 		ZS_UNUSUED_PARAM(_zs);
 		String *str=so->str_ptr;
-		return StringUtils::startsWith(*str,*prefix);
+		return str->startsWith(*prefix);
 	}
 
 	bool StringScriptObjectZs_endsWith(ZetScript *_zs,StringScriptObject *so,String *suffix){
 		ZS_UNUSUED_PARAM(_zs);
-		String *str=so->str_ptr;
-		return StringUtils::endsWith(*str,*suffix);
+		return so->str_ptr->endsWith(*suffix);
 	}
 
 	void 							StringScriptObjectZs_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *str_append){
@@ -141,19 +139,19 @@ namespace zetscript{
 
 	StringScriptObject * 	StringScriptObjectZs_toLowerCase(ZetScript *_zs,StringScriptObject *so){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(StringUtils::toLower(so->toString()));
+		str_out->set(so->toString().toLower());
 		return str_out;
 	}
 
 	StringScriptObject * 	StringScriptObjectZs_toUpperCase(ZetScript *_zs,StringScriptObject *so){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(StringUtils::toUpper(so->toString()));
+		str_out->set(so->toString().toUpper());
 		return str_out;
 	}
 
 	StringScriptObject * 	StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(StringUtils::substring(_so->toString(),_start_index, _end_index));
+		str_out->set(_so->toString().substring(_start_index, _end_index));
 		return str_out;
 	}
 

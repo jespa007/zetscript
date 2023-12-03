@@ -9,7 +9,50 @@
 
 namespace zetscript{
 
+	//--------
+	// STATIC
 	int String::npos=-1;
+
+	bool String::contains(const Vector<String> & _strings, const String & _str_containts,StringComparer sc){
+
+		String *_strings_items=_strings.data();
+		for(int i = 0; i < _strings.length(); i++){
+			if(_strings_items[i].contains(_str_containts,sc)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	String  String::format(const  char  *_str_in, ...){
+
+		char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
+		va_list  ap;
+		va_start(ap,  _str_in);
+		vsprintf(_sformat_buffer,  _str_in,  ap);
+		va_end(ap);
+
+		return String(_sformat_buffer);
+	}
+
+	String	String::formatFileLine(const char* _file, int _line, const  char* _str_in, ...) {
+		String str_out;
+		char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
+		va_list  ap;
+		va_start(ap,  _str_in);
+		vsprintf(_sformat_buffer,  _str_in,  ap);
+		va_end(ap);
+
+		if((_file == NULL || *_file == 0)){
+			str_out=format("[line %i] : %s", _line,_sformat_buffer);
+		}else{
+			str_out=format(ZS_FORMAT_FILE_LINE" : %s", Path::getFilename(_file).toConstChar(), _line,_sformat_buffer);
+		}
+
+		return str_out;
+
+	}
+
 
 	//--------
 	// MEMBER
@@ -189,10 +232,7 @@ namespace zetscript{
 
 			free(buf_new_from_two);
 		}
-
 		return s;
-
-
     }
 
     // +
@@ -262,6 +302,181 @@ namespace zetscript{
 		}
 
 		return strcmp(_s1.toConstChar(),_s2)!=0;
+	}
+
+
+	//------------------------------------------------------------------------------------------------------------------------
+	Vector<String> String::split(char _delim) const {
+		const String &_s_in=*this;
+		Vector<String> elems;
+		//String s = s_in;
+		char *last_pos=(char *)_s_in.toConstChar();
+		char *pos=(char *)_s_in.toConstChar();
+		String token;
+		while((pos=strchr(pos,_delim))!=NULL) {
+			token = _s_in.substr(last_pos-_s_in.toConstChar(), pos-last_pos);
+			elems.push(String(token));
+			pos++;
+			last_pos=pos;
+		}
+
+		// push last token
+		token = _s_in.substr((last_pos-_s_in.toConstChar()), _s_in.length()-(last_pos-_s_in.toConstChar()));
+		elems.push(String(token));
+
+		return elems;
+	}
+
+	Vector<String> String::split(const String & _delim) const {
+		Vector<String> elems;
+		String s = *this;
+		int pos = 0;
+		String token;
+		while ((pos = s.find(_delim)) != String::npos) {
+			token = s.substr(0, pos);
+			elems.push(String(token));
+			s.erase(0, pos + _delim.length());
+		}
+
+		elems.push(String(s));
+		return elems;
+	}
+
+
+	String String::toLower() const{
+
+		String ret = *this;
+		for(int short l = 0; l < ret.length();l++){
+			ret[l] = Character::toLower(ret[l]);
+		}
+		return ret;
+	}
+
+	String String::toUpper() const{
+
+		String ret = *this;
+		for(int short l = 0; l < ret.length();l++){
+			ret[l] = Character::toUpper(ret[l]);
+		}
+		return ret;
+	}
+
+	bool String::endsWith(const String & ending){
+		size_t len_str=this->length();
+		size_t len_end_str=ending.length();
+		if(len_end_str<=len_str){
+			const char *p1=this->toConstChar()+len_str-len_end_str;
+			const char *p2=ending.toConstChar();
+			return strcmp(p1,p2)==0;
+		}
+
+		return false;
+	}
+
+	bool String::startsWith(const String & starting){
+		if (this->length() >= starting.length()) {
+			return strncmp(this->toConstChar(),starting.toConstChar(),starting.length())==0;
+		}
+		return false;
+	}
+
+	/*int String::count(const String & s,char c){
+		int n_items=0;
+
+		for(int i=0; i < s.length(); i++)
+			if(s[i] == c)
+				n_items++;
+
+		return n_items;
+	}*/
+
+	bool String::contains(const String & _str_containts,StringComparer sc){
+
+		String s1=*this;
+		String s2=_str_containts;
+
+		if(sc==StringComparer::OrdinalIgnoreCase){
+			s1=s1.toLower();
+			s2=s2.toLower();
+		}
+
+		if (s1.find(s2) != String::npos) {
+			return true;
+		}
+		return false;
+	}
+
+	int String::indexOf(const String& pattern)
+	{
+		// where appears the pattern in the text?
+		int loc = this->find(pattern, 0);
+		if (loc != String::npos)
+		{
+			return loc;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	String String::substring(int _start_index, int _end_index){
+		String out_string="";
+		if(_start_index<0){
+			ZS_THROW_RUNTIME_ERROR("_start_index negative (_start_index:%i)", _start_index);
+		}
+		if(_end_index < 0){
+			_end_index=this->length()+_end_index;
+		}
+		if(_end_index>=this->length()){
+			_end_index=this->length()-1;
+		}
+
+		if(_start_index<=_end_index){
+			out_string=this->substr(_start_index,_end_index-_start_index+1);
+		}
+
+		return out_string;
+	}
+
+
+	String String::unescape()const{
+		String res;
+		char *it = (char *)this->toConstChar();
+		char *end= (char *)this->toConstChar()+this->length();
+		while (it != end) {
+			char c = *it++;
+			if (c == '\\' && it != end)	{
+				switch (*it++) {
+					case '\\': c = '\\'; break;
+					case 'n': c = '\n'; break;
+					case 't': c = '\t'; break;
+					case '"': c = '\"'; break;
+					case 0x27: c = '\''; break;
+					// all other escapes
+					default:
+					// invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...
+				continue;
+			  }
+			}
+			res += c;
+		}
+
+	  return res;
+	}
+
+	String String::replace(const String & str_old, const String & str_new){
+		String str = *this;
+		int	idx_current_pos=0;
+		char *current_pos=NULL;
+
+		while((current_pos = strstr((char*)str.toConstChar()+idx_current_pos,str_old.toConstChar())) != NULL) {
+			idx_current_pos=current_pos-str.toConstChar();
+			str.replace(idx_current_pos, str_old.length(), str_new);
+			idx_current_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
+		}
+
+		return str;
 	}
 
 	String String::substr (int _pos, int _len) const{
@@ -467,10 +682,6 @@ namespace zetscript{
 		//buf=(char *)rea0loc(buf,size+1);
 		buf[count]=0;
 		buf[count-1]=_c;
-	}
-
-	bool String::empty() const{
-		return count==0;
 	}
 
 	void String::__cleanup__()

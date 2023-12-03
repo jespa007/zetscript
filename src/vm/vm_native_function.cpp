@@ -179,7 +179,7 @@ namespace zetscript{
 				?
 				_symbol_to_find
 				:
-				StringUtils::format("%s::%s",class_str.toConstChar(),_symbol_to_find.toConstChar());
+				String::format("%s::%s",class_str.toConstChar(),_symbol_to_find.toConstChar());
 
 			String args_str = "";
 			/* get arguments... */

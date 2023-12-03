@@ -189,7 +189,7 @@ namespace zetscript{
 			// get identifier with quotes...
 			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
-			if(symbol_value.empty()){
+			if(symbol_value.isEmpty()){
 				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error ScriptObject: expected property name");
 			}
 

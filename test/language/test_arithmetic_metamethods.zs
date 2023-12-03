@@ -83,10 +83,10 @@ function test_self_operation(_a){
 		System::eval(
 			"var ma=new Number("+_a+");\n" +
 			"var va="+_a+";\n" +
-			StringUtils::format(op,"ma")+";\n"+
-			StringUtils::format(op,"va")+";\n"+
+			String::format(op,"ma")+";\n"+
+			String::format(op,"va")+";\n"+
 			"System::assert(\n"+
-				"ma.value==va, \\\"test_self_operation "+StringUtils::format(op,"ma")+" => \\\"+ma.value+\\\")!=\\\"+va\n"+
+				"ma.value==va, \\\"test_self_operation "+String::format(op,"ma")+" => \\\"+ma.value+\\\")!=\\\"+va\n"+
 			 ");"					
 		);
 	}
@@ -100,7 +100,7 @@ function test_self_operation_property(_a){
 			"var ma=new Number("+_a+");\n" +
 			"var va="+_a+";\n" +
 			"/*System::assert(\n"+
-				StringUtils::format(op,"ma.value")+"=="+StringUtils::format(op,"va")+",\\\"test_self_operation_property "+StringUtils::format(op,"ma")+" => \\\"+ma.value+\\\"!=\\\"+va\n"+
+				String::format(op,"ma.value")+"=="+String::format(op,"va")+",\\\"test_self_operation_property "+String::format(op,"ma")+" => \\\"+ma.value+\\\"!=\\\"+va\n"+
 			 ");*/"					
 		);
 	}	

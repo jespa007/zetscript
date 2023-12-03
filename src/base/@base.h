@@ -63,17 +63,17 @@
 #include "Config.h"
 #include "Common.h"
 
+
+#include "System.h"
+#include "Character.h"
+#include "Buffer.h"
+#include "Vector.h"
 #include "String.h"
 #include "Exception.h"
-#include "System.h"
-#include "Vector.h"
-#include "StringUtils.h"
 #include "Integer.h"
 #include "Float.h"
 #include "Boolean.h"
 #include "List.h"
-#include "Buffer.h"
-#include "String.h"
 #include "File.h"
 #include "Log.h"
 #include "Rtti.h"
@@ -87,5 +87,7 @@
 #include "DateTime.h"
 #include "Console.h"
 #include "Memory.h"
+#include "Vector.tcc"
+
 
 

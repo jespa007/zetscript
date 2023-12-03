@@ -115,7 +115,7 @@ namespace zetscript{
 
 		// Custom user function or classes
 		eval(
-			StringUtils::format(
+			String::format(
 				//------------------------------------------------
 				// String
 				"static String::format(_s,..._args){" // add static function format to String module
@@ -249,7 +249,7 @@ namespace zetscript{
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
-						 StringUtils::startsWith(local_sf->name,"@_afun_defval")
+						 local_sf->name.startsWith("@_afun_defval")
 				)){
 					 show_function=false;
 				 }
@@ -443,7 +443,7 @@ namespace zetscript{
 			}
 		}
 
-		if(result.empty()){
+		if(result.isEmpty()){
 			result=stackElementToString(_stk,_format);
 		}
 
@@ -757,7 +757,7 @@ namespace zetscript{
 					}
 				}
 			}else{
-				_error=StringUtils::format("Cannot know how to convert type '%s' from '%s'"
+				_error=String::format("Cannot know how to convert type '%s' from '%s'"
 					,Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert)).toConstChar()
 					,this->stackElementToStringTypeOf(_stack_element).toConstChar()
 				);
@@ -1098,7 +1098,7 @@ namespace zetscript{
 			delete buf_tmp;
 
 			if(error){
-				if(error_file.empty()==false){
+				if(error_file.isEmpty()==false){
 					ZS_THROW_EXCEPTION_FILE_LINE(error_file.toConstChar(),error_line,str_error.toConstChar());
 				}else{
 					ZS_THROW_EXCEPTION(str_error.toConstChar());

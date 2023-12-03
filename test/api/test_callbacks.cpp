@@ -130,7 +130,7 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 	// test calling script-c-script-c
 
 	_zs->eval(
-			zetscript::StringUtils::format(
+			zetscript::String::format(
 			"function test_1st_script_call(){\n"
 				"if(%s){\n"
 					"Console::outln (\"Hello from script\");\n"

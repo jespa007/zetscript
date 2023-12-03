@@ -30,9 +30,10 @@ int main(int argc, char * argv[]) {
 
 		int idx_arg=1;
 		bool exit_loop=false;
+		zetscript::String str_arg;
 		for(;idx_arg  < argc && exit_loop==false; idx_arg++){
-
-			bool is_option=zetscript::StringUtils::startsWith(argv[idx_arg],"--"); // is option
+			str_arg=argv[idx_arg];
+			bool is_option=str_arg.startsWith("--"); // is option
 
 			if(is_option){
 

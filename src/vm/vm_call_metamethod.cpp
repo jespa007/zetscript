@@ -88,14 +88,14 @@ namespace zetscript{
 
 
 		if(object == NULL){ // cannot perform operation
-			if(str_type_object_found.empty()){ // not any object found
+			if(str_type_object_found.isEmpty()){ // not any object found
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
 				if(instruction->byte_code == BYTE_CODE_JE_CASE){
-					error_found=StringUtils::format("Unable to perform '==' operator for case conditional");
+					error_found=String::format("Unable to perform '==' operator for case conditional");
 				}else{
-					error_found=StringUtils::format("ScriptType '%s' does not implements metamethod '%s'"
+					error_found=String::format("ScriptType '%s' does not implements metamethod '%s'"
 						,str_type_object_found.toConstChar()
 						,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					);
@@ -128,7 +128,7 @@ namespace zetscript{
 				,stk_args
 				,n_stk_args
 			)) == NULL){
-				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,operator_str);
+				error_found=String::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -137,19 +137,19 @@ namespace zetscript{
 			Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 			if(symbol == NULL){
-				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,operator_str);
+				error_found=String::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 
 			if(_is_static && ((sf->properties & SCRIPT_FUNCTION_PROPERTY_STATIC) == 0)){
-				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,operator_str);
+				error_found=String::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
 			if((_is_static==false) && ((sf->properties & SCRIPT_FUNCTION_PROPERTY_STATIC) != 0)){
-				error_found=StringUtils::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,operator_str);
+				error_found=String::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -234,7 +234,7 @@ namespace zetscript{
 					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,data->zs->stackElementToStringTypeOf(stk_result_op2).toConstChar()
-					,error_found.empty()?"":":"
+					,error_found.isEmpty()?"":":"
 					,error_found.toConstChar()
 					,tip.toConstChar()
 				);
@@ -244,7 +244,7 @@ namespace zetscript{
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
-					,error_found.empty()?"":":"
+					,error_found.isEmpty()?"":":"
 					,error_found.toConstChar()
 					,tip.toConstChar()
 				);

@@ -3,13 +3,13 @@
  *  See LICENSE file for details.
  */
 #include 	"System.cpp"
+#include 	"Character.cpp"
 #include	"File.cpp"
 #include 	"Buffer.cpp"
 #include 	"Log.cpp"
 #include 	"Path.cpp"
 #include 	"Rtti.cpp"
 #include 	"String.cpp"
-#include 	"StringUtils.cpp"
 #include 	"MapIntIterator.cpp"
 #include 	"MapInt.cpp"
 #include 	"MapStringIterator.cpp"

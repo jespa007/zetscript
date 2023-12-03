@@ -422,12 +422,12 @@ namespace zetscript{
 				end="";
 
 				if(info->file != 0 && *info->file!=0){
-					created_at=StringUtils::format(" at " ZS_FORMAT_FILE_LINE,Path::getFilename(info->file).toConstChar(),info->line);
+					created_at=String::format(" at " ZS_FORMAT_FILE_LINE,Path::getFilename(info->file).toConstChar(),info->line);
 				}else{
 					created_at=" at [??:??]";
 					some_registers_without_file_line=true;
 				}
-				error+=StringUtils::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.toConstChar(),end.toConstChar());
+				error+=String::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.toConstChar(),end.toConstChar());
 
 			}
 

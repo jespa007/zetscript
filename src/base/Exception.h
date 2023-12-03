@@ -11,7 +11,6 @@
 #define ZS_THROW_EXCEPTION												::zetscript::throw_exception
 
 namespace zetscript {
-
 	class Exception: public std::exception{
 		public:
 

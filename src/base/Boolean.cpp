@@ -5,14 +5,15 @@
 #include "@base.h"
 
 namespace zetscript{
-	bool * Boolean::parse(const String & s){
+	bool * Boolean::parse(const String & _str){
+		String str=_str.toLower();
 
-		if(StringUtils::toLower(s)=="true"){
+		if(str=="true"){
 			bool *b=new bool;
 			*b=true;
 			return b;
 
-		}else if(StringUtils::toLower(s)=="false"){
+		}else if(str=="false"){
 			bool *b=new bool;
 			*b=false;
 			return b;

@@ -214,7 +214,7 @@ namespace zetscript{
 
 		}
 
-		if(error.empty()==false){
+		if(error.isEmpty()==false){
 			ZS_VM_ERROR("Cannot perform operation 'in' because %s",error.toConstChar());
 			return false;
 		}

@@ -4,7 +4,6 @@
  */
 #pragma once
 
-
 #define ZS_STR_EXPAND(tok) 	#tok
 #define ZS_STR(tok) 		ZS_STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) 	(strcmp(a,b) R 0)
@@ -32,7 +31,18 @@ namespace zetscript{
 	class String
 	{
 	public:
+
+		typedef enum{
+			Exactly=0,
+			OrdinalIgnoreCase=1
+		}StringComparer;
+
 		static int npos;
+
+		static bool 		contains(const Vector<String> & _strings, const String & _str_containts,StringComparer sc=StringComparer::Exactly);
+		static String  		format(const  char  *string_text, ...);
+		static String		formatFileLine(const char* _file, int _line, const  char* _str_in, ...);
+
 
 		String();
 		String(const char * _s);
@@ -58,7 +68,7 @@ namespace zetscript{
 	    void clear();
 
 
-	    String  substr (int pos = 0, int len = npos) const;
+	    String  substr (int pos, int len = npos) const;
 
 	    // +
 		friend String operator+(const String & _s1, const String &_s2);
@@ -95,7 +105,36 @@ namespace zetscript{
 		void insert(int _pos, char _c);
 		void insert(int _pos, const String & _s1);
 
-		bool empty() const;
+		 String 				toLower() const;
+		 String 				toUpper() const;
+
+		 bool 					endsWith( const String & ending);
+		 bool 					startsWith(const String & starting);
+		 String 				replace( const String & old_word, const String & new_word);
+
+		 Vector<String> 		split(char delim) const;
+
+		 Vector<String> 		split(const String & delim) const;
+
+
+		 String 				remove(const String & str_old, char ch_to_remove);
+
+		 //int 					count(char c);
+
+		 bool 					contains(const String & _str_containts,StringComparer sc=StringComparer::Exactly);
+
+
+		 int 					indexOf(const String& pattern);
+
+		String 					substring(int _start_index, int _end_index=-1);
+
+		String 					unescape() const;
+
+
+		inline bool isEmpty() const{
+			return count==0;
+		}
+
 
 		inline int length() const{
 			return count;
@@ -108,6 +147,9 @@ namespace zetscript{
 		~String();
 
 	private:
+
+
+
 		char * buf = NULL;
 		int count=0;
 		int _size = 0;
@@ -117,6 +159,8 @@ namespace zetscript{
 		void set(const char * _s, int _length=npos);
 		void inc_slots(int _n_slots);
 		void __cleanup__();
+
+
 	};
 
 }

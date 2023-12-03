@@ -203,7 +203,7 @@ namespace zetscript{
 			}
 
 			if(args.length()==1 && _type != NULL){
-				error=StringUtils::format(
+				error=String::format(
 					"ScriptFunction to bind has to have '%s' as SECOND parameter for object member reference"
 					,Rtti::demangle(_type->native_name.toConstChar()).toConstChar()
 				);
@@ -225,7 +225,7 @@ namespace zetscript{
 
 				if(i==1 && _type!=NULL){
 					if(strcmp(str_param,_type->native_name.toConstChar())!=0){
-						error=StringUtils::format(
+						error=String::format(
 							"SECOND parameter, as object member reference, has to be type '%s' but it was '%s'"
 							,Rtti::demangle(_type->native_name.toConstChar()).toConstChar()
 							,Rtti::demangle(str_param).toConstChar()
@@ -236,7 +236,7 @@ namespace zetscript{
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(script_type_id==SCRIPT_TYPE_ID_FLOAT || script_type_id==SCRIPT_TYPE_ID_BOOL || script_type_id == SCRIPT_TYPE_ID_STRING){
-					error=StringUtils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
+					error=String::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,Rtti::demangle(str_param).toConstChar()
 							,Rtti::demangle(str_param).toConstChar());
@@ -245,7 +245,7 @@ namespace zetscript{
 
 				if(script_type_id==SCRIPT_TYPE_ID_INVALID){
 
-					error=StringUtils::format("Argument %i type '%s' not registered"
+					error=String::format("Argument %i type '%s' not registered"
 						,i+1
 						,Rtti::demangle(str_param).toConstChar()
 					);
@@ -258,7 +258,7 @@ namespace zetscript{
 
 exit_function_traits:
 
-		if(StringUtils::isEmpty(error)==false){
+		if(error.isEmpty()==false){
 
 			if(*_params !=NULL){
 				delete [] *_params;

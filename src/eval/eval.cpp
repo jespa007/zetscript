@@ -382,7 +382,7 @@ namespace zetscript{
 							eval_data->error=true;\
 							eval_data->error_file=ex.getFilename();
 							eval_data->error_line=ex.getLine();
-							eval_data->str_error=StringUtils::format(
+							eval_data->str_error=String::format(
 									"%s \n"
 									ZS_FORMAT_FILE_LINE" from import '%s'"
 									,ex.what()

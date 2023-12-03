@@ -45,7 +45,7 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 		if(_show_print) printf("%s %i\n",s->name.toConstChar(),(s->idx_position+1));
 		if(s->name != str_to_compare){
 			throw new std::runtime_error(
-				zetscript::StringUtils::format(
+				zetscript::String::format(
 						"Symbol are not ordered ('%s' != '%s')"
 						,s->name.toConstChar()
 						,str_to_compare.toConstChar()).toConstChar()
@@ -62,7 +62,7 @@ void test_anonymous_scopes_no_print(zetscript::ZetScript *_zs){
 
 void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->eval(zetscript::StringUtils::format(
+	_zs->eval(zetscript::String::format(
 		"class A{\n"
 		"	constructor(){\n"
 		//		should call A::function1 of the instance of var is A
@@ -77,7 +77,7 @@ void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_pr
 		"};\n",_show_print?"true":"false")
 	);
 
-	_zs->eval(zetscript::StringUtils::format(
+	_zs->eval(zetscript::String::format(
 		"class B extends A{\n"
 		"	constructor(){\n"
 		"		super();\n"

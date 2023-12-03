@@ -379,7 +379,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
-		if(_script_type_name.empty()){
+		if(_script_type_name.isEmpty()){
 			ZS_THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
@@ -392,7 +392,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR("ScriptType name '%s' is already defined %s"
 						,_script_type_name.toConstChar()
 						,main_function_symbol->file!=NULL && strcmp(main_function_symbol->file,"")!=0 && main_function_symbol->line!=-1?
-							StringUtils::format("at " ZS_FORMAT_FILE_LINE
+							String::format("at " ZS_FORMAT_FILE_LINE
 								,Path::getFilename(main_function_symbol->file).toConstChar()
 								,main_function_symbol->line
 							).toConstChar():""
@@ -547,7 +547,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=type->registerMemberFunction(
-					StringUtils::format(
+					String::format(
 						"@__field_initializer_%s_@__"
 						,type->name.toConstChar()
 					)

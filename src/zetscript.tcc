@@ -1703,7 +1703,7 @@ namespace zetscript{
 			std::function<F> return_function=NULL;
 			ScriptFunction * fun_obj=NULL;
 			ScriptObject *calling_obj=NULL;
-			Vector<String> access_var = StringUtils::split(function_access,'.');
+			Vector<String> access_var =function_access.split('.');
 			ScriptFunction * main_function = script_types_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;

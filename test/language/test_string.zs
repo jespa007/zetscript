@@ -70,4 +70,4 @@ System::assert("!!!hello world!!!".substring(3,-4)=="hello world","\"!!!hello wo
 System::assert("hello world world".replace("world","people")=="hello people people","\"hello world\".replace(\"world\",\"people\")!=\"hello people people\"")
 
 // Test format
-System::assert(StringUtils::format("hello {0} {1}","people1","people2")=="hello people1 people2","StringUtils::format(\"hello {0} {1}\",\"people1\",\"people2\")!=\"hello people1 people2\"")
+System::assert(String::format("hello {0} {1}","people1","people2")=="hello people1 people2","String::format(\"hello {0} {1}\",\"people1\",\"people2\")!=\"hello people1 people2\"")

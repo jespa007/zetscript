@@ -44,7 +44,7 @@ namespace zetscript{
 		}
 		if(data->vm_error == true){
 
-			data->vm_error_callstack_str+=StringUtils::format(
+			data->vm_error_callstack_str+=String::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
 				, "_iter"
 				,SFI_GET_FILE(_script_function,instruction)
@@ -587,12 +587,12 @@ execute_function:
 						str_class_owner=data->script_types_factory->getScriptType(sf_call_script_function->owner_script_type_id)->name.toConstChar();
 					}
 					const char * file_src_call=SFI_GET_FILE(_script_function,instruction);
-					data->vm_error_callstack_str+=StringUtils::format(
+					data->vm_error_callstack_str+=String::format(
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
 						,sf_call_script_function->name.toConstChar()
-						,file_src_call?StringUtils::format("file:%s ",file_src_call).toConstChar():""
+						,file_src_call?String::format("file:%s ",file_src_call).toConstChar():""
 						,SFI_GET_LINE(_script_function,instruction)
 					);
 

@@ -107,7 +107,7 @@ namespace zetscript{
 
 		if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			// transform '\"' to '"','\n' to carry returns, etc
-			str_input=StringUtils::unescape(((ScriptObject *)stk.value)->toString());
+			str_input=((ScriptObject *)stk.value)->toString().unescape();
 		}
 		else{
 			str_input=_zs->stackElementToString( &stk);
@@ -299,7 +299,7 @@ namespace zetscript{
 	}
 
 	void StringScriptObject::set(const String & _s){
-		*str_ptr = StringUtils::unescape(_s);
+		*str_ptr = _s.unescape();
 	}
 
 	const String & StringScriptObject::get(){
@@ -321,7 +321,7 @@ namespace zetscript{
 	StringScriptObject *StringScriptObject::sub(StringScriptObject *s1){
 		//String *str;
 		StringScriptObject *so_string = ZS_NEW_STRING_SCRIPT_OBJECT(this->zs);
-		so_string->set(StringUtils::replace(this->toString(),s1->toString(),""));
+		so_string->set(this->toString().replace(s1->toString(),""));
 		return so_string;
 	}
 

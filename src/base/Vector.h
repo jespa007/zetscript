@@ -62,4 +62,4 @@ namespace zetscript{
 	};
 }
 
-#include "Vector.tcc"
+

@@ -169,30 +169,30 @@ namespace zetscript{
 			default:
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
-				 iload_info=StringUtils::format("%s", instruction->getConstantValueOp2ToString().toConstChar());
+				 iload_info=String::format("%s", instruction->getConstantValueOp2ToString().toConstChar());
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-				 iload_info=StringUtils::format("%s['%s']"
+				 iload_info=String::format("%s['%s']"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-			 	 iload_info=StringUtils::format("%s,%s['%s']"
+			 	 iload_info=String::format("%s,%s['%s']"
 					 ,instruction->getConstantValueOp2ToString().toConstChar()
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
-				 iload_info=StringUtils::format("%s['%s'],%s"
+				 iload_info=String::format("%s['%s'],%s"
 					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().toConstChar()
 				 );
 				break;
 		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
-		   	   iload_info=StringUtils::format(
+		   	   iload_info=String::format(
 		   			 "%s['%s'],%s['%s']"
 		  			 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 		  			 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
@@ -495,7 +495,7 @@ namespace zetscript{
 				if(same_signature){
 					ZS_THROW_EXCEPTION_FILE_LINE(NULL,-1,"ScriptFunction '%s' with same signature already binded"
 						,function_member->scope!=NULL?
-								StringUtils::format("%s::%s"
+								String::format("%s::%s"
 										,function_member->scope->owner_type->name.toConstChar()
 										,_function_name.toConstChar()).toConstChar()
 								:_function_name.toConstChar()
@@ -624,16 +624,16 @@ namespace zetscript{
 	){
 		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY,SCRIPT_SCOPE_REGISTER_PROPERTY_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		String current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
-							StringUtils::format(ZS_FORMAT_LINE,_line):
-							StringUtils::format(ZS_FORMAT_FILE_LINE,Path::getFilename(_file).toConstChar(),_line);
+							String::format(ZS_FORMAT_LINE,_line):
+							String::format(ZS_FORMAT_FILE_LINE,Path::getFilename(_file).toConstChar(),_line);
 
 		if(symbol_repeat != NULL){ // symbol found
 
 			ScriptFunction *sf_repeat=NULL;
 
 			String symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
-					StringUtils::format(ZS_FORMAT_LINE,_line):
-					StringUtils::format(ZS_FORMAT_FILE_LINE,Path::getFilename(symbol_repeat->file).toConstChar(),_line);
+					String::format(ZS_FORMAT_LINE,_line):
+					String::format(ZS_FORMAT_FILE_LINE,Path::getFilename(symbol_repeat->file).toConstChar(),_line);
 
 
 			if(symbol_repeat->properties & SYMBOL_PROPERTY_FUNCTION){
