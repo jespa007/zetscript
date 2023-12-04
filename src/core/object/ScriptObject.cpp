@@ -206,15 +206,15 @@ namespace zetscript{
 
 
 
-	void ScriptObject::attachRefObjectNode(ListNode<RefObjectScriptObject *> *_ref_object_node){
+	void ScriptObject::attachRefObjectNode(ListNode<RefScriptObject *> *_ref_object_node){
 		if(ref_objects==NULL){
-			ref_objects=new List<RefObjectScriptObject *>;
+			ref_objects=new List<RefScriptObject *>;
 		}
 		ref_objects->insert(_ref_object_node);
 	}
 
 
-	void ScriptObject::deattachRefObjectNode(ListNode<RefObjectScriptObject *> *_ref_object_node){
+	void ScriptObject::deattachRefObjectNode(ListNode<RefScriptObject *> *_ref_object_node){
 		if(ref_objects==NULL){
 			ZS_VM_SET_USER_ERRORF(vm,"ref_objects==NULL");
 			return;
@@ -226,7 +226,7 @@ namespace zetscript{
 		return zs->getScriptTypesFactory();
 	}
 
-	void ScriptObject::onDettachRefObjectNode(ListNode<RefObjectScriptObject *> *_current_node){
+	void ScriptObject::onDettachRefObjectNode(ListNode<RefScriptObject *> *_current_node){
 		_current_node->data->setRefObject(NULL);
 	}
 

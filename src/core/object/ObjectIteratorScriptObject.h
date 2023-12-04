@@ -4,11 +4,11 @@
  */
 #pragma once
 
-#define ZS_NEW_STRING_ITERATOR_SCRIPT_OBJECT(zs,so) (StringIteratorScriptObject::newStringIteratorScriptObject(zs,so))
+#define ZS_NEW_OBJECT_ITERATOR_SCRIPT_OBJECT(zs,so) (ObjectIteratorScriptObject::newObjectIteratorScriptObject(zs,so))
 
 namespace zetscript{
 
-	class  StringIteratorScriptObject:public RefScriptObject{
+	class  ObjectIteratorScriptObject:public RefScriptObject{
 
 	public:
 
@@ -16,9 +16,9 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static StringIteratorScriptObject * newStringIteratorScriptObject(
+		static ObjectIteratorScriptObject * newObjectIteratorScriptObject(
 				ZetScript *_zs
-				,StringScriptObject *_so_ref
+				, ObjectScriptObject *_so_ref
 		);
 
 		//
@@ -26,23 +26,22 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		//StringIteratorScriptObject();
-		StringIteratorScriptObject(
+		ObjectIteratorScriptObject(
 				ZetScript *_zs
-				,StringScriptObject *_so_ref
+				,ObjectScriptObject *_so_ref
 		);
 		void get();
 		void next();
 		bool end();
-		~StringIteratorScriptObject();
+
+		~ObjectIteratorScriptObject();
 
 	private:
 
-		zs_int idx;
 		StackElement stk_key;
-		StackElement stk_value;
-
+		MapStringIterator it;
 		void setup();
+
 	};
 
 }

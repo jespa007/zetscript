@@ -4,16 +4,16 @@
  */
 namespace zetscript{
 
-	class RefObjectScriptObject : public ScriptObject{
+	class RefScriptObject : public ScriptObject{
 	public:
-		RefObjectScriptObject(ZetScript *_zs, ScriptObject *_so_ref);
+		RefScriptObject(ZetScript *_zs, ScriptObject *_so_ref);
 		void setRefObject(ScriptObject *_ref_object);
 		ScriptObject *getRefObject();
-		~RefObjectScriptObject();
+		~RefScriptObject();
 
 
 	protected:
-		ListNode<RefObjectScriptObject *> *ref_object_node;
+		ListNode<RefScriptObject *> *ref_object_node;
 		ScriptObject *ref_object;
 
 		void dettachRefObject();

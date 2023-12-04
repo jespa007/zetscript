@@ -387,7 +387,6 @@ SET(
 	base/Path.h
 	base/Rtti.h
 	base/String.h
-	base/StringUtils.h
 	base/TimeSpan.h
 	base/@base.h
 	base/Vector.h
@@ -397,6 +396,10 @@ SET(
 	base/System.h
 	base/List.h
 	base/Exception.h
+	base/Character.h
+	base/Integer.h
+	base/Float.h
+	base/Boolean.h
 	
 
 	#eval
@@ -416,12 +419,14 @@ SET(
 	
 	# core
 	core/@core.h
+	
 	core/MemberProperty.h
 	core/MetamethodMembers.h
 	core/StackElementMemberProperty.h
 	core/ByteCode.h
-	core/MetamethodHelper.h	
+	core/ByteCodeHelper.h
 	core/Metamethod.h
+	core/MetamethodHelper.h	
 	core/Instruction.h
 	core/StackElement.h
 	core/Symbol.h
@@ -430,7 +435,7 @@ SET(
 	# core/function	
 	core/function/ScriptFunction.h
 	core/function/ScriptFunctionsFactory.h
-	core/function/FunctionParam.h
+	core/function/ScriptFunctionParam.h
 	core/function/FunctionTraits.h
 	
 	# core/type
@@ -441,14 +446,13 @@ SET(
 	core/type/ScriptTypesFactory.tcc
 	
 	# core/object
-	core/object/RefObjectScriptObject.h
+	core/object/RefScriptObject.h
 	core/object/ScriptObject.h
 	core/object/ClassScriptObject.h
 	core/object/ClassScriptObject.tcc
-	core/object/MemberFunctionObject.h
+	core/object/MemberFunctionScriptObject.h
 	core/object/ContainerScriptObject.h
 	core/object/ContainerSlot.h
-	script/object/ContainerSlot.h
 	core/object/ObjectScriptObject.h
 	core/object/ObjectScriptObject.tcc
 	core/object/ObjectScriptObjectZs.h
@@ -458,15 +462,14 @@ SET(
 	core/object/StringScriptObjectZs.h
 	core/object/StringIteratorScriptObject.h
 	core/object/StringIteratorScriptObjectZs.h
-	core/object/VarRefObject.h
+	core/object/VarRefScriptObject.h
 	core/object/ArrayScriptObject.h
 	core/object/ArrayScriptObject.tcc
 	core/object/ArrayScriptObjectZs.h
 	core/object/ArrayIteratorScriptObject.h
-	core/object/ArrayIteratorObjectZs.h
+	core/object/ArrayIteratorScriptObjectZs.h
 	core/scope/ScriptScope.h
 	core/scope/ScriptScopesFactory.h
-	core/scope/zs_scope.h
 	
 	# vm
 	vm/vm_operation_assign.h

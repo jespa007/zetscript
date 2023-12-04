@@ -4,19 +4,19 @@
  */
 
 namespace zetscript{
-	RefObjectScriptObject::RefObjectScriptObject(
+	RefScriptObject::RefScriptObject(
 			ZetScript *_zs
 			, ScriptObject *_so_ref
 	):ScriptObject(_zs){
 		ref_object=_so_ref;
-		ref_object_node=new ListNode<RefObjectScriptObject *>;
+		ref_object_node=new ListNode<RefScriptObject *>;
 		ref_object_node->data=this;
 
 		ref_object->attachRefObjectNode(ref_object_node);
 	}
 
 
-	void RefObjectScriptObject::setRefObject(ScriptObject *_ref_object){
+	void RefScriptObject::setRefObject(ScriptObject *_ref_object){
 
 		if(ref_object!=_ref_object){
 			//detach current
@@ -32,11 +32,11 @@ namespace zetscript{
 		ref_object=_ref_object;
 	}
 
-	ScriptObject *RefObjectScriptObject::getRefObject(){
+	ScriptObject *RefScriptObject::getRefObject(){
 		return ref_object;
 	}
 
-	void RefObjectScriptObject::dettachRefObject(){
+	void RefScriptObject::dettachRefObject(){
 		// if ref_object != is not already deattached
 		if(ref_object != NULL){
 			ref_object->deattachRefObjectNode(ref_object_node);
@@ -44,7 +44,7 @@ namespace zetscript{
 		}
 	}
 
-	RefObjectScriptObject::~RefObjectScriptObject(){
+	RefScriptObject::~RefScriptObject(){
 		dettachRefObject();
 		delete ref_object_node;
 		ref_object_node=NULL;
