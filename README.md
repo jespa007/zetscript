@@ -13,7 +13,7 @@ int main(){
 
 	zetscript::ZetScript zs;
 
-	zs.eval("Console::outln(\"Hello World from script!\")");
+	zs.compileAndRun("Console::outln(\"Hello World from script!\")");
 
 	return 0;
 }
@@ -160,7 +160,7 @@ int main(){
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
 	zs.registerFunction("sayHelloWorld",sayHelloWorld);
 	// Evaluates a script where it calls 'sayHelloWorld' function
-	zs.eval(
+	zs.compileAndRun(
 	"sayHelloWorld();"
 	);
 	return 0;
@@ -229,7 +229,7 @@ int main(){
 
 	// Register member function 'MyClass::setData' using 'MyClassWrap_setData' wrapper
 	zs.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
-	zs.eval(
+	zs.compileAndRun(
 		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
 		"myclass.setData(5);\n" // it prints "Int value as 5"
 		"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:5"
@@ -247,7 +247,7 @@ int main(){
 
 	// ...
 
-	zs.eval(
+	zs.compileAndRun(
 		"class ScriptMyClass extends MyClass{\n"
 		"	setData(arg){\n"
 		"		var i=this.data1;\n"
@@ -282,7 +282,7 @@ void test_call_script_function(){
 
 	zetscript::ZetScript zs;
 
-	zs.eval(
+	zs.compileAndRun(
 		"function sayHello(){\n"
 		"	Console::outln(\"hello from 'sayHello'!\")\n"
 		"}\n"
