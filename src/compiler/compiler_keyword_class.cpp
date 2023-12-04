@@ -2,31 +2,31 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "eval.h"
+#include "compiler.h"
 
 namespace zetscript{
 
 
 
-	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptType *sc	);
+	char * compiler_keyword_class_property(CompilerData *compiler_data, const char *s, int & line	, ScriptType *sc	);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
 	//
 	// CLASS
 	//
 
-	char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, ScriptScope *scope_info){
-		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char * compiler_keyword_class(CompilerData *compiler_data,const char *s,int & line, ScriptScope *scope_info){
+		// PRE: **ast_node_to_be_compileruated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
 		String name;
 		String base_class_name="";
 		ScriptType *sc;
 		Keyword key_w;
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		// check for keyword ...
-		key_w = eval_is_keyword(aux_p);
+		key_w = compiler_is_keyword(aux_p);
 
 
 		if(key_w != Keyword::KEYWORD_CLASS){
@@ -34,14 +34,14 @@ namespace zetscript{
 		}
 
 		if(scope_info->scope_parent!=NULL){
-			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"class keyword is not allowed");
+			EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"class keyword is not allowed");
 		}
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p+strlen(compiler_data_keywords[key_w].str),line);
 
 		// check for symbol's name
 		aux_p=get_name_identifier_token(
-				eval_data
+				compiler_data
 				,aux_p
 				,line
 				,name
@@ -50,48 +50,48 @@ namespace zetscript{
 		// try to register type...
 		class_line = line;
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
+			IGNORE_BLANKS(aux_p,compiler_data,aux_p+7,line);
 			aux_p=get_name_identifier_token(
-					eval_data
+					compiler_data
 					,aux_p
 					,line
 					,base_class_name
 			);
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
+			IGNORE_BLANKS(aux_p,compiler_data,aux_p, line);
 		}
 
 		// register type
 		try{
-			sc=eval_data->script_types_factory->registerScriptType(
+			sc=compiler_data->script_types_factory->registerScriptType(
 				 name
 				,base_class_name
 				,0
-				,eval_data->current_parsing_file
+				,compiler_data->current_parsing_file
 				, line
 			);
 		}catch(Exception &ex){
-			eval_data->error=true;
-			eval_data->str_error=ex.what();
-			eval_data->error_line=ex.getLine();
-			eval_data->error_file=ex.getFilename();
+			compiler_data->error=true;
+			compiler_data->str_error=ex.what();
+			compiler_data->error_line=ex.getLine();
+			compiler_data->error_file=ex.getFilename();
 			return NULL;
 		}catch(std::exception &ex){
-			eval_data->error=true;
-			eval_data->str_error=ex.what();
+			compiler_data->error=true;
+			compiler_data->str_error=ex.what();
 			return NULL;
 		}
 
 		ZS_LOG_DEBUG("registered type '%s' line %i ",name.toConstChar(), class_line);
 
 		if(*aux_p != '{' ){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",name.toConstChar());
+			EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",name.toConstChar());
 		}
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p+1,line);
 
 		// TODO: Register type and baseof
 		// register info type ...
@@ -99,8 +99,8 @@ namespace zetscript{
 		while(*aux_p != '}' && *aux_p != 0){
 			char *test_attrib=aux_p;
 			int test_line_attrib=line;
-			if((test_attrib=eval_keyword_class_property(
-				eval_data
+			if((test_attrib=compiler_keyword_class_property(
+				compiler_data
 				,aux_p
 				,line
 				,sc // pass type
@@ -108,20 +108,20 @@ namespace zetscript{
 
 				line=test_line_attrib; // restore line
 
-				if(eval_data->error){
+				if(compiler_data->error){
 					return NULL;
 				}
 
-				// 1st. check whether eval a keyword...
-				key_w = eval_is_keyword(aux_p);
+				// 1st. check whether compiler a keyword...
+				key_w = compiler_is_keyword(aux_p);
 
 				switch(key_w){
 				// functions
 				case Keyword::KEYWORD_STATIC:
 				case Keyword::KEYWORD_FUNCTION:
 
-						aux_p = eval_keyword_function(
-							eval_data
+						aux_p = compiler_keyword_function(
+							compiler_data
 							,aux_p
 							, line
 							,sc->scope // pass type scope
@@ -129,7 +129,7 @@ namespace zetscript{
 						break;
 				case Keyword::KEYWORD_UNKNOWN: // supposes a member function
 					// function member without function keyword
-					aux_p=eval_keyword_function(eval_data
+					aux_p=compiler_keyword_function(compiler_data
 							,aux_p
 							, line
 							,sc->scope
@@ -138,8 +138,8 @@ namespace zetscript{
 					break;
 				case Keyword::KEYWORD_VAR:
 				case Keyword::KEYWORD_CONST: // const symbol
-						aux_p = eval_keyword_var(
-							eval_data
+						aux_p = compiler_keyword_var(
+							compiler_data
 							,aux_p
 							, line
 							,sc->scope // pass type scope
@@ -153,7 +153,7 @@ namespace zetscript{
 
 						break;
 				default:
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,name.toConstChar());
+					EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",compiler_data_keywords[key_w].str,name.toConstChar());
 				}
 
 				if(aux_p == NULL){
@@ -162,27 +162,27 @@ namespace zetscript{
 			}else{ // parsed detected an attrib
 				aux_p = test_attrib;
 			}
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+			IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 		}
 
 		if(*aux_p != '}'){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",name.toConstChar());
+			EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",name.toConstChar());
 		}
 
 		return aux_p+1;
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,String & member_symbol){
+	char * is_class_member_extension(CompilerData *compiler_data,const char *s,int & line,ScriptType **sc,String & member_symbol){
 
 		char *aux_p = (char *)s;
 		String name;
 		*sc=NULL;
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		// check whwther the function is anonymous or not.
 		aux_p=get_name_identifier_token(
-				eval_data
+				compiler_data
 				,aux_p
 				,line
 				,name);
@@ -191,18 +191,18 @@ namespace zetscript{
 			return NULL;
 		}
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 			aux_p=get_name_identifier_token(
-					eval_data
+					compiler_data
 					,aux_p+2
 					,line
 					,member_symbol
 			);
 
-			if((*sc=ZS_GET_OBJECT_TYPE(eval_data->script_types_factory,name)) == NULL){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. ScriptType '%s' not defined"
+			if((*sc=ZS_GET_OBJECT_TYPE(compiler_data->script_types_factory,name)) == NULL){
+				EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Error access '%s::%s'. ScriptType '%s' not defined"
 					,name.toConstChar()
 					,member_symbol.toConstChar()
 					,name.toConstChar()
@@ -214,38 +214,38 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  ScriptScope *scope_info){
-		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+	char * compiler_keyword_delete(CompilerData *compiler_data,const char *s,int & line,  ScriptScope *scope_info){
+		// PRE: **ast_node_to_be_compileruated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		String symbol_value;
 		Keyword key_w;
-		EvalInstruction *eval_instruction;
+		CompilerInstruction *compiler_instruction;
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		// check for keyword ...
-		key_w = eval_is_keyword(aux_p);
+		key_w = compiler_is_keyword(aux_p);
 
 		if(key_w == Keyword::KEYWORD_DELETE){
 			Operator tst_op_aux;
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+			IGNORE_BLANKS(aux_p,compiler_data,aux_p+strlen(compiler_data_keywords[key_w].str),line);
 
 			if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",eval_data_operators[tst_op_aux].str);
+				EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",compiler_data_operators[tst_op_aux].str);
 			}
 
-			key_w=eval_is_keyword(aux_p);
+			key_w=compiler_is_keyword(aux_p);
 			if(key_w!=Keyword::KEYWORD_UNKNOWN && key_w!=Keyword::KEYWORD_THIS){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",eval_data_keywords[key_w].str);
+				EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",compiler_data_keywords[key_w].str);
 			}
 
-			if((aux_p = eval_expression(
-					eval_data
+			if((aux_p = compiler_expression(
+					compiler_data
 					,aux_p
 					,line
 					,scope_info
-					,&eval_data->current_function->eval_instructions
+					,&compiler_data->current_function->compiler_instructions
 					,{}
 					,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 			))==NULL){
@@ -254,20 +254,20 @@ namespace zetscript{
 			}
 
 			if((tst_op_aux=is_operator(aux_p))!=ZS_OPERATOR_UNKNOWN){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected operator '%s' after delete identifier ",eval_data_operators[tst_op_aux].str);
+				EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Syntax error 'delete': unexpected operator '%s' after delete identifier ",compiler_data_operators[tst_op_aux].str);
 			}
 
 			// get last instruction...
-			eval_instruction = eval_data->current_function->eval_instructions.get(eval_data->current_function->eval_instructions.length()-1);
-			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
+			compiler_instruction = compiler_data->current_function->compiler_instructions.get(compiler_data->current_function->compiler_instructions.length()-1);
+			ByteCode  byte_code=compiler_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
-				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-			}else if(eval_is_byte_code_load_var_type(byte_code)){
-				eval_instruction->vm_instruction.byte_code=eval_byte_code_load_var_type_to_push_stk(byte_code);
+				compiler_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+			}else if(compiler_is_byte_code_load_var_type(byte_code)){
+				compiler_instruction->vm_instruction.byte_code=compiler_byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->eval_instructions.push(new EvalInstruction(BYTE_CODE_DELETE));
-			eval_data->current_function->eval_instructions.push(new EvalInstruction(BYTE_CODE_RESET_STACK));
+			compiler_data->current_function->compiler_instructions.push(new CompilerInstruction(BYTE_CODE_DELETE));
+			compiler_data->current_function->compiler_instructions.push(new CompilerInstruction(BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}
@@ -275,8 +275,8 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_class_property(
-			EvalData *eval_data
+	char * compiler_keyword_class_property(
+			CompilerData *compiler_data
 			, const char *s
 			, int & line
 			, ScriptType *sc
@@ -289,12 +289,12 @@ namespace zetscript{
 		String class_property_name=sc->name;
 		ScriptScope *scope_info=sc->scope;
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 		attrib_start_line = line;
 
 		end_var=get_name_identifier_token(
-				eval_data
+				compiler_data
 				,aux_p
 				,line
 				,property_name
@@ -305,11 +305,11 @@ namespace zetscript{
 			return NULL;
 		}
 
-		IGNORE_BLANKS(aux_p,eval_data,end_var,line);
+		IGNORE_BLANKS(aux_p,compiler_data,end_var,line);
 
 		if(*aux_p=='{'){ // is a type property
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+			IGNORE_BLANKS(aux_p,compiler_data,aux_p+1,line);
 			Symbol *symbol=NULL;
 			Symbol *symbol_attrib=NULL;
 			MemberProperty *mp=NULL;
@@ -320,14 +320,14 @@ namespace zetscript{
 			try{
 				symbol_attrib=sc->registerMemberProperty(
 						 property_name
-						,eval_data->current_parsing_file
+						,compiler_data->current_parsing_file
 						,attrib_start_line
 
 				);
 			}catch(std::exception & ex){
 
 				EVAL_ERROR_FILE_LINE(
-					eval_data->current_parsing_file
+					compiler_data->current_parsing_file
 					,attrib_start_line
 					,ex.what()
 					, NULL
@@ -336,21 +336,21 @@ namespace zetscript{
 			}
 
 			mp=(MemberProperty *)symbol_attrib->ref_ptr;
-			//ScriptScope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
+			//ScriptScope *scope_function =compiler_new_scope(compiler_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
 
 			while(*aux_p != '}' && *aux_p != 0){
 
-					// 1st. check whether eval a keyword...
-					Keyword key_w = eval_is_keyword(aux_p);
+					// 1st. check whether compiler a keyword...
+					Keyword key_w = compiler_is_keyword(aux_p);
 
 					if(key_w == KEYWORD_FUNCTION){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+						IGNORE_BLANKS(aux_p,compiler_data,aux_p+strlen(compiler_data_keywords[key_w].str),line);
 					}
 
 					end_var=get_name_identifier_token(
-							eval_data
+							compiler_data
 							,aux_p
 							,line
 							,name
@@ -363,8 +363,8 @@ namespace zetscript{
 					// metamethod property
 					aux_p=end_var;
 
-					if((aux_p = eval_keyword_function(
-						eval_data
+					if((aux_p = compiler_keyword_function(
+						compiler_data
 						,aux_p
 						, line
 						,scope_info // pass type scope
@@ -401,7 +401,7 @@ namespace zetscript{
 								break;
 							}else{
 								EVAL_ERROR_FILE_LINE(
-									eval_data->current_parsing_file
+									compiler_data->current_parsing_file
 									,line
 									,"Property '%s' has already a '%s' implemented"
 									,property_name.toConstChar()
@@ -423,7 +423,7 @@ namespace zetscript{
 								mp->metamethod_members.addSetter(_mp_info.metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(
-									eval_data->current_parsing_file
+									compiler_data->current_parsing_file
 									,line
 									,"Property '%s' has already a setter '%s'"
 									,property_name.toConstChar()
@@ -461,7 +461,7 @@ namespace zetscript{
 
 
 							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
+								compiler_data->current_parsing_file
 								,line
 								,"unexpected metamethod '%s' in property '%s::%s'. Valid metamethods are the following:\n\n%s\n"
 								,name.toConstChar()
@@ -472,12 +472,12 @@ namespace zetscript{
 						}
 					}
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 			}
 
 			if(*aux_p != '}'){
 				EVAL_ERROR_FILE_LINE(
-					eval_data->current_parsing_file,attrib_start_line
+					compiler_data->current_parsing_file,attrib_start_line
 					,"expected '}' to end in property '%s::%s'"
 					,class_property_name.toConstChar()
 					,property_name.toConstChar()

@@ -8,7 +8,9 @@ namespace zetscript{
 
 	class Character{
 	public:
-		 static char 			toLower(char _c);
-		 static char 			toUpper(char _c);
+		 static char 	toLower(char _c);
+		 static char 	toUpper(char _c);
+		 static bool 	isDigit(char _c);
+		 static bool 	isHexaDigit(char _c);
 	};
 }

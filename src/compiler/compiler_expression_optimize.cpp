@@ -26,7 +26,7 @@
 		result_bc=BYTE_CODE_LOAD_FLOAT;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
-			eval_data->current_parsing_file\
+			compiler_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant arithmetic operation %s %s %s"\
 			,i1->getConstantValueOp2ToString().toConstChar()\
@@ -56,7 +56,7 @@
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
-			eval_data->current_parsing_file\
+			compiler_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant compare operation %s %s %s"\
 			,i1->getConstantValueOp2ToString().toConstChar()\
@@ -71,7 +71,7 @@
 		result_bc=BYTE_CODE_LOAD_INT;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
-			 eval_data->current_parsing_file\
+			 compiler_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant bitwise operation %s %s %s"\
 			,i1->getConstantValueOp2ToString().toConstChar()\
@@ -86,7 +86,7 @@
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
 		ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(\
-			eval_data->current_parsing_file\
+			compiler_data->current_parsing_file\
 			,token_operator->line\
 			,"Invalid constant boolean operation %s %s %s"\
 			,i1->getConstantValueOp2ToString().toConstChar()\
@@ -100,7 +100,7 @@ namespace zetscript{
 
 
 
-	unsigned short eval_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
+	unsigned short compiler_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
 
 		switch(byte_code){
 		default:
@@ -122,7 +122,7 @@ namespace zetscript{
 		return 0;
 	}
 
-	bool eval_expression_get_register(EvalData *eval_data, ScriptScope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
+	bool compiler_expression_get_register(CompilerData *compiler_data, ScriptScope *scope,CompilerInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
 		Symbol *symbol_found=NULL;
 
 		 if(!BYTE_CODE_IS_LOAD_VARIABLE_IMMEDIATE(i1->vm_instruction.byte_code)){
@@ -130,7 +130,7 @@ namespace zetscript{
 		 }
 
 		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
-		 if(eval_data->script_types_factory->getScriptType(i1->symbol_name)!=NULL){
+		 if(compiler_data->script_types_factory->getScriptType(i1->symbol_name)!=NULL){
 			return false;
 		}
 
@@ -139,7 +139,7 @@ namespace zetscript{
 
 		if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 
-			if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol_name)) != NULL){
+			if((symbol_found = compiler_find_local_symbol(compiler_data,scope,i1->symbol_name)) != NULL){
 				load_byte_code=BYTE_CODE_LOAD_LOCAL;
 				load_value_op2=symbol_found->idx_position;
 				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
@@ -152,7 +152,7 @@ namespace zetscript{
 			if(load_value_op2 == ZS_UNDEFINED_IDX){
 				ScriptType *sc=NULL;
 				if(
-					   ( eval_data->current_function->script_function->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
+					   ( compiler_data->current_function->script_function->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
 					&& (	scope->owner_type->id != SCRIPT_TYPE_ID_CLASS_MAIN)
 					   // is function member
 					){ // type members are defined as functions
@@ -182,22 +182,22 @@ namespace zetscript{
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// IMMEDIATE OPERATION 2 OPS
-	EvalInstruction * eval_expression_perform_KK_operation(
-			EvalData *eval_data
+	CompilerInstruction * compiler_expression_perform_KK_operation(
+			CompilerData *compiler_data
 			,TokenNode *token_operator
-			, EvalInstruction *ei1
-			, EvalInstruction *ei2
+			, CompilerInstruction *ei1
+			, CompilerInstruction *ei2
 	){
 		zs_float  result_op_float=0;
 		zs_int result_op_int=0;
 		bool	result_op_bool=false;
 		String result_op_str="";
 		String str_constant_key="";
-		EvalInstruction *result_instruction=NULL;
+		CompilerInstruction *result_instruction=NULL;
 		ByteCode result_bc=BYTE_CODE_INVALID;
 		Instruction *i1=&ei1->vm_instruction;
 		Instruction *i2=&ei2->vm_instruction;
-		ByteCode byte_code=eval_operator_to_byte_code(token_operator->operator_type);
+		ByteCode byte_code=compiler_operator_to_byte_code(token_operator->operator_type);
 
 		// check last two instructions stk op1 and stk op2 are bool/int/float or string
 		if(!(i1->isConstant() && i2->isConstant())){
@@ -233,7 +233,7 @@ namespace zetscript{
 		case BYTE_CODE_DIV:
 			if(i2->value_op2==0){
 				ZS_THROW_EXCEPTION_FILE_LINE(
-						 eval_data->current_parsing_file
+						 compiler_data->current_parsing_file
 						,token_operator->line
 						,"constant divide operation by 0"
 				);
@@ -256,7 +256,7 @@ namespace zetscript{
 				result_bc=BYTE_CODE_LOAD_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
-					eval_data->current_parsing_file
+					compiler_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant arithmetic operation %s / %s"
 					,i1->getConstantValueOp2ToString().toConstChar()
@@ -267,7 +267,7 @@ namespace zetscript{
 		case BYTE_CODE_MOD:
 			if(i2->value_op2==0){
 				ZS_THROW_EXCEPTION_FILE_LINE(
-					eval_data->current_parsing_file
+					compiler_data->current_parsing_file
 					,token_operator->line
 					,"constant module operation by 0"
 				);
@@ -290,7 +290,7 @@ namespace zetscript{
 				result_bc=BYTE_CODE_LOAD_FLOAT;
 			}else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
-					eval_data->current_parsing_file
+					compiler_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant arithmetic operation %s % %s"
 					,i1->getConstantValueOp2ToString().toConstChar()
@@ -351,7 +351,7 @@ namespace zetscript{
 			}
 			else{
 				ZS_THROW_EXCEPTION_CONSTANT_EVAL_OPERATION(
-					eval_data->current_parsing_file
+					compiler_data->current_parsing_file
 					,token_operator->line
 					,"Invalid constant operation %s in %s"
 					,i1->getConstantValueOp2ToString().toConstChar()
@@ -361,7 +361,7 @@ namespace zetscript{
 			break;
 		default:
 			ZS_THROW_EXCEPTION_FILE_LINE(
-				eval_data->current_parsing_file
+				compiler_data->current_parsing_file
 				,token_operator->line
 				,"Invalid constant operation %s %s %s"
 				,i1->getConstantValueOp2ToString().toConstChar()
@@ -375,14 +375,14 @@ namespace zetscript{
 		default:
 			break;
 		case BYTE_CODE_LOAD_INT:
-			result_instruction=new EvalInstruction(
+			result_instruction=new CompilerInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_int
 			);
 			break;
 		case BYTE_CODE_LOAD_FLOAT:
-			result_instruction=new EvalInstruction(
+			result_instruction=new CompilerInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_int
@@ -390,14 +390,14 @@ namespace zetscript{
 			break;
 		case BYTE_CODE_LOAD_STRING:
 			str_constant_key=String("\"")+result_op_str+"\"";
-			result_instruction=new EvalInstruction(
+			result_instruction=new CompilerInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
-					,(zs_int)eval_data->zs->registerStkConstantStringScriptObject(str_constant_key,result_op_str)
+					,(zs_int)compiler_data->zs->registerStkConstantStringScriptObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:
-			result_instruction=new EvalInstruction(
+			result_instruction=new CompilerInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,result_op_bool
@@ -408,26 +408,26 @@ namespace zetscript{
 		return result_instruction;
 	}
 
-	EvalInstruction *eval_expression_optimize(
-			EvalData *eval_data
+	CompilerInstruction *compiler_expression_optimize(
+			CompilerData *compiler_data
 			,ScriptScope *scope_info
 			,TokenNode   *token_operation
-			, Vector<EvalInstruction *> *eval_instructions
+			, Vector<CompilerInstruction *> *compiler_instructions
 	){
-		int size_instructions=eval_instructions->length();
-		EvalInstruction *instruction=NULL;
+		int size_instructions=compiler_instructions->length();
+		CompilerInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;
 		bool is_i1_R=false;
 		bool is_i2_R=false;
-		int n_eval_ops=0;
+		int n_compiler_ops=0;
 
 		if(size_instructions < 2){
 			return NULL;
 		}
 
-		EvalInstruction *i1=(EvalInstruction *)eval_instructions->get(size_instructions-2);
-		EvalInstruction *i2=(EvalInstruction *)eval_instructions->get(size_instructions-1);
+		CompilerInstruction *i1=(CompilerInstruction *)compiler_instructions->get(size_instructions-2);
+		CompilerInstruction *i2=(CompilerInstruction *)compiler_instructions->get(size_instructions-1);
 
 
 		is_i1_K=i1->vm_instruction.isConstant();
@@ -435,39 +435,39 @@ namespace zetscript{
 
 		// can be reduce the number of bytes codes down to 2, yeah!
 		if(token_operation->operator_type == ZS_OPERATOR_INSTANCEOF){
-			instruction=new EvalInstruction(
+			instruction=new CompilerInstruction(
 					BYTE_CODE_INSTANCEOF
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 					,i2->vm_instruction.value_op2
 			);
 
 			instruction->symbol_name=token_operation->value;
-			instruction->instruction_source_info = eval_instruction_source_info(
-				eval_data
-				,eval_data->current_parsing_file
+			instruction->instruction_source_info = compiler_instruction_source_info(
+				compiler_data
+				,compiler_data->current_parsing_file
 				,token_operation->line
 				,token_operation->value
 			);
 			i1=i2; // swap instruction to erase...
-			n_eval_ops=1;
+			n_compiler_ops=1;
 		}else if(is_i1_K && is_i2_K){
-			instruction=eval_expression_perform_KK_operation(eval_data,token_operation,i1,i2);
-			n_eval_ops=2;
+			instruction=compiler_expression_perform_KK_operation(compiler_data,token_operation,i1,i2);
+			n_compiler_ops=2;
 		}else{ // try KR/RK/RR/k or R
 			ByteCode load_byte_code_1= i1->vm_instruction.byte_code;
 			zs_int	 load_value_op2_1= i1->vm_instruction.value_op2;
 			ByteCode load_byte_code_2= i2->vm_instruction.byte_code;
 			zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
 
-			ByteCode byte_code=eval_operator_to_byte_code(token_operation->operator_type);
+			ByteCode byte_code=compiler_operator_to_byte_code(token_operation->operator_type);
 			unsigned short k_properties=0;
-			n_eval_ops=2;
+			n_compiler_ops=2;
 
-			is_i1_R=eval_expression_get_register(eval_data, scope_info, i1, load_byte_code_1,load_value_op2_1);
-			is_i2_R=eval_expression_get_register(eval_data, scope_info, i2, load_byte_code_2,load_value_op2_2);
+			is_i1_R=compiler_expression_get_register(compiler_data, scope_info, i1, load_byte_code_1,load_value_op2_1);
+			is_i2_R=compiler_expression_get_register(compiler_data, scope_info, i2, load_byte_code_2,load_value_op2_2);
 
 			if(is_i1_R && is_i2_R){ // RR
-				instruction=new EvalInstruction(
+				instruction=new CompilerInstruction(
 						byte_code
 						,load_value_op2_1
 						,((load_value_op2_2 & 0xff) << 16) // pack value + properties
@@ -483,11 +483,11 @@ namespace zetscript{
 				);
 
 			}else if(is_i1_R && is_i2_K){ // RK
-				if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_2))==0){
+				if((k_properties=compiler_expression_load_const_byte_code_to_instruction_property(load_byte_code_2))==0){
 					return NULL;
 				}
 
-				instruction= new EvalInstruction(
+				instruction= new CompilerInstruction(
 						byte_code
 						,load_value_op2_1
 						,load_value_op2_2
@@ -500,11 +500,11 @@ namespace zetscript{
 						| k_properties
 				);
 			}else if(is_i1_K && is_i2_R){ // KR
-				if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
+				if((k_properties=compiler_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
 					return NULL;
 				}
 
-				instruction=new EvalInstruction(
+				instruction=new CompilerInstruction(
 						byte_code
 						,load_value_op2_2
 						,load_value_op2_1
@@ -517,13 +517,13 @@ namespace zetscript{
 				);
 			}else{ // is K or R
 				i1=i2;
-				n_eval_ops=1;
+				n_compiler_ops=1;
 				if(is_i2_K){ // is K
-					if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
+					if((k_properties=compiler_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
 						return NULL;
 					}
 
-					instruction=new EvalInstruction(
+					instruction=new CompilerInstruction(
 							byte_code
 							, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 							, load_value_op2_2
@@ -532,7 +532,7 @@ namespace zetscript{
 
 				}else if(is_i2_R){ // is R
 
-					instruction=new EvalInstruction(
+					instruction=new CompilerInstruction(
 							byte_code
 							,load_value_op2_2
 							,ZS_UNDEFINED_IDX
@@ -542,23 +542,23 @@ namespace zetscript{
 							)
 					);
 				}else{ // no optimization...
-					n_eval_ops=0;
+					n_compiler_ops=0;
 				}
 			}
 		}
 
-		if(n_eval_ops == 0){
+		if(n_compiler_ops == 0){
 			return NULL;
 		}
 
 		// remove last two instructions from vector
 		delete i1;
-		if(n_eval_ops == 2){
+		if(n_compiler_ops == 2){
 			delete i2;
 		}
 
 		// erase last two instructions
-		eval_instructions->resize(eval_instructions->length()-n_eval_ops);
+		compiler_instructions->resize(compiler_instructions->length()-n_compiler_ops);
 
 		// and push the new one
 		return instruction;

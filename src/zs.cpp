@@ -18,12 +18,18 @@ void show_usage(){
 	);
 }
 
+typedef enum:uint16_t{
+	 OPTION_NO_EXECUTE			=0x1
+	,OPTION_PRINT_BYTE_CODE		=0x2
+	,OPTION_PRINT_ALL_BYTE_CODE	=0x4
+}Option;
 
 int main(int argc, char * argv[]) {
 
+
+	uint16_t options=0;
 	zetscript::ZetScript zs;
 	const char *param_script_filename="";
-	unsigned short eval_options=0;
 	bool no_execution_time=false;
 
 	if (argc > 1) {
@@ -38,13 +44,13 @@ int main(int argc, char * argv[]) {
 			if(is_option){
 
 				if(strcmp(argv[idx_arg],"--no-execute")==0){
-					eval_options |= zetscript::EVAL_OPTION_NO_EXECUTE;
+					options |= OPTION_NO_EXECUTE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code")==0){
-					eval_options|=zetscript::EVAL_OPTION_PRINT_BYTE_CODE;
+					options|=OPTION_PRINT_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-all")==0){
-					eval_options|=(zetscript::EVAL_OPTION_PRINT_BYTE_CODE|zetscript::EVAL_OPTION_PRINT_ALL_BYTE_CODE);
+					options|=(OPTION_PRINT_BYTE_CODE|OPTION_PRINT_ALL_BYTE_CODE);
 				}else if(strcmp(argv[idx_arg],"--print-byte-code-system")==0){
-					eval_options|=zetscript::EVAL_OPTION_PRINT_ALL_BYTE_CODE;
+					options|=OPTION_PRINT_ALL_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--no-execution-time")==0){
 					no_execution_time=true;
 				}else if(strcmp(argv[idx_arg],"--version")==0){
@@ -99,7 +105,7 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 
 				try{
-					zs.eval(expression);
+					zs.compileAndRun(expression);
 				}catch(zetscript::Exception & ex){
 					fprintf(stderr,"[line %i] %s\n",ex.getLine(),ex.what());
 				}
@@ -120,7 +126,14 @@ int main(int argc, char * argv[]) {
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 			try{
-				zs.evalFile(param_script_filename,eval_options,NULL,__FILE__,__LINE__);
+				zs.compile(param_script_filename);
+				if(options & OPTION_PRINT_BYTE_CODE){
+					zs.printGeneratedCode();
+				}
+				if((options & OPTION_NO_EXECUTE) == false){
+					zs.run();
+				}
+
 			}catch(zetscript::Exception & ex){
 				zetscript::String filename=ex.getFilename();
 				int line=ex.getLine();

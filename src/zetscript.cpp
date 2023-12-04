@@ -17,7 +17,7 @@ namespace zetscript{
 
 		script_filenames_by_ref=NULL;
 
-		eval_init();
+		compiler_init();
 		scope_factory = new ScriptScopesFactory(this);
 		scope_factory->init();
 		script_function_factory= new ScriptFunctionsFactory(this);
@@ -114,7 +114,7 @@ namespace zetscript{
 
 
 		// Custom user function or classes
-		eval(
+		compile(
 			String::format(
 				//------------------------------------------------
 				// String
@@ -875,32 +875,115 @@ namespace zetscript{
 		return false;
 	}
 
-	StackElement ZetScript::evalInternal(const char * _code, unsigned short _eval_options, const char * _filename, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__)  {
-		StackElement stk_ret=k_stk_undefined;
-
-		eval_parse_and_compile(this,_code,_eval_data_from,_filename);
-		link();
-
-		if(_eval_options & EVAL_OPTION_PRINT_BYTE_CODE){
-			printGeneratedCode(_eval_options & EVAL_OPTION_PRINT_ALL_BYTE_CODE);
-		}
-
-		if((_eval_options & EVAL_OPTION_NO_EXECUTE)==0){
-			// the first code to execute is the main function that in fact is a special member function inside our main class
-			stk_ret=vm_execute(
-					virtual_machine
-					,NULL
-					,script_types_factory->getMainFunction()
-					,NULL
-					,0
-					,0
-					,__invoke_file__
-					,__invoke_line__
-			);
-		}
-
-		return stk_ret;
+	void ZetScript::compile(const String & _expresion)  {
+		compiler_compile_and_link(
+			this
+			,_expresion.toConstChar()
+		);
 	}
+
+	StackElement ZetScript::compileAndRun(const String & _expresion, const char *__invoke_file__, int __invoke_line__)  {
+
+		compiler_compile_and_link(
+			this
+			,_expresion.toConstChar()
+		);
+
+		return run(
+				__invoke_file__
+				,__invoke_line__
+		);
+	}
+
+
+	void ZetScript::compileFile(
+			const String &  _filename
+			,CompilerData *_compiler_data
+	){
+		//int idx_file=-1;
+		StackElement stk_ret;
+		Buffer *buf_tmp=NULL;
+
+		stk_ret.setUndefined();
+
+		if(!isFilenameAlreadyParsed(_filename)){
+			ParsedFile *ps=new ParsedFile();
+			String current_directory="";
+			ps->filename = _filename;
+			parsed_files.push(ps);
+			const char * const_file_char=ps->filename.toConstChar();
+			//idx_file=parsed_files.length()-1;
+
+			buf_tmp=File::readText(_filename);
+
+			// file exist and can read ... set current pwd
+			current_directory = Directory::getCurrentDirectory();
+			Directory::changeDir(Path::getDirectory(_filename));
+
+			String str_error="";
+			String error_file="";
+
+			bool error=false;
+
+
+			int error_line=-1;
+			try{
+				compiler_compile_and_link(
+					this
+					,(const char *)buf_tmp->ptr
+					,_compiler_data
+					,const_file_char
+				);
+			}catch(Exception & e){
+				error=true;
+				error_file=e.getFilename();
+				error_line=e.getLine();
+				str_error=e.what();
+			}catch(std::exception & e){
+				error=true;
+				str_error=e.what();
+			}
+
+			// restore previous directory
+			Directory::changeDir(current_directory);
+
+			// deallocate before throw errors...
+			delete buf_tmp;
+
+			if(error){
+				if(error_file.isEmpty()==false){
+					ZS_THROW_EXCEPTION_FILE_LINE(error_file.toConstChar(),error_line,str_error.toConstChar());
+				}else{
+					ZS_THROW_EXCEPTION(str_error.toConstChar());
+				}
+			}
+		}
+	}
+
+	StackElement ZetScript::compileFileAndRun(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
+
+		compileFile(_filename);
+
+		return run(
+				__invoke_file__
+				,__invoke_line__
+		);
+	}
+
+	StackElement ZetScript::run(const char *__invoke_file__, int __invoke_line__){
+		return vm_execute(
+				virtual_machine
+				,NULL
+				,script_types_factory->getMainFunction()
+				,NULL
+				,0
+				,0
+				,__invoke_file__
+				,__invoke_line__
+		);
+	}
+
+
 	//
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -1031,84 +1114,6 @@ namespace zetscript{
 
 	ArrayScriptObject * ZetScript::newArrayScriptObject(){
 		return ArrayScriptObject::newArrayScriptObject(this);
-	}
-
-	StackElement ZetScript::eval(const String & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
-
-		const char *script_filename_by_ref=getFilenameByRef(_script_filename_by_ref);
-
-		return evalInternal(_expresion.toConstChar(), _options, script_filename_by_ref,NULL,__invoke_file__,__invoke_line__);
-	}
-
-	StackElement	ZetScript::eval(const String & _expresion, const char *__invoke_file__, int __invoke_line__){
-		return evalInternal(_expresion.toConstChar(), 0, NULL,NULL,__invoke_file__,__invoke_line__);
-	}
-
-	StackElement ZetScript::evalFile(const String &  _filename, uint16_t _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
-		//int idx_file=-1;
-		StackElement stk_ret;
-		Buffer *buf_tmp=NULL;
-
-		stk_ret.setUndefined();
-
-		if(!isFilenameAlreadyParsed(_filename)){
-			ParsedFile *ps=new ParsedFile();
-			String current_directory="";
-			ps->filename = _filename;
-			parsed_files.push(ps);
-			const char * const_file_char=ps->filename.toConstChar();
-			//idx_file=parsed_files.length()-1;
-
-			buf_tmp=File::readText(_filename);
-
-			// file exist and can read ... set current pwd
-			current_directory = Directory::getCurrentDirectory();
-			Directory::changeDir(Path::getDirectory(_filename));
-
-			String str_error="";
-			String error_file="";
-
-			bool error=false;
-
-
-			int error_line=-1;
-			try{
-				stk_ret=evalInternal(
-						(const char *)buf_tmp->ptr
-						,_eval_options
-						,const_file_char
-						,_eval_data_from
-						,__invoke_file__
-						,__invoke_line__
-				);
-			}catch(Exception & e){
-				error=true;
-				error_file=e.getFilename();
-				error_line=e.getLine();
-				str_error=e.what();
-			}catch(std::exception & e){
-				error=true;
-				str_error=e.what();
-			}
-
-			// restore previous directory
-			Directory::changeDir(current_directory);
-
-			// deallocate before throw errors...
-			delete buf_tmp;
-
-			if(error){
-				if(error_file.isEmpty()==false){
-					ZS_THROW_EXCEPTION_FILE_LINE(error_file.toConstChar(),error_line,str_error.toConstChar());
-				}else{
-					ZS_THROW_EXCEPTION(str_error.toConstChar());
-				}
-			}
-
-
-		}
-
-		return stk_ret;
 	}
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){

@@ -14,7 +14,7 @@ void test_register_constants(zetscript::ZetScript *_zs) {
 	_zs->registerConstant("TEST_BOOL", true);
 	_zs->registerConstant("TEST_STRING", "constant_string");
 
-	_zs->eval(
+	_zs->compileAndRun(
 			"System::assert(TEST_INT==100,\"TEST_INT!=100\")\n"
 			"System::assert(TEST_FLOAT==1.5,\"TEST_FLOAT!=1.5\")\n"
 			"System::assert(TEST_BOOL==true,\"TEST_BOOL!=true\")\n"

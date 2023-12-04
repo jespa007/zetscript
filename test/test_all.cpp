@@ -151,7 +151,7 @@ int main(int argc, char * argv[]) {
 				throw std::runtime_error("file not exist");
 			}
 
-			zs.evalFile(filename.toConstChar());
+			zs.compileFileAndRun(filename.toConstChar());
 
 
 			if(strcmp(*it_test_script_files,"test_cyclic_references")==0){

@@ -8,7 +8,7 @@
 namespace zetscript{
 
 	// to String utils ...
-	char * eval_symbol(EvalData *eval_data
+	char * compiler_symbol(CompilerData *compiler_data
 			,const char *start_word
 			, int line
 			,  ScriptScope *scope_info
@@ -21,13 +21,13 @@ namespace zetscript{
 		ByteCode byte_code=BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;
-		EvalInstruction *eval_instruction=NULL;
+		CompilerInstruction *compiler_instruction=NULL;
 		void *const_obj=NULL;
 		char *aux=(char *)start_word;
 		String default_str_value="";
 
 		 if((aux=parse_literal_number(
-				 eval_data
+				 compiler_data
 				 ,start_word
 				 ,line
 				 ,default_str_value
@@ -54,7 +54,7 @@ namespace zetscript{
 					value_flt=-value_flt;
 				}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
 						EVAL_ERROR_FILE_LINE(
-							eval_data->current_parsing_file
+							compiler_data->current_parsing_file
 							,line
 							,"Bitwise complement (~) not allowed for constant float '%f'"
 							,value_flt
@@ -66,17 +66,17 @@ namespace zetscript{
 				byte_code = BYTE_CODE_LOAD_FLOAT;
 			}
 			else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal '%s'",default_str_value.toConstChar());
+				EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line ,"Unable to parse literal '%s'",default_str_value.toConstChar());
 			}
 
 		}else{ // if not number,integer, hex, bit then is a literal String, boolean or identifier...
 
-			 if(eval_data->error){
+			 if(compiler_data->error){
 				 return NULL;
 			 }
 
 			 aux=(char *)start_word;
-			 // try eval identifier, boolean, String ...
+			 // try compiler identifier, boolean, String ...
 			char pre=0;
 			if(*aux=='\"'){
 
@@ -85,14 +85,14 @@ namespace zetscript{
 				}while(!((*aux=='\"' && *(aux-1)!= '\\')|| *aux==0 || *aux=='\n'));
 
 				if(*aux!='\"'){
-					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
+					EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line ,"Constant string not ends with '\"'");
 				}
 
 				if((start_word+1)<aux){ // copy string without double quotes...
-					default_str_value=eval_copy_const_char_diff(start_word+1,aux);
+					default_str_value=compiler_copy_const_char_diff(start_word+1,aux);
 				}
 				aux++;
-				value=(zs_int)eval_data->zs->registerStkConstantStringScriptObject(String("\"")+default_str_value+"\"",default_str_value);
+				value=(zs_int)compiler_data->zs->registerStkConstantStringScriptObject(String("\"")+default_str_value+"\"",default_str_value);
 				byte_code = BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;
@@ -130,9 +130,9 @@ namespace zetscript{
 
 						if(default_str_value == SYMBOL_VALUE_SUPER){
 							char *test=aux;
-							IGNORE_BLANKS(test,eval_data,aux,line);
+							IGNORE_BLANKS(test,compiler_data,aux,line);
 							if(*test != '('){
-								EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"'super' only allowed as function");
+								EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line ,"'super' only allowed as function");
 							}
 
 							byte_code=BYTE_CODE_SUPER_CALL;
@@ -142,25 +142,25 @@ namespace zetscript{
 					}else{
 						Symbol *local_symbol=NULL;
 
-						// should be an identifier and should be find after eval function or at runtime...
+						// should be an identifier and should be find after compiler function or at runtime...
 						if(check_identifier_name_expression_ok(
-							eval_data
+							compiler_data
 							,default_str_value
 							,line
 						)==FALSE){
 							Operator op;
 							if((op=is_operator(default_str_value.toConstChar()))!=Operator::ZS_OPERATOR_UNKNOWN){
 								EVAL_ERROR_FILE_LINE(
-									eval_data->current_parsing_file
+									compiler_data->current_parsing_file
 									,line
 									,"unexpected operator '%s'"
-									,eval_data_operators[op].str
+									,compiler_data_operators[op].str
 								);
 
 							}else{
 
 								EVAL_ERROR_FILE_LINE(
-									eval_data->current_parsing_file
+									compiler_data->current_parsing_file
 									,line
 									,"expected identifier after '%s'"
 									,default_str_value.toConstChar()
@@ -168,7 +168,7 @@ namespace zetscript{
 							}
 						}
 
-						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
+						if((local_symbol=compiler_find_local_symbol(compiler_data,scope_info,default_str_value)) != NULL){ // local sy
 
 							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 								byte_code= BYTE_CODE_LOAD_FUNCTION;
@@ -187,10 +187,10 @@ namespace zetscript{
 								}
 							}
 						}else{
-							if(eval_data->current_function->script_function->id==ZS_IDX_FUNCTION_MAIN){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Symbol '%s' not defined",default_str_value.toConstChar());
+							if(compiler_data->current_function->script_function->id==ZS_IDX_FUNCTION_MAIN){
+								EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line ,"Symbol '%s' not defined",default_str_value.toConstChar());
 							}
-							// else it remains as variable to be found in the post evaluation
+							// else it remains as variable to be found in the post compileruation
 						}
 					}
 				}
@@ -198,8 +198,8 @@ namespace zetscript{
 		 }
 
 		token_node_symbol->value = default_str_value;
-		token_node_symbol->eval_instructions.push(
-			eval_instruction=new EvalInstruction(
+		token_node_symbol->compiler_instructions.push(
+			compiler_instruction=new CompilerInstruction(
 				byte_code
 				, INSTRUCTION_VALUE_OP1_NOT_DEFINED
 				,value

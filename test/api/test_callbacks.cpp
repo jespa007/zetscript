@@ -82,7 +82,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::DictionaryScriptObject *_params)>(test_callback));
 
 
-	_zs->eval(
+	_zs->compileAndRun(
 		// ScriptType 'Test' declaration
 		"class Test{\n"
 		"	constructor(){\n"
@@ -129,7 +129,7 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 	_zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
 
-	_zs->eval(
+	_zs->compileAndRun(
 			zetscript::String::format(
 			"function test_1st_script_call(){\n"
 				"if(%s){\n"

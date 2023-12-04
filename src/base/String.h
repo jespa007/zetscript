@@ -37,17 +37,9 @@ namespace zetscript{
 			OrdinalIgnoreCase=1
 		}StringComparer;
 
-		typedef enum{
-			NUMBER_TYPE_INVALID=0,
-			NUMBER_TYPE_HEXA,
-			NUMBER_TYPE_BINARY,
-			NUMBER_TYPE_INT,
-			NUMBER_TYPE_DOUBLE,
-		}NumberType;
-
 		static int npos;
 
-		static NumberType		isNumber(const String & test_str);
+
 		static bool 			contains(const Vector<String> & _strings, const String & _str_containts,StringComparer sc=StringComparer::Exactly);
 		static String  			format(const  char  *string_text, ...);
 		static String			formatFileLine(const char* _file, int _line, const  char* _str_in, ...);
@@ -157,17 +149,10 @@ namespace zetscript{
 
 	private:
 
-
-
 		char * buf = NULL;
 		int count=0;
 		int _size = 0;
 		static String newFromTwo(const char *_s1,const char *_s2);
-		static bool				isDigit(char c);
-		static bool 			isHexaDigit(char _c);
-		static char *			advanceDigits(char *aux_p);
-		static char *			advanceHexaDigits(char *aux_p);
-
 
 
 		void set(const String & _s);

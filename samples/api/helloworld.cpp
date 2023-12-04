@@ -10,6 +10,6 @@ void sayHelloWorld(){
 int main(){
 	ZetScript zs;
 	zs.registerFunction("sayHelloWorld",sayHelloWorld);
-	zs.eval("sayHelloWorld()");
+	zs.compileAndRun("sayHelloWorld()");
 	return 0;
 }

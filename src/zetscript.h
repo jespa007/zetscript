@@ -6,7 +6,7 @@
 
 #include "base/@base.h"
 #include "core/@core.h"
-#include "eval/eval.h"
+#include "compiler/compiler.h"
 #include "vm/vm.h"
 #include "module/@module.h"
 
@@ -21,12 +21,6 @@
 
 
 namespace zetscript{
-
-	typedef enum:uint16_t{
-		 EVAL_OPTION_NO_EXECUTE				=0x1
-		,EVAL_OPTION_PRINT_BYTE_CODE		=0x2
-		,EVAL_OPTION_PRINT_ALL_BYTE_CODE	=0x4
-	}EvalOption;
 
 	struct VirtualMachine;
 	class ScriptEval;
@@ -53,10 +47,16 @@ namespace zetscript{
 		inline ScriptFunctionsFactory *getScriptFunctionsFactory() { return script_function_factory;}
 		inline ScriptTypesFactory *getScriptTypesFactory() { return script_types_factory;}
 
-		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	eval(const String & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	evalFile(const String & _filename,uint16_t _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
+
+
+		StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
+		void			compileFile(const String & _filename, CompilerData *_compiler_data=NULL);
+
+		void 			compile(const String & expresion);
+		StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+
+		StackElement 	run(const char *__invoke_file__="", int __invoke_line__=-1);
 
 		inline MapString * getCompiledSymbolName(){
 			return compiled_symbol_name;
@@ -498,7 +498,6 @@ namespace zetscript{
 		Vector<ParsedFile *>					parsed_files;
 		Vector<ScriptFunction *>				functions_with_unresolved_symbols;
 
-		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
 		ScriptScopesFactory * scope_factory;
 		ScriptFunctionsFactory *script_function_factory;
@@ -519,7 +518,8 @@ namespace zetscript{
 		// PRINT ASM INFO
 		//----
 		void clearMainFunction();
-		StackElement evalInternal(const char * _code, unsigned short _options=0, const char  *_filename="",EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+		//StackElement evalInternal(const char * _code, unsigned short _options=0, const char  *_filename="",CompilerData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+		//StackElement	compileAndRun(const String & expresion, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

@@ -13,7 +13,7 @@ void test_arithmetic_vars(zetscript::ZetScript *_zs, bool _show_print=true) {
 	if(_show_print) printf("%i. testing primitive var\n",++n_test);
 
 	// decalre vars
-	_zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	_zs->compileAndRun("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
 	TEST_CONSTANT_INT_EXPRESSION(_zs,"i=1;return i;",1);
 	TEST_CONSTANT_INT_EXPRESSION(_zs,"i++;return i;",2);

@@ -22,5 +22,13 @@ namespace zetscript{
 		return _ch;
 	}
 
+	bool Character::isDigit(char _c){
+		return (('0' <= _c) && (_c<='9'));
+	}
+
+	bool Character::isHexaDigit(char _c){
+		return ((('0' <= _c) && (_c<='9')) || ('a'<=(Character::toLower(_c))&&(Character::toLower(_c)<='f')));
+	}
+
 
 }

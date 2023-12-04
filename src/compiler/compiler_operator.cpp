@@ -2,11 +2,11 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "eval.h"
+#include "compiler.h"
 
 namespace zetscript{
 
-	ByteCode eval_operator_to_byte_code(Operator op){
+	ByteCode compiler_operator_to_byte_code(Operator op){
 		switch(op){
 		default:
 			ZS_THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
@@ -82,7 +82,7 @@ namespace zetscript{
 		return BYTE_CODE_INVALID;
 	}
 
-	const char * eval_operator_to_str(Operator op){
+	const char * compiler_operator_to_str(Operator op){
 		switch(op){
 		default:
 			break;

@@ -209,7 +209,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	core/@core.cpp
 	
 	# Eval		
-	eval/eval.cpp
+	compiler/compiler.cpp
 	
 	# Modules
 	module/@module.cpp
@@ -399,12 +399,10 @@ SET(
 	base/Exception.h
 	
 
-	
-
 	#eval
-	eval/eval_keyword.h
-	eval/eval_operator.h
-	eval/eval.h
+	compiler/compiler_keyword.h
+	compiler/compiler_operator.h
+	compiler/compiler.h
 	
 	
 	# module

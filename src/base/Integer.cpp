@@ -8,17 +8,15 @@ namespace zetscript{
 
 	//
 
-
-
 	zs_int *  Integer::parse(const String & val){
 		zs_int *n=NULL;
-		String::NumberType number_type = String::isNumber(val);
+		Integer::IntegerType number_type = Integer::isInteger(val);
 		zs_int value=0;
-		if(number_type == String::NumberType::NUMBER_TYPE_INT){
+		if(number_type == Integer::IntegerType::INTEGER_TYPE_INT){
 			value=strtoll (val.toConstChar(), NULL, 10);
-		}else if(number_type == String::NumberType::NUMBER_TYPE_HEXA){
+		}else if(number_type == Integer::IntegerType::INTEGER_TYPE_HEXA){
 			value=strtoll (val.toConstChar(), NULL, 16);
-		}else if(number_type == String::NumberType::NUMBER_TYPE_BINARY){
+		}else if(number_type == Integer::IntegerType::INTEGER_TYPE_BINARY){
 			String binary = val.substr(0,val.length()-1);
 			value=strtoll (binary.toConstChar(), NULL, 2);
 		}
@@ -94,4 +92,68 @@ namespace zetscript{
 
 	}
 
+
+	Integer::IntegerType Integer::isInteger(const String & test_str_number){
+
+		if(test_str_number.isEmpty()){
+			return Integer::IntegerType::INTEGER_TYPE_INVALID;
+		}
+
+		bool isHexa=false;
+		char *str = (char *)test_str_number.toConstChar();
+
+		// check binary
+		while(Character::isDigit(*str)){
+			if(!(*str=='0' || *str=='1')){
+				break;
+			}else{
+				str++;
+			}
+		}
+
+		if(Character::toLower(*str)=='b'){
+			return IntegerType::INTEGER_TYPE_BINARY;
+		}
+
+
+		// check hexa
+		str = (char *)test_str_number.toConstChar();
+
+		switch(*str){
+		case '-': str++; // negative numbers ...
+				   break;
+		case '0':
+				  if(Character::toLower(*(str+1))=='x')  {
+					  isHexa = true;
+					  str+=2;
+				  }
+				  break;
+		default:
+				break;
+		};
+
+
+		if(isHexa) {
+			char *start_str = str; // saves position...
+
+			while(Character::isHexaDigit(*str)) str++;
+
+			if(str == start_str){
+				return IntegerType::INTEGER_TYPE_INVALID;
+			}
+
+			if(*str == ' ' || *str == 0) return IntegerType::INTEGER_TYPE_HEXA;
+		}else{
+
+			str=(char *)test_str_number.toConstChar();
+
+			while(Character::isDigit(*str))	str++;
+
+			if(*str == ' ' || *str == 0){
+				return IntegerType::INTEGER_TYPE_INT;
+			}
+		}
+
+		return IntegerType::INTEGER_TYPE_INVALID;
+	}
 }

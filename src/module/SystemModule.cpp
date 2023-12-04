@@ -117,7 +117,7 @@ namespace zetscript{
 
 		// 3. Call zetscript->eval this function
 		try{
-			eval_parse_and_compile(
+			compiler_compile_and_link(
 					_zs
 					,str_start
 					,NULL
@@ -129,9 +129,6 @@ namespace zetscript{
 			vm_set_error(vm,(String("eval error:")+ex.what()).toConstChar());
 			goto goto_eval_exit;
 		}
-
-		// link unresoved symbols
-		_zs->link();
 
 		// check if there's a reset stack at the end and set as end function in order to ensure it gets last value stk ...
 		if(sf_eval->instructions_len>2){

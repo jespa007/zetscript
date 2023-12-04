@@ -4,7 +4,7 @@
  */
 #pragma once
 
-// group 0 is the most candidate split it will do in the eval expression (less priority)
+// group 0 is the most candidate split it will do in the compiler expression (less priority)
 #define ZS_PREFERENCE_OPERATOR_GROUP_0(_operator) \
 (\
   (_operator) == ZS_OPERATOR_LOGIC_OR \
@@ -63,7 +63,7 @@
 	(_operator) == ZS_OPERATOR_IN \
 || 	(_operator) == ZS_OPERATOR_INSTANCEOF \
 )
-// group 8 is the less candidate split it will do in the eval expression (more priority)
+// group 8 is the less candidate split it will do in the compiler expression (more priority)
 
 #define ZS_PREFERENCE_OPERATOR_GROUP_MAX	8
 

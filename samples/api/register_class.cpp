@@ -48,7 +48,7 @@ int main(){
 	zs.extends<MyClassExtend,MyClass>();
 
 
-	zs.eval(
+	zs.compileAndRun(
 		"class ScriptMyClassExtend extends MyClassExtend{\n"
 		"	var data5;\n"
 		"	function function0(){\n"

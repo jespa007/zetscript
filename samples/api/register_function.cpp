@@ -24,7 +24,7 @@ int main(){
 	zs.registerFunction("add",static_cast<zetscript::zs_float (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,zetscript::zs_float *)>(add));
 
 
-	zs.eval(
+	zs.compileAndRun(
 		"Console::outln(\"result 5+4:\"+add(5,4));"       // prints "result 5+4:9"
 		"Console::outln(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);
