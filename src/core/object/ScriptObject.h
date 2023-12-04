@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	class RefDictionaryScriptObject;
+	class RefObjectScriptObject;
 	struct InfoSharedPointerNode;
 	struct VirtualMachine;
 	class ScriptTypesFactory;
@@ -56,8 +56,8 @@ namespace zetscript{
 		virtual void						*	getNativeObject();
 		virtual String 						toString();
 
-		void 									attachRefObjectNode(ListNode<RefDictionaryScriptObject *> * _ref_object_node);
-		void 									deattachRefObjectNode(ListNode<RefDictionaryScriptObject *> * _ref_object_node);
+		void 									attachRefObjectNode(ListNode<RefObjectScriptObject *> * _ref_object_node);
+		void 									deattachRefObjectNode(ListNode<RefObjectScriptObject *> * _ref_object_node);
 
 		void 									printAllMemberFunctions();
 		MapString 						*			getMapStringBuiltinFields();
@@ -72,8 +72,8 @@ namespace zetscript{
 		Vector<StackElement *>				stk_builtin_elements;
 		MapString    							*	map_builtin_fields; // to search faster each property by its name
 
-		static void 							onDettachRefObjectNode(ListNode<RefDictionaryScriptObject *> *node);
-		List<RefDictionaryScriptObject *>	*	ref_objects;
+		static void 							onDettachRefObjectNode(ListNode<RefObjectScriptObject *> *node);
+		List<RefObjectScriptObject *>	*	ref_objects;
 		ScriptTypesFactory					*	getScriptTypesFactory();
 
 		virtual StackElement 				* 	newBuiltinSlot();

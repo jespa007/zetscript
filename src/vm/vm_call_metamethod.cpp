@@ -55,14 +55,14 @@ namespace zetscript{
 					vm_create_shared_object(_vm,object);\
 					ZS_VM_PUSH_STK_OBJECT(object);\
 					return true;
-			}else if(STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk_result_op1)\
+			}else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op1)\
 						&&\
-					STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk_result_op2)\
+					STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				object=DictionaryScriptObject::concat(\
+				object=ObjectScriptObject::concat(\
 							data->zs\
-							,(DictionaryScriptObject *)stk_result_op1->value\
-							,(DictionaryScriptObject *)stk_result_op2->value\
+							,(ObjectScriptObject *)stk_result_op1->value\
+							,(ObjectScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_object(_vm,object);\
 					ZS_VM_PUSH_STK_OBJECT(object);\
@@ -289,7 +289,7 @@ namespace zetscript{
 						&&\
 					STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				DictionaryScriptObject::append(data->zs, (DictionaryScriptObject *)stk_result_op1->value,(DictionaryScriptObject *)stk_result_op1->value);\
+				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
 				ZS_VM_PUSH_STK_OBJECT(stk_result_op1->value);\
 				return true;
 			}

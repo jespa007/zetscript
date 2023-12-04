@@ -17,7 +17,7 @@ namespace zetscript{
 			ZetScript *_zs
 			, ScriptTypeId _script_type_id
 			,void *_c_object
-	):DictionaryScriptObject(_zs){
+	):ObjectScriptObject(_zs){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -211,7 +211,7 @@ namespace zetscript{
 			}
 			return aux;
 		}
-		return DictionaryScriptObject::toString();
+		return ObjectScriptObject::toString();
 	}
 
 	ClassScriptObject::~ClassScriptObject(){

@@ -17,15 +17,15 @@ object["general.info"]=false;
 System::assert(object["general.info"]==false,"object[\"general.info\"]!=false");
 
 // check object erases a property
-ScriptObject::erase(object,"k");
-System::assert(ScriptObject::contains(object,"k")==false,"ScriptObject::contains(o,\"k\")!=false");
+Object::erase(object,"k");
+System::assert(Object::contains(object,"k")==false,"Object::contains(o,\"k\")!=false");
 
 var obj1={a:1,b:2}
 var obj2={c:3,d:4}
 
 // get object keys for iteration...
-var key1=ScriptObject::keys(obj1);
-var key2=ScriptObject::keys(obj2);
+var key1=Object::keys(obj1);
+var key2=Object::keys(obj2);
 var concat_keys="";
 
 // iteration through the keys
@@ -35,11 +35,11 @@ for(var i=0; i < key1.length; i++){
 
 System::assert(concat_keys=="ab","keys(obj1) failed, concat_keys!=\"ab\"")
 
-System::assert(ScriptObject::contains(obj1,"a")==true,"obj1 does not have key 'a'")
+System::assert(Object::contains(obj1,"a")==true,"obj1 does not have key 'a'")
 
 
 var obj3=obj1+obj2;
-var key3=ScriptObject::keys(obj3);
+var key3=Object::keys(obj3);
 concat_keys="";
 
 for(var i=0; i < key3.length; i++){
@@ -48,8 +48,8 @@ for(var i=0; i < key3.length; i++){
 
 System::assert(concat_keys=="abcd","keys(obj3) failed, concat_keys!=\"abcd\"")
 
-ScriptObject::clear(obj3)
-key3=ScriptObject::keys(obj3);
+Object::clear(obj3)
+key3=Object::keys(obj3);
 concat_keys="";
 
 for(var i=0; i < key3.length; i++){

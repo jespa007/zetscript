@@ -16,8 +16,8 @@
 #define ZS_OBJECT_ARRAY(script_types_factory)									((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT))
 #define ZS_ARRAY_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT))
 
-#define ZS_DICTIONARY_SCRIPT_OBJECT(script_types_factory)							((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT))
-#define ZS_DICTIONARY_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT))
+#define ZS_OBJECT_SCRIPT_OBJECT(script_types_factory)							((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT))
+#define ZS_OBJECT_ITERATOR_SCRIPT_OBJECT(script_types_factory)					((script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(script_types_factory)					((script_types_factory->script_types_factory)->getScriptType(ScriptTypeId::SCRIPT_TYPE_ID_SCRIPT_FUNCTION))
 #define ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(script_types_factory,script_type_id) 		((script_types_factory)->getScriptType(script_type_id)->native_name.toConstChar())
@@ -41,7 +41,7 @@ namespace zetscript{
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
-	class DictionaryScriptObject;
+	class ObjectScriptObject;
 	class ScriptFunction;
 	class ScriptType;
 	class ZetScript;

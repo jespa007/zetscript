@@ -441,7 +441,7 @@ SET(
 	core/type/ScriptTypesFactory.tcc
 	
 	# core/object
-	core/object/RefDictionaryScriptObject.h
+	core/object/RefObjectScriptObject.h
 	core/object/ScriptObject.h
 	core/object/ClassScriptObject.h
 	core/object/ClassScriptObject.tcc
@@ -449,11 +449,11 @@ SET(
 	core/object/ContainerScriptObject.h
 	core/object/ContainerSlot.h
 	script/object/ContainerSlot.h
-	core/object/DictionaryScriptObject.h
-	core/object/DictionaryScriptObject.tcc
-	core/object/DictionaryScriptObjectZs.h
-	core/object/DictionaryIteratorScriptObject.h
-	core/object/DictionaryIteratorScriptObjectZs.h
+	core/object/ObjectScriptObject.h
+	core/object/ObjectScriptObject.tcc
+	core/object/ObjectScriptObjectZs.h
+	core/object/ObjectIteratorScriptObject.h
+	core/object/ObjectIteratorScriptObjectZs.h
 	core/object/StringScriptObject.h
 	core/object/StringScriptObjectZs.h
 	core/object/StringIteratorScriptObject.h

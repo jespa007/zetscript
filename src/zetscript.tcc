@@ -6,7 +6,7 @@
 
 #include "core/object/ArrayScriptObject.tcc"
 #include "core/object/ClassScriptObject.tcc"
-#include "core/object/DictionaryScriptObject.tcc"
+#include "core/object/ObjectScriptObject.tcc"
 #include "core/type/ScriptTypesFactory.tcc"
 
 

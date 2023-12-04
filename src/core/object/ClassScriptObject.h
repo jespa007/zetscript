@@ -11,7 +11,7 @@ namespace zetscript{
 		class ZetScript;
 		struct VirtualMachine;
 		class ScriptTypesFactory;
-		class  ClassScriptObject: public DictionaryScriptObject{
+		class  ClassScriptObject: public ObjectScriptObject{
 		public:
 
 			ScriptFunction 		*	info_function_new;

@@ -3,7 +3,7 @@ int main(int argc, char *argv[]){
 
 	zetscript::ZetScript zs;
 
-	auto object=zs.newDictionaryScriptObject();
+	auto object=zs.newObjectScriptObject();
 
 	object->set<zetscript::zs_int>("a",10);
 

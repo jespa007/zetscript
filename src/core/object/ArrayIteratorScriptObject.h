@@ -8,7 +8,7 @@
 
 namespace zetscript{
 
-	class  ArrayIteratorScriptObject:public RefDictionaryScriptObject{
+	class  ArrayIteratorScriptObject:public RefObjectScriptObject{
 
 	public:
 

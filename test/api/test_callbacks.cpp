@@ -48,14 +48,14 @@ void test_callback(
 void test_callback(
 	zetscript::ZetScript *_zs
 	,zetscript::ScriptFunction *_script_function
-	,zetscript::DictionaryScriptObject *_user_params
+	,zetscript::ObjectScriptObject *_user_params
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = _zs->bindScriptFunction<zetscript::StringScriptObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::DictionaryScriptObject *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindScriptFunction<zetscript::StringScriptObject * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::ObjectScriptObject *)>(_script_function,__FILE__,__LINE__);
 
 	// call the function with params 1,2,3. The function returns a 'StringScriptObject' ...
 	auto so=script_function(&param1,&param2,&param3,_user_params);
@@ -78,8 +78,8 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
 	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
 
-	// bind 'test_callback' receives a 'ScriptFunction' and 'DictionaryScriptObject' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::DictionaryScriptObject *_params)>(test_callback));
+	// bind 'test_callback' receives a 'ScriptFunction' and 'ObjectScriptObject' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
 
 
 	_zs->compileAndRun(
@@ -99,7 +99,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 		"			){\n"
 		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
 		"			}"
-		//		2nd parameter: ScriptObject with user params ('DictionaryScriptObject *' in C aka '{}')
+		//		2nd parameter: ScriptObject with user params ('ObjectScriptObject *' in C aka '{}')
 		"			,{"
 		"				that:this"
 		"			}"

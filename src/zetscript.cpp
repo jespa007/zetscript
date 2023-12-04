@@ -64,7 +64,7 @@ namespace zetscript{
 		cl=script_types_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,DictionaryScriptObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
 		//cl->registerStaticMemberFunction("assertNative",SystemModule_assert);
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
@@ -200,7 +200,7 @@ namespace zetscript{
 				"ScriptObject:%i\n"
 				"StringScriptObject:%i\n"
 				"ArrayScriptObject:%i\n"
-				"DictionaryScriptObject:%i\n"
+				"ObjectScriptObject:%i\n"
 				"ClassScriptObject:%i\n"
 				"ContainerSlot:%i\n"
 				,(int)sizeof(zs_char)
@@ -222,7 +222,7 @@ namespace zetscript{
 				, (int)sizeof(ScriptObject)
 				, (int)sizeof(StringScriptObject)
 				, (int)sizeof(ArrayScriptObject)
-				, (int)sizeof(DictionaryScriptObject)
+				, (int)sizeof(ObjectScriptObject)
 				, (int)sizeof(ClassScriptObject)
 				, (int)sizeof(ContainerSlot)
 			);
@@ -320,14 +320,14 @@ namespace zetscript{
 			result=ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_SCRIPT_TYPE_NAME_ARRAY_SCRIPT_OBJECT;
-		else if(STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_DICTIONARY_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_STRING_ITERATOR_SCRIPT_OBJECT(stk))
 			result=ZS_SCRIPT_TYPE_NAME_STRING_ITERATOR_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_ITERATOR_ARRAY_SCRIPT_OBJECT(stk))
 			result=ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT;
-		else if(STACK_ELEMENT_IS_ITERATOR_DICTIONARY_SCRIPT_OBJECT(stk))
-			result=ZS_SCRIPT_TYPE_NAME_DICTIONARY_ITERATOR_SCRIPT_OBJECT;
+		else if(STACK_ELEMENT_IS_ITERATOR_OBJECT_SCRIPT_OBJECT(stk))
+			result=ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT;
 		else if(STACK_ELEMENT_IS_FUNCTION(stk))
 			result=String("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name;
 		else if(STACK_ELEMENT_IS_TYPE(stk)) // is a type
@@ -836,9 +836,9 @@ namespace zetscript{
 				 break;
 			 case SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT:
-			 case SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT:
-			 case SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT:
+			 case SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT:
 			 case SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT:
 				 if(ptr_var==0) return stk_result;
@@ -1104,8 +1104,8 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-	DictionaryScriptObject * ZetScript::newDictionaryScriptObject(){
-		return DictionaryScriptObject::newDictionaryScriptObject(this);
+	ObjectScriptObject * ZetScript::newObjectScriptObject(){
+		return ObjectScriptObject::newObjectScriptObject(this);
 	}
 
 	StringScriptObject * ZetScript::newStringScriptObject(const String & _str){

@@ -15,7 +15,7 @@ namespace zetscript{
 
 	struct VM_Foreach{
 		StackElement 		   	*key; // iterator element can be String or integer...
-		DictionaryScriptObject		*ptr; // can be struct or Vector...
+		ObjectScriptObject		*ptr; // can be struct or Vector...
 		unsigned int 		   	idx_current;
 	};
 
@@ -373,7 +373,7 @@ namespace zetscript{
 						_vm
 						,_file
 						,_line
-						,(DictionaryScriptObject *)stk_return.value
+						,(ObjectScriptObject *)stk_return.value
 					);
 				}
 

@@ -107,7 +107,7 @@ namespace zetscript{
 		//
 		bool isFilenameAlreadyParsed(const String & filename);
 		//
-		DictionaryScriptObject * newDictionaryScriptObject();
+		ObjectScriptObject * newObjectScriptObject();
 		StringScriptObject * newStringScriptObject(const String & _str="");
 		ArrayScriptObject * newArrayScriptObject();
 

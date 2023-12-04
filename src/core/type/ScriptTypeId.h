@@ -25,13 +25,13 @@
 #define ZS_SCRIPT_TYPE_NAME_CONTAINER_SLOT_SCRIPT_OBJECT	"__@ContainerSlot@__"
 #define ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT 			"String"
 #define ZS_SCRIPT_TYPE_NAME_ARRAY_SCRIPT_OBJECT 			"Array"
-#define ZS_SCRIPT_TYPE_NAME_DICTIONARY_SCRIPT_OBJECT 		"Dictionary"
+#define ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT 			"Object"
 #define ZS_SCRIPT_TYPE_NAME_CLASS_SCRIPT_OBJECT 			"__@ObjectClass@__"
 #define ZS_SCRIPT_TYPE_NAME_VAR_REF_SCRIPT_OBJECT 			"__@VarRef@__"
 #define ZS_SCRIPT_TYPE_NAME_MEMBER_FUNCTION_SCRIPT_OBJECT 	"__@MemberFunction@__"
 #define ZS_SCRIPT_TYPE_NAME_STRING_ITERATOR_SCRIPT_OBJECT 	"__@IteratorString@__"
 #define ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT 	"__@IteratorArray@__"
-#define ZS_SCRIPT_TYPE_NAME_DICTIONARY_ITERATOR_SCRIPT_OBJECT 	"__@IteratorObject@__"
+#define ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT 	"__@IteratorObject@__"
 
 
 namespace zetscript{
@@ -77,7 +77,7 @@ namespace zetscript{
 		// Iterator
 		SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT, // "IteratorString"
 		SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT, // IteratorArray []
-		SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT, // IteratorObject
+		SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT, // IteratorObject
 		//
 		// BUILT-IN CLASSES
 		//--------------------------------------------------------------------------------------------------------------------->
@@ -87,7 +87,7 @@ namespace zetscript{
 		SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT, // Array []
 
 		// ScriptObject & type
-		SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT, //  ScriptObject {}
+		SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT, //  ScriptObject {}
 		SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT, // class A{}
 
 		//

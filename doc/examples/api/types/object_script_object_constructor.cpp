@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
 using zetscript::ZetScript;
-using zetscript::DictionaryScriptObject;
+using zetscript::ObjectScriptObject;
 
-DictionaryScriptObject *returnNewObject(ZetScript *_zs){
+ObjectScriptObject *returnNewObject(ZetScript *_zs){
 
 	// instance new StringScriptObject using ZetScript context
-	DictionaryScriptObject *new_object=new DictionaryScriptObject(_zs);
+	ObjectScriptObject *new_object=new ObjectScriptObject(_zs);
 
 	//...
 

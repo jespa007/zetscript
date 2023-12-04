@@ -94,7 +94,7 @@ namespace zetscript{
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 	const char * k_str_zettype_ptr=typeid(ZetScript *).name();
 
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(DictionaryScriptObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ArrayScriptObject)
 
@@ -231,14 +231,14 @@ namespace zetscript{
 		// Script object iterators
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_STRING_ITERATOR_SCRIPT_OBJECT,StringIteratorScriptObject);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_ARRAY_ITERATOR_SCRIPT_OBJECT,ArrayIteratorScriptObject);
-		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_DICTIONARY_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_DICTIONARY_ITERATOR_SCRIPT_OBJECT,DictionaryIteratorScriptObject);
+		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_ITERATOR_SCRIPT_OBJECT,ObjectIteratorScriptObject);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_ARRAY_SCRIPT_OBJECT,ArrayScriptObject);
-		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_DICTIONARY_SCRIPT_OBJECT,DictionaryScriptObject);
+		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_OBJECT_SCRIPT_OBJECT,ObjectScriptObject);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_CLASS_SCRIPT_OBJECT,ClassScriptObject);
 		// it needs script object type to have zetscript reference
 		// BUILT-IN SCRIPT OBJECTS CLASSES
@@ -340,18 +340,18 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// ScriptObject
-		registerStaticMemberFunction<DictionaryScriptObject>("clear",&DictionaryScriptObjectZs_clear);
-		registerStaticMemberFunction<DictionaryScriptObject>("erase",&DictionaryScriptObjectZs_erase);
-		registerStaticMemberFunction<DictionaryScriptObject>("contains",&DictionaryScriptObjectZs_contains);
-		registerStaticMemberFunction<DictionaryScriptObject>("extend",&DictionaryScriptObjectZs_extend);
-		registerStaticMemberFunction<DictionaryScriptObject>("concat",DictionaryScriptObject::concat);
-		registerStaticMemberFunction<DictionaryScriptObject>("keys",DictionaryScriptObjectZs_keys);
-		registerStaticMemberFunction<DictionaryScriptObject>("_iter",DictionaryScriptObjectZs_iter);
+		registerStaticMemberFunction<ObjectScriptObject>("clear",&ObjectScriptObjectZs_clear);
+		registerStaticMemberFunction<ObjectScriptObject>("erase",&ObjectScriptObjectZs_erase);
+		registerStaticMemberFunction<ObjectScriptObject>("contains",&ObjectScriptObjectZs_contains);
+		registerStaticMemberFunction<ObjectScriptObject>("extend",&ObjectScriptObjectZs_extend);
+		registerStaticMemberFunction<ObjectScriptObject>("concat",ObjectScriptObject::concat);
+		registerStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObjectZs_keys);
+		registerStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectZs_iter);
 
 		// IteratorObject
-		registerMemberFunction<DictionaryIteratorScriptObject>("_next",DictionaryIteratorScriptObjectZs_next);
-		registerMemberFunction<DictionaryIteratorScriptObject>("_end",DictionaryIteratorScriptObjectZs_end);
-		registerMemberFunction<DictionaryIteratorScriptObject>("_get",DictionaryIteratorScriptObjectZs_get);
+		registerMemberFunction<ObjectIteratorScriptObject>("_next",ObjectIteratorScriptObjectZs_next);
+		registerMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObjectZs_end);
+		registerMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObjectZs_get);
 
 		zs->saveState();
 	}
@@ -658,8 +658,8 @@ namespace zetscript{
 				so=ArrayScriptObject::newArrayScriptObject(zs);
 				break;
 			// ScriptObject
-			case SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT: //  ScriptObject {}
-				so=DictionaryScriptObject::newDictionaryScriptObject(zs);
+			case SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT: //  ScriptObject {}
+				so=ObjectScriptObject::newObjectScriptObject(zs);
 				break;
 
 			default:
@@ -708,7 +708,7 @@ namespace zetscript{
 		if(
 				_script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT
 				|| _script_type_id == SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT
-				|| _script_type_id == SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT
+				|| _script_type_id == SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
 				|| _script_type_id >= SCRIPT_TYPE_ID_MAX
 		){
 			return ((ScriptType *)types->get(_script_type_id))->isNonInstantiable()==false;

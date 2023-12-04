@@ -181,7 +181,7 @@ namespace zetscript{
 			 ){
 				// if object is C
 				// exceptions
-				if(type->id < SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT || type->id > SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT){
+				if(type->id < SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT || type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
@@ -189,7 +189,7 @@ namespace zetscript{
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
-							,type->id > SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT?"Native type":"ScriptType"
+							,type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT?"Native type":"ScriptType"
 							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,str_symbol_aux1
 						);
@@ -398,7 +398,7 @@ namespace zetscript{
 			VM_POP_STK_TWO; // first must be a string that describes property name and the other the variable itself ...
 
 			stk_var=(data->vm_stk_current-1);
-			if(STACK_ELEMENT_IS_DICTIONARY_SCRIPT_OBJECT(stk_var) == 0){
+			if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'"
 					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
@@ -552,7 +552,7 @@ lbl_exit_function:
 
 
 			if(		   so_aux->script_type_id == SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT
-					|| so_aux->script_type_id == SCRIPT_TYPE_ID_DICTIONARY_SCRIPT_OBJECT
+					|| so_aux->script_type_id == SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
 					|| so_aux->script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT
 			){
 
@@ -581,12 +581,12 @@ lbl_exit_function:
 						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STACK_ELEMENT_PROPERTY_SLOT if not BYTE_CODE_LOAD_ARRAY_ITEM
-					stk_var = ((DictionaryScriptObject *)so_aux)->getStackElementByKeyName(
+					stk_var = ((ObjectScriptObject *)so_aux)->getStackElementByKeyName(
 							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_ARRAY_ITEM){
-							if((stk_var =((DictionaryScriptObject *)so_aux)->setStackElementByKeyName(
+							if((stk_var =((ObjectScriptObject *)so_aux)->setStackElementByKeyName(
 									((StringScriptObject *)(stk_result_op2->value))->get()
 								)
 							)==NULL){

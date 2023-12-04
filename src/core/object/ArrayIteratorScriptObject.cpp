@@ -18,7 +18,7 @@ namespace zetscript{
 	ArrayIteratorScriptObject::ArrayIteratorScriptObject(
 		ZetScript *_zs
 		, ArrayScriptObject *_so_ref
-	):RefDictionaryScriptObject(_zs,_so_ref)
+	):RefObjectScriptObject(_zs,_so_ref)
 	{
 		script_type_id=SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT;
 		idx=0;

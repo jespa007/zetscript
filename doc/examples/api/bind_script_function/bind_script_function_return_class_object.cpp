@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::DictionaryScriptObject;
+using zetscript::ObjectScriptObject;
 
 int main()
 {
@@ -19,10 +19,10 @@ int main()
       "}\n"
  	);
 
-    // It binds 'newNumber' as '(DictionaryScriptObject *)(void)'
-    auto newNumber=zs.bindFunction<DictionaryScriptObject *()>("newNumber");
+    // It binds 'newNumber' as '(ObjectScriptObject *)(void)'
+    auto newNumber=zs.bindFunction<ObjectScriptObject *()>("newNumber");
 
-   // Calls ZetScript function which it returns 'DictionaryScriptObject *' reference
+   // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto number=newNumber();
 
     // Prints return value by console.
