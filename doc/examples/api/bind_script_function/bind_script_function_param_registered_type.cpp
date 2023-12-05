@@ -40,14 +40,14 @@ int main()
 
 
     // Evaluates ZetScript function 'paramNumber' that prints the contents of '_number'
-    zs.eval(
+    zs.compile(
  		"function paramNumber(_number){\n"
         "    Console::outln(\"result : \"+_number);\n"
         "}\n"
  	);
 
     // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto paramNumber=zs.bindFunction<void(Number * _number)>("paramNumber");
+    auto paramNumber=zs.bindScriptFunction<void(Number * _number)>("paramNumber");
 
     // Prepare parameters
     auto number=Number(10);

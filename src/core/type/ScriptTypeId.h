@@ -20,7 +20,7 @@
 #define ZS_SCRIPT_TYPE_NAME_FLOAT 							"Float"
 #define	ZS_SCRIPT_TYPE_NAME_FLOAT_PTR						"__@zs_float_ptr@__"
 #define	ZS_SCRIPT_TYPE_NAME_CONST_FLOAT_PTR					"__@const_zs_float_ptr@__"
-#define ZS_SCRIPT_TYPE_NAME_SCRIPT_FUNCTION					"__@ScriptFunction@__"
+#define ZS_SCRIPT_TYPE_NAME_SCRIPT_FUNCTION					"Function"
 #define ZS_SCRIPT_TYPE_NAME_SCRIPT_OBJECT					"__@ScriptObject@__"
 #define ZS_SCRIPT_TYPE_NAME_CONTAINER_SLOT_SCRIPT_OBJECT	"__@ContainerSlot@__"
 #define ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT 			"String"

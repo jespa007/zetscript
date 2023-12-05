@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval("var number=new Number();");
+	zs.compileAndRun("var number=new Number();");
 
 	return 0;
 }

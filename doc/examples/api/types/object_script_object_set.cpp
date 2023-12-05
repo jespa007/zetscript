@@ -9,7 +9,7 @@ using zetscript::StringScriptObject;
 void modifyObject(ZetScript *_zs,ObjectScriptObject *_object){
 
 	auto keys=_object->getKeys();
-	for(int i=0; i < keys.size(); i++){
+	for(int i=0; i < keys.length(); i++){
 		switch(i%3){
 		case 0: // set a integer
 			_object->set<zs_int>(keys.get(i),i);
@@ -33,7 +33,7 @@ int main(){
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyObject'
-	zs.eval(
+	zs.compileAndRun(
 		"var o={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

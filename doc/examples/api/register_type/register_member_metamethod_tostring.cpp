@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval(
+	zs.compileAndRun(
 		"Console::outln(\"Result _tostring => \"+new Number(10))"
 	);
 

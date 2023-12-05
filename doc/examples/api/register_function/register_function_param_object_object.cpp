@@ -10,7 +10,7 @@ using zetscript::MapString;
 void paramObjectScriptObject(ZetScript *_zs, ObjectScriptObject *_object){
 	printf("Values in object:\n");
 	auto keys=_object->getKeys();
-	for(int i=0; i < keys.size();i++){
+	for(int i=0; i < keys.length();i++){
         printf(
 			"Key: '%s' => Value: %i\n"
 			,keys.get(i).toConstChar()
@@ -25,7 +25,7 @@ int main(){
     zs.registerFunction("paramObjectScriptObject",paramObjectScriptObject);
 
     // eval and call bind function
-    zs.eval(
+    zs.compileAndRun(
         "paramObjectScriptObject({"
         "    a:0"
         "     ,b:1"

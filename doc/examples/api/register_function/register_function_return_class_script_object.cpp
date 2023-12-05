@@ -61,7 +61,7 @@ int main(){
     zs.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
-    zs.eval(
+    zs.compileAndRun(
         "Console::outln(\"result : \"+returnNumber());"
  	);
 

@@ -14,7 +14,7 @@ int main(){
 	zs.registerFunction("checkStringLength",checkStringLength);
 
 	// calls checkStringLength
-	zs.eval("checkStringLength(\"Hello World!\")");
+	zs.compileAndRun("checkStringLength(\"Hello World!\")");
 	
 	return 0;
 }

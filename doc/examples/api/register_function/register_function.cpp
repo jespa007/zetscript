@@ -14,7 +14,7 @@ int main(){
     zs.registerFunction("sayHelloWorld",sayHelloWorld);
 
     // Evaluates a script where it calls 'sayHelloWorld' function
-    zs.eval(
+    zs.compileAndRun(
         "sayHelloWorld();"
  	);
 

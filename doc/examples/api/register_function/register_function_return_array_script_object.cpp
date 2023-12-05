@@ -36,7 +36,7 @@ int main(){
     zs.registerFunction("returnArray",returnArray);
 
     // Eval script that calls native function 'returnArray'
-    zs.eval(
+    zs.compileAndRun(
         "Console::outln(\"result : \"+returnArray());"
  	);
 

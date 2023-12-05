@@ -19,7 +19,7 @@ int main(){
     zs.registerFunction("paramFunction",paramFunction);
 
     // call c function with string param
-    zs.eval(
+    zs.compileAndRun(
         "paramFunction(function(){\n"
     	"	Console::outln(\"Hello world\");\n"
     	"});"

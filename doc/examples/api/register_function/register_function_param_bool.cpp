@@ -14,7 +14,7 @@ int main(){
     zs.registerFunction("paramBool",paramBool);
 
     // Evaluates the script that calls C function with 'true' value as argument
-    zs.eval(
+    zs.compileAndRun(
         "paramBool(true);"
  	);
 

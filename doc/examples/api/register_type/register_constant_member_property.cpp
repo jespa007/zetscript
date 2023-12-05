@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval(
+	zs.compileAndRun(
 		"var number=new Number();\n"
 		"Console::outln(\"number::MAX_VALUE => {0}\",number::MAX_VALUE)\n"
 	);

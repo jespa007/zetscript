@@ -32,7 +32,7 @@ int main(){
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyArray'
-	zs.eval(
+	zs.compileAndRun(
 		"var v=[0,\"hello\",10.0,0,1,2,\"world\"]\n"
 		"Console::outln(\"Before call 'modifyArray':{0}\",v);"
 		"modifyArray(v)\n"

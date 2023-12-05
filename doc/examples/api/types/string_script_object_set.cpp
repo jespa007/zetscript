@@ -16,7 +16,7 @@ int main(){
 	zs.registerFunction("returnString",returnString);
 
 	// prints the value returned by returnString
-	zs.eval("Console::outln(returnString())");
+	zs.compileAndRun("Console::outln(returnString())");
 	
 	return 0;
 }

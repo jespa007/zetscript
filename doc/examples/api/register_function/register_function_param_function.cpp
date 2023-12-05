@@ -21,7 +21,7 @@ int main(){
     zs.registerFunction("paramFunction",paramFunction);
 
     // Evaluates the script that calls C function with anonymous function as argument
-    zs.eval(
+    zs.compileAndRun(
         "paramFunction(function(){\n"
         "    Console::out(\"Calling from script function\")\n"
         "})\n"

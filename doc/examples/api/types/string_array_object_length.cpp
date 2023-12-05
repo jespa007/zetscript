@@ -17,7 +17,7 @@ int main(){
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyArray'
-	zs.eval(
+	zs.compileAndRun(
 		"var v=[0,1.5,\"world\"]\n"
 		"checkLengthArray(v)\n"
 	);

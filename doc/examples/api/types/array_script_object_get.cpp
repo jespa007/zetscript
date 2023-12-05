@@ -34,7 +34,7 @@ int main(){
 	zs.registerFunction("printArray",printArray);
 
 	// calls printArray
-	zs.eval("printArray([0,10.5,\"Hello World\"])");
+	zs.compileAndRun("printArray([0,10.5,\"Hello World\"])");
 	
 	return 0;
 }

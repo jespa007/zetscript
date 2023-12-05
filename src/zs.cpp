@@ -55,11 +55,11 @@ int main(int argc, char * argv[]) {
 					no_execution_time=true;
 				}else if(strcmp(argv[idx_arg],"--version")==0){
 					printf(ZETSCRIP_COPYRIGHT);
-					goto zs_exit;
+					return 0;
 				}else{ // unknow option
 					fprintf(stderr,"Unrecognized option '%s'\n",argv[idx_arg]);
 					show_usage();
-					goto zs_exit;
+					return 0;
 				}
 			}else{
 				param_script_filename =argv[idx_arg];
@@ -126,7 +126,7 @@ int main(int argc, char * argv[]) {
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 			try{
-				zs.compile(param_script_filename);
+				zs.compileFile(param_script_filename);
 				if(options & OPTION_PRINT_BYTE_CODE){
 					zs.printGeneratedCode();
 				}
@@ -157,7 +157,4 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-zs_exit:
-
-	return 0;
 }

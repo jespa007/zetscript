@@ -5,14 +5,14 @@ int main(){
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript function 'sayHelloWorld' that prints a "Hello world" by console
-    zs.eval(
+    zs.compile(
  		"function sayHelloWorld(){\n"
         "    Console::outln(\"Hello world\");\n"
         "}\n"
  	);
 
     // It binds 'sayHelloWorld' as 'void(void)'
-    auto sayHelloWorld=zs.bindFunction<void(void)>("sayHelloWorld");
+    auto sayHelloWorld=zs.bindScriptFunction<void(void)>("sayHelloWorld");
 
     // Calls ZetScript function
     sayHelloWorld();

@@ -2,7 +2,7 @@
 int main(){
 	zetscript::ZetScript zs;
 
-	zs.eval("");
+	zs.compileAndRun("");
 	
 	return 0;
 }

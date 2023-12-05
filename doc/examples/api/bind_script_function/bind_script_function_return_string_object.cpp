@@ -8,14 +8,14 @@ int main()
   ZetScript zs;
 
   // Evaluates ZetScript function 'returnString' that returns 'String' value
-  zs.eval(
+  zs.compile(
   "function returnString(){\n"
       "    return \"Hello World\";\n"
       "}\n"
  	);
 
   // It binds 'returnString' as 'StringScriptObject *(void)'
-  auto returnString=zs.bindFunction<StringScriptObject *()>("returnString");
+  auto returnString=zs.bindScriptFunction<StringScriptObject *()>("returnString");
 
   // Calls ZetScript function which it returns 'StringScriptObject *' reference
   auto object=returnString();

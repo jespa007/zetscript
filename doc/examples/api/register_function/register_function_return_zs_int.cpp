@@ -14,7 +14,7 @@ int main(){
     zs.registerFunction("returnInteger",returnInteger);
 
     // Evaluates a script that calls the registered function and prints its result by console
-    zs.eval(
+    zs.compileAndRun(
         "Console::outln(\"result : \"+returnInteger());"
  	);
     return 0;

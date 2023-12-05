@@ -10,14 +10,14 @@ int main()
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript function 'printConcat' that prints the result of the operation '+' from two arguments
-    zs.eval(
+    zs.compile(
  		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+(_value1+_value2));\n"
         "}\n"
  	);
 
     // It binds 'printConcat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto printConcat=zs.bindFunction<void(ObjectScriptObject * _value1, ObjectScriptObject * _value2)>("printConcat");
+    auto printConcat=zs.bindScriptFunction<void(ObjectScriptObject * _value1, ObjectScriptObject * _value2)>("printConcat");
 
     // Prepare param values
     auto object1=zs.newObjectScriptObject();

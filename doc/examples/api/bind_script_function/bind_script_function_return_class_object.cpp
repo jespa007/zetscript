@@ -7,7 +7,7 @@ int main()
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript class Number and function 'newNumber' that returns a new instance of type 'Number'
-    zs.eval(
+    zs.compile(
       "class Number{ \n"
       "  var value=0;\n"
       "}\n"
@@ -20,7 +20,7 @@ int main()
  	);
 
     // It binds 'newNumber' as '(ObjectScriptObject *)(void)'
-    auto newNumber=zs.bindFunction<ObjectScriptObject *()>("newNumber");
+    auto newNumber=zs.bindScriptFunction<ObjectScriptObject *()>("newNumber");
 
    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto number=newNumber();

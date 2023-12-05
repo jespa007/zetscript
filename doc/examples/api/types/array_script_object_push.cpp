@@ -33,7 +33,7 @@ int main(){
 	zs.registerFunction("returnNewArray",returnNewArray);
 
 	// prints the value returned by returnNewArray
-	zs.eval("Console::outln(returnNewArray())");
+	zs.compileAndRun("Console::outln(returnNewArray())");
 	
 	return 0;
 }

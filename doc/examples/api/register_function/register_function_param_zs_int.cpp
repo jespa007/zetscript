@@ -15,7 +15,7 @@ int main(){
     zs.registerFunction("add",add);
 
     // Evaluates the script that calls C function passing '10' and '20' values as arguments
-    zs.eval(
+    zs.compileAndRun(
         "add(10,20);"
  	);
 

@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval(
+	zs.compileAndRun(
 		"Console::outln(\"Number::pow(2,10) : \"+Number::pow(2,10))"
 	);
 

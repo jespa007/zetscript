@@ -45,7 +45,7 @@ int main(){
 	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 	// Evaluates function 'newNumber' that returns an instance of registered type 'Number'
-	zs.eval(
+	zs.compile(
 		"// 'newNumber' instances a new 'Number' type\n"
 		"function newNumber(){\n"
 		"   return new Number(10);\n"
@@ -53,7 +53,7 @@ int main(){
 	);
 
 	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
-	auto newNumber=zs.bindFunction<ClassScriptObject *()>("newNumber");
+	auto newNumber=zs.bindScriptFunction<ClassScriptObject *()>("newNumber");
 
 	// Calls ZetScript function which it returns 'ClassScriptObject *' reference
 	auto class_object_number=newNumber();

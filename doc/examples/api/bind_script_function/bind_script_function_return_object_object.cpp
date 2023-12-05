@@ -7,14 +7,14 @@ int main()
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript function 'returnObject' that returns 'ScriptObject' value
-    zs.eval(
+    zs.compile(
  		"function returnObject(){\n"
         "    return {a:1,b:true,c:\"String\"};\n"
         "}\n"
  	);
 
     // It binds 'returnObject' as 'ObjectScriptObject *(void)'
-    auto returnObject=zs.bindFunction<ObjectScriptObject *()>("returnObject");
+    auto returnObject=zs.bindScriptFunction<ObjectScriptObject *()>("returnObject");
 
     // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto object_object=returnObject();

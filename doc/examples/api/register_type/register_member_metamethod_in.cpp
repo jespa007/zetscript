@@ -21,7 +21,7 @@ Data * getData(zetscript::ZetScript *_zs){
 }
 
 bool DataZs_in(zetscript::ZetScript *_zs, Data *_this, zs_float *_value){
-	for(int i=0; i < _this->data.size(); i++){
+	for(int i=0; i < _this->data.length(); i++){
 		if(*_value == _this->data.get(i)){
 			return true;
 		}
@@ -39,7 +39,7 @@ int main(){
 	zs.registerFunction("getData",getData);
 	zs.registerMemberFunction<Data>("_in",DataZs_in);
 
-	zs.eval(
+	zs.compileAndRun(
 		"var data=getData();\n"
 		"if(10 in data){\n"
 		"	Console::outln(\"10 is content in data\")\n"

@@ -14,7 +14,7 @@ int main(){
     zs.registerFunction("funParamFloat",funParamFloat);
 
     // call c function 
-    zs.eval(
+    zs.compileAndRun(
         "funParamFloat(10.5);"
  	);
 

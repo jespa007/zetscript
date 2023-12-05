@@ -45,7 +45,7 @@ int main(){
     zs.registerFunction("returnObject",returnObject);
 
     // Eval script that calls native function 'returnObject'
-    zs.eval(
+    zs.compileAndRun(
         "Console::outln(\"result : \"+returnObject());"
  	);
 

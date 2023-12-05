@@ -11,7 +11,7 @@ void printKeys(ZetScript *_zs,ObjectScriptObject *_object){
 	// instance new ObjectScriptObject using ZetScript context
 	auto keys=_object->getKeys();
 	printf("keys : [");
-	for(int i=0; i < keys.size(); i++){
+	for(int i=0; i < keys.length(); i++){
 		if(i>0){
 			printf(",");
 		}
@@ -26,7 +26,7 @@ int main(){
 	// registers printKeys
 	zs.registerFunction("printKeys",printKeys);
 
-	zs.eval(
+	zs.compileAndRun(
 		"var object={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

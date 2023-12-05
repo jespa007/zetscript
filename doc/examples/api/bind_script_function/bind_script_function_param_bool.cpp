@@ -5,14 +5,14 @@ int main()
 	zetscript::ZetScript zs;
 
     // Evaluates ZetScript function 'paramBoolean' that prints the contents of '_value'
-    zs.eval(
+    zs.compile(
  		"function paramBoolean(_value){\n"
         "    Console::outln(\"result : \"+_value);\n"
         "}\n"
  	);
 
     // It binds 'paramBoolean' as '(void *)(bool *)'
-    auto paramBoolean=zs.bindFunction<void(bool *)>("paramBoolean");
+    auto paramBoolean=zs.bindScriptFunction<void(bool *)>("paramBoolean");
 
     // Prepare parameter values 
     bool value=true;

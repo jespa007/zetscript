@@ -6,13 +6,13 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    zs.eval(
+    zs.compile(
  		"function add(_a,_b){\n"
         "    return _a+_b;\n"
         "}\n"
  	);
 
-    auto add=zs.bindFunction<String(String *,String *)>("add");
+    auto add=zs.bindScriptFunction<String(String *,String *)>("add");
     String s1="Hello";
     String s2="World";
 

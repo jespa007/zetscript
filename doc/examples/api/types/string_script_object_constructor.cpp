@@ -21,7 +21,7 @@ int main(){
 	zs.registerFunction("returnNewStringScriptObject",returnNewStringScriptObject);
 
 	// prints the returning of new string object
-	zs.eval("Console::outln(returnNewStringScriptObject())");
+	zs.compileAndRun("Console::outln(returnNewStringScriptObject())");
 	
 	return 0;
 }

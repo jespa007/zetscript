@@ -1,7 +1,7 @@
 
 === Data types
 
-This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environments. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
+This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
 
 ==== zetscript::zs_int
 
@@ -1612,7 +1612,7 @@ _Object_ defines a the parent class of any object in TypeScript. This type is us
 |Tells that the object is an instance of  ObjectArray
 
 |TYPE_ID_DICTIONARY_OBJECT
-|Tells that the object is an instance of  DictionaryObject
+|Tells that the object is an instance of  ObjectScriptObject
 
 |TYPE_ID_OBJECT_CLASS
 |Tells that the object is an instance of  ClassObject
@@ -2078,20 +2078,20 @@ Console output:
 include::../examples/api/types/array_object_tostring_out.txt[]
 ----
 
-==== DictionaryObject
+==== ObjectScriptObject
 
 _ObjectObject_ it defines a array script object.
 
 ===== Contructor
 
-The DictionaryObject constructor creates a new object script object. DictionaryObject constructor needs a ZetScript context.
+The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ZetScript context.
 
 
 *Syntax*
 
 [source,cpp]
 ----
-DictionaryObject(ZetScript *_zs);
+ObjectScriptObject(ZetScript *_zs);
 ----
 
 [.underline]#Parameters#
@@ -2102,21 +2102,21 @@ DictionaryObject(ZetScript *_zs);
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_constructor.cpp[]
+include::../examples/api/types/object_script_object_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_constructor_out.txt[]
+include::../examples/api/types/object_script_object_constructor_out.txt[]
 ----
 
 
 ===== Member functions
 
 
-====== DictionaryObject::set()
+====== ObjectScriptObject::set()
 
 Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
@@ -2124,7 +2124,7 @@ Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
 
 [source,cpp]
 ----
-void DictionaryObject::set(int _key, _T _element)
+void ObjectScriptObject::set(int _key, _T _element)
 ----
 
 [.underline]#Template#
@@ -2145,17 +2145,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_set.cpp[]
+include::../examples/api/types/object_script_object_set.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_set_out.txt[]
+include::../examples/api/types/object_script_object_set_out.txt[]
 ----
 
-====== DictionaryObject::elementInstanceOf()
+====== ObjectScriptObject::elementInstanceOf()
 
 Says whether the element is instance of zetscript data type or a registered type.
 
@@ -2182,17 +2182,17 @@ Returns true if the element at key _&#95;key_ it type or extends from type _&#95
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_element_instanceof.cpp[]
+include::../examples/api/types/object_script_object_element_instanceof.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_element_instanceof_out.txt[]
+include::../examples/api/types/object_script_object_element_instanceof_out.txt[]
 ----
 
-====== DictionaryObject::get()
+====== ObjectScriptObject::get()
 
 Returns element of type _&#x5f;T_ at key __key_.
 
@@ -2230,17 +2230,17 @@ The element at the specified position in the array.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_get.cpp[]
+include::../examples/api/types/object_script_object_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_get_out.txt[]
+include::../examples/api/types/object_script_object_get_out.txt[]
 ----
 
-====== DictionaryObject::toString()
+====== ObjectScriptObject::toString()
 
 Returns a string as the object contents in json format.
 
@@ -2263,14 +2263,14 @@ A string of the object contents in json format.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_tostring.cpp[]
+include::../examples/api/types/object_script_object_to_string.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_tostring_out.txt[]
+include::../examples/api/types/object_script_object_to_string_out.txt[]
 ----
 
 ====== ArrayObject::getKeys()
@@ -2296,14 +2296,14 @@ A vector of strings as the keys of the Object.
 
 [source,cpp]
 ----
-include::../examples/api/types/object_object_get_keys.cpp[]
+include::../examples/api/types/object_script_object_get_keys.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/object_object_get_keys_out.txt[]
+include::../examples/api/types/object_script_object_get_keys_out.txt[]
 ----
 
 ==== ClassObject
@@ -2316,115 +2316,233 @@ template<typename _C>
 _C to();
 
 
-==== Function
+==== ScriptFunction
 
-_Function_ it defines a function object that contains function information. 
+_ScriptFunction_ it defines a function object that contains function information. 
 
-- id: id from factory
+- id: Function id
 - name: function name
-- scope: funcio
-
-
-		// script type
-		int 				return_type_id; 		// idx return type
-		int					owner_type_id; 				// which type belongs to...
-
-		uint16_t			properties;
-
+- return_script_type_id:  return script type id.
+- owner_script_type_id: script type id  which script function it belongs
+- properties: Script function properties
 
 typedef enum{
-	FUNCTION_PROPERTY_C_OBJECT_REF			= 0x0001, // function is C
-	FUNCTION_PROPERTY_STATIC				= 0x0002,
-	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0004,// Member function
-	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
+	SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF		= 0x0001, // function is C
+	SCRIPT_FUNCTION_PROPERTY_STATIC					= 0x0002,
+	SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0004,// Member function
+	SCRIPT_FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
 }FunctionProperty;
 
 ==== ZetScript
 
 
-===== ZetScript::eval()
-		StackElement	eval(const String & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
+===== ZetScript::compile()
 
-		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+It compiles an expression given by parameter.
+
+*Syntax*
+
+[source,cpp]
+----
+void	compile(const String & expresion,const char *__invoke_file__="", int __invoke_line__=-1);
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_compile.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zetscript_compile_out.txt[]
+----
+
+===== ZetScript::compileAndRun()
+
+It compiles an expression given by parameter and it runs after its compilation.
+
+*Syntax*
+
+[source,cpp]
+----
+StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+----
 
 
-===== ZetScript::evalFile()
-		StackElement	evalFile(const String & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_compile_and_run.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/zetscript_compile_and_run_out.txt[]
+----
+
+===== ZetScript::compileFile()
+
+It compiles a file given by parameter.
+
+*Syntax*
+
+[source,cpp]
+----
+void	compileFile(const String & _filename, CompileData *_compile_data=NULL, const har *__invoke_file__="", int __invoke_line__=-1);
+----
 
 
-===== ZetScript::intToStackElement()
+*Example*
 
-		StackElement   			intToStackElement(zs_int);
+[source,cpp]
+----
+include::../examples/api/types/zetscript_compile_file.cpp[]
+----
 
-===== ZetScript::floatToStackElement()
+Console output:
 
-		StackElement    		floatToStackElement(zs_float);
+[source,txt]
+----
+include::../examples/api/types/zetscript_compile_file_out.txt[]
+----
 
-===== ZetScript::boolToStackElement()
+===== ZetScript::compileFileAndRun()
 
-		StackElement    		boolToStackElement(bool);
+It compiles a file given by parameter and it runs after its compilation.
 
-===== ZetScript::stackElementTo()
-		template<typename _C>
-		_C stackElementTo(StackElement   _stk);
+*Syntax*
 
-===== ZetScript::stackElementToString()
-		String		stackElementToString(StackElement _stk,const String & _format="");
+[source,cpp]
+----
+StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
+----
 
-===== ZetScript::stackElementToStringTypeOf()
-		String		stackElementToStringTypeOf(StackElement _stk);
+*Example*
 
-===== ZetScript::toStackElement()
-		template<typename _C>
-		StackElement	toStackElement( _C _val);
+[source,cpp]
+----
+include::../examples/api/types/zetscript_compile_file_and_run.cpp[]
+----
 
-===== newStringObject();
+Console output:
 
-		StringObject * newStringObject(const String & _str="");
+[source,txt]
+----
+include::../examples/api/types/zetscript_compile_file_and_run_out.txt[]
+----
 
-===== ZetScript::newObjectObject()
+===== ZetScript::printGeneratedCode()
 
-		DictionaryObject * newObjectObject();
+It prints generated byte code after compile script/s
 
-===== ZetScript::newArrayObject()
-		ArrayObject * newArrayObject();
+*Syntax*
 
-===== ZetScript::newClassObject()
+[source,cpp]
+----
+void printGeneratedCode()
+----
 
-		template<typename _C>
-		ClassObject * newClassObject(_C  *_instance=NULL);
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_print_generated_code.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_print_generated_code_out.txt[]
+----
+
+As we can see in the output _EVAL_OPTION_PRINT_BYTE_CODE_ option prints the byte code per each function. At the begin it prints summary,
+
+ - *Function*: Function name
+ - *Stack code*: Stack required for code
+ - *Stack local vars*: Stack required for local variables
+ - *Total stack required*: Total stack required
+ - *Scopes*: Total scopes
+
+Apart there's a description per instruction with the following columns,
+
+- *NUM*: Instruction number
+- *RS*: Required Stack for current instruction
+- *AS*: Acumulated Stack in the current instruction
+- *INSTRUCTION*: Byte code and operands if it needs
+
+<<<
+Here there's a meaning of each byte code is seen on zetscript::ByteCode
 
 
 ===== ZetScript::registerConstant()
 
+*Syntax*
 
-		void registerConstant(const String & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+[source,cpp]
+----
+void registerConstant(const String & var_name, int value, const char *registered_file="", short registered_line=-1);
 
-		// register object
-		StackElement * registerStkConstantStringObject(const String & _key,const String & _value);
+void registerConstant(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
 
-		StackElement * getStkConstantStringObject(const String & _key);
+void registerConstant(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
 
+void registerConstant(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
+
+void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_constant.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_constant.txt[]
+----
 
 ===== ZetScript::registerType()
 
-		template<typename T>
-		Type * registerType(
-				const String & name
-				, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
-				, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
-				, const char *_registered_file="",short _registered_line=-1
-		)
+*Syntax*
 
+[source,cpp]
+----
+ScriptType * registerType(
+		const String & name
+		, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
+		, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
+		, const char *_registered_file="",short _registered_line=-1
+)
+----
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_type.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_type.txt[]
+----
 
 ===== ZetScript::registerFunction()
-
-		template <typename F>
-		void registerFunction( const String & _name_script_function,F ptr_function)
 
 *Syntax*
 
@@ -2436,86 +2554,239 @@ void registerFunction( const String & _function_name,F _c_function, const char *
 [.underline]#Parameters#
 
 - __function_name_ : The function name to be refered in ZetScript.
-- __c_function_ : The C function to register.
+- _function : C function to register.
 - __registered_file_ : Source file where the function was registered
 - __registered_line_ : Line file where the function was registered
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_function.txt[]
+----
 
 
 ===== ZetScript::extends()
 
-		template<class T, class B>
-		void extends()
+
+*Syntax*
+
+[source,cpp]
+----
+void extends<T,B>()
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_extends.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_extends.txt[]
+----
 
 ===== ZetScript::registerConstructor()        
 
-		template<typename T,typename F>
-		void registerConstructor(
-				 F function_type
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		)
+*Syntax*
+
+[source,cpp]
+----
+void registerConstructor(
+	 F _c_function
+   , const char *_registered_file=""
+	,short _registered_line=-1
+)
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_constructor.txt[]
+----
 
 ===== ZetScript::registerMemberFunction()
 
-		template <typename T,typename F>
-		void	registerMemberFunction(
-				const String & _name_script_function
-				,F function_type
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		)
+*Syntax*
+
+[source,cpp]
+----
+void	registerMemberFunction<T,F>(
+		const String & _name_script_function
+		,F _c_function
+		, const char *_registered_file=""
+		,short _registered_line=-1
+)
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_member_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_member_function.txt[]
+----
 
 ===== ZetScript::registerConstMemberProperty()        
 
-		template <typename T,typename F>
-		void	registerConstMemberProperty(
-				const String & _property_name
-				,F ptr_function
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		)
+*Syntax*
+
+[source,cpp]
+----
+void	registerConstMemberProperty<T,F>(
+		const String & _property_name
+		,F _c_function
+		 , const char *_registered_file=""
+		,short _registered_line=-1
+)
+----
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_const_member_property.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_const_member_property.txt[]
+----
 
 
 ===== ZetScript::registerMemberPropertyMetamethod()
 
-		template <typename T,typename F>
-		void	registerMemberPropertyMetamethod(
-				const String & _property_name
-				,const String & _metamethod_name
-				,F _ptr_function
-				 , const char *_registered_file=""
-				,short _registered_line=-1
-		);
+*Syntax*
+
+[source,cpp]
+----
+void	registerMemberPropertyMetamethod<T,F>(
+		const String & _property_name
+		,const String & _metamethod_name
+		,F _c_function
+			, const char *_registered_file=""
+		,short _registered_line=-1
+);
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_member_property_metamethod.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_member_property_metamethod_out.txt[]
+----
+
+
 
 ===== ZetScript::registerStaticMemberFunction()
 
-		template <typename T,typename F>
-		void registerStaticMemberFunction(const String & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1);
+*Syntax*
+
+[source,cpp]
+----
+void registerStaticMemberFunction(
+	const String & _name_script_function
+	,F _c_function
+	, const char *_registered_file=""
+	,short _registered_line=-1
+);
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/zetscript_register_static_member_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/zetscript_register_static_member_function_out.txt[]
+----
 
 ===== ZetScript::unrefLifetimeObject()        
 
-		void unrefLifetimeObject(Object *so);
+*Syntax*
 
-===== ZetScript::bindFunction()        
+[source,cpp]
+----
+void unrefLifetimeObject(Object *so);
+----
 
-		template <  typename F>
-		std::function<F> bindFunction(const String & function_access, const char *_file="", int _line=-1);
+===== ZetScript::bindScriptFunction()        
 
-		template <  typename F>
-		std::function<F> bindFunction(MemberFunctionObject *_sf, const char *_file="", int _line=-1);
+*Syntax*
 
-		template <  typename F>
-		std::function<F> bindFunction(Function *_sf, Object *_calling_object, const char *_file="", int _line=-1);
+[source,cpp]
+----
 
-		template <  typename F>
-		std::function<F> bindFunction(Function *_sf, const char *_file="", int _line=-1);
+std::function<F> bindScriptFunction(const String & _function_access, const char *_file="", int _line=-1);
+
+std::function<F> bindScriptFunction(MemberFunctionObject *_sf, const char *_file="", int _line=-1);
+
+
+std::function<F> bindScriptFunction(ScriptFunction *_sf, Object *_calling_object, const char *_file="", int _line=-1);
+
+
+std::function<F> bindScriptFunction(ScriptFunction *_sf, const char *_file="", int _line=-1);
+----
 
 
 ===== ZetScript::clear()
-		void clear();
+
+
+*Syntax*
+
+[source,cpp]
+----
+void clear();
+----
 
 ===== ZetScript::saveState()
-		void saveState();
+
+*Syntax*
+
+[source,cpp]
+----
+void saveState();
+----
 
 
 

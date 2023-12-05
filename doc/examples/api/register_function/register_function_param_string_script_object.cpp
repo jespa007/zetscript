@@ -14,7 +14,7 @@ int main(){
     zs.registerFunction("paramString",paramString);
 
     // call c function with string param
-    zs.eval(
+    zs.compileAndRun(
         "paramString(\"Hello World\");"
  	);
 

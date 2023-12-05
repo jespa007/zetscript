@@ -74,7 +74,7 @@ int main(){
 	zs.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
 
 	// eval print
-	zs.eval(
+	zs.compileAndRun(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln(\"script argument : {0} \",_arg1);\n"

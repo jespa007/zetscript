@@ -20,7 +20,7 @@ int main(){
 	zs.registerFunction("returnNewArrayScriptObject",returnNewArrayScriptObject);
 
 	// prints the contents of new array object (empty)
-	zs.eval("Console::outln(returnNewArrayScriptObject())");
+	zs.compileAndRun("Console::outln(returnNewArrayScriptObject())");
 	
 	return 0;
 }

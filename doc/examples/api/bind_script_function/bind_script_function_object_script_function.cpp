@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ZetScript zs;
 
-    zs.eval(
+    zs.compileAndRun(
  		"class A{\n"
         "    print(){\n"
         "       Console::outln(\"Call from instanced object\")"
@@ -15,7 +15,7 @@ int main()
         "var a=new A();\n"
  	);
 
-    auto a_print=zs.bindFunction<void(void)>("a.print");
+    auto a_print=zs.bindScriptFunction<void(void)>("a.print");
 
     a_print();
 

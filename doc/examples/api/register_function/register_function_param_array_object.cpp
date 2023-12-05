@@ -20,7 +20,7 @@ int main(){
     zs.registerFunction("paramArrayScriptObject",paramArrayScriptObject);
 
     // call c function with string param
-    zs.eval(
+    zs.compileAndRun(
         "paramArrayScriptObject(["
         "    0,1,2,3,4,5"
         "]);"

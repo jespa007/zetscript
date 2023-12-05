@@ -14,7 +14,7 @@ int main(){
 	zs.registerFunction("printString",printString);
 
 	// calls printString
-	zs.eval("printString(\"Hello World!\")");
+	zs.compileAndRun("printString(\"Hello World!\")");
 	
 	return 0;
 }

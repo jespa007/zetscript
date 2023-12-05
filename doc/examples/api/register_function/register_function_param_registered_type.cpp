@@ -55,7 +55,7 @@ int main(){
     zs.registerFunction("mul10Number",mul10Number);
 
     // Eval script that calls native function 'mulNumber'
-    zs.eval(
+    zs.compileAndRun(
         "var number=new Number();\n"
         "number.value=10;\n"
         "Console::outln(\"before : \"+number);\n"

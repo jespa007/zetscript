@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval(
+	zs.compileAndRun(
 		"var number=new Number(20);\n"
 		"Console::outln(\"number.value++ => {0}\",number.value++)\n"
 	);

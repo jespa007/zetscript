@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 
-	zs.eval(
+	zs.compileAndRun(
 		"var number=new Number(10.5);\n"
 		"Console::outln(\"number.toInteger() : \"+number.toInteger())\n"
 	);

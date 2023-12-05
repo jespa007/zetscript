@@ -71,7 +71,7 @@ Now, let's suppose we want to instantiate a _Number_ type by evaluating the foll
 [source,cpp]
 ----
 	// It throws an error that 'Number' is not instantiable
- 	zs.eval(
+ 	zs.compileAndRun(
  		"var number= new Number();"
  	);
 ----
@@ -501,7 +501,7 @@ int main(){
 
 	// ...
 
-	zs.eval(
+	zs.compileAndRun(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln("script argument is "+_arg1);\n"
