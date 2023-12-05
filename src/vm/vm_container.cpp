@@ -19,7 +19,7 @@ namespace zetscript{
 		StackElementMemberProperty 		*	stk_mp_aux=NULL;
 		ScriptType					*	type=NULL;
 		Symbol 						*	symbol_function_member=NULL;
-		MemberFunctionObject	*	somf=NULL;
+		MemberFunctionScriptObject	*	somf=NULL;
 		bool 							instruction_store=false;
 
 		if(

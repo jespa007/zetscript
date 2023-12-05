@@ -35,7 +35,7 @@ namespace zetscript{
 
 		String result="0";
 		bool negative=false;
-		String format=_format.toLower();
+		String format=_format.toLowerCase();
 
 		if(_number < 0){
 			negative=true;
@@ -62,7 +62,7 @@ namespace zetscript{
 		// check format ...
 
 		if(!format.isEmpty()){
-			//String sf=String(_format).toLower();
+			//String sf=String(_format).toLowerCase();
 			char *it_str=(char *)format.toConstChar();
 
 			if(*it_str == 'd'){ // decimal
@@ -111,7 +111,7 @@ namespace zetscript{
 			}
 		}
 
-		if(Character::toLower(*str)=='b'){
+		if(Character::toLowerCase(*str)=='b'){
 			return IntegerType::INTEGER_TYPE_BINARY;
 		}
 
@@ -123,7 +123,7 @@ namespace zetscript{
 		case '-': str++; // negative numbers ...
 				   break;
 		case '0':
-				  if(Character::toLower(*(str+1))=='x')  {
+				  if(Character::toLowerCase(*(str+1))=='x')  {
 					  isHexa = true;
 					  str+=2;
 				  }

@@ -15,7 +15,7 @@ Main improvements:
 - Implements setter/getter for member variables
 - Implements keywords 'const'
 - Implements operators 'in','typeof'
-- Implements builtin iterators for String, Array and Objects
+- Implements builtin iterators for String, Vector and Objects
 - Implements builtin obj: 'DateTime'
 - Implements builtin modules: 'System', 'Math', 'Json' and 'String'
 - The use of "function" keyword on class function members are not mandatory
@@ -125,8 +125,8 @@ Solved issues
 - #179 Bug if-else fails {max scope reached} 
 - #180 Return vector or dictionary not deref its user properties 
 - #181 Implement var args 
-- #182 Make StringStringObject iterable like Array 
-- #183 Implement Object methods
+- #182 Make StringStringScriptObject iterable like Array 
+- #183 Implement ScriptObject methods
 - #184 Implement + for Array 
 - #185 parser char as integer
 - #186 Implement StriptVarString methods
@@ -136,7 +136,7 @@ Solved issues
 - #192 Fix multiassigment 
 - #193 Check fix ternari
 - #194 Detect literal or assigments within literals  
-- #195 Change ScriptVar by Object and remove ScriptVarDictionnary
+- #195 Change ScriptVar by Script and remove ScriptVarDictionnary
 - #196 Do not extend property when it access 
 - #197 Avoid vector/string objects to add properties through string 
 - #199 Check fix instanceof 
@@ -144,7 +144,7 @@ Solved issues
 - #201 System.print: convert any stackelement in string if argument itself is not string var  
 - #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 - #203 Implement operator + object
-- #204 Implement indexs as ArrayObject in Object 
+- #204 Implement indexs as ArrayScriptObject in ScriptObject 
 - #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 - #206 Override global functions 
 - #207 ObjectString: Implement operator [] 
@@ -165,8 +165,8 @@ Solved issues
 - #224 implement keyword static
 - #215 Implement typeof operator
 - #227 implement DateTime class
-- #229 Implement toJson(bool formated=false) for Array and Object 
-- #230 Control return Object[String] values that are not deallocated by user 
+- #229 Implement toJson(bool formated=false) for vector and Object
+- #230 Control return ScriptObject[String] values that are not deallocated by user 
 - #231 register class passing C function constructor and destructor
 - #232 Implement setter/getter for member variables 
 - #233 Implement operator IN 
@@ -206,12 +206,12 @@ Solved issues
 - #275 Change VirtualMachine class by struct and C functions  
 - #276 Implement built-in iterators
 - #277 optimize access stk_vm_current 
-- #279 Support array access for DictionaryObject 
+- #279 Support array access for ObjectScriptObject 
 - #281 Console Helper Class 
 - #282 Improve the meaning of printing errors 
 - #284 Seffault when native function returns object as NULL 
 - #285 No finding static function 
-- #288 ScriptStringObject::format: First implementation format argument with ':' 
+- #288 ScriptStringScriptObject::format: First implementation format argument with ':' 
 - #289 Example bind "object" from C code
 - #290 Json::serialize: expose attributes metamethods that implements getters 
 - #291 vm_call_function_native: Support std::string return type
@@ -220,7 +220,7 @@ Solved issues
 - #294 undefined behaviour when call delete 
 - #295 Allow switch to have expressions/variables in the case 
 - #296 Create inc/dec metamethods and include in attribute metamethods 
-- #297 Array/Object & class by default it gives all public members in json format by default when prints or do toString()
+- #297 Vector/Object & class by default it gives all public members in json format by default when prints or do toString()
 - #298 Do not store function members in Object 
 - #299 Do not allocate for attribute member in script object 
 - #300 Use linear array instead of Vector in vm runtime 

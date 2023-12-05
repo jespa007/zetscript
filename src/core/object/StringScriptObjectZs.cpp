@@ -106,8 +106,7 @@ namespace zetscript{
 		String *str=so->str_ptr;
 		String pattern="";
 		pattern+=(char)+search;
-		return str->indexOf(pattern);
-		//str->indexOf
+		return str->find(pattern, 0);
 	}
 
 	zs_int StringScriptObjectZs_indexOf(ZetScript *_zs,StringScriptObject *so,String *search){
@@ -139,13 +138,13 @@ namespace zetscript{
 
 	StringScriptObject * 	StringScriptObjectZs_toLowerCase(ZetScript *_zs,StringScriptObject *so){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(so->toString().toLower());
+		str_out->set(so->toString().toLowerCase());
 		return str_out;
 	}
 
 	StringScriptObject * 	StringScriptObjectZs_toUpperCase(ZetScript *_zs,StringScriptObject *so){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(so->toString().toUpper());
+		str_out->set(so->toString().toUpperCase());
 		return str_out;
 	}
 

@@ -6,7 +6,7 @@
 
 namespace zetscript{
 	bool * Boolean::parse(const String & _str){
-		String str=_str.toLower();
+		String str=_str.toLowerCase();
 
 		if(str=="true"){
 			bool *b=new bool;

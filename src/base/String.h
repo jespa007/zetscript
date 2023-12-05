@@ -106,8 +106,8 @@ namespace zetscript{
 		void insert(int _pos, char _c);
 		void insert(int _pos, const String & _s1);
 
-		 String 				toLower() const;
-		 String 				toUpper() const;
+		 String 				toLowerCase() const;
+		 String 				toUpperCase() const;
 
 		 bool 					endsWith( const String & ending);
 		 bool 					startsWith(const String & starting);
@@ -124,8 +124,6 @@ namespace zetscript{
 
 		 bool 					contains(const String & _str_containts,StringComparer sc=StringComparer::Exactly);
 
-
-		 int 					indexOf(const String& pattern);
 
 		String 					substring(int _start_index, int _end_index=-1);
 

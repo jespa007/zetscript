@@ -111,7 +111,7 @@ include::../examples/api/register_function/register_function_return_zs_float_out
 To register a C function that returns a xref:language_data_types.adoc#&lowbar;string[String] it can be done by specifying the following return types,
 
 - _String_
-- _StringObject *_
+- _StringScriptObject *_
 
 
 ====== Return String as String
@@ -134,9 +134,9 @@ Console output:
 include::../examples/api/register_function/register_function_return_String_out.txt[]
 ----
 
-====== Return String as StringObject &#42;
+====== Return String as StringScriptObject &#42;
 
-To register a C function that returns a xref:language_data_types.adoc#&#95;string[String] it can specify _StringObject &#42;_ as return type. The instantiation of _StringObject &#42;_ it&#39;s done throught _ZetScript::newStringObject_ using ZetScript context.
+To register a C function that returns a xref:language_data_types.adoc#&#95;string[String] it can specify _StringScriptObject &#42;_ as return type. The instantiation of _StringScriptObject &#42;_ it&#39;s done throught _ZetScript::newStringScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -156,7 +156,7 @@ include::../examples/api/register_function/register_function_return_string_objec
 
 ===== Return Array
 
-To register a C function that returns a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayObject &#42;_ as return type. The instantiation of _ArrayObject &#42;_ it's done through _ZetScript::newArrayObject_ using ZetScript context.
+To register a C function that returns a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ZetScript::newArrayScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -176,7 +176,7 @@ include::../examples/api/register_function/register_function_return_array_object
 
 ===== Return Object
 
-To register a C function that returns a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectObject &#42;_ as return type. The instantiation of _ObjectObject &#42;_ it's done through _ZetScript::newObjectObject_ using ZetScript context.
+To register a C function that returns a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectScriptObject &#42;_ as return type. The instantiation of _ObjectScriptObject &#42;_ it's done through _ZetScript::newObjectScriptObject_ using ZetScript context.
 
 *Example*
 
@@ -330,7 +330,7 @@ include::../examples/api/register_function/register_function_param_zs_float_out.
 
 ===== Parameter String
 
-To register a C function that accepts a xref:language_data_types.adoc#_string[String] it can specify _const char *_ , _String *_  or _StringObject *_ as a parameter type,
+To register a C function that accepts a xref:language_data_types.adoc#_string[String] it can specify _const char *_ , _String *_  or _StringScriptObject *_ as a parameter type,
 
 *Example*
 
@@ -348,7 +348,7 @@ include::../examples/api/register_function/register_function_param_String_out.tx
 
 ===== Parameter Array
 
-To register a C function that accepts a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayObject &#42;_ as parameter type.
+To register a C function that accepts a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayScriptObject &#42;_ as parameter type.
 
 *Example*
 
@@ -368,7 +368,7 @@ include::../examples/api/register_function/register_function_param_array_object_
 
 ===== Parameter Object
 
-To register a C function that accepts a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectObject &#42;_ as parameter type.
+To register a C function that accepts a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectScriptObject &#42;_ as parameter type.
 
 *Example*
 
@@ -388,7 +388,7 @@ include::../examples/api/register_function/register_function_param_object_object
 
 ===== Parameter Function
 
-To register a C function that accepts a xref:language_data_types.adoc#lowbar;function[Function] it must specify _Function &#42;_ as parameter type. To make  _Function_ callable from C++ must use _ZetScript::bindFunction_ (see xref:_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ZetScript functions binding)
+To register a C function that accepts a xref:language_data_types.adoc#lowbar;function[Function] it must specify _Function &#42;_ as parameter type. To make  _Function_ callable from C++ must use _ZetScript::bindScriptFunction_ (see xref:_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ZetScript functions binding)
 
 *Example*
 

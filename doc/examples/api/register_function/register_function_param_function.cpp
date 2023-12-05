@@ -8,7 +8,7 @@ using zetscript::ScriptFunction;
 void paramFunction(ZetScript *_zs, ScriptFunction *_script_function){
 
     // bind script function to make it callable
-    auto script_function=_zs->bindFunction<void ()>(_script_function);
+    auto script_function=_zs->bindScriptFunction<void ()>(_script_function);
 
     // call script function
     script_function();

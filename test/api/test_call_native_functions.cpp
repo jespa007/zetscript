@@ -356,7 +356,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 			fprintf(stderr,"%s\n",ex.what());
 		}
 
-		/*auto ini=new std::function<void(Num *)>(_zs->bindFunction<void (Num *)>("c.ini"));
+		/*auto ini=new std::function<void(Num *)>(_zs->bindScriptFunction<void (Num *)>("c.ini"));
 		(*ini)(&num);
 		delete ini;*/
 

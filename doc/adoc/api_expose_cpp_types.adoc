@@ -266,7 +266,7 @@ To register a member function it has to create and register a C function with a 
 
 As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type.
+As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
 *Syntax*
 
@@ -282,7 +282,7 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be void, bool, zs_int,zs_float, String,  a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, String,  a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type
 
 [.underline]#Parameters# 
 
@@ -362,7 +362,7 @@ To register a static member function it has to create and register a C function 
 
 As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type.
+As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
 *Syntax*
 
@@ -378,7 +378,7 @@ Where,
 [.underline]#Type# 
 
 - _RegisteredType_: The registered type
-- _ReturnType_: Return type can be _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringObject_, _ArrayObject_, DictionaryObject or new instance/reference of a registered type.
+- _ReturnType_: Return type can be _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
 [.underline]#Parameters# 
 

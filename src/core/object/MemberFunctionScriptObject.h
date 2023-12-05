@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_MEMBER_FUNCTION(zs,so_object, so_function) (MemberFunctionObject::newObjectMemberFunction(zs,so_object,so_function))
+#define ZS_NEW_OBJECT_MEMBER_FUNCTION(zs,so_object, so_function) (MemberFunctionScriptObject::newObjectMemberFunction(zs,so_object,so_function))
 
 namespace zetscript{
-	class MemberFunctionObject:public RefScriptObject{
+	class MemberFunctionScriptObject:public RefScriptObject{
 	public:
 		ScriptFunction *sf_ref;
 
@@ -15,7 +15,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static MemberFunctionObject * newObjectMemberFunction(
+		static MemberFunctionScriptObject * newObjectMemberFunction(
 				ZetScript *_zs
 				, ScriptObject *_so_ref
 				, ScriptFunction *_sf_ref
@@ -24,13 +24,13 @@ namespace zetscript{
 		//
 		// Members
 		//
-		MemberFunctionObject(
+		MemberFunctionScriptObject(
 				ZetScript *zs
 				,ScriptObject *_so_ref
 				, ScriptFunction *_sf_ref
 		);
 
-		~MemberFunctionObject();
+		~MemberFunctionScriptObject();
 
 
 	};

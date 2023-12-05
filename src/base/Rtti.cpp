@@ -32,7 +32,7 @@ namespace zetscript{
 		}
 
 		if(name == String("MemberFunction")){
-			return "zetscript::MemberFunctionObject *";
+			return "zetscript::MemberFunctionScriptObject *";
 		}
 
 		int status = -4; // some arbitrary value to eliminate the compiler warning

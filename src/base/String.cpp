@@ -343,20 +343,20 @@ namespace zetscript{
 	}
 
 
-	String String::toLower() const{
+	String String::toLowerCase() const{
 
 		String ret = *this;
 		for(int short l = 0; l < ret.length();l++){
-			ret[l] = Character::toLower(ret[l]);
+			ret[l] = Character::toLowerCase(ret[l]);
 		}
 		return ret;
 	}
 
-	String String::toUpper() const{
+	String String::toUpperCase() const{
 
 		String ret = *this;
 		for(int short l = 0; l < ret.length();l++){
-			ret[l] = Character::toUpper(ret[l]);
+			ret[l] = Character::toUpperCase(ret[l]);
 		}
 		return ret;
 	}
@@ -396,28 +396,14 @@ namespace zetscript{
 		String s2=_str_containts;
 
 		if(sc==StringComparer::OrdinalIgnoreCase){
-			s1=s1.toLower();
-			s2=s2.toLower();
+			s1=s1.toLowerCase();
+			s2=s2.toLowerCase();
 		}
 
 		if (s1.find(s2) != String::npos) {
 			return true;
 		}
 		return false;
-	}
-
-	int String::indexOf(const String& pattern)
-	{
-		// where appears the pattern in the text?
-		int loc = this->find(pattern, 0);
-		if (loc != String::npos)
-		{
-			return loc;
-		}
-		else
-		{
-			return -1;
-		}
 	}
 
 	String String::substring(int _start_index, int _end_index){

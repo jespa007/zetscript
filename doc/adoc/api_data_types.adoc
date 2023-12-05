@@ -31,7 +31,7 @@ _String_ it defines a string represented a sequence of chars
 
 ===== Constructor
 
-The String constructor creates a new zs_tring as empty or initialized with other string or String.
+The String constructor creates a new string as empty or initialized with other string or String.
 
 *Syntax*
 
@@ -105,7 +105,7 @@ include::../examples/api/types/string_length_out.txt[]
 ----
 
 
-====== String::empty()
+====== String::isEmpty()
 
 Returns whether the string is empty.
 
@@ -128,14 +128,180 @@ true if the string length is 0, false otherwise.
 
 [source,cpp]
 ----
-include::../examples/api/types/string_empty.cpp[]
+include::../examples/api/types/string_is_empty.cpp[]
 ----
 
 Console output:
 
 [source,cpp]
 ----
-include::../examples/api/types/string_empty_out.txt[]
+include::../examples/api/types/string_is_empty_out.txt[]
+----
+
+====== String::toLowerCase()
+
+Returns current string as lowe case
+
+*Syntax*
+
+[source,cpp]
+----
+String toLowerCase() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A String value, representing the new string converted to lower case
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_lower_case.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_lower_case_out.txt[]
+----
+
+====== String::toUpperCase()
+
+Returns current string as upper case
+
+*Syntax*
+
+[source,cpp]
+----
+String toUpperCase() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A String value, representing the new string converted to upper case.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_upper_case.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_upper_case_out.txt[]
+----
+
+====== String::split()
+
+Splits the string into multiple strings in an array by a char or string delimiter.
+
+*Syntax*
+
+[source,cpp]
+----
+String split(char _delimiter) const;
+String split(const String & _delimiter) const;
+----
+
+[.underline]#Parameters#
+
+- delimiter : A character or string as the delimiter
+
+[.underline]#Return#
+
+A vector representing the strings split by the delimiter.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_split.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_split_out.txt[]
+----
+
+====== String::startsWidth()
+
+Returns whether the string starts with the specified character(s).
+
+*Syntax*
+
+[source,cpp]
+----
+bool startsWidth() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+true if the string starts with the specified character(s).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with_out.txt[]
+----
+
+====== String::endsWidth()
+
+Returns whether the string ends with the specified character(s).
+
+*Syntax*
+
+[source,cpp]
+----
+bool startsWidth() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+true if the string ends with the specified character(s).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_ends_with.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_ends_with_out.txt[]
 ----
 
 ====== String::toConstChar()
@@ -1606,7 +1772,7 @@ _Object_ defines a the parent class of any object in TypeScript. This type is us
 |Name|Description
 
 |TYPE_ID_OBJECT_STRING
-|Tells that the object is an instance of StringObject
+|Tells that the object is an instance of StringScriptObject
 
 |TYPE_ID_OBJECT_ARRAY
 |Tells that the object is an instance of  ObjectArray
@@ -1628,19 +1794,19 @@ _Object_ defines a the parent class of any object in TypeScript. This type is us
 
 |====
 
-==== StringObject
+==== StringScriptObject
 
-_StringObject_ defines a string script object.
+_StringScriptObject_ defines a string script object.
 
 ===== Constructor
 
-The StringObject constructor creates a new string script object as empty or initialized with a string.  The StringObject constructor needs a ZetScript context.
+The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a ZetScript context.
 
 *Syntax*
 
 [source,cpp]
 ----
-StringObject(ZetScript *_zs, const String & _str="");
+StringScriptObject(ZetScript *_zs, const String & _str="");
 ----
 
 [.underline]#Parameters#
@@ -1664,7 +1830,7 @@ include::../examples/api/types/string_object_constructor_out.txt[]
 
 ===== Member functions
 
-====== StringObject::set()
+====== StringScriptObject::set()
 
 Replaces current string value.
 
@@ -1697,7 +1863,7 @@ Console output:
 include::../examples/api/types/string_object_set_out.txt[]
 ----
 
-====== StringObject::get()
+====== StringScriptObject::get()
 
 Gets its current string value as String or array of characters
 
@@ -1730,7 +1896,7 @@ Console output:
 include::../examples/api/types/string_object_get_out.txt[]
 ----
 
-====== StringObject::getConstChar()
+====== StringScriptObject::getConstChar()
 
 Gets its current string value as array of characters
 
@@ -1763,7 +1929,7 @@ Console output:
 include::../examples/api/types/string_object_get_const_char_out.txt[]
 ----
 
-====== StringObject::toString()
+====== StringScriptObject::toString()
 
 Gets its current string value
 
@@ -1796,7 +1962,7 @@ Console output:
 include::../examples/api/types/string_object_to_string_out.txt[]
 ----
 
-====== StringObject::length()
+====== StringScriptObject::length()
 
 Returns the length of the string, in terms of bytes.
 
@@ -1827,19 +1993,19 @@ Console output:
 include::../examples/api/types/string_object_length_out.txt[]
 ----
 		
-==== ArrayObject
+==== ArrayScriptObject
 
-_ArrayObject_ it defines a array script object.
+_ArrayScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ArrayObject constructor creates a new array script object. ArrayObject constructor needs a ZetScript context.
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ZetScript context.
 
 *Syntax*
 
 [source,cpp]
 ----
-ArrayObject(ZetScript *_zs);
+ArrayScriptObject(ZetScript *_zs);
 ----
 
 [.underline]#Parameters#
@@ -1862,7 +2028,7 @@ include::../examples/api/types/array_object_constructor_out.txt[]
 
 ===== Member functions
 
-====== ArrayObject::push()
+====== ArrayScriptObject::push()
 
 Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
 
@@ -1899,7 +2065,7 @@ Console output:
 include::../examples/api/types/array_object_push_out.txt[]
 ----
 
-====== ArrayObject::length()
+====== ArrayScriptObject::length()
 
 Returns the number of the elements of the array.
 
@@ -1930,7 +2096,7 @@ Console output:
 include::../examples/api/types/string_array_object_length_out.txt[]
 ----
 
-====== ArrayObject::set()
+====== ArrayScriptObject::set()
 
 Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
 
@@ -1970,7 +2136,7 @@ Console output:
 include::../examples/api/types/array_object_set_out.txt[]
 ----
 
-====== ArrayObject::elementInstanceOf()
+====== ArrayScriptObject::elementInstanceOf()
 
 Says whether the element at a position is instance of zetscript data type or a registered type.
 
@@ -2008,7 +2174,7 @@ include::../examples/api/types/array_object_element_instanceof_out.txt[]
 ----
 
 
-====== ArrayObject::get()
+====== ArrayScriptObject::get()
 
 Returns a reference element of type _&#x5f;T_ at position __pos_.
 
@@ -2045,7 +2211,7 @@ Console output:
 include::../examples/api/types/array_object_get_out.txt[]
 ----
 
-====== ArrayObject::toString()
+====== ArrayScriptObject::toString()
 
 Returns a string as the array contents in json format.
 
@@ -2080,7 +2246,7 @@ include::../examples/api/types/array_object_tostring_out.txt[]
 
 ==== ObjectScriptObject
 
-_ObjectObject_ it defines a array script object.
+_ObjectScriptObject_ it defines a array script object.
 
 ===== Contructor
 
@@ -2203,7 +2369,7 @@ Returns element of type _&#x5f;T_ at key __key_.
 _T 	get(const String & _key);
 ----
 
-====== ArrayObject::get()
+====== ArrayScriptObject::get()
 
 Returns a reference element at key.
 
@@ -2273,7 +2439,7 @@ Console output:
 include::../examples/api/types/object_script_object_to_string_out.txt[]
 ----
 
-====== ArrayObject::getKeys()
+====== ArrayScriptObject::getKeys()
 
 Returns a vector of strings as the keys of the Object.
 
@@ -2308,7 +2474,7 @@ include::../examples/api/types/object_script_object_get_keys_out.txt[]
 
 ==== ClassObject
 
-_ClassObject_ it a subclass of _ObjectObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+_ClassObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
 
 
 
@@ -2544,6 +2710,8 @@ include::../examples/api/eval/zetscript_register_type.txt[]
 
 ===== ZetScript::registerFunction()
 
+
+
 *Syntax*
 
 [source,cpp]
@@ -2551,10 +2719,24 @@ include::../examples/api/eval/zetscript_register_type.txt[]
 void registerFunction( const String & _function_name,F _c_function, const char *_registered_file="",short _registered_line=-1);
 ----
 
+[.underline]#Templates#
+
+- _F_ : A C function with the following signature,
+
+ReturnType (ZetScript *_zs, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 )
+
+Where,
+
+- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
+- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+
 [.underline]#Parameters#
 
 - __function_name_ : The function name to be refered in ZetScript.
-- _function : C function to register.
+- _c_function : C function to register.
+
+
+
 - __registered_file_ : Source file where the function was registered
 - __registered_line_ : Line file where the function was registered
 
@@ -2752,20 +2934,68 @@ void unrefLifetimeObject(Object *so);
 
 ===== ZetScript::bindScriptFunction()        
 
+_ZetScript::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
+
+*Syntax*
+
+[source,cpp]
+----
+ ZetScript::bindScriptFunction<F>(const String & _script_function_name);
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
+
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
+
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function);
+
+
+----
+[.underline]#Template#
+
+- _F_ : A C function with the following signature,
+
+ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)
+
+Where,
+
+- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
+- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+
+[.underline]#Parameters#
+
+ - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
+ - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+ - __script_function_: _ZetScript::String_ or _Function *_ as the name or the script function reference to be registered.
+
+
+[.underline]#Returns#
+
+Returns a _std::function_ with the signature provided.
+
+*Example*
+
+The following example it binds a _sayHelloWorld_ function.
+
+[source,cpp]
+----
+include::../examples/api/bind_script_function/bind_script_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/bind_script_function/bind_script_function_out.txt[]
+----
+
 *Syntax*
 
 [source,cpp]
 ----
 
-std::function<F> bindScriptFunction(const String & _function_access, const char *_file="", int _line=-1);
 
-std::function<F> bindScriptFunction(MemberFunctionObject *_sf, const char *_file="", int _line=-1);
-
-
-std::function<F> bindScriptFunction(ScriptFunction *_sf, Object *_calling_object, const char *_file="", int _line=-1);
-
-
-std::function<F> bindScriptFunction(ScriptFunction *_sf, const char *_file="", int _line=-1);
 ----
 
 

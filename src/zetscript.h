@@ -461,7 +461,7 @@ namespace zetscript{
 		std::function<F> bindScriptFunction(const String & function_access, const char *_file="", int _line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(MemberFunctionObject *_sf, const char *_file="", int _line=-1);
+		std::function<F> bindScriptFunction(MemberFunctionScriptObject *_sf, const char *_file="", int _line=-1);
 
 
 		template <  typename F>

@@ -227,7 +227,7 @@ load_function:
 			  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 			  sf_call_is_member_function=true;
 			}else if(STACK_ELEMENT_IS_MEMBER_FUNCTION_OBJECT(sf_call_stk_function_ref)){
-			  MemberFunctionObject *sofm=(  MemberFunctionObject *)sf_call_stk_function_ref->value;
+			  MemberFunctionScriptObject *sofm=(  MemberFunctionScriptObject *)sf_call_stk_function_ref->value;
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
 				  ZS_VM_STOP_EXECUTE(

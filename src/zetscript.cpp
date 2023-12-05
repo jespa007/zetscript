@@ -418,7 +418,7 @@ namespace zetscript{
 			if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
 				if(so->script_type_id==SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT){
-					MemberFunctionObject *somf=(MemberFunctionObject *)so;
+					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= String("member_function<")+st->name+"::"+somf->sf_ref->name+">";
 				}else{
