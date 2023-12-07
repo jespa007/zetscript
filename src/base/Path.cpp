@@ -13,7 +13,7 @@ namespace zetscript{
 			int pos = _path.findLastOf("\\/");
 				return (String::npos == pos)
 					? ""
-					: _path.substr(0, pos);
+					: _path.getSubstring(0, pos);
 		}
 
 		return _path;
@@ -24,7 +24,7 @@ namespace zetscript{
 		String ss=_path;
 		found=_path.findLastOf("/\\");
 		if(found != String::npos){
-			ss= _path.substr(found+1);
+			ss= _path.getSubstring(found+1);
 		}
 		return ss;
 	}
@@ -42,6 +42,6 @@ namespace zetscript{
 			if(pos == 0)    //. is at the front. Not an extension.
 				return fName;
 
-			return fName.substr(0, pos);
+			return fName.getSubstring(0, pos);
 	}
 }

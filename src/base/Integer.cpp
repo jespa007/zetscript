@@ -17,7 +17,7 @@ namespace zetscript{
 		}else if(number_type == Integer::IntegerType::INTEGER_TYPE_HEXA){
 			value=strtoll (val.toConstChar(), NULL, 16);
 		}else if(number_type == Integer::IntegerType::INTEGER_TYPE_BINARY){
-			String binary = val.substr(0,val.length()-1);
+			String binary = val.getSubstring(0,val.length()-1);
 			value=strtoll (binary.toConstChar(), NULL, 2);
 		}
 		else{

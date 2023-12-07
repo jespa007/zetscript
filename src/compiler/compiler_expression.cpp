@@ -173,7 +173,7 @@ namespace zetscript{
 						,start_expression_line
 						,compiler_error_sub_expression
 						,"%s at the end of expression %10s..."
-						,expected_ending_str.toConstChar(),String(start_expression_str).substr(0,len).toConstChar()
+						,expected_ending_str.toConstChar(),String(start_expression_str).getSubstring(0,len).toConstChar()
 				);
 			}
 		}

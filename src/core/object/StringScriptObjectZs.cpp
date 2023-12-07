@@ -112,7 +112,7 @@ namespace zetscript{
 	zs_int StringScriptObjectZs_indexOf(ZetScript *_zs,StringScriptObject *so,String *search){
 		ZS_UNUSUED_PARAM(_zs);
 		String *str=so->str_ptr;
-		return str->indexOf(*search);
+		return str->find(*search);
 	}
 
 	bool StringScriptObjectZs_startsWith(ZetScript *_zs,StringScriptObject *so,String *prefix){
@@ -150,7 +150,25 @@ namespace zetscript{
 
 	StringScriptObject * 	StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index){
 		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
-		str_out->set(_so->toString().substring(_start_index, _end_index));
+		String result="";
+		auto str_in=_so->getPtr();
+
+		if(_start_index<0){
+			ZS_THROW_RUNTIME_ERROR("_start_index negative (_start_index:%i)", _start_index);
+		}
+		if(_end_index < 0){
+			_end_index=str_in->length()+_end_index;
+		}
+		if(_end_index>=str_in->length()){
+			_end_index=str_in->length()-1;
+		}
+
+		if(_start_index<=_end_index){
+			result=str_in->getSubstring(_start_index,_end_index-_start_index+1);
+		}
+
+
+		str_out->set(result);
 		return str_out;
 	}
 

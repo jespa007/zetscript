@@ -1,12 +1,10 @@
 #include "zetscript.h"
 using zetscript::String;
 int main(){
-	String string="this is a test string.";
-	String str2="n example";
+	zetscript::ZetScript zs;
 
-	string.replace(9,5,str2);     
+    String s="My blue car with blue door and blue wheel";
 
-	printf("string.replace(9,5,str2) => '%s'\n",string.toConstChar());
-
+    printf("s.replace(\"blue\",\"green\") => '%s'\n",s.replace("blue","green").toConstChar());
 	return 0;
 }

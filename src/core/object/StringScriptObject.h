@@ -45,6 +45,7 @@ namespace zetscript{
 
 		void set(const String & _s);
 		const String & get();
+		String * getPtr();
 		const char *getConstChar();
 		virtual int length();
 		virtual String toString();

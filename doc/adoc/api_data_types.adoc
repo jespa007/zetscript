@@ -69,17 +69,250 @@ include::../examples/api/types/string_constructor_out.txt[]
 
 npos is a static member constant value with the greatest possible value.
 
+
+==== Static functions
+
+====== String::format()
+
+Returns a formatted string.
+
+*Syntax*
+
+[source,cpp]
+----
+String format(const char *_format,...);
+----
+
+[.underline]#Parameters#
+
+
+- _&#95;format_ : C string that contains the text to be returned as String. It can optionally contain embedded format specifiers that are replaced by the values specified in subsequent additional arguments and formatted as requested. A format specifier follows the same prototype as C printf: %[flags][width][.precision][length]specifier
+
+[cols="1m,3d,3d"]
+|====
+|Specifier |Output|Example
+|d or i	
+|Signed decimal integer	
+|392
+|u	
+|Unsigned decimal integer
+|7235
+|o
+|Unsigned octal
+|610
+|x
+|Unsigned hexadecimal integer
+|7fa
+|X
+|Unsigned hexadecimal integer (uppercase)
+|7FA
+|f
+|Decimal floating point, lowercase
+|392.65
+|F	
+|Decimal floating point, uppercase
+|392.65
+|e	
+|Scientific notation (mantissa/exponent), lowercase
+|3.9265e+2
+|E	
+|Scientific notation (mantissa/exponent), uppercase
+|3.9265E+2
+|g	
+|Use the shortest representation: %e or %f
+|392.65
+|G
+|Use the shortest representation: %E or %F
+|392.65
+|a
+|Hexadecimal floating point, lowercase
+|-0xc.90fep-2
+|A
+|Hexadecimal floating point, uppercase
+|-0XC.90FEP-2
+|c
+|Character
+|a
+|s
+|String of characters
+|sample
+|p	
+|Pointer address
+|b8000000
+|n
+|Nothing printed.
+The corresponding argument must be a pointer to a signed int.
+The number of characters written so far is stored in the pointed location.	
+|%
+|A % followed by another % character will write a single % to the stream.
+|%
+|====
+
+
+The format specifier can also contain sub-specifiers: flags, width, .precision and modifiers (in that order), which are optional and follow these specifications:
+
+[cols="1m,3d"]
+|====
+|flags
+|description
+|-
+|Left-justify within the given field width; Right justification is the default (see width sub-specifier).
+|+
+|Forces to preceed the result with a plus or minus sign (+ or -) even for positive numbers. By default, only negative numbers are preceded with a - sign.
+(space)	If no sign is going to be written, a blank space is inserted before the value.
+|#
+|Used with o, x or X specifiers the value is preceeded with 0, 0x or 0X respectively for values different than zero. Used with a, A, e, E, f, F, g or G it forces the written output to contain a decimal point even if no more digits follow. By default, if no digits follow, no decimal point is written.
+|0
+|Left-pads the number with zeroes (0) instead of spaces when padding is specified (see width sub-specifier).
+|====
+
+
+[cols="1m,3d"]
+|====
+|width
+|description
+|(number)
+|Minimum number of characters to be printed. If the value to be printed is shorter than this number, the result is padded with blank spaces. The value is not truncated even if the result is larger.
+|*
+|The width is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.
+|====
+
+[cols="1m,3d"]
+|====
+|.precision	
+|description
+|.number
+|For integer specifiers (d, i, o, u, x, X): precision specifies the minimum number of digits to be written. If the value to be written is shorter than this number, the result is padded with leading zeros. The value is not truncated even if the result is longer. A precision of 0 means that no character is written for the value 0.
+For a, A, e, E, f and F specifiers: this is the number of digits to be printed after the decimal point (by default, this is 6).
+For g and G specifiers: This is the maximum number of significant digits to be printed.
+For s: this is the maximum number of characters to be printed. By default all characters are printed until the ending null character is encountered.
+If the period is specified without an explicit value for precision, 0 is assumed.
+|.*
+|The precision is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.
+|====
+
+The length sub-specifier modifies the length of the data type. This is a chart showing the types used to interpret the corresponding arguments with and without length specifier (if a different type is used, the proper type promotion or conversion is performed, if allowed):
+
+
+
+
+specifiers
+length	d i	u o x X	f F e E g G a A	c	s	p	n
+(none)	int	unsigned int	double	int	char*	void*	int*
+hh	signed char	unsigned char					signed char*
+h	short int	unsigned short int					short int*
+l	long int	unsigned long int		wint_t	wchar_t*		long int*
+ll	long long int	unsigned long long int					long long int*
+j	intmax_t	uintmax_t					intmax_t*
+z	size_t	size_t					size_t*
+t	ptrdiff_t	ptrdiff_t					ptrdiff_t*
+L			long double	
+
+[.underline]#Return#
+
+A formated String
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_format.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_format_out.txt[]
+----
+
 ===== Member functions
 
-====== String::length()
+====== String::append()
 
-Returns the length of the string, in terms of bytes.
+Appends a character o string at the end of current contents.
 
 *Syntax*
 
 [source,cpp]
 ----
-int length() const;
+void append(char _c);
+void append(const char * _s);
+void append(const char *_s, int _len);
+void append(const String & _str);
+
+----
+
+[.underline]#Parameters#
+
+- _&#95;c_ : The character to append.
+- _&#95;s_ : A pointer to array of characters.
+- _&#95;len_ : The length of number of characters to copy.
+- _&#95;str_ : A String object.
+
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_append.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_append_out.txt[]
+----
+
+
+====== String::at()
+
+Returns a reference to the character at position __pos_.
+
+*Syntax*
+
+[source,cpp]
+----
+char& at (int _pos);
+const char& at (int _pos) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The character at the specified position in the string.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_at.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_at_out.txt[]
+----
+
+====== String::clear()
+
+Erases the contents of the string.
+
+*Syntax*
+
+[source,cpp]
+----
+void clear();
 ----
 
 [.underline]#Parameters#
@@ -88,187 +321,53 @@ None
 
 [.underline]#Return#
 
-The number of bytes in the string.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_length.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/string_length_out.txt[]
-----
-
-
-====== String::isEmpty()
-
-Returns whether the string is empty.
-
-*Syntax*
-
-[source,cpp]
-----
-bool empty() const;
-----
-
-[.underline]#Parameters#
-
 None
 
-[.underline]#Return#
-
-true if the string length is 0, false otherwise.
-
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_is_empty.cpp[]
+include::../examples/api/types/string_clear.cpp[]
 ----
 
 Console output:
 
-[source,cpp]
+[source,txt]
 ----
-include::../examples/api/types/string_is_empty_out.txt[]
+include::../examples/api/types/string_clear_out.txt[]
 ----
 
-====== String::toLowerCase()
+====== String::contains()
 
-Returns current string as lowe case
+Finds out whether a string contains a substring or not.
 
 *Syntax*
 
-[source,cpp]
+[source,javascript]
 ----
-String toLowerCase() const;
+bool String::contains(const String & _str);
 ----
 
 [.underline]#Parameters#
 
-None
+- _&#95;str_:  A substring to find.
 
-[.underline]#Return#
+[.underline]#Returns#
 
-A String value, representing the new string converted to lower case
+true if the string _&#95;str_ exist, false otherwise.
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_to_lower_case.cpp[]
+include::../examples/api/types/string_contains.cpp[]
 ----
 
 Console output:
 
 [source,cpp]
 ----
-include::../examples/api/types/string_to_lower_case_out.txt[]
-----
-
-====== String::toUpperCase()
-
-Returns current string as upper case
-
-*Syntax*
-
-[source,cpp]
-----
-String toUpperCase() const;
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-A String value, representing the new string converted to upper case.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_to_upper_case.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/string_to_upper_case_out.txt[]
-----
-
-====== String::split()
-
-Splits the string into multiple strings in an array by a char or string delimiter.
-
-*Syntax*
-
-[source,cpp]
-----
-String split(char _delimiter) const;
-String split(const String & _delimiter) const;
-----
-
-[.underline]#Parameters#
-
-- delimiter : A character or string as the delimiter
-
-[.underline]#Return#
-
-A vector representing the strings split by the delimiter.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_split.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/string_split_out.txt[]
-----
-
-====== String::startsWidth()
-
-Returns whether the string starts with the specified character(s).
-
-*Syntax*
-
-[source,cpp]
-----
-bool startsWidth() const;
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-true if the string starts with the specified character(s).
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_starts_with.cpp[]
-----
-
-Console output:
-
-[source,cpp]
-----
-include::../examples/api/types/string_starts_with_out.txt[]
+include::../examples/api/types/string_contains_out.txt[]
 ----
 
 ====== String::endsWidth()
@@ -304,15 +403,195 @@ Console output:
 include::../examples/api/types/string_ends_with_out.txt[]
 ----
 
-====== String::toConstChar()
+====== String::erase()
 
-Returns a pointer to an array that contains a null-terminated sequence of characters (i.e., a C-string) representing the current value of the string object.
+Erases part of the string, reducing its length.
 
 *Syntax*
 
 [source,cpp]
 ----
-const char * toConstChar() const;
+void erase(int _pos, int _len);
+void erase(int _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to be erased.
+- _&#95;len_ : Number of characters to erase.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_erase.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_erase_out.txt[]
+----
+
+======  String::find()
+
+Searches the string for the first occurrence of the sequence specified by its arguments.
+
+*Syntax*
+
+[source,cpp]
+----
+int find(const String & _str, int _pos = 0) const;
+int find(const char *_s, int _pos = 0) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;s_ :  A pointer to an array of characters.
+- _&#95;str_ : A String object.
+- _&#95;pos_ : Position of the first character in the string to be considered in the search.
+
+[.underline]#Return#
+
+The position of the first character of the first match. If no matches were found, the function returns String::npos
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_find.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_find_out.txt[]
+----
+
+====== String::findLastOf()
+
+Searches the string for the last character that matches any of the characters specified in its arguments.
+
+
+*Syntax*
+
+[source,cpp]
+----
+int findLastOf(const char *_s, int _pos = npos) const;
+int findLastOf(const String & _str, int _pos = npos) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;str_ : A String object.
+- _&#95;s_ :  A pointer to an array of characters.
+- _&#95;pos_ : Position of the last character in the string to be considered in the search.
+
+
+[.underline]#Return#
+
+The position of the last character that matches. If no matches are found, the function returns string::npos.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_find_last_of.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_find_last_of_out.txt[]
+----
+
+====== String::getSubstring()
+
+Returns a new string with its value initialized to a copy of a substring of this object.
+
+*Syntax*
+
+[source,cpp]
+----
+String  getSubstring (int _pos = 0, int _len = npos) ;
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to be copied as a substring.
+- _&#95;len_ : Number of characters to include in the substring. As default it passes String::npos that indicates it will take all characters until the end of the string.
+
+[.underline]#Return#
+
+A string with a substring of this object.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_get_substring.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_get_substring_out.txt[]
+----
+
+
+====== String::insert()
+
+Inserts additional characters into the string right before the character indicated by _&#x5f;pos_.
+
+*Syntax*
+
+[source,cpp]
+----
+void insert(int _pos, char _char);
+void insert(int _pos, const String & _string);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to insert.
+- _&#95;c_ : The character to insert.
+- _&#95;str_ : The characters from String object to insert.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_insert.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_insert_out.txt[]
+----
+
+====== String::isEmpty()
+
+Returns whether the string is empty.
+
+*Syntax*
+
+[source,cpp]
+----
+bool empty() const;
 ----
 
 [.underline]#Parameters#
@@ -321,20 +600,53 @@ None
 
 [.underline]#Return#
 
-A pointer of characters of the string object's value.
+true if the string length is 0, false otherwise.
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_to_const_char.cpp[]
+include::../examples/api/types/string_is_empty.cpp[]
 ----
 
 Console output:
 
-[source,txt]
+[source,cpp]
 ----
-include::../examples/api/types/string_to_const_char_out.txt[]
+include::../examples/api/types/string_is_empty_out.txt[]
+----
+
+====== String::length()
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+int length() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_length.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_length_out.txt[]
 ----
 
 ====== String::operator=()
@@ -443,49 +755,49 @@ Console output:
 include::../examples/api/types/string_operator_access_out.txt[]
 ----
 
-====== String::at()
+====== String::split()
 
-Returns a reference to the character at position __pos_.
+Splits the string into multiple strings in an array by a char or string delimiter.
 
 *Syntax*
 
 [source,cpp]
 ----
-char& at (int _pos);
-const char& at (int _pos) const;
+String split(char _delimiter) const;
+String split(const String & _delimiter) const;
 ----
 
 [.underline]#Parameters#
 
-- _&#95;pos_ : The integer value as the position.
+- delimiter : A character or string as the delimiter
 
 [.underline]#Return#
 
-The character at the specified position in the string.
+A vector representing the strings split by the delimiter.
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_at.cpp[]
+include::../examples/api/types/string_split.cpp[]
 ----
 
 Console output:
 
-[source,txt]
+[source,cpp]
 ----
-include::../examples/api/types/string_at_out.txt[]
+include::../examples/api/types/string_split_out.txt[]
 ----
 
-====== String::clear()
+====== String::startsWidth()
 
-Erases the contents of the string.
+Returns whether the string starts with the specified character(s).
 
 *Syntax*
 
 [source,cpp]
 ----
-void clear();
+bool startsWidth() const;
 ----
 
 [.underline]#Parameters#
@@ -494,131 +806,123 @@ None
 
 [.underline]#Return#
 
+true if the string starts with the specified character(s).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with_out.txt[]
+----
+
+====== String::toConstChar()
+
+Returns a pointer to an array that contains a null-terminated sequence of characters (i.e., a C-string) representing the current value of the string object.
+
+*Syntax*
+
+[source,cpp]
+----
+const char * toConstChar() const;
+----
+
+[.underline]#Parameters#
+
 None
 
+[.underline]#Return#
+
+A pointer of characters of the string object's value.
+
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_clear.cpp[]
+include::../examples/api/types/string_to_const_char.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_clear_out.txt[]
+include::../examples/api/types/string_to_const_char_out.txt[]
 ----
 
-====== String::getSubstring()
+====== String::toLowerCase()
 
-Returns a new string with its value initialized to a copy of a substring of this object.
+Returns current string as lowe case
 
 *Syntax*
 
 [source,cpp]
 ----
-String  getSubstring (int _pos = 0, int _len = npos) ;
+String toLowerCase() const;
 ----
 
 [.underline]#Parameters#
 
-- _&#95;pos_ : Position of the first character to be copied as a substring.
-- _&#95;len_ : Number of characters to include in the substring. As default it passes String::npos that indicates it will take all characters until the end of the string.
+None
 
 [.underline]#Return#
 
-A string with a substring of this object.
+A String value, representing the new string converted to lower case
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_get_substring.cpp[]
+include::../examples/api/types/string_to_lower_case.cpp[]
 ----
 
 Console output:
 
-[source,txt]
+[source,cpp]
 ----
-include::../examples/api/types/string_get_substring_out.txt[]
+include::../examples/api/types/string_to_lower_case_out.txt[]
 ----
 
-======  String::find()
+====== String::toUpperCase()
 
-Searches the string for the first occurrence of the sequence specified by its arguments.
+Returns current string as upper case
 
 *Syntax*
 
 [source,cpp]
 ----
-int find(const String & _str, int _pos = 0) const;
-int find(const char *_s, int _pos = 0) const;
+String toUpperCase() const;
 ----
 
 [.underline]#Parameters#
 
-- _&#95;s_ :  A pointer to an array of characters.
-- _&#95;str_ : A String object.
-- _&#95;pos_ : Position of the first character in the string to be considered in the search.
+None
 
 [.underline]#Return#
 
-The position of the first character of the first match. If no matches were found, the function returns String::npos
+A String value, representing the new string converted to upper case.
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/string_find.cpp[]
+include::../examples/api/types/string_to_upper_case.cpp[]
 ----
 
 Console output:
 
-[source,txt]
-----
-include::../examples/api/types/string_find_out.txt[]
-----
-
-====== String::findLastOf()
-
-Searches the string for the last character that matches any of the characters specified in its arguments.
-
-
-*Syntax*
-
 [source,cpp]
 ----
-int findLastOf(const char *_s, int _pos = npos) const;
-int findLastOf(const String & _str, int _pos = npos) const;
+include::../examples/api/types/string_to_upper_case_out.txt[]
 ----
 
-[.underline]#Parameters#
 
-- _&#95;str_ : A String object.
-- _&#95;s_ :  A pointer to an array of characters.
-- _&#95;pos_ : Position of the last character in the string to be considered in the search.
-
-
-[.underline]#Return#
-
-The position of the last character that matches. If no matches are found, the function returns string::npos.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_find_last_of.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_find_last_of_out.txt[]
-----
-
-====== String::setSubString()
+====== String::setSubstring()
 
 Replaces a portion of the string.
 
@@ -651,121 +955,6 @@ Console output:
 [source,txt]
 ----
 include::../examples/api/types/string_set_substring_out.txt[]
-----
-
-
-====== String::append()
-
-Appends a character o string at the end of current contents.
-
-*Syntax*
-
-[source,cpp]
-----
-void append(char _c);
-void append(const char * _s);
-void append(const char *_s, int _len);
-void append(const String & _str);
-
-----
-
-[.underline]#Parameters#
-
-- _&#95;c_ : The character to append.
-- _&#95;s_ : A pointer to array of characters.
-- _&#95;len_ : The length of number of characters to copy.
-- _&#95;str_ : A String object.
-
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_append.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_append_out.txt[]
-----
-
-
-====== String::erase()
-
-Erases part of the string, reducing its length.
-
-*Syntax*
-
-[source,cpp]
-----
-void erase(int _pos, int _len);
-void erase(int _pos);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : Position of the first character to be erased.
-- _&#95;len_ : Number of characters to erase.
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_erase.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_erase_out.txt[]
-----
-
-
-====== String::insert()
-
-Inserts additional characters into the string right before the character indicated by _&#x5f;pos_.
-
-*Syntax*
-
-[source,cpp]
-----
-void insert(int _pos, char _char);
-void insert(int _pos, const String & _string);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : Position of the first character to insert.
-- _&#95;c_ : The character to insert.
-- _&#95;str_ : The characters from String object to insert.
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_insert.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_insert_out.txt[]
 ----
 
 ===== Static functions

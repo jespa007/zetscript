@@ -141,7 +141,7 @@ namespace zetscript{
 				}
 
 				if(ok){
-					str_result+=str_input.substr(str_it-str_start,str_begin-str_it);
+					str_result+=str_input.getSubstring(str_it-str_start,str_begin-str_it);
 
 					str_begin=str_begin+1; // ignore '{'
 
@@ -248,7 +248,7 @@ namespace zetscript{
 
 							}else{ // copy parameter between '{}'
 								char *str_from=(str_begin-1);
-								str_result+=str_input.substr(str_from-str_start,str_end-str_from+1);
+								str_result+=str_input.getSubstring(str_from-str_start,str_end-str_from+1);
 								//error=true;
 								//str_error="Index must be greater than or equal to zero and less than the size of the argument list.";
 							}
@@ -268,7 +268,7 @@ namespace zetscript{
 					str_it = str_end+1; // ignore '}'
 				}else{ // copy current position up to end
 					str_end=str_start+str_input.length();
-					str_result+=str_input.substr(str_it-str_start,str_end-str_it);
+					str_result+=str_input.getSubstring(str_it-str_start,str_end-str_it);
 				}
 			}
 		}
@@ -304,6 +304,10 @@ namespace zetscript{
 
 	const String & StringScriptObject::get(){
 		return *str_ptr;
+	}
+
+	String * StringScriptObject::getPtr(){
+		return str_ptr;
 	}
 
 	const char *StringScriptObject::getConstChar(){

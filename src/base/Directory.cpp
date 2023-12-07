@@ -68,7 +68,7 @@ namespace zetscript{
 
 						if(!end){
 
-							dir=dir.substr(pos+1,String::npos);
+							dir=dir.getSubstring(pos+1,String::npos);
 
 							// update directory
 							pos=path.findLastOf("\\/");
@@ -77,7 +77,7 @@ namespace zetscript{
 							}
 
 							if(!end){
-								path=path.substr(0,pos);
+								path=path.getSubstring(0,pos);
 							}
 						}
 					}

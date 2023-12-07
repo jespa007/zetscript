@@ -314,14 +314,14 @@ namespace zetscript{
 		char *pos=(char *)_s_in.toConstChar();
 		String token;
 		while((pos=strchr(pos,_delim))!=NULL) {
-			token = _s_in.substr(last_pos-_s_in.toConstChar(), pos-last_pos);
+			token = _s_in.getSubstring(last_pos-_s_in.toConstChar(), pos-last_pos);
 			elems.push(String(token));
 			pos++;
 			last_pos=pos;
 		}
 
 		// push last token
-		token = _s_in.substr((last_pos-_s_in.toConstChar()), _s_in.length()-(last_pos-_s_in.toConstChar()));
+		token = _s_in.getSubstring((last_pos-_s_in.toConstChar()), _s_in.length()-(last_pos-_s_in.toConstChar()));
 		elems.push(String(token));
 
 		return elems;
@@ -333,7 +333,7 @@ namespace zetscript{
 		int pos = 0;
 		String token;
 		while ((pos = s.find(_delim)) != String::npos) {
-			token = s.substr(0, pos);
+			token = s.getSubstring(0, pos);
 			elems.push(String(token));
 			s.erase(0, pos + _delim.length());
 		}
@@ -438,14 +438,14 @@ namespace zetscript{
 
 		while((current_pos = strstr((char*)str.toConstChar()+idx_current_pos,str_old.toConstChar())) != NULL) {
 			idx_current_pos=current_pos-str.toConstChar();
-			str.setSubString(idx_current_pos, str_old.length(), str_new);
+			str.setSubstring(idx_current_pos, str_old.length(), str_new);
 			idx_current_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
 		}
 
 		return str;
 	}
 
-	String String::getSubstring (int _pos, int _len, const String & _string) const{
+	String String::getSubstring (int _pos, int _len) const{
 		String s="";
 
 		if(_len == String::npos){

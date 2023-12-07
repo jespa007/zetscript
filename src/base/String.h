@@ -95,7 +95,7 @@ namespace zetscript{
 		int findLastOf(const String & _str, int _pos = npos) const;
 
 		void 		setSubstring(int _pos, int _len, const String & _string);
-		String 		getSubstring (int _pos, int _len, const String & _string)const;
+		String 		getSubstring (int _pos, int _len=String::npos)const;
 
 		void append(char _c);
 		void append(const char * _s);

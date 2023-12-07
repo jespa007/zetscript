@@ -455,7 +455,7 @@ namespace zetscript{
 						ptr_date_section = &second;
 					}
 					if (pattern_temp == "tt") { //Day period
-						String period_str = value.substr(pattern_firstindex, pattern_temp.length());
+						String period_str = value.getSubstring(pattern_firstindex, pattern_temp.length());
 						if (strcmp(period_str.toConstChar(), "AM") == 0) {
 							day_period = period::AM;
 						}
@@ -489,7 +489,7 @@ namespace zetscript{
 		char *end;
 		const char *parse_str_chr;
 
-		String value_parsed = parse_str.substr(index, (int)mask_length);
+		String value_parsed = parse_str.getSubstring(index, (int)mask_length);
 		parse_str_chr = value_parsed.toConstChar();
 		converted_value = strtol(parse_str_chr, &end, 10);
 		if (parse_str_chr == end) {
