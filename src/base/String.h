@@ -69,7 +69,7 @@ namespace zetscript{
 	    void clear();
 
 
-	    String  substr (int pos, int len = npos) const;
+	    
 
 	    // +
 		friend String operator+(const String & _s1, const String &_s2);
@@ -94,7 +94,9 @@ namespace zetscript{
 		int findLastOf(const char *_s, int _pos = npos) const;
 		int findLastOf(const String & _str, int _pos = npos) const;
 
-		String & replace(int _pos, int _len, const String & _to_replace);
+		void 		setSubstring(int _pos, int _len, const String & _string);
+		String 		getSubstring (int _pos, int _len, const String & _string)const;
+
 		void append(char _c);
 		void append(const char * _s);
 		void append(const char * _s, int _len);
@@ -123,9 +125,7 @@ namespace zetscript{
 		 //int 					count(char c);
 
 		 bool 					contains(const String & _str_containts,StringComparer sc=StringComparer::Exactly);
-
-
-		String 					substring(int _start_index, int _end_index=-1);
+		
 
 		String 					unescape() const;
 

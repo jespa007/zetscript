@@ -510,7 +510,7 @@ Console output:
 include::../examples/api/types/string_clear_out.txt[]
 ----
 
-====== String::substr()
+====== String::getSubstring()
 
 Returns a new string with its value initialized to a copy of a substring of this object.
 
@@ -518,7 +518,7 @@ Returns a new string with its value initialized to a copy of a substring of this
 
 [source,cpp]
 ----
-String  substr (int _pos = 0, int _len = npos) const;
+String  getSubstring (int _pos = 0, int _len = npos) ;
 ----
 
 [.underline]#Parameters#
@@ -534,14 +534,14 @@ A string with a substring of this object.
 
 [source,cpp]
 ----
-include::../examples/api/types/string_substr.cpp[]
+include::../examples/api/types/string_get_substring.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_substr_out.txt[]
+include::../examples/api/types/string_get_substring_out.txt[]
 ----
 
 ======  String::find()
@@ -618,15 +618,15 @@ Console output:
 include::../examples/api/types/string_find_last_of_out.txt[]
 ----
 
-====== String::replace()
+====== String::setSubString()
 
-Replaces the portion of the string.
+Replaces a portion of the string.
 
 *Syntax*
 
 [source,cpp]
 ----
-String & replace(int _pos, int _len, const String & _to_replace);
+String & setSubstring(int _pos, int _len, const String & _to_replace);
 ----
 
 [.underline]#Parameters#
@@ -643,14 +643,14 @@ String & replace(int _pos, int _len, const String & _to_replace);
 
 [source,cpp]
 ----
-include::../examples/api/types/string_replace.cpp[]
+include::../examples/api/types/string_set_substring.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/string_replace_out.txt[]
+include::../examples/api/types/string_set_substring_out.txt[]
 ----
 
 

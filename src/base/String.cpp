@@ -406,26 +406,6 @@ namespace zetscript{
 		return false;
 	}
 
-	String String::substring(int _start_index, int _end_index){
-		String out_string="";
-		if(_start_index<0){
-			ZS_THROW_RUNTIME_ERROR("_start_index negative (_start_index:%i)", _start_index);
-		}
-		if(_end_index < 0){
-			_end_index=this->length()+_end_index;
-		}
-		if(_end_index>=this->length()){
-			_end_index=this->length()-1;
-		}
-
-		if(_start_index<=_end_index){
-			out_string=this->substr(_start_index,_end_index-_start_index+1);
-		}
-
-		return out_string;
-	}
-
-
 	String String::unescape()const{
 		String res;
 		char *it = (char *)this->toConstChar();
@@ -458,17 +438,18 @@ namespace zetscript{
 
 		while((current_pos = strstr((char*)str.toConstChar()+idx_current_pos,str_old.toConstChar())) != NULL) {
 			idx_current_pos=current_pos-str.toConstChar();
-			str.replace(idx_current_pos, str_old.length(), str_new);
+			str.setSubString(idx_current_pos, str_old.length(), str_new);
 			idx_current_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
 		}
 
 		return str;
 	}
 
-	String String::substr (int _pos, int _len) const{
-		String s;
-		if(_len == npos){
-			_len=count-_pos;
+	String String::getSubstring (int _pos, int _len, const String & _string) const{
+		String s="";
+
+		if(_len == String::npos){
+			_len=this->count-_pos;
 		}
 
 		if(_len < 0){
@@ -478,6 +459,8 @@ namespace zetscript{
 		if((_pos+_len) > count){
 			ZS_THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",_pos,_len,count);
 		}
+
+
 
 		char *str_cut=(char *)ZS_MALLOC(_len+1);
 		strncpy(str_cut,this->buf+_pos,_len);
@@ -489,13 +472,37 @@ namespace zetscript{
 		return s;
 	}
 
-	String & String::replace(int _pos, int _len, const String & _to_replace){
+	/*String String::getSubString(int _start_index, int _end_index) {
+		String out_string="";
+		if(_start_index<0){
+			ZS_THROW_RUNTIME_ERROR("_start_index negative (_start_index:%i)", _start_index);
+		}
+		if(_end_index < 0){
+			_end_index=this->length()+_end_index;
+		}
+		if(_end_index>=this->length()){
+			_end_index=this->length()-1;
+		}
 
-		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,const String &): _pos(%i) >= size(%i)",_pos,count);
+		if(_start_index<=_end_index){
+			out_string=this->getSubString(_start_index,_end_index-_start_index+1);
+		}
 
-		int new_size = count + (_to_replace.count-_len);
+		return out_string;
+	}*/
 
-		if(new_size<=0) ZS_THROW_RUNTIME_ERRORF("replace(int , int , const String & ): new_size <= 0");
+
+	void String::setSubstring(int _pos, int _len, const String & _string){
+
+		if(_pos>=this->count) {
+			ZS_THROW_RUNTIME_ERROR("String::setSubstring: _pos(%i) >= size(%i)",_pos,count);
+		}
+
+		int new_size = count + (_string.count-_len);
+
+		if(new_size<=0) {
+			ZS_THROW_RUNTIME_ERRORF("String::setSubstring: new_size <= 0");
+		}
 
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
@@ -503,24 +510,26 @@ namespace zetscript{
 			strncpy(new_buf, buf, _pos); // copy the 1st string
 		}
 
-		strcat(new_buf+_pos,_to_replace.toConstChar());
+		strcat(new_buf+_pos,_string.toConstChar());
 
-		strcpy(new_buf+_pos+_to_replace.count, buf+_pos+_len);
+		strcpy(new_buf+_pos+_string.count, buf+_pos+_len);
 
 		free(buf);
 
 		buf=new_buf;
 		count=_size=new_size;
 
-		return *this;
 	}
+
 
 	void String::erase(int _pos){
 		erase(_pos,1);
 	}
 
 	void String::insert(int _pos, char _c){
-		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,char): _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) {
+			ZS_THROW_RUNTIME_ERROR("String::insert: _pos(%i) >= size(%i)",_pos,count);
+		}
 
 		int new_size = count + 1;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
@@ -542,7 +551,9 @@ namespace zetscript{
 	}
 
 	void String::insert(int _pos, const String & _s1){
-		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,const String &): _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) {
+			ZS_THROW_RUNTIME_ERROR("String::insert: _pos(%i) >= size(%i)",_pos,count);
+		}
 
 		int new_size = count + _s1.count;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
@@ -562,8 +573,13 @@ namespace zetscript{
 
 	void String::erase(int _pos, int _len){
 
-		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,count);
-		if((_pos+_len)>this->count) ZS_THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
+		if(_pos>=this->count) {
+			ZS_THROW_RUNTIME_ERROR("String::erase: _pos(%i) >= size(%i)",_pos,count);
+		}
+
+		if((_pos+_len)>this->count) {
+			ZS_THROW_RUNTIME_ERROR("String::erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
+		}
 
 		int new_size=count-_len;
 
