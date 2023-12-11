@@ -2899,7 +2899,7 @@ include::../examples/api/eval/zetscript_register_type.txt[]
 
 ===== ZetScript::registerFunction()
 
-
+ZetScript::registerFunction is used to call C&#43;&#43; code from _ZetScript_. The function needs a C function with a particular prototype to connects both sides (i.e native and script). 
 
 *Syntax*
 
@@ -2908,28 +2908,74 @@ include::../examples/api/eval/zetscript_register_type.txt[]
 void registerFunction( const String & _function_name,F _c_function, const char *_registered_file="",short _registered_line=-1);
 ----
 
-[.underline]#Templates#
+[.underline]#Parameters#
 
-- _F_ : A C function with the following signature,
+- _&#95;function_name_ : The function name to be refered in ZetScript.
 
+- _&#95;c_function_ : A C function to register with the following signature,
+
+[source,cpp]
+----
 ReturnType (ZetScript *_zs, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 )
+----
 
 Where,
 
-- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+_ReturnType_ it can be a registered type or one of the following types,
 
-[.underline]#Parameters#
+[cols="1m,2d"]
+|====
+|ReturnType| Description
+|void
+|Returns nothing
+|bool
+|Returns xref:language_data_types#_boolean[Boolean]
+|xref:api_data_types#_zetscriptzs_int[zetscript::zs_int]
+|Returns xref:language_data_types#_integer[Integer]
+|xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] 
+|Returns xref:language_data_types#_float[Float]
+|xref:api_data_types#_zetscriptstring[zetscript::String]
+|Returns xref:language_data_types#_string[String]
+|xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
+|Returns xref:language_data_types#_stringscriptobject[String]
+|xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
+|Returns xref:language_data_types#_array[Array]
+|xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
+|Returns xref:language_data_types#_object[Object]
+|xref:api_data_types#_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
+|Returns registered type
+|====
 
-- __function_name_ : The function name to be refered in ZetScript.
-- _c_function : C function to register.
+As a parameters, the function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters type _ParamType_ as a registered type or one of the following types,
+
+[cols="1m,2d"]
+|====
+|ParamType| Description
+|bool *
+|Accepts xref:language_data_types#_boolean[Boolean] type
+|xref:api_data_types#_zetscriptzs_int[zetscript::zs_int] *
+|Accepts xref:language_data_types#_integer[Integer] type
+|xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] *
+|Accepts xref:language_data_types#_float[Float] type
+|xref:api_data_types#_zetscriptstring[zetscript::String] *
+|Accepts xref:language_data_types#_string[String] type
+|const char *
+|Accepts xref:language_data_types#_string[String]
+|xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
+|Accepts xref:language_data_types#_stringscriptobject[String] type
+|xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
+|Accepts xref:language_data_types#_array[Array] type
+|xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
+|Accepts xref:language_data_types#_object[Object] type
+|====
 
 
-
-- __registered_file_ : Source file where the function was registered
-- __registered_line_ : Line file where the function was registered
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
 
 *Example*
+
+The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
 
 [source,cpp]
 ----
@@ -2940,8 +2986,11 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_function.txt[]
+include::../examples/api/types/zetscript_register_function_out.txt[]
 ----
+
+To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ZetScript]
+
 
 
 ===== ZetScript::extends()
