@@ -960,7 +960,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement ScriptEngine::compileFileAndRun(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
+	StackElement ScriptEngine::evalFile(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
 
 		compileFile(_filename);
 

@@ -3,7 +3,7 @@ int main(){
 
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.compileFileAndRun(
+	script_engine.evalFile(
 		"file.zs"
 	);
 
