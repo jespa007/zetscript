@@ -27,7 +27,7 @@ const char *post_exe_name="";
 
 int main(int argc, char * argv[]) {
 	ZS_UNUSUED_2PARAMS(argc,argv);
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 
 	printf("======================================\n\n");
@@ -36,7 +36,7 @@ int main(int argc, char * argv[]) {
 	// get all files in the path
 	typedef struct{
 		const char *name;
-		void (* fun)(zetscript::ZetScript *_zs);
+		void (* fun)(zetscript::ScriptEngine *_zs);
 	}TestNativeFunctionIterator;
 
 	TestNativeFunctionIterator test_native_functions[]={

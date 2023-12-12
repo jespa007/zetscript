@@ -42,7 +42,7 @@
 		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)||(false)); \
 		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)||(true));
 
-void test_arithmetic_constants(zetscript::ZetScript *_zs, bool _show_print=true) {
+void test_arithmetic_constants(zetscript::ScriptEngine *_zs, bool _show_print=true) {
 
 	int n_test=0;
 
@@ -105,14 +105,14 @@ void test_arithmetic_constants(zetscript::ZetScript *_zs, bool _show_print=true)
 
 }
 
-void test_arithmetic_constants_no_print(zetscript::ZetScript *_zs) {
+void test_arithmetic_constants_no_print(zetscript::ScriptEngine *_zs) {
 	test_arithmetic_constants(_zs,false);
 }
 
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_arithmetic_constants(&zs);
 	}catch(std::exception & ex){

@@ -30,7 +30,7 @@ namespace zetscript{
 
 
 	class ScriptScopesFactory;
-	class ZetScript;
+	class ScriptEngine;
 	class ScriptType;
 	class  ScriptScope{
 	public:
@@ -51,7 +51,7 @@ namespace zetscript{
 		// Functions
 
 		ScriptScope(
-			ZetScript * _zs
+			ScriptEngine * _zs
 			, int _idx_script_function
 			, ScriptScope * _scope_parent=NULL
 			,uint16_t _properties=0
@@ -110,7 +110,7 @@ namespace zetscript{
 
 	private:
 
-		ZetScript *zs;
+		ScriptEngine *zs;
 
 		Vector<ScriptScope *>		*scopes;  // local scopes from starting block { }
 		ScriptScopesFactory 			*scope_factory;

@@ -16,7 +16,7 @@ namespace zetscript{
 		// Helpers
 		//
 		static MemberFunctionScriptObject * newObjectMemberFunction(
-				ZetScript *_zs
+				ScriptEngine *_zs
 				, ScriptObject *_so_ref
 				, ScriptFunction *_sf_ref
 		);
@@ -25,7 +25,7 @@ namespace zetscript{
 		// Members
 		//
 		MemberFunctionScriptObject(
-				ZetScript *zs
+				ScriptEngine *zs
 				,ScriptObject *_so_ref
 				, ScriptFunction *_sf_ref
 		);

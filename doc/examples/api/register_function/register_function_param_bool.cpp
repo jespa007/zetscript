@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
 // The C function to register that prints parameter value by console
-void paramBool(ZetScript *_zs, bool *_bool){
+void paramBool(ScriptEngine *_zs, bool *_bool){
     printf("Result : %s\n",*_bool?"true":"false");
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
     // Register C function
     zs.registerFunction("paramBool",paramBool);

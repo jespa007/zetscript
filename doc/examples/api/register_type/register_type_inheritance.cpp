@@ -1,7 +1,7 @@
 #include "zetscript.h"
 
 using zetscript::zs_int;
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
 class MyCppType{
 	public:
@@ -21,29 +21,29 @@ public:
 	}
 };
 
-zs_int MyCppType_function1(ZetScript *_zs, MyCppType *_this, zs_int _arg){
+zs_int MyCppType_function1(ScriptEngine *_zs, MyCppType *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
-MyCppTypeExtend * MyCppTypeExtend_new(ZetScript *_zs){
+MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_zs){
 	return new MyCppTypeExtend();
 }
 
-void MyCppTypeExtend_constructor(ZetScript *_zs, MyCppTypeExtend *_this, zs_int _data1){
+void MyCppTypeExtend_constructor(ScriptEngine *_zs, MyCppTypeExtend *_this, zs_int _data1){
 	_this->data1=_data1;
 	_this->data2=_data1*10;
 }
 
-zs_int MyCppTypeExtend_function2(ZetScript *_zs, MyCppTypeExtend *_this, zs_int _arg){
+zs_int MyCppTypeExtend_function2(ScriptEngine *_zs, MyCppTypeExtend *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
-void MyCppTypeExtend_delete(ZetScript *_zs, MyCppTypeExtend *_this){
+void MyCppTypeExtend_delete(ScriptEngine *_zs, MyCppTypeExtend *_this){
 	delete _this;
 }
 
 int main(){
-	ZetScript zs; // instance zetscript
+	ScriptEngine zs; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
 	zs.registerScriptType<MyCppType>("MyCppType");

@@ -12,7 +12,7 @@
 
 int main(){
 
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// register MyClass with name MyClass in script side.
 	zs.registerScriptType<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);

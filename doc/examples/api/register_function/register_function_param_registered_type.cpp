@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
 // C++ class to be registered
@@ -14,33 +14,33 @@ public:
 };
 
 // defines new function for Number object
-Number *NumberZs_new(ZetScript *_zs){
+Number *NumberZs_new(ScriptEngine *_zs){
 	return new  Number();
 }
 
 // defines setter property for Number::x
-void NumberZs_set_value(ZetScript *_zs, Number *_this, zs_float *_value){
+void NumberZs_set_value(ScriptEngine *_zs, Number *_this, zs_float *_value){
 	_this->value=*_value;
 }
 
 // defines getter property for Number::x
-zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+zs_float NumberZs_get_value(ScriptEngine *_zs, Number *_this){
 	return _this->value;
 }
 
 // defines delete function for Number object
-void NumberZs_delete(ZetScript *_zs, Number *_this){
+void NumberZs_delete(ScriptEngine *_zs, Number *_this){
 	delete _this;
 }
 
 // C function the accepts native Number
-void mul10Number(ZetScript *_zs, Number *_number){
+void mul10Number(ScriptEngine *_zs, Number *_number){
 	// initialize x and y
 	_number->value*=10;
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// Register class Number
 	zs.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);

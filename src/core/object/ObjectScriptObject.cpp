@@ -10,11 +10,11 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ZetScript	*_zs){
+	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ScriptEngine	*_zs){
 		return new ObjectScriptObject(_zs);
 	}
 
-	ObjectScriptObject * ObjectScriptObject::concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+	ObjectScriptObject * ObjectScriptObject::concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		//String error;
 		ObjectScriptObject *obj = ZS_NEW_OBJECT_SCRIPT_OBJECT(zs);
 
@@ -32,7 +32,7 @@ namespace zetscript{
 		return obj;
 	}
 
-	void  ObjectScriptObject::append(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+	void  ObjectScriptObject::append(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		ZS_UNUSUED_PARAM(zs);
 		String error;
 
@@ -49,7 +49,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ObjectScriptObject::ObjectScriptObject(
-			ZetScript	*_zs
+			ScriptEngine	*_zs
 	):ContainerScriptObject(_zs, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 		map_fields=new MapString();
 	}

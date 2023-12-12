@@ -16,7 +16,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	ScriptType::ScriptType(ZetScript *_zs
+	ScriptType::ScriptType(ScriptEngine *_zs
 			,ScriptTypeId _id
 			, const String & _class_name
 			, ScriptScope *_class_scope

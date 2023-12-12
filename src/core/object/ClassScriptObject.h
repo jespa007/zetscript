@@ -8,7 +8,7 @@ namespace zetscript{
 
 		class ScriptType;
 		class ScriptType;
-		class ZetScript;
+		class ScriptEngine;
 		struct VirtualMachine;
 		class ScriptTypesFactory;
 		class  ClassScriptObject: public ObjectScriptObject{
@@ -18,9 +18,9 @@ namespace zetscript{
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;
 
-			static ClassScriptObject * newClassScriptObject(ZetScript *_zs,ScriptTypeId _script_type_id,void *  _c_object=NULL);
+			static ClassScriptObject * newClassScriptObject(ScriptEngine *_zs,ScriptTypeId _script_type_id,void *  _c_object=NULL);
 
-			ClassScriptObject(ZetScript *_zs, ScriptTypeId _script_type_id,void *  _c_object=NULL);
+			ClassScriptObject(ScriptEngine *_zs, ScriptTypeId _script_type_id,void *  _c_object=NULL);
 
 			template<typename _C>
 			_C to();

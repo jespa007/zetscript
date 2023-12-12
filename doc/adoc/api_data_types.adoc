@@ -1,11 +1,11 @@
 
 === Data types
 
-This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
+This section will describe the data types used in the ScriptEngine API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ScriptEngine internally but this documentation only will explain the relevant ones needed for the user.
 
 ==== zetscript::zs_int
 
-Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ZetScript is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ScriptEngine is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -16,7 +16,7 @@ zetscript::zs_int i=10;
 
 ==== zetscript::zs_float
 
-_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
+_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ScriptEngine is compiled for 32bits or 64bits.
 
 *Example*
 
@@ -1837,7 +1837,7 @@ Here there's a meaning of each byte code
 
 ==== Type
 
-Type is an type managed by ZetScript that defines a builtin or registered script type. Type has the following fields.
+Type is an type managed by ScriptEngine that defines a builtin or registered script type. Type has the following fields.
 
 - id: The script type id
 - name: The script type name
@@ -1859,7 +1859,7 @@ Type is an type managed by ZetScript that defines a builtin or registered script
 
 ==== Symbol
 
-_Symbol_ is a type managed internally by ZetScript that defines a symbol. The _Symbol_ type has the following fields:
+_Symbol_ is a type managed internally by ScriptEngine that defines a symbol. The _Symbol_ type has the following fields:
 
 - scope : scope where symbol was registered
 - name: symbol name
@@ -1951,9 +1951,9 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 
 ==== Object
 
-_Object_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _Object_ type has the following fields:
+_Object_ defines a the parent class of any object in TypeScript. This type is usually used internally by ScriptEngine. The _Object_ type has the following fields:
 
-- type_id: The script type representated by the instance of script object. ZetScript it register primitive objects as which type_ids matches with the following,
+- type_id: The script type representated by the instance of script object. ScriptEngine it register primitive objects as which type_ids matches with the following,
 
 [cols="1d,2m,2d"]
 |====
@@ -1989,18 +1989,18 @@ _StringScriptObject_ defines a string script object.
 
 ===== Constructor
 
-The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a ZetScript context.
+The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a ScriptEngine context.
 
 *Syntax*
 
 [source,cpp]
 ----
-StringScriptObject(ZetScript *_zs, const String & _str="");
+StringScriptObject(ScriptEngine *_zs, const String & _str="");
 ----
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ZetScript instance.
+- _&#95;zs_ : ScriptEngine instance.
 - _&#95;str_ : String value as a initialize value (empty by default).
 
 *Example*
@@ -2188,18 +2188,18 @@ _ArrayScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ZetScript context.
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ScriptEngine context.
 
 *Syntax*
 
 [source,cpp]
 ----
-ArrayScriptObject(ZetScript *_zs);
+ArrayScriptObject(ScriptEngine *_zs);
 ----
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ZetScript instance.
+- _&#95;zs_ : ScriptEngine instance.
 
 *Example*
 
@@ -2439,19 +2439,19 @@ _ObjectScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ZetScript context.
+The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ScriptEngine context.
 
 
 *Syntax*
 
 [source,cpp]
 ----
-ObjectScriptObject(ZetScript *_zs);
+ObjectScriptObject(ScriptEngine *_zs);
 ----
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ZetScript instance.
+- _&#95;zs_ : ScriptEngine instance.
 
 *Example*
 
@@ -2663,7 +2663,7 @@ include::../examples/api/types/object_script_object_get_keys_out.txt[]
 
 ==== ClassObject
 
-_ClassObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper for instanced of registered C++ types.
+_ClassObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ScriptEngine. Also it is used as a wrapper for instanced of registered C++ types.
 
 
 
@@ -2688,10 +2688,10 @@ typedef enum{
 	SCRIPT_FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
 }FunctionProperty;
 
-==== ZetScript
+==== ScriptEngine
 
 
-===== ZetScript::compile()
+===== ScriptEngine::compile()
 
 It compiles an expression given by parameter.
 
@@ -2716,7 +2716,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_out.txt[]
 ----
 
-===== ZetScript::compileAndRun()
+===== ScriptEngine::compileAndRun()
 
 It compiles an expression given by parameter and it runs after its compilation.
 
@@ -2742,7 +2742,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_and_run_out.txt[]
 ----
 
-===== ZetScript::compileFile()
+===== ScriptEngine::compileFile()
 
 It compiles a file given by parameter.
 
@@ -2768,7 +2768,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_file_out.txt[]
 ----
 
-===== ZetScript::compileFileAndRun()
+===== ScriptEngine::compileFileAndRun()
 
 It compiles a file given by parameter and it runs after its compilation.
 
@@ -2793,7 +2793,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_file_and_run_out.txt[]
 ----
 
-===== ZetScript::printGeneratedCode()
+===== ScriptEngine::printGeneratedCode()
 
 It prints generated byte code after compile script/s
 
@@ -2837,7 +2837,7 @@ Apart there's a description per instruction with the following columns,
 Here there's a meaning of each byte code is seen on zetscript::ByteCode
 
 
-===== ZetScript::registerConstant()
+===== ScriptEngine::registerConstant()
 
 *Syntax*
 
@@ -2868,7 +2868,7 @@ Console output:
 include::../examples/api/eval/zetscript_register_constant.txt[]
 ----
 
-===== ZetScript::registerType()
+===== ScriptEngine::registerType()
 
 *Syntax*
 
@@ -2876,8 +2876,8 @@ include::../examples/api/eval/zetscript_register_constant.txt[]
 ----
 ScriptType * registerType(
 		const String & name
-		, T  * (*_new_native_instance)(ZetScript *_zs)=NULL
-		, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
+		, T  * (*_new_native_instance)(ScriptEngine *_zs)=NULL
+		, void (*_delete_native_instance)(ScriptEngine *_zs,T *)=NULL
 		, const char *_registered_file="",short _registered_line=-1
 )
 ----
@@ -2897,9 +2897,9 @@ Console output:
 include::../examples/api/eval/zetscript_register_type.txt[]
 ----
 
-===== ZetScript::registerFunction()
+===== ScriptEngine::registerFunction()
 
-ZetScript::registerFunction is used to call C&#43;&#43; code from _ZetScript_. The function needs a C function with a particular prototype to connects both sides (i.e native and script). 
+ScriptEngine::registerFunction is used to call C&#43;&#43; code from _ScriptEngine_. The function needs a C function with a particular prototype to connects both sides (i.e native and script). 
 
 *Syntax*
 
@@ -2910,64 +2910,11 @@ void registerFunction( const String & _function_name,F _c_function, const char *
 
 [.underline]#Parameters#
 
-- _&#95;function_name_ : The function name to be refered in ZetScript.
+- _&#95;function_name_ : The function name to be refered in ScriptEngine.
 
 - _&#95;c_function_ : A C function to register with the following signature,
 
-[source,cpp]
-----
-ReturnType (ZetScript *_zs, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 )
-----
-
-Where,
-
-_ReturnType_ it can be a registered type or one of the following types,
-
-[cols="1m,2d"]
-|====
-|ReturnType| Description
-|void
-|Returns nothing
-|bool
-|Returns xref:language_data_types#_boolean[Boolean]
-|xref:api_data_types#_zetscriptzs_int[zetscript::zs_int]
-|Returns xref:language_data_types#_integer[Integer]
-|xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] 
-|Returns xref:language_data_types#_float[Float]
-|xref:api_data_types#_zetscriptstring[zetscript::String]
-|Returns xref:language_data_types#_string[String]
-|xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
-|Returns xref:language_data_types#_stringscriptobject[String]
-|xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
-|Returns xref:language_data_types#_array[Array]
-|xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
-|Returns xref:language_data_types#_object[Object]
-|xref:api_data_types#_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
-|Returns registered type
-|====
-
-As a parameters, the function must always include _zetscript::ZetScript *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters type _ParamType_ as a registered type or one of the following types,
-
-[cols="1m,2d"]
-|====
-|ParamType| Description
-|bool *
-|Accepts xref:language_data_types#_boolean[Boolean] type
-|xref:api_data_types#_zetscriptzs_int[zetscript::zs_int] *
-|Accepts xref:language_data_types#_integer[Integer] type
-|xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] *
-|Accepts xref:language_data_types#_float[Float] type
-|xref:api_data_types#_zetscriptstring[zetscript::String] *
-|Accepts xref:language_data_types#_string[String] type
-|const char *
-|Accepts xref:language_data_types#_string[String]
-|xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
-|Accepts xref:language_data_types#_stringscriptobject[String] type
-|xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
-|Accepts xref:language_data_types#_array[Array] type
-|xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
-|Accepts xref:language_data_types#_object[Object] type
-|====
+include::api_register_c_function_signature.adoc[]
 
 
 - _&#95;registered_file_ : Source file where the function was registered
@@ -2975,7 +2922,7 @@ As a parameters, the function must always include _zetscript::ZetScript *_ as th
 
 *Example*
 
-The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
+The following example registers a C function _sayHelloWorld_ and it is called in ScriptEngine.
 
 [source,cpp]
 ----
@@ -2989,11 +2936,11 @@ Console output:
 include::../examples/api/types/zetscript_register_function_out.txt[]
 ----
 
-To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ZetScript]
+To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ScriptEngine]
 
 
 
-===== ZetScript::extends()
+===== ScriptEngine::extends()
 
 
 *Syntax*
@@ -3017,7 +2964,7 @@ Console output:
 include::../examples/api/eval/zetscript_extends.txt[]
 ----
 
-===== ZetScript::registerConstructor()        
+===== ScriptEngine::registerConstructor()        
 
 *Syntax*
 
@@ -3044,7 +2991,7 @@ Console output:
 include::../examples/api/eval/zetscript_register_constructor.txt[]
 ----
 
-===== ZetScript::registerMemberFunction()
+===== ScriptEngine::registerMemberFunction()
 
 *Syntax*
 
@@ -3072,7 +3019,7 @@ Console output:
 include::../examples/api/eval/zetscript_register_member_function.txt[]
 ----
 
-===== ZetScript::registerConstMemberProperty()        
+===== ScriptEngine::registerConstMemberProperty()        
 
 *Syntax*
 
@@ -3102,7 +3049,7 @@ include::../examples/api/eval/zetscript_register_const_member_property.txt[]
 ----
 
 
-===== ZetScript::registerMemberPropertyMetamethod()
+===== ScriptEngine::registerMemberPropertyMetamethod()
 
 *Syntax*
 
@@ -3133,7 +3080,7 @@ include::../examples/api/eval/zetscript_register_member_property_metamethod_out.
 
 
 
-===== ZetScript::registerStaticMemberFunction()
+===== ScriptEngine::registerStaticMemberFunction()
 
 *Syntax*
 
@@ -3161,7 +3108,7 @@ Console output:
 include::../examples/api/eval/zetscript_register_static_member_function_out.txt[]
 ----
 
-===== ZetScript::unrefLifetimeObject()        
+===== ScriptEngine::unrefLifetimeObject()        
 
 *Syntax*
 
@@ -3170,15 +3117,15 @@ include::../examples/api/eval/zetscript_register_static_member_function_out.txt[
 void unrefLifetimeObject(Object *so);
 ----
 
-===== ZetScript::bindScriptFunction()        
+===== ScriptEngine::bindScriptFunction()        
 
-_ZetScript::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
+_ScriptEngine::bindScriptFunction_ it binds ScriptEngine function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
 
 *Syntax*
 
 [source,cpp]
 ----
- ZetScript::bindScriptFunction<F>(const String & _script_function_name);
+ ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
 
 std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
 
@@ -3205,7 +3152,7 @@ Where,
 
  - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
  - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
- - __script_function_: _ZetScript::String_ or _Function *_ as the name or the script function reference to be registered.
+ - __script_function_: _ScriptEngine::String_ or _Function *_ as the name or the script function reference to be registered.
 
 
 [.underline]#Returns#
@@ -3237,7 +3184,7 @@ include::../examples/api/bind_script_function/bind_script_function_out.txt[]
 ----
 
 
-===== ZetScript::clear()
+===== ScriptEngine::clear()
 
 
 *Syntax*
@@ -3247,7 +3194,7 @@ include::../examples/api/bind_script_function/bind_script_function_out.txt[]
 void clear();
 ----
 
-===== ZetScript::saveState()
+===== ScriptEngine::saveState()
 
 *Syntax*
 

@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ObjectScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 
 // Check whether the object element is type integer, float or string
-void testObjectElementInstanceOf(ZetScript *_zs,ObjectScriptObject *_object){
+void testObjectElementInstanceOf(ScriptEngine *_zs,ObjectScriptObject *_object){
 
     auto keys=_object->getKeys();
 
@@ -32,7 +32,7 @@ void testObjectElementInstanceOf(ZetScript *_zs,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers testObjectElementInstanceOf
 	zs.registerFunction("testObjectElementInstanceOf",testObjectElementInstanceOf);

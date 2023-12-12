@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ArrayScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
@@ -8,9 +8,9 @@ using zetscript::String;
 
 
 // Definition of the native function interface returnArray
-ArrayScriptObject *returnArray(ZetScript *_zs){
+ArrayScriptObject *returnArray(ScriptEngine *_zs){
 
-	// instance new ArrayScriptObject using ZetScript context
+	// instance new ArrayScriptObject using ScriptEngine context
 	ArrayScriptObject *array=_zs->newArrayScriptObject();
 
 	// push first value as integer 10
@@ -30,7 +30,7 @@ ArrayScriptObject *returnArray(ZetScript *_zs){
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// bind native function returnArray named as 'returnArray'
     zs.registerFunction("returnArray",returnArray);

@@ -5,7 +5,7 @@
 
 #include "test_arithmetic_common.h"
 
-void test_arithmetic_vars(zetscript::ZetScript *_zs, bool _show_print=true) {
+void test_arithmetic_vars(zetscript::ScriptEngine *_zs, bool _show_print=true) {
 
 	int n_test=0;
 
@@ -46,13 +46,13 @@ void test_arithmetic_vars(zetscript::ZetScript *_zs, bool _show_print=true) {
 
 }
 
-void test_arithmetic_vars_no_print(zetscript::ZetScript *_zs){
+void test_arithmetic_vars_no_print(zetscript::ScriptEngine *_zs){
 	test_arithmetic_vars(_zs,false);
 }
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_arithmetic_vars(&zs);
 	}catch(std::exception & ex){

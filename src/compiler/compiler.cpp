@@ -59,7 +59,7 @@ namespace zetscript{
 	}
 
 
-	void compiler_compile_and_link(ZetScript *_zs
+	void compiler_compile_and_link(ScriptEngine *_zs
 			,const char * str_code
 			,CompilerData *_compiler_data_from
 			, const char *  _filename

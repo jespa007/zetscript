@@ -3,9 +3,9 @@
 using zetscript::zs_int;
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
-    // Evaluates ZetScript function 'returnInteger' that returns 'Integer' value
+    // Evaluates ScriptEngine function 'returnInteger' that returns 'Integer' value
     zs.compile(
  		"function returnInteger(){\n"
         "    return 10;\n"
@@ -15,7 +15,7 @@ int main(){
    // It binds 'returnInteger' as 'zs_int(void)'
    auto returnInteger=zs.bindScriptFunction<zs_int()>("returnInteger");
 
-   // Calls ZetScript function and prints return value by console.
+   // Calls ScriptEngine function and prints return value by console.
    printf("result : %ld\n",returnInteger());
  	return 0;
 }

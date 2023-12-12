@@ -3,9 +3,9 @@
 using zetscript::zs_float;
 
 int main(){
-   zetscript::ZetScript zs;
+   zetscript::ScriptEngine zs;
 
-   // Evaluates ZetScript function 'printAdd' that prints the result of the operation '+' from two arguments
+   // Evaluates ScriptEngine function 'printAdd' that prints the result of the operation '+' from two arguments
    zs.compile(
  		"function printAdd(_value1,_value2){\n"
         "    Console::outln(\"result : \"+(_value1 + _value2));\n"
@@ -19,7 +19,7 @@ int main(){
    zs_float value1=3.5;
    zs_float value2=10.7;
 
-   // Calls binded ZetScript function with parameters
+   // Calls binded ScriptEngine function with parameters
    printAdd(&value1,&value2);
 
  	return 0;

@@ -1,15 +1,15 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
 // c function
-void funParamFloat(ZetScript *_zs, zs_float *_number){
+void funParamFloat(ScriptEngine *_zs, zs_float *_number){
     printf("Result : %f\n",*_number);
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
     zs.registerFunction("funParamFloat",funParamFloat);
 

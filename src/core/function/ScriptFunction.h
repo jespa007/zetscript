@@ -25,7 +25,7 @@ namespace zetscript{
 	class ScriptFunctionsFactory;
 	class ScriptTypesFactory;
 	class ScriptScopesFactory;
-	class ZetScript;
+	class ScriptEngine;
 
 	/**
 	 * Script context refers to function context. A function can contain local variables and local functions
@@ -62,7 +62,7 @@ namespace zetscript{
 		Vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
-				ZetScript *_zs
+				ScriptEngine *_zs
 				,int _idx_script_function
 				,ScriptTypeId _owner_script_type_id
 				,int _idx_position
@@ -143,7 +143,7 @@ namespace zetscript{
 		void clearUnresolvedSymbols();
 
 		void addUnresolvedSymbol(zs_int instruction);
-		ZetScript *getZetScript();
+		ScriptEngine *getScriptEngine();
 
 		~ScriptFunction();
 
@@ -155,7 +155,7 @@ namespace zetscript{
 
 	private:
 
-		ZetScript 				*zs;
+		ScriptEngine 				*zs;
 		ScriptFunctionsFactory 	*script_function_factory;
 		ScriptTypesFactory 		*script_types_factory;
 		ScriptScopesFactory 			*scope_factory;	// reference scope_factory

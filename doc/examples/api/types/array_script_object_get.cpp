@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ArrayScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
@@ -8,7 +8,7 @@ using zetscript::String;
 
 
 // Print contents of an array.
-void printArray(ZetScript *_zs,ArrayScriptObject *_array_object){
+void printArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
 	printf("Array contents : [");
 	for(int i=0; i < _array_object->length(); i++){
 		if(i>0){
@@ -28,7 +28,7 @@ void printArray(ZetScript *_zs,ArrayScriptObject *_array_object){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers printString
 	zs.registerFunction("printArray",printArray);

@@ -13,12 +13,12 @@ namespace zetscript{
 
 	static int n_eval_function=0;
 
-	zs_float SystemModule_clock(ZetScript *_zs){
+	zs_float SystemModule_clock(ScriptEngine *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return System::clock();
 	}
 
-	void SystemModule_eval(ZetScript *_zs,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
+	void SystemModule_eval(ScriptEngine *_zs,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
 		StringScriptObject *so_str_eval=NULL;
 		ObjectScriptObject *oo_param=NULL;
 		FunctionParam *function_params=NULL;
@@ -209,11 +209,11 @@ goto_eval_exit:
 		data->vm_stk_current=stk_start_arg_call+n_ret_args;
 	}
 
-	void 	SystemModule_eval(ZetScript *_zs, StringScriptObject *_so_str_eval){
+	void 	SystemModule_eval(ScriptEngine *_zs, StringScriptObject *_so_str_eval){
 		SystemModule_eval(_zs,_so_str_eval,NULL);
 	}
 
-	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
+	void SystemModule_error(ScriptEngine *zs, StackElement *str, StackElement *args){
 		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		vm_set_error(zs->getVirtualMachine(),str_out->toString().toConstChar());
 		delete str_out;

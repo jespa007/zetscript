@@ -21,7 +21,7 @@ namespace zetscript{
 		//SYMBOL_PROPERTY_ALLOCATED_STK			= 0x0080,// Is a reference
 	}SymbolProperty;
 
-	class	ZetScript;
+	class	ScriptEngine;
 	class 	ScriptScope;
 	struct Symbol {
 		const char *file;   // file where symbol was registered
@@ -53,6 +53,6 @@ namespace zetscript{
 
 	};
 
-	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *ptr_variable);
+	StackElement convertSymbolToStackElement(ScriptEngine * zs, Symbol *symbol,void *ptr_variable);
 
 }

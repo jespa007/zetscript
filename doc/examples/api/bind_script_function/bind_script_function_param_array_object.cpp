@@ -7,9 +7,9 @@ using zetscript::String;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
-    // Evaluates ZetScript function 'printConcat' that prints the result of the operation '+' from two arguments
+    // Evaluates ScriptEngine function 'printConcat' that prints the result of the operation '+' from two arguments
     zs.compile(
  		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+(_value1+_value2));\n"
@@ -34,7 +34,7 @@ int main()
    array2->push<const char *>("World");
 
 
-    // Calls binded ZetScript function with parameters
+    // Calls binded ScriptEngine function with parameters
     printConcat(array1,array2);
 
 

@@ -5,8 +5,8 @@
 #include "zetscript.h"
 
 void test_call_script_function(){
-	// instances ZetScript
-	zetscript::ZetScript zs;
+	// instances ScriptEngine
+	zetscript::ScriptEngine zs;
 
 	zs.compileAndRun(
 		// ScriptFunction 'say_hello'

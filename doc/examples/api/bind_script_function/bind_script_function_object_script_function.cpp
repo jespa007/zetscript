@@ -4,7 +4,7 @@ using zetscript::zs_float;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
     zs.compileAndRun(
  		"class A{\n"

@@ -5,7 +5,7 @@
 #include "zetscript.h"
 
 
-void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_anonymous_scopes(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 
 	_zs->compileAndRun("var a1=1\n");
@@ -60,11 +60,11 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 }
 
 
-void test_anonymous_scopes_no_print(zetscript::ZetScript *_zs){
+void test_anonymous_scopes_no_print(zetscript::ScriptEngine *_zs){
 	test_anonymous_scopes(_zs,false);
 }
 
-void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_consistency_function_override(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 	_zs->compile(zetscript::String::format(
 		"class A{\n"
@@ -104,13 +104,13 @@ void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_pr
 	);
 }
 
-void test_consistency_function_override_no_print(zetscript::ZetScript *_zs){
+void test_consistency_function_override_no_print(zetscript::ScriptEngine *_zs){
 	test_consistency_function_override(_zs, false);
 }
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	try{
 		test_anonymous_scopes(&zs);

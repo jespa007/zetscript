@@ -8,33 +8,33 @@ namespace zetscript{
 
 	class	StringIteratorScriptObject;
 
-	zs_int 							StringScriptObjectZs_length(ZetScript *_zs,StringScriptObject *_so);
-	bool 							StringScriptObjectZs_contains(ZetScript *_zs,StringScriptObject *so, String *_str);
-	bool 							StringScriptObjectZs_contains(ZetScript *_zs,StringScriptObject *so, zs_int _ch);
-	void 							StringScriptObjectZs_clear(ZetScript *_zs,StringScriptObject *_so);
-	StringScriptObject *			StringScriptObjectZs_replace(ZetScript *_zs,StringScriptObject *str_in,String *str_old, String *_str_new);
-	void 							StringScriptObjectZs_eraseAt(ZetScript *_zs,StringScriptObject *so, zs_int _idx);
-	void 							StringScriptObjectZs_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,zs_int _ch);
-	void 							StringScriptObjectZs_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,String *_str);
-	ArrayScriptObject * 			StringScriptObjectZs_split(ZetScript *_zs,StringScriptObject *so,zs_int _ch_delim);
-	ArrayScriptObject * 			StringScriptObjectZs_split(ZetScript *_zs,StringScriptObject *so,String * _str_token);
+	zs_int 							StringScriptObjectZs_length(ScriptEngine *_zs,StringScriptObject *_so);
+	bool 							StringScriptObjectZs_contains(ScriptEngine *_zs,StringScriptObject *so, String *_str);
+	bool 							StringScriptObjectZs_contains(ScriptEngine *_zs,StringScriptObject *so, zs_int _ch);
+	void 							StringScriptObjectZs_clear(ScriptEngine *_zs,StringScriptObject *_so);
+	StringScriptObject *			StringScriptObjectZs_replace(ScriptEngine *_zs,StringScriptObject *str_in,String *str_old, String *_str_new);
+	void 							StringScriptObjectZs_eraseAt(ScriptEngine *_zs,StringScriptObject *so, zs_int _idx);
+	void 							StringScriptObjectZs_insertAt(ScriptEngine *_zs,StringScriptObject *so, zs_int idx,zs_int _ch);
+	void 							StringScriptObjectZs_insertAt(ScriptEngine *_zs,StringScriptObject *so, zs_int idx,String *_str);
+	ArrayScriptObject * 			StringScriptObjectZs_split(ScriptEngine *_zs,StringScriptObject *so,zs_int _ch_delim);
+	ArrayScriptObject * 			StringScriptObjectZs_split(ScriptEngine *_zs,StringScriptObject *so,String * _str_token);
 
-	zs_int 							StringScriptObjectZs_indexOf(ZetScript *_zs,StringScriptObject *so,zs_int search);
-	zs_int 							StringScriptObjectZs_indexOf(ZetScript *_zs,StringScriptObject *so,String *search);
-	bool 							StringScriptObjectZs_startsWith(ZetScript *_zs,StringScriptObject *so,String *prefix);
-	bool 							StringScriptObjectZs_endsWith(ZetScript *_zs,StringScriptObject *so,String *suffix);
+	zs_int 							StringScriptObjectZs_indexOf(ScriptEngine *_zs,StringScriptObject *so,zs_int search);
+	zs_int 							StringScriptObjectZs_indexOf(ScriptEngine *_zs,StringScriptObject *so,String *search);
+	bool 							StringScriptObjectZs_startsWith(ScriptEngine *_zs,StringScriptObject *so,String *prefix);
+	bool 							StringScriptObjectZs_endsWith(ScriptEngine *_zs,StringScriptObject *so,String *suffix);
 
-	void 							StringScriptObjectZs_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *_str_append);
-	void 							StringScriptObjectZs_append(ZetScript *_zs,StringScriptObject *str_in,zs_int _ch);
+	void 							StringScriptObjectZs_append(ScriptEngine *_zs,StringScriptObject *str_in,StringScriptObject *_str_append);
+	void 							StringScriptObjectZs_append(ScriptEngine *_zs,StringScriptObject *str_in,zs_int _ch);
 
-	StringScriptObject * 			StringScriptObjectZs_toUpperCase(ZetScript *_zs,StringScriptObject *so);
-	StringScriptObject * 			StringScriptObjectZs_toLowerCase(ZetScript *_zs,StringScriptObject *so);
+	StringScriptObject * 			StringScriptObjectZs_toUpperCase(ScriptEngine *_zs,StringScriptObject *so);
+	StringScriptObject * 			StringScriptObjectZs_toLowerCase(ScriptEngine *_zs,StringScriptObject *so);
 
-	StringScriptObject * 			StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index);
-	StringScriptObject * 			StringScriptObjectZs_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index);
+	StringScriptObject * 			StringScriptObjectZs_substring(ScriptEngine *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index);
+	StringScriptObject * 			StringScriptObjectZs_substring(ScriptEngine *_zs,StringScriptObject *_so, zs_int _start_index);
 
 
-	StringIteratorScriptObject *	StringScriptObjectZs_iter(ZetScript *_zs,StringScriptObject *_str_in);
+	StringIteratorScriptObject *	StringScriptObjectZs_iter(ScriptEngine *_zs,StringScriptObject *_str_in);
 
 
 }

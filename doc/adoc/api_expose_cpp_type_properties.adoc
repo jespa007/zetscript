@@ -1,7 +1,7 @@
 
 ==== Properties
 
-the ZetScript API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
+the ScriptEngine API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
 
 
 ===== Register constant property
@@ -12,12 +12,12 @@ Returns a constant property.
 
 [source,javascript]
 ----
-ReturnType RegisteredTypeProperty_get(ZetScript *_zs, RegisteredType *_this)
+ReturnType RegisteredTypeProperty_get(ScriptEngine *_zs, RegisteredType *_this)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context.
+- __zs_ : ScriptEngine context.
 - __this_ : The current instance.
 
 [.underline]#Returns#
@@ -31,18 +31,18 @@ The following code defines a function that returns the _value_ contents of curre
 [source,cpp]
 ----
 
-zs_float NumberZs_MAX_VALUE_get(ZetScript *_zs,Number *_this){
+zs_float NumberZs_MAX_VALUE_get(ScriptEngine *_zs,Number *_this){
 	return FLT_MAX;
 }
 
 ----
 
-Next, the function _NumberZs_MAX_VALUE_get_ is registered through _ZetScript::registerConstMemberProperty_,
+Next, the function _NumberZs_MAX_VALUE_get_ is registered through _ScriptEngine::registerConstMemberProperty_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -79,12 +79,12 @@ __get_ returns the value of the property
 
 [source,javascript]
 ----
-ReturnType RegisteredTypeProperty_get(ZetScript *_zs, RegisteredType *_this)
+ReturnType RegisteredTypeProperty_get(ScriptEngine *_zs, RegisteredType *_this)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -98,18 +98,18 @@ The following code defines a function as a _get_ property operation that returns
 [source,cpp]
 ----
 
-zs_float NumberZs_value_get(ZetScript *_zs,Number *_this){
+zs_float NumberZs_value_get(ScriptEngine *_zs,Number *_this){
 	return _this->value;
 }
 
 ----
 
-Next, the function _NumberZs_value_get_ is registered as member metamethod __get__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_get_ is registered as member metamethod __get__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -144,12 +144,12 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_set(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_set(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -164,17 +164,17 @@ The following code defines a function that performs a _set_ to _value_ variable 
 [source,cpp]
 ----
 
-void NumberZs_value_set(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_set(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 ----
 
-Next, the function _NumberZs_value_set_ is registered as member metamethod _set_ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_set_ is registered as member metamethod _set_ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -209,12 +209,12 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_addset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_addset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -229,17 +229,17 @@ The following code defines a function that performs and _addset_ to _value_ vari
 
 [source,cpp]
 ----
-void NumberZs_value_addset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_addset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value+=*_value;
 }
 ----
 
-Next, the function _NumberZs_value_addset_ is registered as member metamethod __addset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_addset_ is registered as member metamethod __addset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -274,12 +274,12 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_subset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_subset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -295,18 +295,18 @@ The following code defines a function that performs a _subset_ to _value_ variab
 [source,cpp]
 ----
 
-void NumberZs_value_subset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_subset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value-=*_value;
 }
 
 ----
 
-Next, the function _NumberZs_value_subset_ is registered as member metamethod __subset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_subset_ is registered as member metamethod __subset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -341,12 +341,12 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_mulset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_mulset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -361,17 +361,17 @@ The following code defines a function that performs and _mulset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_mulset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_mulset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value*=*_value;
 }
 
 ----
 
-Next, the function _NumberZs_value_mulset_ is registered as member metamethod __mulset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_mulset_ is registered as member metamethod __mulset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -406,12 +406,12 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_divset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_divset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -427,17 +427,17 @@ The following code defines a function that performs and _divset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_divset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_divset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value/=*_value;
 }
 ----
 
-Next, the function _NumberZs_value_divset_ is registered as member metamethod __divset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_divset_ is registered as member metamethod __divset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -472,12 +472,12 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_modset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_modset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -492,16 +492,16 @@ The following code defines a function that performs and _modset_ to _value_ vari
 
 [source,cpp]
 ----
-void NumberZs_value_modset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_modset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=fmod(_this->value,*_value);
 }
 ----
 
-Next, the function _NumberZs_value_modset_ is registered as member metamethod __addset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_modset_ is registered as member metamethod __addset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -536,12 +536,12 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_andset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_andset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -557,16 +557,16 @@ The following code defines a function that performs and _andset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_andset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_andset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)&(int)(*_value);
 }
 ----
 
-Next, the function _NumberZs_value_andset_ is registered as member metamethod __andset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_andset_ is registered as member metamethod __andset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -601,12 +601,12 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_orset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_orset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -622,16 +622,16 @@ The following code defines a function that performs and _orset_ to _value_ varia
 [source,cpp]
 ----
 
-void NumberZs_value_orset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_orset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)|(int)(*_value);
 }
 ----
 
-Next, the function _NumberZs_value_orset_ is registered as member metamethod __orset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_orset_ is registered as member metamethod __orset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -666,12 +666,12 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_xorset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_xorset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -687,17 +687,17 @@ The following code defines a function that performs and _xorset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_xorset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_xorset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)^(int)(*_value);
 }
 ----
 
-Next, the function _NumberZs_value_xorset_ is registered as member metamethod __xorset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_xorset_ is registered as member metamethod __xorset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -733,12 +733,12 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_shrset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_shrset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -754,16 +754,16 @@ The following code defines a function that performs and _shrset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_shrset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_shrset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)>>(int)(*_value);
 }
 ----
 
-Next, the function _NumberZs_value_shrset_ is registered as member metamethod __shrset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_shrset_ is registered as member metamethod __shrset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -798,12 +798,12 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_shlset(ZetScript *_zs, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_shlset(ScriptEngine *_zs, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -819,16 +819,16 @@ The following code defines a function that performs and _shlset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_shlset(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_value_shlset(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)<<(int)(*_value);
 }
 ----
 
-Next, the function _NumberZs_value_shlset_ is registered as member metamethod __shlset__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_shlset_ is registered as member metamethod __shlset__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -864,12 +864,12 @@ Implements _post_increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_postinc(ZetScript *_zs, RegisteredType *_this);
+ReturnType  RegisteredType_value_postinc(ScriptEngine *_zs, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -883,18 +883,18 @@ The following code defines a function that performs a _postinc_ of current insta
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_postinc(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_postinc(ScriptEngine *_zs,Number *_this){
 	return _this->value++;
 }
 
 ----
 
-Next, the function _NumberZs_value_postinc_ is registered as member metamethod __postinc__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_postinc_ is registered as member metamethod __postinc__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -929,12 +929,12 @@ Implements _post_decrement_ operator (aka a-- )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_postdec(ZetScript *_zs, RegisteredType *_this);
+ReturnType  RegisteredType_value_postdec(ScriptEngine *_zs, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -948,18 +948,18 @@ The following code defines a function that performs a _postdec_ of current insta
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_postdec(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_postdec(ScriptEngine *_zs,Number *_this){
 	return _this->value--;
 }
 
 ----
 
-Next, the function _NumberZs_value_postdec_ is registered as member metamethod __postdec__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_postdec_ is registered as member metamethod __postdec__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -994,12 +994,12 @@ Implements _pre_increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_preinc(ZetScript *_zs, RegisteredType *_this);
+ReturnType  RegisteredType_value_preinc(ScriptEngine *_zs, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -1012,17 +1012,17 @@ The following code defines a function that performs a _preinc_ of current instan
 
 [source,cpp]
 ----
-zs_float  NumberZs_value_preinc(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_preinc(ScriptEngine *_zs,Number *_this){
 	return ++_this->value;
 }
 ----
 
-Next, the function _NumberZs_value_preinc_ is registered as member metamethod __preinc__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_preinc_ is registered as member metamethod __preinc__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 
@@ -1053,12 +1053,12 @@ include::../examples/api/register_type/register_member_property_metamethod_prein
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_predec(ZetScript *_zs, RegisteredType *_this);
+ReturnType  RegisteredType_value_predec(ScriptEngine *_zs, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -1072,17 +1072,17 @@ The following code defines a function that performs a _predec_ of current instan
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_predec(ZetScript *_zs,Number *_this){
+zs_float  NumberZs_value_predec(ScriptEngine *_zs,Number *_this){
 	return --_this->value;
 }
 ----
 
-Next, the function _NumberZs_value_predec_ is registered as member metamethod __predec__ through _ZetScript::registerMemberPropertyMetamethod_,
+Next, the function _NumberZs_value_predec_ is registered as member metamethod __predec__ through _ScriptEngine::registerMemberPropertyMetamethod_,
 
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ZetScript *_zs){
+void NumberZs_register(zetscript::ScriptEngine *_zs){
 
 	//...
 

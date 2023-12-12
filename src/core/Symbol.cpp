@@ -8,7 +8,7 @@ namespace zetscript{
 
 	// STATIC
 
-	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol, void *ptr_variable) {
+	StackElement convertSymbolToStackElement(ScriptEngine * zs, Symbol *symbol, void *ptr_variable) {
 
 		if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type

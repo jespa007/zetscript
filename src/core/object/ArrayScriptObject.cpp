@@ -10,12 +10,12 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ArrayScriptObject * ArrayScriptObject::newArrayScriptObject(ZetScript *_zs){
+	ArrayScriptObject * ArrayScriptObject::newArrayScriptObject(ScriptEngine *_zs){
 		return new ArrayScriptObject(_zs);
 	}
 
 	ArrayScriptObject * ArrayScriptObject::concat(
-			ZetScript *zs
+			ScriptEngine *zs
 			,ArrayScriptObject *v1
 			,ArrayScriptObject *v2
 	){
@@ -33,7 +33,7 @@ namespace zetscript{
 
 
 	ArrayScriptObject::ArrayScriptObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 	):ContainerScriptObject(_zs,SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT){
 	}
 

@@ -1,6 +1,6 @@
 === Operators
 
-ZetScript supports the following operator types,
+ScriptEngine supports the following operator types,
 
 * Arithmetic operators
 * Bitwise operators
@@ -125,7 +125,7 @@ Bitwise operators combines operations between two integer values. The bitwise op
 
 ==== Assigment operators
 
-Assignment operators assign values to ZetScript variables. The assigment operators are the following,
+Assignment operators assign values to ScriptEngine variables. The assigment operators are the following,
 
 [cols="2m,2d,3d,6a"]
 |====

@@ -7,12 +7,12 @@
 
 namespace zetscript{
 
-	zs_int ConsoleModule_readChar(ZetScript *_zs){
+	zs_int ConsoleModule_readChar(ScriptEngine *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return Console::readChar();
 	}
 
-	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_outln(ScriptEngine *zs,StackElement *str, StackElement *args){
 		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().toConstChar());
@@ -22,7 +22,7 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModule_out(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_out(ScriptEngine *zs,StackElement *str, StackElement *args){
 		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s",str_out->toString().toConstChar());
@@ -31,7 +31,7 @@ namespace zetscript{
 		}
 	}
 
-	void ConsoleModule_errorln(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_errorln(ScriptEngine *zs,StackElement *str, StackElement *args){
 		if(str->properties==0){
 			fprintf(stderr,"\n");
 			fflush(stderr);
@@ -47,7 +47,7 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModule_error(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_error(ScriptEngine *zs,StackElement *str, StackElement *args){
 		if(str->properties==0){
 			return;
 		}

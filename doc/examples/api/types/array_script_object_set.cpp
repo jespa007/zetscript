@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::ArrayScriptObject;
 using zetscript::StringScriptObject;
 
-void modifyArray(ZetScript *_zs,ArrayScriptObject *_array_object){
+void modifyArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
 
 	for(int i=0; i < _array_object->length(); i++){
 		switch(i%3){
@@ -25,7 +25,7 @@ void modifyArray(ZetScript *_zs,ArrayScriptObject *_array_object){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers modifyArray
 	zs.registerFunction("modifyArray",modifyArray);

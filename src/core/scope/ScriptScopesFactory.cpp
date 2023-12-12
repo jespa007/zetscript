@@ -8,7 +8,7 @@ namespace zetscript{
 
 
 	//-----------
-	ScriptScopesFactory::ScriptScopesFactory(ZetScript *zs){
+	ScriptScopesFactory::ScriptScopesFactory(ScriptEngine *zs){
 		this->zs=zs;
 		this->scopes = new Vector<ScriptScope *>;
 		main_scope=NULL;

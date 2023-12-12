@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
 // C++ class to be registered
@@ -21,7 +21,7 @@ public:
 // REGISTER FUNCTIONS
 
 // defines getter property for Number::value
-zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
+zs_float NumberZs_get_value(ScriptEngine *_zs, Number *_this){
 	return _this->value;
 }
 
@@ -30,7 +30,7 @@ zs_float NumberZs_get_value(ZetScript *_zs, Number *_this){
 
 int main()
 {
-	ZetScript zs;
+	ScriptEngine zs;
 
    // Register class Number
 	zs.registerScriptType<Number>("Number");
@@ -39,7 +39,7 @@ int main()
 	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 
-    // Evaluates ZetScript function 'paramNumber' that prints the contents of '_number'
+    // Evaluates ScriptEngine function 'paramNumber' that prints the contents of '_number'
     zs.compile(
  		"function paramNumber(_number){\n"
         "    Console::outln(\"result : \"+_number);\n"
@@ -52,7 +52,7 @@ int main()
     // Prepare parameters
     auto number=Number(10);
 
-    // Calls binded ZetScript function with parameters
+    // Calls binded ScriptEngine function with parameters
     paramNumber(&number);
 
 

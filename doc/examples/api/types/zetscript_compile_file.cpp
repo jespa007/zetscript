@@ -1,6 +1,6 @@
 #include "zetscript.h"
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	zs.compileFile("file.zs");
 	

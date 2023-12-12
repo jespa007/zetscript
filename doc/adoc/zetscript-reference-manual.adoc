@@ -1,4 +1,4 @@
-= ZetScript 2.0.0
+= ScriptEngine 2.0.0
 Jordi Espada
 v2.0, August 30,2023
 :doctype: book

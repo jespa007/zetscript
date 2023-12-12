@@ -4,9 +4,9 @@ using zetscript::ObjectScriptObject;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
-    // Evaluates ZetScript function 'returnObject' that returns 'ScriptObject' value
+    // Evaluates ScriptEngine function 'returnObject' that returns 'ScriptObject' value
     zs.compile(
  		"function returnObject(){\n"
         "    return {a:1,b:true,c:\"String\"};\n"
@@ -16,7 +16,7 @@ int main()
     // It binds 'returnObject' as 'ObjectScriptObject *(void)'
     auto returnObject=zs.bindScriptFunction<ObjectScriptObject *()>("returnObject");
 
-    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
+    // Calls ScriptEngine function which it returns 'ObjectScriptObject *' reference
     auto object_object=returnObject();
 
     // Prints its value by console.

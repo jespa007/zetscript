@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::ArrayScriptObject;
 
-ArrayScriptObject *returnNewArray(ZetScript *_zs){
+ArrayScriptObject *returnNewArray(ScriptEngine *_zs){
 
-	// instance new ArrayScriptObject using ZetScript context
+	// instance new ArrayScriptObject using ScriptEngine context
 	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
 
 	// push first value as integer 10
@@ -27,7 +27,7 @@ ArrayScriptObject *returnNewArray(ZetScript *_zs){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers returnNewArray
 	zs.registerFunction("returnNewArray",returnNewArray);

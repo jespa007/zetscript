@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ScriptObject::ScriptObject(ZetScript *_zs, ScriptTypeId _script_type_id){
+	ScriptObject::ScriptObject(ScriptEngine *_zs, ScriptTypeId _script_type_id){
 		script_type_id=_script_type_id;
 		shared_pointer=NULL;
 		properties=0;
@@ -141,7 +141,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ZetScript      * ScriptObject::getZetScript() {
+	ScriptEngine      * ScriptObject::getScriptEngine() {
 		return zs;
 	}
 

@@ -8,7 +8,7 @@
 namespace zetscript{
 
 	ArrayIteratorScriptObject * ArrayIteratorScriptObject::newArrayIteratorObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			, ArrayScriptObject *_so_ref
 	){
 		return new ArrayIteratorScriptObject(_zs,_so_ref);
@@ -16,7 +16,7 @@ namespace zetscript{
 
 
 	ArrayIteratorScriptObject::ArrayIteratorScriptObject(
-		ZetScript *_zs
+		ScriptEngine *_zs
 		, ArrayScriptObject *_so_ref
 	):RefScriptObject(_zs,_so_ref)
 	{

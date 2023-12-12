@@ -12,8 +12,8 @@ namespace zetscript{
 	class  VarRefObject: public ScriptObject{
 
 	public:
-		static VarRefObject * newVarRefObject(ZetScript *zs, StackElement _stk_var_ref); // idx call
-		VarRefObject(ZetScript *_zs);
+		static VarRefObject * newVarRefObject(ScriptEngine *zs, StackElement _stk_var_ref); // idx call
+		VarRefObject(ScriptEngine *_zs);
 
 		//void setIdxCall(int idx_call);
 		//int getIdxCall();

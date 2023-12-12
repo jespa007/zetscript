@@ -198,7 +198,7 @@ namespace zetscript{
 
 			if(args.length()==0){
 				ZS_THROW_RUNTIME_ERRORF(
-					"ScriptFunction to bind has to have 'ZetScript *' as FIRST parameter"
+					"ScriptFunction to bind has to have 'ScriptEngine *' as FIRST parameter"
 				);
 			}
 
@@ -217,7 +217,7 @@ namespace zetscript{
 				if(i==0){
 					if(script_type_id!=SCRIPT_TYPE_ID_ZETSCRIPT_SCRIPT_OBJECT){
 						ZS_THROW_RUNTIME_ERROR(
-							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
+							"Expected FIRST parameter as 'ScriptEngine *' but it was '%s'"
 							,Rtti::demangle(str_param).toConstChar()
 						);
 					}

@@ -8,7 +8,7 @@ std::function<void ()> * test_2nd_script_call = NULL;
 int idx_test_function_1st_c_call=0;
 bool test_function_1st_c_call_print=true;
 
-void test_function_1st_c_call(zetscript::ZetScript *_zs){
+void test_function_1st_c_call(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	if(test_function_1st_c_call_print==true){
 		printf("C ScriptFunction 1st call from script\n");
@@ -22,7 +22,7 @@ void test_function_1st_c_call(zetscript::ZetScript *_zs){
 
 
 void test_callback(
-	zetscript::ZetScript *_zs
+	zetscript::ScriptEngine *_zs
 	,zetscript::ScriptFunction *_script_function
 ){
 	zetscript::zs_float param1=1.5;
@@ -46,7 +46,7 @@ void test_callback(
 }
 
 void test_callback(
-	zetscript::ZetScript *_zs
+	zetscript::ScriptEngine *_zs
 	,zetscript::ScriptFunction *_script_function
 	,zetscript::ObjectScriptObject *_user_params
 ){
@@ -70,16 +70,16 @@ void test_callback(
 
 }
 
-void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_call_script_c_script(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 	test_function_1st_c_call_print=_show_print;
 
 	// 1s combination: Script -> C -> Script
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptEngine *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
 
 	// bind 'test_callback' receives a 'ScriptFunction' and 'ObjectScriptObject' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptEngine *_zs,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
 
 
 	_zs->compileAndRun(
@@ -122,7 +122,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true)
 	);
 }
 
-void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_call_c_script_c(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 
 	// 2nd test calling from C->Script->C
@@ -157,17 +157,17 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 	delete test_2nd_script_call;
 }
 
-void test_call_c_script_c_no_print(zetscript::ZetScript *_zs){
+void test_call_c_script_c_no_print(zetscript::ScriptEngine *_zs){
 	 test_call_c_script_c(_zs,false);
 }
 
-void test_call_script_c_script_no_print(zetscript::ZetScript *_zs){
+void test_call_script_c_script_no_print(zetscript::ScriptEngine *_zs){
 	 test_call_script_c_script(_zs,false);
 }
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_call_script_c_script(&zs);
 		test_call_c_script_c(&zs);

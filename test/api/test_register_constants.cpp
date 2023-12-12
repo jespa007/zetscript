@@ -5,7 +5,7 @@
 
 #include "test_arithmetic_common.h"
 
-void test_register_constants(zetscript::ZetScript *_zs) {
+void test_register_constants(zetscript::ScriptEngine *_zs) {
 
 	//int n_test=0;
 
@@ -25,7 +25,7 @@ void test_register_constants(zetscript::ZetScript *_zs) {
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_register_constants(&zs);
 	}catch(std::exception & ex){

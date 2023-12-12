@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ZetScript::ZetScript(){
+	ScriptEngine::ScriptEngine(){
 		eval_int=0;
 		eval_float=0;
 		eval_string="";
@@ -63,15 +63,15 @@ namespace zetscript{
 		// System mod
 		cl=script_types_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *)>(SystemModule_eval));
-		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ZetScript *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ScriptEngine *, StringScriptObject *)>(SystemModule_eval));
+		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ScriptEngine *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
 		//cl->registerStaticMemberFunction("assertNative",SystemModule_assert);
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
 		cl=script_types_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *zs,StackElement *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan
@@ -161,8 +161,8 @@ namespace zetscript{
 				/*"static System::eval(_str_eval,_params){"
 				"	return System::evalNative(_str_eval,_params)"
 				"}"*/
-				"static System::getZetScript(){"
-				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
+				"static System::getScriptEngine(){"
+				"	return ptrToScriptEnginePtr(%lu);" // ptrToScriptEngine it gets current this
 				"}"
 				//------------------------------------------------
 				// Json
@@ -179,7 +179,7 @@ namespace zetscript{
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT INFO
 
-	void ZetScript::printAllStructSizes(){
+	void ScriptEngine::printAllStructSizes(){
 		printf(
 				"zs_char:%i\n"
 				"zs_int:%i\n"
@@ -189,7 +189,7 @@ namespace zetscript{
 				"MapString:%i\n"
 				"MapInt:%i\n"
 				"bool:%i\n"
-				"ZetScript:%i\n"
+				"ScriptEngine:%i\n"
 				"VirtualMachineData:%i\n"
 				"ScriptType:%i\n"
 				"ScriptFunction:%i\n"
@@ -211,7 +211,7 @@ namespace zetscript{
 				,(int)sizeof(MapString)
 				,(int)sizeof(MapInt)
 				,(int)sizeof(bool)
-				,(int)sizeof(ZetScript)
+				,(int)sizeof(ScriptEngine)
 				, (int)sizeof(VirtualMachineData)
 				, (int)sizeof(ScriptType)
 				, (int)sizeof(ScriptFunction)
@@ -228,7 +228,7 @@ namespace zetscript{
 			);
 	}
 
-	void ZetScript::printGeneratedCode(bool show_system_code){
+	void ScriptEngine::printGeneratedCode(bool show_system_code){
 
 		 Vector<ScriptType *> *script_classes=script_types_factory->getScriptTypes();
 		 // for all classes print code...
@@ -300,7 +300,7 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // STACKELEMENT
 
-	String ZetScript::stackElementToStringTypeOf(StackElement *_stk){
+	String ScriptEngine::stackElementToStringTypeOf(StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
 		String result="unknow";
@@ -352,7 +352,7 @@ namespace zetscript{
 		return result;
 	}
 
-	const char *ZetScript::stackElementToStringTypeOf(char *_str_out, StackElement *_stk){
+	const char *ScriptEngine::stackElementToStringTypeOf(char *_str_out, StackElement *_stk){
 		auto str=this->stackElementToStringTypeOf(_stk);
 
 		strcpy(_str_out,str.toConstChar());
@@ -360,7 +360,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	StackElement ZetScript::unwrapStackElement(StackElement _stk){
+	StackElement ScriptEngine::unwrapStackElement(StackElement _stk){
 		if(_stk.properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 			_stk=*((StackElement *)_stk.value);
 		}
@@ -377,7 +377,7 @@ namespace zetscript{
 		return _stk;
 	}
 
-	String ZetScript::stackElementToString(StackElement *_stk, const String  & _format ){
+	String ScriptEngine::stackElementToString(StackElement *_stk, const String  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		String result="unknown";
 		StackElement stk=unwrapStackElement(*_stk);
@@ -430,7 +430,7 @@ namespace zetscript{
 		return result;
 	}
 
-	const char		*ZetScript::stackElementToString(char *_str_out, int _str_out_len, StackElement *_stk,const String & _format){
+	const char		*ScriptEngine::stackElementToString(char *_str_out, int _str_out_len, StackElement *_stk,const String & _format){
 		StackElement stk=unwrapStackElement(*_stk);
 		String result;
 		memset(_str_out,0,_str_out_len);
@@ -452,7 +452,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	void			ZetScript::stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src){
+	void			ScriptEngine::stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src){
 		*_stk_dst=*_stk_src;
 
 		if(_stk_dst->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -487,7 +487,7 @@ namespace zetscript{
 		}
 	}
 
-	bool ZetScript::canStackElementCastTo(
+	bool ScriptEngine::canStackElementCastTo(
 		StackElement * _stack_element
 		, ScriptTypeId _script_type_id_to_convert
 		, bool _strict
@@ -603,7 +603,7 @@ namespace zetscript{
 		return false;
 	}
 
-	bool ZetScript::stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id_to_convert, zs_int *_ptr_var, String  & _error){
+	bool ScriptEngine::stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id_to_convert, zs_int *_ptr_var, String  & _error){
 		zs_int val_ret=0;
 
 		ScriptObject *object=NULL;
@@ -778,7 +778,7 @@ namespace zetscript{
 	}
 
 	// Helpers...
-	 StackElement ZetScript::toStackElement(zs_int ptr_var, ScriptTypeId _var_script_type_id){
+	 StackElement ScriptEngine::toStackElement(zs_int ptr_var, ScriptTypeId _var_script_type_id){
 		//zs_int ptr_var = (zs_int)input_var;
 			StackElement stk_result=k_stk_undefined;
 			StringScriptObject *so=NULL;
@@ -866,7 +866,7 @@ namespace zetscript{
 	 // STACKELEMENT
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
-	bool ZetScript::isFilenameAlreadyParsed(const String & filename){
+	bool ScriptEngine::isFilenameAlreadyParsed(const String & filename){
 		for(int i = 0; i < parsed_files.length(); i++){
 			if(((ParsedFile *)parsed_files.get(i))->filename==filename){
 				return true;
@@ -875,14 +875,14 @@ namespace zetscript{
 		return false;
 	}
 
-	void ZetScript::compile(const String & _expresion)  {
+	void ScriptEngine::compile(const String & _expresion)  {
 		compiler_compile_and_link(
 			this
 			,_expresion.toConstChar()
 		);
 	}
 
-	StackElement ZetScript::compileAndRun(const String & _expresion, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ScriptEngine::compileAndRun(const String & _expresion, const char *__invoke_file__, int __invoke_line__)  {
 
 		compiler_compile_and_link(
 			this
@@ -896,7 +896,7 @@ namespace zetscript{
 	}
 
 
-	void ZetScript::compileFile(
+	void ScriptEngine::compileFile(
 			const String &  _filename
 			,CompilerData *_compiler_data
 	){
@@ -960,7 +960,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement ZetScript::compileFileAndRun(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
+	StackElement ScriptEngine::compileFileAndRun(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
 
 		compileFile(_filename);
 
@@ -970,7 +970,7 @@ namespace zetscript{
 		);
 	}
 
-	StackElement ZetScript::run(const char *__invoke_file__, int __invoke_line__){
+	StackElement ScriptEngine::run(const char *__invoke_file__, int __invoke_line__){
 		return vm_execute(
 				virtual_machine
 				,NULL
@@ -990,7 +990,7 @@ namespace zetscript{
 	// REGISTER CONSTANTS
 	//
 
-	void ZetScript::registerConstant(const String & _key, int _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstant(const String & _key, int _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1003,7 +1003,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_INT|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ZetScript::registerConstant(const String & _key, bool _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstant(const String & _key, bool _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1017,7 +1017,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_BOOL|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ZetScript::registerConstant(const String & _key, zs_float _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstant(const String & _key, zs_float _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1030,7 +1030,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_FLOAT|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ZetScript::registerConstant(const String & _key, const String & _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstant(const String & _key, const String & _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1051,7 +1051,7 @@ namespace zetscript{
 		//*stk=*(this->registerStkConstantStringScriptObject(_key,_value));
 	}
 
-	void ZetScript::registerConstant(const String & _key, const char * _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstant(const String & _key, const char * _value, const char *registered_file, short registered_line){
 		registerConstant(_key, String(_value), registered_file, registered_line);
 	}
 	//
@@ -1060,7 +1060,7 @@ namespace zetscript{
 	//
 	// STK REGISTER OBJECT
 	//
-	StackElement * ZetScript::registerStkConstantStringScriptObject(const String & _key,const String & _value){
+	StackElement * ScriptEngine::registerStkConstantStringScriptObject(const String & _key,const String & _value){
 
 		StackElement *stk=NULL;
 		StringScriptObject *so=NULL;
@@ -1094,7 +1094,7 @@ namespace zetscript{
 		return stk;
 	}
 
-	StackElement *ZetScript::getStkConstantStringScriptObject(const String & _key){
+	StackElement *ScriptEngine::getStkConstantStringScriptObject(const String & _key){
 		return (StackElement *)stk_constants->get(_key.toConstChar());
 	}
 
@@ -1104,19 +1104,19 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-	ObjectScriptObject * ZetScript::newObjectScriptObject(){
+	ObjectScriptObject * ScriptEngine::newObjectScriptObject(){
 		return ObjectScriptObject::newObjectScriptObject(this);
 	}
 
-	StringScriptObject * ZetScript::newStringScriptObject(const String & _str){
+	StringScriptObject * ScriptEngine::newStringScriptObject(const String & _str){
 		return StringScriptObject::newStringScriptObject(this,_str);
 	}
 
-	ArrayScriptObject * ZetScript::newArrayScriptObject(){
+	ArrayScriptObject * ScriptEngine::newArrayScriptObject(){
 		return ArrayScriptObject::newArrayScriptObject(this);
 	}
 
-	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
+	void ScriptEngine::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		ZS_UNUSUED_PARAM(_idx_start_function);
 		String global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_UNDEFINED_IDX ?  idx_current_global_variable_checkpoint:_idx_start_variable;
@@ -1190,7 +1190,7 @@ namespace zetscript{
 		);
 	}
 
-	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){
+	const char *ScriptEngine::getFilenameByRef(const char * _filename_by_ref){
 		if(_filename_by_ref==NULL){
 			return NULL;
 		}
@@ -1207,14 +1207,14 @@ namespace zetscript{
 	}
 
 
-	void ZetScript::resetParsedFiles(){
+	void ScriptEngine::resetParsedFiles(){
 		for(int i=0;i<parsed_files.length();i++){
 			delete ((ParsedFile *)parsed_files.get(i));
 		}
 		parsed_files.clear();
 	}
 
-	void ZetScript::clear(){
+	void ScriptEngine::clear(){
 
 		// clearGlobalVariables
 		clearGlobalVariables();
@@ -1270,7 +1270,7 @@ namespace zetscript{
 
 	}
 
-	void ZetScript::saveState(){
+	void ScriptEngine::saveState(){
 		ScriptFunction *main_function_object=script_types_factory->getMainFunction();
 		ScriptScope *main_scope=ZS_MAIN_SCOPE(this);
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->length();
@@ -1282,7 +1282,7 @@ namespace zetscript{
 		script_types_factory->saveState();
 	}
 
-	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
+	bool ScriptEngine::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
 		for(int i=0;i < functions_with_unresolved_symbols.length(); i++){
 			if(functions_with_unresolved_symbols.get(i)==_sf){
 				return true;
@@ -1293,14 +1293,14 @@ namespace zetscript{
 
 	}
 
-	void ZetScript::addUnresolvedSymbol(ScriptFunction *_sf, zs_int idx_instruction){
+	void ScriptEngine::addUnresolvedSymbol(ScriptFunction *_sf, zs_int idx_instruction){
 		if(getFunctionWithUnresolvedSymbolExists(_sf) ==false){
 			functions_with_unresolved_symbols.push(_sf);
 		}
 		_sf->addUnresolvedSymbol(idx_instruction);
 	}
 
-	void ZetScript::link(){
+	void ScriptEngine::link(){
 		int i=0;
 		while(i<functions_with_unresolved_symbols.length()){
 			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.get(i);
@@ -1312,11 +1312,11 @@ namespace zetscript{
 		}
 	}
 
-	void ZetScript::unrefLifetimeObject(ScriptObject *so){
+	void ScriptEngine::unrefLifetimeObject(ScriptObject *so){
 		vm_unref_lifetime_object(this->virtual_machine,so);
 	}
 
-	void ZetScript::makeObjectShared(ScriptObject *so){
+	void ScriptEngine::makeObjectShared(ScriptObject *so){
 		if(so->shared_pointer != NULL){
 			// share this variable++
 			vm_create_shared_object(virtual_machine,so);
@@ -1326,7 +1326,7 @@ namespace zetscript{
 		}
 	}
 
-	ZetScript::~ZetScript(){
+	ScriptEngine::~ScriptEngine(){
 		// delete system and string...
 		clearGlobalVariables(0,0);
 

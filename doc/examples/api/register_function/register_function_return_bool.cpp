@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
-bool returnBoolean(ZetScript *_zs){
+bool returnBoolean(ScriptEngine *_zs){
     return true;
 }
 
 int main(){
 
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// Registers function
     zs.registerFunction("returnBoolean",returnBoolean);

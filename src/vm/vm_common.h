@@ -148,7 +148,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 
 namespace zetscript{
 
-	class ZetScript;
+	class ScriptEngine;
 
 	typedef enum{
 		ZS_VM_MAIN_ERROR_ZS_LOAD_PROPERTIES_ERROR=0
@@ -186,13 +186,13 @@ namespace zetscript{
 		ScriptType 							*	main_class_object;
 
 		const ScriptFunction 				*	current_call_c_function;
-		ZetScript *zs;
+		ScriptEngine *zs;
 		ScriptFunctionsFactory 				*	script_function_factory;
 		ScriptTypesFactory 					*	script_types_factory;
 		ScriptScopesFactory 						*	scope_factory;
 		MapInt								cyclic_container_instances;
 
-		VirtualMachineData(ZetScript *_zs){
+		VirtualMachineData(ScriptEngine *_zs){
 			memset(&vm_stack,0,sizeof(vm_stack));
 
 			vm_stk_current=NULL;

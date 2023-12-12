@@ -4,9 +4,9 @@ using zetscript::ArrayScriptObject;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
-  // Evaluates ZetScript function 'returnArray' that returns 'Array' value
+  // Evaluates ScriptEngine function 'returnArray' that returns 'Array' value
   zs.compile(
   "function returnArray(){\n"
       "    return [1,true,\"String\"];\n"
@@ -16,7 +16,7 @@ int main()
   // It binds 'returnArray' as 'ArrayScriptObject *(void)'
   auto returnArray=zs.bindScriptFunction<ArrayScriptObject *()>("returnArray");
 
-  // Calls ZetScript function which it returns 'ArrayScriptObject *' reference
+  // Calls ScriptEngine function which it returns 'ArrayScriptObject *' reference
   auto array_object=returnArray();
 
   // Prints its value by console.

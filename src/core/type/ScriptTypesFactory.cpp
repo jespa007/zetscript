@@ -92,13 +92,13 @@ namespace zetscript{
 	const char * k_str_float_type=typeid(zs_float).name();
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
-	const char * k_str_zettype_ptr=typeid(ZetScript *).name();
+	const char * k_str_zettype_ptr=typeid(ScriptEngine *).name();
 
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ArrayScriptObject)
 
-	ScriptTypesFactory::ScriptTypesFactory(ZetScript *_zs){
+	ScriptTypesFactory::ScriptTypesFactory(ScriptEngine *_zs){
 		zs = _zs;
 		vm = _zs->getVirtualMachine();
 		scope_factory = this->zs->getScriptScopesFactory();
@@ -128,32 +128,32 @@ namespace zetscript{
 		idx_clear_checkpoint=1; // by default restore till main type.
 	}
 
-	ZetScript *ptrToZetScriptPtr(ZetScript *_zs, zs_int ptr){
+	ScriptEngine *ptrToScriptEnginePtr(ScriptEngine *_zs, zs_int ptr){
 		ZS_UNUSUED_PARAM(_zs);
-		return (ZetScript *)ptr;
+		return (ScriptEngine *)ptr;
 	}
 
-	zs_int intMaxValue(ZetScript *_zs){
+	zs_int intMaxValue(ScriptEngine *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return INTPTR_MAX;
 	}
 
-	zs_float floatMaxValue(ZetScript *_zs){
+	zs_float floatMaxValue(ScriptEngine *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return FLT_MAX;
 	}
 
-	zs_float parseFloat(ZetScript *_zs,zs_int number){
+	zs_float parseFloat(ScriptEngine *_zs,zs_int number){
 		ZS_UNUSUED_PARAM(_zs);
 		return (zs_float)(number);
 	}
 
-	zs_float parseFloat(ZetScript *_zs,zs_float *number){
+	zs_float parseFloat(ScriptEngine *_zs,zs_float *number){
 		ZS_UNUSUED_PARAM(_zs);
 		return *number;
 	}
 
-	zs_float parseFloat(ZetScript *_zs,String  *number_str){
+	zs_float parseFloat(ScriptEngine *_zs,String  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
 		zs_float *result_ptr=Float::parse(*number_str);
@@ -166,17 +166,17 @@ namespace zetscript{
 		return result;
 	}
 
-	zs_int parseInt(ZetScript *_zs,zs_int number){
+	zs_int parseInt(ScriptEngine *_zs,zs_int number){
 		ZS_UNUSUED_PARAM(_zs);
 		return number;
 	}
 
-	zs_int parseInt(ZetScript *_zs,zs_float *number){
+	zs_int parseInt(ScriptEngine *_zs,zs_float *number){
 		ZS_UNUSUED_PARAM(_zs);
 		return (zs_int)(*number);
 	}
 
-	zs_int parseInt(ZetScript *_zs,String  *number_str){
+	zs_int parseInt(ScriptEngine *_zs,String  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
 		zs_int *result_ptr=Integer::parse(*number_str);
@@ -187,7 +187,7 @@ namespace zetscript{
 		return result;
 	}
 
-	bool isNumber(ZetScript *_zs,StackElement *_stk){
+	bool isNumber(ScriptEngine *_zs,StackElement *_stk){
 		ZS_UNUSUED_PARAM(_zs);
 		return (_stk->properties & (STACK_ELEMENT_PROPERTY_INT | STACK_ELEMENT_PROPERTY_FLOAT)) != 0;
 	}
@@ -224,7 +224,7 @@ namespace zetscript{
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_SCRIPT_FUNCTION,ZS_SCRIPT_TYPE_NAME_SCRIPT_FUNCTION,ScriptFunction);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_VAR_REF_SCRIPT_OBJECT,VarRefObject);
 		SCF_REGISTER_SINGLETON_NAME_CLASS(SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_MEMBER_FUNCTION_SCRIPT_OBJECT,MemberFunctionScriptObject);
-		SCF_REGISTER_SINGLETON_CLASS(SCRIPT_TYPE_ID_ZETSCRIPT_SCRIPT_OBJECT,ZetScript);
+		SCF_REGISTER_SINGLETON_CLASS(SCRIPT_TYPE_ID_ZETSCRIPT_SCRIPT_OBJECT,ScriptEngine);
 
 		SCF_REGISTER_CLASS(SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT,ZS_SCRIPT_TYPE_NAME_STRING_SCRIPT_OBJECT,StringScriptObject);
 
@@ -253,19 +253,19 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
-		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
+		zs->registerFunction("ptrToScriptEnginePtr",ptrToScriptEnginePtr);
 
 		ScriptType *integer_type=this->getScriptType(ZS_SCRIPT_TYPE_NAME_INT);
 		integer_type->registerConstMemberProperty("MAX_VALUE",intMaxValue);
-		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
-		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
-		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,String *)>(parseInt));
+		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ScriptEngine *,zs_float *)>(parseInt));
+		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ScriptEngine *,zs_int )>(parseInt));
+		integer_type->registerStaticMemberFunction("parse",static_cast<zs_int (*)(ScriptEngine *,String *)>(parseInt));
 
 		ScriptType *float_type=this->getScriptType(ZS_SCRIPT_TYPE_NAME_FLOAT);
 		float_type->registerConstMemberProperty("MAX_VALUE",floatMaxValue);
-		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
-		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
-		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,String *)>(parseFloat));
+		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ScriptEngine *,zs_int )>(parseFloat));
+		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ScriptEngine *,zs_float *)>(parseFloat));
+		float_type->registerStaticMemberFunction("parse",static_cast<zs_float (*)(ScriptEngine *,String *)>(parseFloat));
 
 
 		// Global symbols
@@ -283,24 +283,24 @@ namespace zetscript{
 		// members
 		registerStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
 		registerMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectZs_eraseAt);
-		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObjectZs_insertAt));
-		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, String *)>(StringScriptObjectZs_insertAt));
+		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObjectZs_insertAt));
+		registerMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int, String *)>(StringScriptObjectZs_insertAt));
 		registerMemberFunction<StringScriptObject>("clear",StringScriptObjectZs_clear);
 		registerMemberFunction<StringScriptObject>("replace",StringScriptObjectZs_replace);
-		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectZs_split));
-		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, String *)>(StringScriptObjectZs_split));
-		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, String *)>(&StringScriptObjectZs_contains));
-		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_contains));
+		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectZs_split));
+		registerMemberFunction<StringScriptObject>("split",static_cast<ArrayScriptObject * (*)(ScriptEngine *_zs,StringScriptObject *so, String *)>(StringScriptObjectZs_split));
+		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ScriptEngine *_zs,StringScriptObject *so, String *)>(&StringScriptObjectZs_contains));
+		registerMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_contains));
 
-		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, String *)>(&StringScriptObjectZs_indexOf));
-		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_indexOf));
+		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ScriptEngine *_zs,StringScriptObject *so, String *)>(&StringScriptObjectZs_indexOf));
+		registerMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_indexOf));
 
 		registerMemberFunction<StringScriptObject>("startsWith",StringScriptObjectZs_startsWith);
 		registerMemberFunction<StringScriptObject>("endsWith",StringScriptObjectZs_endsWith);
-		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int,zs_int )>(&StringScriptObjectZs_substring));
-		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_substring));
-		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, StringScriptObject *)>(&StringScriptObjectZs_append));
-		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ZetScript *,StringScriptObject *, zs_int )>(&StringScriptObjectZs_append));
+		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int,zs_int )>(&StringScriptObjectZs_substring));
+		registerMemberFunction<StringScriptObject>("substring",static_cast<StringScriptObject * (*)(ScriptEngine *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectZs_substring));
+		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ScriptEngine *,StringScriptObject *, StringScriptObject *)>(&StringScriptObjectZs_append));
+		registerMemberFunction<StringScriptObject>("append",static_cast<void (*)(ScriptEngine *,StringScriptObject *, zs_int )>(&StringScriptObjectZs_append));
 		registerMemberFunction<StringScriptObject>("toLowerCase",StringScriptObjectZs_toLowerCase);
 		registerMemberFunction<StringScriptObject>("toUpperCase",StringScriptObjectZs_toUpperCase);
 

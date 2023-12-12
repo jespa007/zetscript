@@ -8,7 +8,7 @@
 
 namespace zetscript{
 
-	class ZetScript;
+	class ScriptEngine;
 	class  ArrayScriptObject: public ContainerScriptObject{
 	public:
 
@@ -16,8 +16,8 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ArrayScriptObject * 			newArrayScriptObject(ZetScript *zs);
-		static ArrayScriptObject * 			concat(ZetScript *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
+		static ArrayScriptObject * 			newArrayScriptObject(ScriptEngine *zs);
+		static ArrayScriptObject * 			concat(ScriptEngine *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
 
 
 
@@ -26,7 +26,7 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		ArrayScriptObject(ZetScript *_zs);
+		ArrayScriptObject(ScriptEngine *_zs);
 
 		template<typename _T>
 		void 								set(int _pos, _T _element);

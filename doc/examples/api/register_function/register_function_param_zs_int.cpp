@@ -1,15 +1,15 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 
 // The C function to register that prints the result of adding (_numbe1) + (*_number2)
-void add(ZetScript *_zs, zs_int _number1, zs_int  *_number2){
+void add(ScriptEngine *_zs, zs_int _number1, zs_int  *_number2){
     printf("Result _number1 + _number2: %ld\n",_number1 + *_number2);
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
     // Registers C function
     zs.registerFunction("add",add);

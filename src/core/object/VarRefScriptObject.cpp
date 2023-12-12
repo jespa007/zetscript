@@ -7,14 +7,14 @@
 
 namespace zetscript{
 
-	VarRefObject * VarRefObject::newVarRefObject(ZetScript *_zs,StackElement _stk){//,int idx_call){
+	VarRefObject * VarRefObject::newVarRefObject(ScriptEngine *_zs,StackElement _stk){//,int idx_call){
 		VarRefObject *so=new VarRefObject(_zs);
 		so->setStackElement(_stk);
 		return so;
 	}
 
 	VarRefObject::VarRefObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 	):ScriptObject(_zs){
 		script_type_id = SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT;
 		stk_var_ref.setUndefined();

@@ -1,11 +1,11 @@
 == Introduction
 
-ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual machine so the execution is quite fast. Because ZetScript syntax is almost less or more equal to Javascript you can edit the code with any editor that supports Javascript syntax notation. 
+ScriptEngine is a script language with a syntax inspired in ECMAScript or Javascript but also it brings a easy way to bind parts of your C++ code. ScriptEngine provides a virtual machine so the execution is quite fast. Because ScriptEngine syntax is almost less or more equal to Javascript you can edit the code with any editor that supports Javascript syntax notation. 
 
 
 === Compile
 
-To install ZetScript ,first download last source code from https://zetscript.org and compile the project with the following steps,
+To install ScriptEngine ,first download last source code from https://zetscript.org and compile the project with the following steps,
 
  . First we have to configure the project using cmake application.
 +
@@ -22,7 +22,7 @@ sudo footnote:[sudo is required when the project is compiled in linux.] make ins
 
 === Hello World
 
-Once ZetScript is installed we present a quick sample of "HelloWorld" application, 
+Once ScriptEngine is installed we present a quick sample of "HelloWorld" application, 
 
 . Create a filename named helloworld.zs and type the following sentence
 +

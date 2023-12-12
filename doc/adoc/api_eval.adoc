@@ -1,6 +1,6 @@
 === Evaluation
 
-ZetScript can evaluate scripts from string or from file
+ScriptEngine can evaluate scripts from string or from file
 
 ==== Evaluation from string
 

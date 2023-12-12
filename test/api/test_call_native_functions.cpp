@@ -59,108 +59,108 @@ void setNumRef(Num *_num){
 struct ParamA{zetscript::String _s;ParamA(){_s="";}};
 struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
 
-ClassA *ClassA_new(zetscript::ZetScript *_zs){
+ClassA *ClassA_new(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new ClassA;
 }
 
-void ClassA_fun1(zetscript::ZetScript *_zs, ClassA *_this, ParamA *_param_a,bool *_show_print){
+void ClassA_fun1(zetscript::ScriptEngine *_zs, ClassA *_this, ParamA *_param_a,bool *_show_print){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->fun1(_param_a->_s.toConstChar(),*_show_print);
 }
 
-bool ClassA_lt(zetscript::ZetScript *_zs, ClassA *_n1, ClassA *_n2){
+bool ClassA_lt(zetscript::ScriptEngine *_zs, ClassA *_n1, ClassA *_n2){
 	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	return true;
 }
 
-bool ClassA_lt(zetscript::ZetScript *_zs, ClassA *_n1, zetscript::zs_float *_n2){
+bool ClassA_lt(zetscript::ScriptEngine *_zs, ClassA *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	printf("from float 1!\n");
 	return true;
 }
 
-bool ClassA_lt(zetscript::ZetScript *_zs, zetscript::zs_float *_n1, ClassA *_n2){
+bool ClassA_lt(zetscript::ScriptEngine *_zs, zetscript::zs_float *_n1, ClassA *_n2){
 	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	printf("from float 2!\n");
 	return true;
 }
 
 
-void ClassA_delete(zetscript::ZetScript *_zs,ClassA *_this){
+void ClassA_delete(zetscript::ScriptEngine *_zs,ClassA *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
 
 
-ClassB *ClassB_new(zetscript::ZetScript *_zs){
+ClassB *ClassB_new(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new ClassB;
 }
 
-void ClassB_fun1(zetscript::ZetScript *_zs, ClassB *_this, ParamB *_param_b,bool *_show_print){
+void ClassB_fun1(zetscript::ScriptEngine *_zs, ClassB *_this, ParamB *_param_b,bool *_show_print){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->fun1(_param_b->_f,*_show_print);
 }
 
-void ClassB_delete(zetscript::ZetScript *_zs,ClassB *_this){
+void ClassB_delete(zetscript::ScriptEngine *_zs,ClassB *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
 
-ClassC *ClassC_new(zetscript::ZetScript *_zs){
+ClassC *ClassC_new(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new ClassC;
 }
 
-void ClassC_fun1(zetscript::ZetScript *_zs, ClassC *_c, bool *_b,bool *_show_print){
+void ClassC_fun1(zetscript::ScriptEngine *_zs, ClassC *_c, bool *_b,bool *_show_print){
 	ZS_UNUSUED_PARAM(_zs);
 	_c->fun1(*_b,*_show_print);
 }
 
-/*void ClassC_num_setter(zetscript::ZetScript *_zs, ClassC *_c, zetscript::zs_int _num){
+/*void ClassC_num_setter(zetscript::ScriptEngine *_zs, ClassC *_c, zetscript::zs_int _num){
 	ZS_UNUSUED_PARAM(_zs);
 	_c->num=_num;
 }*/
 
-Num * ClassC_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
+Num * ClassC_num_getter(zetscript::ScriptEngine *_zs, ClassC *_c){
 	ZS_UNUSUED_PARAM(_zs);
 	return &_c->num;
 }
 
-Num *ClassC_newNum(zetscript::ZetScript *_zs,ClassC *_c){
+Num *ClassC_newNum(zetscript::ScriptEngine *_zs,ClassC *_c){
 	ZS_UNUSUED_2PARAMS(_zs,_c);
 	return num_ref;
 }
 
-zetscript::zs_int Num_x_getter(zetscript::ZetScript *_zs, Num *_this){
+zetscript::zs_int Num_x_getter(zetscript::ScriptEngine *_zs, Num *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	return _this->x;
 }
 
-void Num_setPosition(zetscript::ZetScript *_zs, Num *_this){
+void Num_setPosition(zetscript::ScriptEngine *_zs, Num *_this){
 	ZS_UNUSUED_2PARAMS(_zs,_this);
 }
 
-void Num_pre_increment(zetscript::ZetScript *_zs, Num *_n){
+void Num_pre_increment(zetscript::ScriptEngine *_zs, Num *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	++_n->x;
 	++_n->y;
 }
 
-void Num_pre_decrement(zetscript::ZetScript *_zs, Num *_n){
+void Num_pre_decrement(zetscript::ScriptEngine *_zs, Num *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	--_n->x;
 	--_n->y;
 }
 
 
-ClassD * ClassC_get_d(zetscript::ZetScript *_zs, ClassC *_c){
+ClassD * ClassC_get_d(zetscript::ScriptEngine *_zs, ClassC *_c){
 	ZS_UNUSUED_PARAM(_zs);
 	return &_c->d;
 }
 
-void ClassC_delete(zetscript::ZetScript *_zs,ClassC *_this){
+void ClassC_delete(zetscript::ScriptEngine *_zs,ClassC *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
@@ -173,7 +173,7 @@ bool allCharsTheSame(const zetscript::String & input){
     return true;
 }
 
-bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * sov){
+bool allValuesTheSame(zetscript::ScriptEngine *_zs,zetscript::ArrayScriptObject * sov){
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::Vector<zetscript::StackElement *> *stk_elements = sov->getStkListElements();
    for(int i =1; i < stk_elements->length(); i++){
@@ -184,7 +184,7 @@ bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject * s
    return true;
 }
 
-zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
+zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ScriptEngine *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
 	ZS_UNUSUED_PARAM(_zs);
 	if(max_number==0 || n_elements==0){
 		throw("max number or n_elements are 0s");
@@ -213,7 +213,7 @@ zetscript::Vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs
 	return index_rand;
 }
 
-zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ArrayScriptObject *_input){
+zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ScriptEngine *_zs,zetscript::ArrayScriptObject *_input){
 
 	zetscript::ArrayScriptObject *output=zetscript::ArrayScriptObject::newArrayScriptObject(_zs);
 	zetscript::Vector<zetscript::StackElement *> *input=_input->getStkListElements();
@@ -252,24 +252,24 @@ zetscript::ArrayScriptObject * reorderValuesFromIntArray(zetscript::ZetScript *_
 //-------
 // PARAMS
 
-ParamA *ParamA_new(zetscript::ZetScript *_zs){
+ParamA *ParamA_new(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new ParamA;
 }
 
 
-void ParamA_delete(zetscript::ZetScript *_zs,ParamA *_this){
+void ParamA_delete(zetscript::ScriptEngine *_zs,ParamA *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
 
-ParamB *ParamB_new(zetscript::ZetScript *_zs){
+ParamB *ParamB_new(zetscript::ScriptEngine *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new ParamB;
 }
 
 
-void ParamB_delete(zetscript::ZetScript *_zs,ParamB *_this){
+void ParamB_delete(zetscript::ScriptEngine *_zs,ParamB *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
 }
@@ -277,7 +277,7 @@ void ParamB_delete(zetscript::ZetScript *_zs,ParamB *_this){
 //------------------------------
 // TEST NATIVE CALL FUNCTION MEMBER
 
-void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_call_function_member(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 	Num num;
 	setNumRef(&num);
@@ -375,7 +375,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 //------------------------------
 // TEST NATIVE CALL WITH NULLS
 void test_native_function_with_nulls(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		,zetscript::zs_int _p1
 		,zetscript::zs_float *_p2
 		,bool *_p3
@@ -389,7 +389,7 @@ void test_native_function_with_nulls(
 
 }
 
-void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
+void test_call_native_function_with_nulls(zetscript::ScriptEngine *_zs){
 
 
 	_zs->compileAndRun(
@@ -405,7 +405,7 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 }
 
 
-void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
+void test_call_native_function(zetscript::ScriptEngine *_zs, bool _show_print=true){
 
 	_zs->registerScriptType<ClassA>("ClassA", ClassA_new, ClassA_delete);
 	_zs->registerScriptType<ClassB>("ClassB",ClassB_new,ClassB_delete);
@@ -420,9 +420,9 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	_zs->registerFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);
 
 	_zs->registerMemberFunction<ClassA>("fun1",ClassA_fun1);
-	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassA_lt));
-	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassA_lt));
-	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassA_lt));
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ScriptEngine *,ClassA *,ClassA *)>(ClassA_lt));
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ScriptEngine *,ClassA *,zetscript::zs_float *)>(ClassA_lt));
+	_zs->registerStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ScriptEngine *,zetscript::zs_float *,ClassA *)>(ClassA_lt));
 
 
 	_zs->extends<ClassB,ClassA>();
@@ -464,13 +464,13 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 }
 
-void test_call_native_function_no_print(zetscript::ZetScript *_zs){
+void test_call_native_function_no_print(zetscript::ScriptEngine *_zs){
 	test_call_native_function(_zs,false);
 }
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_call_native_function(&zs);
 		//test_bug();

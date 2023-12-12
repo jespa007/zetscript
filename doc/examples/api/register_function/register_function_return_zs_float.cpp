@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
-zs_float returnFloat(ZetScript *_zs){
+zs_float returnFloat(ScriptEngine *_zs){
     return 10.5;
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// Registers function interface
     zs.registerFunction("returnFloat",returnFloat);

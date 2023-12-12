@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::ObjectScriptObject;
 using zetscript::StringScriptObject;
 
-void printKeys(ZetScript *_zs,ObjectScriptObject *_object){
+void printKeys(ScriptEngine *_zs,ObjectScriptObject *_object){
 
-	// instance new ObjectScriptObject using ZetScript context
+	// instance new ObjectScriptObject using ScriptEngine context
 	auto keys=_object->getKeys();
 	printf("keys : [");
 	for(int i=0; i < keys.length(); i++){
@@ -21,7 +21,7 @@ void printKeys(ZetScript *_zs,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers printKeys
 	zs.registerFunction("printKeys",printKeys);

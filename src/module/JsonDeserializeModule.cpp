@@ -11,7 +11,7 @@ namespace zetscript{
 			const char *str_start;
 			String str_error;
 			StackElement *first_element;
-			ZetScript *zs;
+			ScriptEngine *zs;
 		}JsonDeserializeData;
 
 

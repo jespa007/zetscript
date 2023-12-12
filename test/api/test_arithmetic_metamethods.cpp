@@ -86,7 +86,7 @@
 
 
 
-void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true) {
+void test_arithmetic_metamethods(zetscript::ScriptEngine *_zs,bool _show_print=true) {
 
 	int n_test=0;
 	//zetscript::zs_int result_assign=10;
@@ -159,14 +159,14 @@ void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true
 
 }
 
-void test_arithmetic_metamethods_no_print(zetscript::ZetScript *_zs) {
+void test_arithmetic_metamethods_no_print(zetscript::ScriptEngine *_zs) {
 	test_arithmetic_metamethods(_zs,false);
 }
 
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 	try{
 		test_arithmetic_metamethods(&zs);
 	}catch(std::exception & ex){

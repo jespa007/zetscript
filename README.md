@@ -11,7 +11,7 @@
 
 int main(){
 
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	zs.compileAndRun("Console::outln(\"Hello World from script!\")");
 
@@ -23,7 +23,7 @@ int main(){
 					
 #### ZetScript types
 
-Zetscript has defined types as integers, numbers, booleans, arrays and objects.
+ZetScript has defined types as integers, numbers, booleans, arrays and objects.
 
 <pre lang="javascript">
 var i=10; //integer
@@ -150,13 +150,13 @@ To call C++ code from ZetScript is done by defining and registering a C function
 						
 <pre lang="c++">
 #include "zetscript.h"
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 // ZetScript C++ interface function
-void sayHelloWorld(ZetScript *_zs){
+void sayHelloWorld(ScriptEngine *_zs){
 	printf("Hello world\n");
 }
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
 	zs.registerFunction("sayHelloWorld",sayHelloWorld);
 	// Evaluates a script where it calls 'sayHelloWorld' function
@@ -172,9 +172,9 @@ int main(){
 To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by by defining and registering a C function.
 						
 <pre lang="c++">
-#include "ZetScript.h"
+#include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 
 
@@ -194,31 +194,31 @@ public:
 };
 
 // define new and delete functions
-MyClass *MyClassWrap_new(ZetScript *_zs){
+MyClass *MyClassWrap_new(ScriptEngine *_zs){
 	return new MyClass;
 }
 
-void MyClassWrap_delete(ZetScript *_zs,MyClass *_this){
+void MyClassWrap_delete(ScriptEngine *_zs,MyClass *_this){
 	delete _this;
 }
 
 // bind data1 member variable (read & write)
-void MyClassWrap_set_data1(ZetScript *_zs,MyClass *_this, zs_int v){
+void MyClassWrap_set_data1(ScriptEngine *_zs,MyClass *_this, zs_int v){
 	_this->data1=v;
 }
 
-zs_int MyClassWrap_get_data1(ZetScript *_zs,MyClass *_this){
+zs_int MyClassWrap_get_data1(ScriptEngine *_zs,MyClass *_this){
 	return _this->data1;
 }
 
 // 'MyClassWrap::setData' wrap function
-void MyClassWrap_setData(ZetScript *_zs,MyClass *_this, zs_int v){
+void MyClassWrap_setData(ScriptEngine *_zs,MyClass *_this, zs_int v){
 	_this->setValue(v);
 }
 
 int main(){
 
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// Register class type 'MyClass' as instantiable
 	zs.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
@@ -280,7 +280,7 @@ Once you have evaluated the script you can call function script from c++.
 
 void test_call_script_function(){
 
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	zs.compileAndRun(
 		"function sayHello(){\n"

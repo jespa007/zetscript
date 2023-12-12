@@ -57,7 +57,7 @@
 
 
 namespace zetscript{
-	class ZetScript;
+	class ScriptEngine;
 
 	// properties shared by compiler + VM
 	typedef enum :uint16_t {

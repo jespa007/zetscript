@@ -479,14 +479,14 @@ execute_function:
 						if(sf_found != NULL){
 							// check whether the parameters matches	EXACTLY with the current ones.
 
-							// if static it starts at 1 because param 0 is ZetScript reference
+							// if static it starts at 1 because param 0 is ScriptEngine reference
 							int start_param=1;
 							if(
 							((sf_found->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0)
 							&&
 							 ((sf_found->properties & SCRIPT_FUNCTION_PROPERTY_STATIC)==0)
 							){
-								// it passes ZetScript ref and object
+								// it passes ScriptEngine ref and object
 								start_param=2;
 							}
 

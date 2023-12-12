@@ -20,7 +20,7 @@ namespace zetscript{
 			_vm_scope_block=ZS_VM_CURRENT_SCOPE_BLOCK;
 		}
 
-		// if vm_scope_block is NULL it seems user wants to register a type out of ZetScript function. It assings globally
+		// if vm_scope_block is NULL it seems user wants to register a type out of ScriptEngine function. It assings globally
 		if(_vm_scope_block == NULL){
 			_vm_scope_block=ZS_VM_MAIN_SCOPE_BLOCK;
 		}

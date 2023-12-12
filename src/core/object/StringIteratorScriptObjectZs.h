@@ -5,7 +5,7 @@
 #pragma once
 
 namespace zetscript{
-	void 			StringIteratorScriptObjectZs_get(ZetScript *_zs,StringIteratorScriptObject *si);
-	void			StringIteratorScriptObjectZs_next(ZetScript *_zs,StringIteratorScriptObject *si);
-	bool			StringIteratorScriptObjectZs_end(ZetScript *_zs,StringIteratorScriptObject *si);
+	void 			StringIteratorScriptObjectZs_get(ScriptEngine *_zs,StringIteratorScriptObject *si);
+	void			StringIteratorScriptObjectZs_next(ScriptEngine *_zs,StringIteratorScriptObject *si);
+	bool			StringIteratorScriptObjectZs_end(ScriptEngine *_zs,StringIteratorScriptObject *si);
 }

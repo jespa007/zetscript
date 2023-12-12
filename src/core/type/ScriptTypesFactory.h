@@ -44,7 +44,7 @@ namespace zetscript{
 	class ObjectScriptObject;
 	class ScriptFunction;
 	class ScriptType;
-	class ZetScript;
+	class ScriptEngine;
 
 	typedef zs_int (*ConversionType)(zs_int);
 
@@ -53,7 +53,7 @@ namespace zetscript{
 
 	public:
 
-		ScriptTypesFactory(ZetScript *_zs);
+		ScriptTypesFactory(ScriptEngine *_zs);
 		void init();
 		void setup();
 
@@ -110,8 +110,8 @@ namespace zetscript{
 		template<typename T>
 		ScriptType * registerScriptType(
 			const String & name
-			, T * (*_new_native_instance)(ZetScript *_zs)=NULL
-			, void (*_delete_native_instance)(ZetScript *_zs,T *)=NULL
+			, T * (*_new_native_instance)(ScriptEngine *_zs)=NULL
+			, void (*_delete_native_instance)(ScriptEngine *_zs,T *)=NULL
 			, const char *registered_file=""
 			,short registered_line=-1
 		);
@@ -196,7 +196,7 @@ namespace zetscript{
 		}PrimitiveType;
 
 		Vector<ScriptType *>			*	types;
-		ZetScript 						*	zs;
+		ScriptEngine 						*	zs;
 		VirtualMachine					*	vm;
 		ScriptScopesFactory 					*	scope_factory;
 		ScriptFunctionsFactory 			*	script_function_factory;

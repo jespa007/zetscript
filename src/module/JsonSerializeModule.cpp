@@ -11,7 +11,7 @@ namespace zetscript{
 	namespace json{
 
 		void serialize_stk(
-				ZetScript *_zs
+				ScriptEngine *_zs
 				,ScriptObject *_this_object
 				,String & _str_result
 				, StackElement *_stk
@@ -22,7 +22,7 @@ namespace zetscript{
 
 
 		void serialize_array(
-				ZetScript *_zs
+				ScriptEngine *_zs
 				,ScriptObject *_this_object
 				,String & _str_result
 				, ArrayScriptObject * _array
@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 
 		void serialize_object(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			,ScriptObject *_this_object
 			, String & _str_result
 			, ObjectScriptObject *_obj
@@ -145,14 +145,14 @@ namespace zetscript{
 
 									switch(ptr_function->return_script_type_id){
 									case  SCRIPT_TYPE_ID_STRING:
-										str_aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										str_aux=((String (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										result = (zs_int)&str_aux;
 										break;
 									case  SCRIPT_TYPE_ID_FLOAT:
-										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
+										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
-										result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										result=((zs_int (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
 										break;
 									}
 									stk_getter_result=_zs->toStackElement(
@@ -204,7 +204,7 @@ namespace zetscript{
 		}
 
 		void serialize_stk(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			, ScriptObject *_this_object
 			,String & _str_result
 			, StackElement *_stk
@@ -266,7 +266,7 @@ namespace zetscript{
 			}
 		}
 
-		String serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format){
+		String serialize(ScriptEngine *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format){
 			String serialized_stk="";
 
 			if(

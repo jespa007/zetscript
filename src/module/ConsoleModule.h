@@ -10,11 +10,11 @@ namespace zetscript{
 	class ArrayScriptObject;
 	class StringMod;
 
-	zs_int 	ConsoleModule_readChar(ZetScript *_zs);
-	void 	ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args);
-	void	ConsoleModule_out(ZetScript *zs,StackElement *str, StackElement *args);
-	void 	ConsoleModule_errorln(ZetScript *zs,StackElement *str, StackElement *args);
-	void 	ConsoleModule_error(ZetScript *zs,StackElement *str, StackElement *args);
+	zs_int 	ConsoleModule_readChar(ScriptEngine *_zs);
+	void 	ConsoleModule_outln(ScriptEngine *zs,StackElement *str, StackElement *args);
+	void	ConsoleModule_out(ScriptEngine *zs,StackElement *str, StackElement *args);
+	void 	ConsoleModule_errorln(ScriptEngine *zs,StackElement *str, StackElement *args);
+	void 	ConsoleModule_error(ScriptEngine *zs,StackElement *str, StackElement *args);
 
 }
 

@@ -2,7 +2,7 @@
 
 int main(){
 
-	ZetScript zs;
+	ScriptEngine zs;
 
 	NumberZs_register(&zs);
 

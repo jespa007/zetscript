@@ -9,7 +9,7 @@
 
 namespace zetscript{
 
-	class ZetScript;
+	class ScriptEngine;
 	class  ObjectScriptObject:public ContainerScriptObject{
 
 	public:
@@ -18,16 +18,16 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ObjectScriptObject * newObjectScriptObject(ZetScript	*_zs);
-		static ObjectScriptObject * concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
-		static void  append(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
+		static ObjectScriptObject * newObjectScriptObject(ScriptEngine	*_zs);
+		static ObjectScriptObject * concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
+		static void  append(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
 
-		ObjectScriptObject(ZetScript	*_zs);
+		ObjectScriptObject(ScriptEngine	*_zs);
 
 		/**
 		 * setters to set field value

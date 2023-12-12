@@ -6,13 +6,13 @@
 
 namespace zetscript{
 
-	MemberFunctionScriptObject * MemberFunctionScriptObject::newObjectMemberFunction(ZetScript *_zs, ScriptObject *_so_object_ref, ScriptFunction *_sf_ref){
+	MemberFunctionScriptObject * MemberFunctionScriptObject::newObjectMemberFunction(ScriptEngine *_zs, ScriptObject *_so_object_ref, ScriptFunction *_sf_ref){
 
 		return new MemberFunctionScriptObject(_zs,_so_object_ref,_sf_ref);
 	}
 
 	MemberFunctionScriptObject::MemberFunctionScriptObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			, ScriptObject *_so_ref
 			, ScriptFunction *_sf_ref
 	):RefScriptObject(_zs, _so_ref){

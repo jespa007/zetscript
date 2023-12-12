@@ -8,7 +8,7 @@
 
 === Statments
 
-ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
+ScriptEngine Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
 
 Example of four statements,
 
@@ -29,7 +29,7 @@ var op1,op2,res; op1=5; op2=6; res = 5+6;
 
 === Comments
 
-ZetScript support block and line comments.
+ScriptEngine support block and line comments.
 
 ==== Block comment
 

@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
-// ZetScript C++ interface function
-StringScriptObject *returnString(ZetScript *_zs){
+// ScriptEngine C++ interface function
+StringScriptObject *returnString(ScriptEngine *_zs){
 
-	// instance new StringScriptObject using ZetScript context
+	// instance new StringScriptObject using ScriptEngine context
 	StringScriptObject *string=_zs->newStringScriptObject();
 
     // set string value "Hello world (StringScriptObject)"
@@ -16,7 +16,7 @@ StringScriptObject *returnString(ZetScript *_zs){
 }
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 
 	// Registers function interface
     zs.registerFunction("returnString",returnString);

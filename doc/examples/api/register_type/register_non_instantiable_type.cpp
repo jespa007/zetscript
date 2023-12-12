@@ -1,19 +1,19 @@
 #include "Number.h"
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
 // Number reference
 Number *number=NULL;
 
 // function that returns number reference
-Number *getNumber(ZetScript *_zs){
+Number *getNumber(ScriptEngine *_zs){
 	return 	number;
 }
 
 int main(){
 	
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	zs.registerScriptType<Number>("Number");
 	
@@ -24,7 +24,7 @@ int main(){
  	zs.registerFunction("getNumber",getNumber);
  	
  	
-	// Evaluates ZetScript code that calls 'getNumber' to get 'number' object reference
+	// Evaluates ScriptEngine code that calls 'getNumber' to get 'number' object reference
  	zs.compileAndRun(
  		"var number= getNumber();" 
  	);

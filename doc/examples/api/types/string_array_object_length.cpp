@@ -1,16 +1,16 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ArrayScriptObject;
 
 
-void checkLengthArray(ZetScript *_zs,ArrayScriptObject *_array_object){
-	// instance new ArrayScriptObject using ZetScript context
+void checkLengthArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
+	// instance new ArrayScriptObject using ScriptEngine context
     printf("The length of array is : %i\n",_array_object->length());
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers modifyArray
 	zs.registerFunction("checkLengthArray",checkLengthArray);

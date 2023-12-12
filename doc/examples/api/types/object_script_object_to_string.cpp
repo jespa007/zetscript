@@ -1,18 +1,18 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ObjectScriptObject;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::String;
 
 // print array contents
-void printObject(ZetScript *_zs,ObjectScriptObject *_object){
+void printObject(ScriptEngine *_zs,ObjectScriptObject *_object){
 	printf("ScriptObject contents : %s",_object->toString().toConstChar());
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers printObject
 	zs.registerFunction("printObject",printObject);

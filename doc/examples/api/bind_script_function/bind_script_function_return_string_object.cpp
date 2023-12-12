@@ -1,13 +1,13 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
 int main()
 {
-  ZetScript zs;
+  ScriptEngine zs;
 
-  // Evaluates ZetScript function 'returnString' that returns 'String' value
+  // Evaluates ScriptEngine function 'returnString' that returns 'String' value
   zs.compile(
   "function returnString(){\n"
       "    return \"Hello World\";\n"
@@ -17,7 +17,7 @@ int main()
   // It binds 'returnString' as 'StringScriptObject *(void)'
   auto returnString=zs.bindScriptFunction<StringScriptObject *()>("returnString");
 
-  // Calls ZetScript function which it returns 'StringScriptObject *' reference
+  // Calls ScriptEngine function which it returns 'StringScriptObject *' reference
   auto object=returnString();
 
   // Prints its value by console.

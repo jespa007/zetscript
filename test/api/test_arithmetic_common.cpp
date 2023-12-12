@@ -51,7 +51,7 @@ bool float_values_are_almost_the_same(
 // INTEGER OPERATIONS
 //
 void test_arithmetic_int_expression(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, zetscript::zs_int expr
 		,const char *str_expr
 ){ \
@@ -76,7 +76,7 @@ void test_arithmetic_int_expression(
 }
 
 void test_constant_int_expression(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, const char *str_expr
 		, zetscript::zs_int expected_value
 ) {
@@ -136,7 +136,7 @@ void test_constant_int_expression(
 }\
 
 void _complete_test_arithmetic_integer_op(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		,zetscript::zs_int val1
 		, zetscript::zs_int val2
 		, const char *str_format
@@ -191,7 +191,7 @@ void _complete_test_arithmetic_integer_op(
 }
 
 void _complete_test_arithmetic_integer_op_assign(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, zetscript::zs_int _val1
 		, zetscript::zs_int _val2
 		, const char *str_format
@@ -253,7 +253,7 @@ void _complete_test_arithmetic_integer_op_assign(
 }
 
 void _complete_test_arithmetic_self_op(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
@@ -290,7 +290,7 @@ void _complete_test_arithmetic_self_op(
 
 
 void _complete_test_arithmetic_self_property_op(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
@@ -333,7 +333,7 @@ void _complete_test_arithmetic_self_property_op(
 // FLOAT OPERATIONS
 //
 void test_constant_float_expression(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		,const char  *str_expr
 		, zetscript::zs_float expected_value
 ) {
@@ -350,7 +350,7 @@ void test_constant_float_expression(
 }
 
 void test_arithmetic_float_expression(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		,zetscript::zs_float expr
 		, const char *str_expr
 		, bool print_warnings
@@ -376,7 +376,7 @@ void test_arithmetic_float_expression(
 
 #define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zetscript::String::format(str_format,toString(val1).toConstChar(),"%",toString(val2).toConstChar()), (zetscript::zs_float)fmod(val1,val2)}
 void _complete_test_arithmetic_float_op(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		,zetscript::zs_float val1
 		, zetscript::zs_float val2
 		, const char *str_format
@@ -454,7 +454,7 @@ void _complete_test_arithmetic_float_op(
 }
 
 void _complete_test_arithmetic_float_op_assign(
-		zetscript::ZetScript *_zs
+		zetscript::ScriptEngine *_zs
 		, zetscript::zs_float _val1
 		, zetscript::zs_float _val2
 
@@ -517,7 +517,7 @@ void _complete_test_arithmetic_float_op_assign(
 //
 // BOOL OPERATIONS
 //
-void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_expr, bool expected_value){
+void test_constant_bool_expression(zetscript::ScriptEngine *_zs,const char *str_expr, bool expected_value){
 	try{
 		zetscript::StackElement stk = _zs->compileAndRun(str_expr);
 		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_BOOL){
@@ -538,7 +538,7 @@ void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_exp
 	}
 }
 
-void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const char *str_expr){
+void test_arithmetic_bool_expression(zetscript::ScriptEngine *_zs,bool expr, const char *str_expr){
 
 	try{
 		zetscript::StackElement stk = _zs->compileAndRun(zetscript::String("return ")+str_expr);
@@ -567,7 +567,7 @@ void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const 
 // STRING OPERATIONS
 //
 
-void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expected_value, const char *str_expr){
+void test_constant_string_expression(zetscript::ScriptEngine *_zs,const char * expected_value, const char *str_expr){
 
 
 	try{
@@ -591,7 +591,7 @@ void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expe
 	}
 }
 
-void test_arithmetitoConstCharing_expression(zetscript::ZetScript *_zs,const zetscript::String & expected_value, const char * str_expr){
+void test_arithmetitoConstCharing_expression(zetscript::ScriptEngine *_zs,const zetscript::String & expected_value, const char * str_expr){
 
 
 	try{\

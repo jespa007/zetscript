@@ -3,8 +3,8 @@
 
 int main(){
 
-	// instance ZetScript
-	zetscript::ZetScript zs;
+	// instance ScriptEngine
+	zetscript::ScriptEngine zs;
 
 	zs.registerConstant("MY_CONSTANT_INT",10);
 	zs.registerConstant("MY_CONSTANT_STR","my_string");

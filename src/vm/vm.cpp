@@ -48,7 +48,7 @@ namespace zetscript{
 		vm_remove_empty_shared_pointers(_vm,vm_get_scope_block_main(_vm));
 	}
 
-	VirtualMachine *vm_new(ZetScript *_zs){
+	VirtualMachine *vm_new(ScriptEngine *_zs){
 
 		VirtualMachine *vm = (VirtualMachine *)ZS_MALLOC(sizeof(VirtualMachine));
 		VirtualMachineData *data = new VirtualMachineData(_zs);
@@ -61,7 +61,7 @@ namespace zetscript{
 
 	void vm_init(
 		VirtualMachine *_vm
-		,ZetScript *_zs
+		,ScriptEngine *_zs
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 

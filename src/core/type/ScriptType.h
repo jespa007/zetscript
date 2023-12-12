@@ -41,7 +41,7 @@ namespace zetscript{
 
 		Vector<ScriptTypeId>				*   base_script_type_ids; // list of idx of classes base
 
-		 ScriptType(ZetScript *_zs
+		 ScriptType(ScriptEngine *_zs
 				 ,ScriptTypeId _id
 				 , const String & _name
 				 , ScriptScope *_scope
@@ -153,7 +153,7 @@ namespace zetscript{
 		virtual ~ScriptType();
 
 	private:
-		ZetScript 				*zs;
+		ScriptEngine 				*zs;
 		ScriptFunctionsFactory 	*script_function_factory;
 		ScriptTypesFactory 		*script_types_factory;
 		ScriptScopesFactory 			*scope_factory;	// reference scope_factory

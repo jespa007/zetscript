@@ -19,9 +19,9 @@ namespace zetscript{
 		void *data;
 	};
 
-	VirtualMachine *vm_new(ZetScript *zs);
+	VirtualMachine *vm_new(ScriptEngine *zs);
 
-	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
+	void			vm_init(VirtualMachine *vm, ScriptEngine *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *object);

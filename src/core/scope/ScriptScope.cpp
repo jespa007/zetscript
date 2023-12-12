@@ -11,7 +11,7 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	ScriptScope::ScriptScope(ZetScript * _zs,int _idx_script_function, ScriptScope * _scope_parent, uint16_t _properties){
+	ScriptScope::ScriptScope(ScriptEngine * _zs,int _idx_script_function, ScriptScope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
 		owner_type=NULL;

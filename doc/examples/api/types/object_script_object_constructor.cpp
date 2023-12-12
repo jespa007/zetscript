@@ -1,11 +1,11 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::ObjectScriptObject;
 
-ObjectScriptObject *returnNewObject(ZetScript *_zs){
+ObjectScriptObject *returnNewObject(ScriptEngine *_zs){
 
-	// instance new StringScriptObject using ZetScript context
+	// instance new StringScriptObject using ScriptEngine context
 	ObjectScriptObject *new_object=new ObjectScriptObject(_zs);
 
 	//...
@@ -14,7 +14,7 @@ ObjectScriptObject *returnNewObject(ZetScript *_zs){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// Registers returnNewObject
 	zs.registerFunction("returnNewObject",returnNewObject);

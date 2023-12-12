@@ -1,12 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::ObjectScriptObject;
 using zetscript::StringScriptObject;
 
-void modifyObject(ZetScript *_zs,ObjectScriptObject *_object){
+void modifyObject(ScriptEngine *_zs,ObjectScriptObject *_object){
 
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.length(); i++){
@@ -26,7 +26,7 @@ void modifyObject(ZetScript *_zs,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
 	// registers modifyObject
 	zs.registerFunction("modifyObject",modifyObject);

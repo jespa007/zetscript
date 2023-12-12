@@ -1,7 +1,7 @@
 <<<
-=== Exposing C++ types to ZetScript
+=== Exposing C++ types to ScriptEngine
 
-In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
+In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ScriptEngine.
 
 ==== Register a type
 
@@ -12,9 +12,9 @@ There's two ways to register a type,
 
 ===== Register a type as non instantiable
 
-Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
+Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ScriptEngine using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
 
-To register a non instantible type it's done calling _ZetScript::registerType_ specifying the type in the template and passing the class name by parameter.
+To register a non instantible type it's done calling _ScriptEngine::registerType_ specifying the type in the template and passing the class name by parameter.
 
 *Syntax*
 [source,cpp]
@@ -28,7 +28,7 @@ Type * registerType<_Type>(const String & _class_name);
 
 [.underline]#Parameters# 
 
-- _class_name: Class name that will be referenced in ZetScript
+- _class_name: Class name that will be referenced in ScriptEngine
 
 [.underline]#Returns# 
 
@@ -53,11 +53,11 @@ The code below it registers _Number_ type as non instantiable,
 #include "Number.h"
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
 int main()
 {
-	ZetScript zs;
+	ScriptEngine zs;
 
 	zs.registerType<Number>("Number");
 	 	
@@ -93,14 +93,14 @@ include::../examples/api/register_type/register_non_instantiable_type.cpp[]
 
 ===== Register a type as instantiable
 
-Register an instantiable type it means that it *CAN* create new objects of that 'type' in ZetScript code using operator _new_.
+Register an instantiable type it means that it *CAN* create new objects of that 'type' in ScriptEngine code using operator _new_.
 
-To register instantiable type it's done also with _ZetScript::registerType_ but, furthermore, it has to pass two additional parameters : A _new_ function and _delete_ function.
+To register instantiable type it's done also with _ScriptEngine::registerType_ but, furthermore, it has to pass two additional parameters : A _new_ function and _delete_ function.
 
 *Syntax*
 [source,cpp]
 ----
-Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ZetScript *_zs), void (*_delete_native_instance)(ZetScript *_zs, RegisteredType * _this));
+Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ScriptEngine *_zs), void (*_delete_native_instance)(ScriptEngine *_zs, RegisteredType * _this));
 ----
 
 [.underline]#Template# 
@@ -114,14 +114,14 @@ Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_n
 
 [source,cpp]
 ----
-RegsiteredType * RegisteredType_new(ZetScript *_zs);
+RegsiteredType * RegisteredType_new(ScriptEngine *_zs);
 ----
 
 - __delete_native_instance_: A C function that deletes native instance. The SECOND parameter it must define the current instance,
 
 [source,cpp]
 ----
-void RegisteredType_delete(ZetScript *_zs, RegisteredType *_this);
+void RegisteredType_delete(ScriptEngine *_zs, RegisteredType *_this);
 ----
 
 [.underline]#Returns# 
@@ -136,11 +136,11 @@ Let's define _NumberZs_new_ and _NumberZs_delete_ functions that creates and des
 
 [source,cpp]
 ----
-Number *NumberZs_new(ZetScript *_zs){
+Number *NumberZs_new(ScriptEngine *_zs){
 	return new Number();
 }
 
-void NumberZs_delete(ZetScript *_zs,Number *_this){
+void NumberZs_delete(ScriptEngine *_zs,Number *_this){
 	delete _this;
 }
 ----
@@ -150,7 +150,7 @@ Then, in the _NumberZs_register_ function, it registers _Number_ type as instant
 
 [source,cpp]
 ----
-void NumberZs_register(ZetScript *_zs){
+void NumberZs_register(ScriptEngine *_zs){
 
 	_zs->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
@@ -168,15 +168,15 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
+To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ScriptEngine, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 *Syntax*
 
 [source,cpp]
 ----
-void RegisteredType_constructor(ZetScript *_zs, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+void RegisteredType_constructor(ScriptEngine *_zs, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -189,11 +189,11 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ZetScript context.
+- __zs_ : ScriptEngine context.
 - __this_: The current instance.
 - __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
 
-After the constructor function is defined it has to be registered with _ZetScript::registerConstructor_. _registerConstructor_ it has the following signature,
+After the constructor function is defined it has to be registered with _ScriptEngine::registerConstructor_. _registerConstructor_ it has the following signature,
 
 *Syntax*
 [source,cpp]
@@ -220,28 +220,28 @@ The following code defines two functions that accepts a xref:language_data_types
 
 //...
 
-void NumberZs_constructor(ZetScript *_zs,Number *_this,zs_float *_value){
+void NumberZs_constructor(ScriptEngine *_zs,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 
-void NumberZs_constructor(ZetScript *_zs,Number *_this,Number *_value){
+void NumberZs_constructor(ScriptEngine *_zs,Number *_this,Number *_value){
 	_this->value=_value->value;
 }
 ----
 
-Next, the functions _NumberZs_constructor_ are registered with _ZetScript::registerConstructor_ method,
+Next, the functions _NumberZs_constructor_ are registered with _ScriptEngine::registerConstructor_ method,
 
 [source,cpp]
 ----
 
 
-void NumberZs_register(ZetScript *_zs){
+void NumberZs_register(ScriptEngine *_zs){
 
 	//...
 
-	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this, zs_float *_value)>(&NumberZs_constructor));
+	_zs->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_zs,Number *_this, zs_float *_value)>(&NumberZs_constructor));
 
-	_zs->registerConstructor<Number>(static_cast<void (*)(ZetScript *_zs,Number *_this, Number *_value)>(&NumberZs_constructor));
+	_zs->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_zs,Number *_this, Number *_value)>(&NumberZs_constructor));
 
 	//...
 
@@ -264,7 +264,7 @@ include::../examples/api/register_type/register_instantiable_type_with_construct
 
 To register a member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
@@ -272,7 +272,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _S
 
 [source,cpp]
 ----
-ReturnType RegisteredType_memberFunction(ZetScript *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+ReturnType RegisteredType_memberFunction(ScriptEngine *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -286,12 +286,12 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __this_: The current instance
 - __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
 
-After the member function is defined it has to be registered with _ZetScript::registerMemberFunction_. _ZetScript::registerMemberFunction_ it has the following signature,
+After the member function is defined it has to be registered with _ScriptEngine::registerMemberFunction_. _ScriptEngine::registerMemberFunction_ it has the following signature,
 
 
 *Syntax*
@@ -318,17 +318,17 @@ The following code defines a function that returns a xref:language_data_types.ad
 
 [source,cpp]
 ----
-zs_int NumberZs_toInteger(ZetScript *_zs,Number *_this){
+zs_int NumberZs_toInteger(ScriptEngine *_zs,Number *_this){
 	return _this->value;
 }
 ----
 
-Next, it registers _NumberZs_toInteger_ as member function named _toInteger_ through with _ZetScript::registerMemberFunction_,
+Next, it registers _NumberZs_toInteger_ as member function named _toInteger_ through with _ScriptEngine::registerMemberFunction_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(ZetScript *_zs){
+void NumberZs_register(ScriptEngine *_zs){
 
 	//...
 
@@ -360,7 +360,7 @@ include::../examples/api/register_type/register_member_function_out.txt[]
 
 To register a static member function it has to create and register a C function with a particular prototype.
 
-As parameters, the function must always include _ZetScript *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
+As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
 As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
 
@@ -368,7 +368,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _S
 
 [source,cpp]
 ----
-ReturnType RegisteredType_staticMemberFunction(ZetScript *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
+ReturnType RegisteredType_staticMemberFunction(ScriptEngine *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
 	....
 }
 ----
@@ -382,11 +382,11 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ZetScript context
+- __zs_ : ScriptEngine context
 - __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
 
-After the constructor function is defined it has to be registered with _ZetScript::registerStaticMemberFunction_. _ZetScript::registerStaticMemberFunction_ it has the following signature,
+After the constructor function is defined it has to be registered with _ScriptEngine::registerStaticMemberFunction_. _ScriptEngine::registerStaticMemberFunction_ it has the following signature,
 
 
 *Syntax*
@@ -417,18 +417,18 @@ The following code defines a function _NumberZs_pow_ that takes two arguments an
 
 //...
 
-zs_float NumberZs_pow(ZetScript *_zs,zs_float *_base, zs_float * _power){
+zs_float NumberZs_pow(ScriptEngine *_zs,zs_float *_base, zs_float * _power){
 	return (*_base) * (*_power);
 }
 
 ----
 
-Next, it registers _NumberZs_pow_ as static member function named _pow_ through with _ZetScript::registerStaticMemberFunction_,
+Next, it registers _NumberZs_pow_ as static member function named _pow_ through with _ScriptEngine::registerStaticMemberFunction_,
 
 [source,cpp]
 ----
 
-void NumberZs_register(ZetScript *_zs){
+void NumberZs_register(ScriptEngine *_zs){
 
 	//...
 
@@ -455,14 +455,14 @@ include::../examples/api/register_type/register_static_member_function_out.txt[]
 
 ==== Inheritance
 
-To register a type and tell that is base of other type is done through _ZetScript::extends_.
+To register a type and tell that is base of other type is done through _ScriptEngine::extends_.
 
 *Syntax*
 
 [source,cpp]
 ----
 
-ZetScript::extends<_RegisteredBaseType, _RegisteredType>();
+ScriptEngine::extends<_RegisteredBaseType, _RegisteredType>();
 ----
 
 [.underline]#Type#
@@ -492,7 +492,7 @@ include::../examples/api/register_type/register_type_inheritance_out.txt[]
 
 <<<
 
-A ZetScript script class can be extended from any registered type. In the following evaluates an script that a script class called _ScriptMyCppTypeExtend_ extends from registered type _MyCppTypeExtend_,
+A ScriptEngine script class can be extended from any registered type. In the following evaluates an script that a script class called _ScriptMyCppTypeExtend_ extends from registered type _MyCppTypeExtend_,
 
 [source,javascript]
 ----

@@ -263,7 +263,7 @@ namespace zetscript{
 	}LoopBreakContinueInfo;
 
 	struct CompilerData{
-		ZetScript 						* 		zs;
+		ScriptEngine 						* 		zs;
 		ScriptScopesFactory 					* 		scope_factory;
 		ScriptFunctionsFactory 			* 		script_function_factory;
 		ScriptTypesFactory 				* 		script_types_factory;
@@ -279,7 +279,7 @@ namespace zetscript{
 		String								error_file;
 		int 									error_line;
 
-		CompilerData(ZetScript * _zs){
+		CompilerData(ScriptEngine * _zs){
 			current_parsing_file="";
 			current_function=NULL;
 			this->zs=_zs;

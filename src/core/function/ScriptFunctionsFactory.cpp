@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ScriptFunctionsFactory::ScriptFunctionsFactory(ZetScript *_zs){
+	ScriptFunctionsFactory::ScriptFunctionsFactory(ScriptEngine *_zs){
 		zs = _zs;
 		scope_factory = _zs->getScriptScopesFactory();
 		script_functions = new Vector<ScriptFunction *>();

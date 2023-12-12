@@ -15,7 +15,7 @@ namespace zetscript{
 	class ScriptFunctionsFactory;
 	class ScriptScopesFactory{
 		public:
-			ScriptScopesFactory(ZetScript 		*zs);
+			ScriptScopesFactory(ScriptEngine 		*zs);
 			void init();
 			ScriptScope	    				*	newScope(int idx_sf,ScriptScope * scope_parent=NULL,uint16_t _properties=0);
 			ScriptScope 						* 	getMainScope(){return main_scope;}
@@ -28,7 +28,7 @@ namespace zetscript{
 
 		private:
 
-			ZetScript 					*zs;
+			ScriptEngine 					*zs;
 
 			/**
 			 * Array of script scopes.

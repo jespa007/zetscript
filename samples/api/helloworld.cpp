@@ -1,6 +1,6 @@
 #include "zetscript.h"
 
-using zetscript::ZetScript;
+using zetscript::ScriptEngine;
 
 void sayHelloWorld(){
 	printf("Say hello world\n");
@@ -8,7 +8,7 @@ void sayHelloWorld(){
 
 
 int main(){
-	ZetScript zs;
+	ScriptEngine zs;
 	zs.registerFunction("sayHelloWorld",sayHelloWorld);
 	zs.compileAndRun("sayHelloWorld()");
 	return 0;

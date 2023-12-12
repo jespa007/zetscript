@@ -9,9 +9,9 @@ namespace zetscript{
 	class ClassScriptObject;
 
 	// member functions
-	DateTime * 		DateTimeModule_new(ZetScript *_zs);
+	DateTime * 		DateTimeModule_new(ScriptEngine *_zs);
 	void DateTimeModule_constructor(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			,DateTime * _this
 			,zs_int _year
 			,zs_int _month
@@ -22,32 +22,32 @@ namespace zetscript{
 	);
 	/*DateTime * 		DateTimeModule_add(DateTime *dt1,DateTime *dt2);*/
 
-	ClassScriptObject * 		DateTimeModule_sub(ZetScript *_zs,DateTime *dt1,DateTime *dt2);
+	ClassScriptObject * 		DateTimeModule_sub(ScriptEngine *_zs,DateTime *dt1,DateTime *dt2);
 
-	void 				DateTimeModule_setUtc(ZetScript *_zs,DateTime *_this);
+	void 				DateTimeModule_setUtc(ScriptEngine *_zs,DateTime *_this);
 
-	void 				DateTimeModule_addSeconds(ZetScript *_zs,DateTime *_this,zs_int _seconds);
-	void 				DateTimeModule_addMinutes(ZetScript *_zs,DateTime *_this,zs_int _minutes);
-	void 				DateTimeModule_addHours(ZetScript *_zs,DateTime *_this,zs_int _hours);
-	void 				DateTimeModule_addDays(ZetScript *_zs,DateTime *_this,zs_int _days);
-	void 				DateTimeModule_addMonths(ZetScript *_zs,DateTime *_this,zs_int _months);
-	void 				DateTimeModule_addYears(ZetScript *_zs,DateTime *_this,zs_int _years);
+	void 				DateTimeModule_addSeconds(ScriptEngine *_zs,DateTime *_this,zs_int _seconds);
+	void 				DateTimeModule_addMinutes(ScriptEngine *_zs,DateTime *_this,zs_int _minutes);
+	void 				DateTimeModule_addHours(ScriptEngine *_zs,DateTime *_this,zs_int _hours);
+	void 				DateTimeModule_addDays(ScriptEngine *_zs,DateTime *_this,zs_int _days);
+	void 				DateTimeModule_addMonths(ScriptEngine *_zs,DateTime *_this,zs_int _months);
+	void 				DateTimeModule_addYears(ScriptEngine *_zs,DateTime *_this,zs_int _years);
 
-	String			DateTimeModule_tostring(ZetScript *_zs,DateTime *_this);
+	String			DateTimeModule_tostring(ScriptEngine *_zs,DateTime *_this);
 
-	zs_int 				DateTimeModule_get_week_day(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_month_day(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_year_day(ZetScript *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_week_day(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_month_day(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_year_day(ScriptEngine *_zs,DateTime *_this);
 
-	zs_int 				DateTimeModule_get_second(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_minute(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_hour(ZetScript *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_second(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_minute(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_hour(ScriptEngine *_zs,DateTime *_this);
 
-	zs_int 				DateTimeModule_get_day(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_month(ZetScript *_zs,DateTime *_this);
-	zs_int 				DateTimeModule_get_year(ZetScript *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_day(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_month(ScriptEngine *_zs,DateTime *_this);
+	zs_int 				DateTimeModule_get_year(ScriptEngine *_zs,DateTime *_this);
 
 
-	void		 		DateTimeModule_delete(ZetScript *_zs,DateTime *_this);
+	void		 		DateTimeModule_delete(ScriptEngine *_zs,DateTime *_this);
 
 }

@@ -17,7 +17,7 @@ namespace zetscript{
 
 		public:
 
-			ScriptFunctionsFactory(ZetScript *_zs);
+			ScriptFunctionsFactory(ScriptEngine *_zs);
 
 			/**
 			 * Set/Get ScriptType Node by its idx, regarding current state.
@@ -49,7 +49,7 @@ namespace zetscript{
 			~ScriptFunctionsFactory();
 
 		private:
-			ZetScript 						* 	zs;
+			ScriptEngine 						* 	zs;
 			ScriptScopesFactory 					* 	scope_factory;
 			Vector<ScriptFunction *>		*   script_functions;
 			int idx_clear_checkpoint;

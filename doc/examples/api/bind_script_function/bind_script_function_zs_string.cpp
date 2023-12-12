@@ -4,7 +4,7 @@ using zetscript::String;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
     zs.compile(
  		"function add(_a,_b){\n"

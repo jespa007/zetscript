@@ -17,14 +17,14 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	StringScriptObject * StringScriptObject::newStringScriptObject(ZetScript *_zs, const String & _str){
+	StringScriptObject * StringScriptObject::newStringScriptObject(ScriptEngine *_zs, const String & _str){
 		StringScriptObject *so=new StringScriptObject(_zs);
 		so->set(_str);
 
 		return so;
 	}
 
-	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ZetScript *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
+	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ScriptEngine *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		StringScriptObject *so_ref=NULL;
 		// we have to create an new string variable
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
@@ -84,7 +84,7 @@ namespace zetscript{
 
 
 	StringScriptObject * StringScriptObject::format(
-			ZetScript *_zs,
+			ScriptEngine *_zs,
 			StackElement *_stk
 			, StackElement *_stk_args
 	){
@@ -291,7 +291,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	StringScriptObject::StringScriptObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			,const String & _str
 	):ScriptObject(_zs,SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){
 		default_str_value = _str;

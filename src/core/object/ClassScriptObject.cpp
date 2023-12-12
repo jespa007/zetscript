@@ -4,17 +4,17 @@
  */
 #include "zetscript.h"
 
-#define CALL_CONSTRUCTOR_CLASS(_zs,sc) (*((void *(*)(zetscript::ZetScript *))sc->new_native_instance))(_zs)
-#define CALL_DESTRUCTOR_CLASS(_zs,sc,obj) (*((void (*)(zetscript::ZetScript *, void *))sc->delete_native_instance))(_zs,obj)
+#define CALL_CONSTRUCTOR_CLASS(_zs,sc) (*((void *(*)(zetscript::ScriptEngine *))sc->new_native_instance))(_zs)
+#define CALL_DESTRUCTOR_CLASS(_zs,sc,obj) (*((void (*)(zetscript::ScriptEngine *, void *))sc->delete_native_instance))(_zs,obj)
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, ScriptTypeId _script_type_id,void *_c_object){
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ScriptEngine *_zs, ScriptTypeId _script_type_id,void *_c_object){
 		return new ClassScriptObject(_zs, _script_type_id,_c_object);
 	}
 
 	ClassScriptObject::ClassScriptObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			, ScriptTypeId _script_type_id
 			,void *_c_object
 	):ObjectScriptObject(_zs){
@@ -194,10 +194,10 @@ namespace zetscript{
 					String *str=NULL;
 					switch(ptr_function->return_script_type_id){
 					case SCRIPT_TYPE_ID_STRING:
-							aux=((String (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
+							aux=((String (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
 					case SCRIPT_TYPE_ID_STRING_PTR:
-							str=((String * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
+							str=((String * (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");
 							}

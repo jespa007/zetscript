@@ -4,9 +4,9 @@ using zetscript::zs_float;
 
 int main()
 {
-	zetscript::ZetScript zs;
+	zetscript::ScriptEngine zs;
 
-    // Evaluates ZetScript function 'returnFloat' that returns 'Float' value
+    // Evaluates ScriptEngine function 'returnFloat' that returns 'Float' value
     zs.compile(
  		"function returnFloat(){\n"
         "    return 10.5;\n"
@@ -16,7 +16,7 @@ int main()
     // It binds 'returnFloat' as 'zs_float(void)'
     auto returnFloat=zs.bindScriptFunction<zs_float()>("returnFloat");
 
-    // Calls ZetScript function and prints return value by console.
+    // Calls ScriptEngine function and prints return value by console.
     printf("result : %f\n",returnFloat());
 
  	return 0;

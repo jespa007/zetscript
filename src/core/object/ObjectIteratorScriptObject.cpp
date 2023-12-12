@@ -8,14 +8,14 @@
 namespace zetscript{
 
 	ObjectIteratorScriptObject * ObjectIteratorScriptObject::newObjectIteratorScriptObject(
-			ZetScript *_zs
+			ScriptEngine *_zs
 			,ObjectScriptObject *_so_ref){
 		return new ObjectIteratorScriptObject(_zs,_so_ref);
 	}
 
 
 	ObjectIteratorScriptObject::ObjectIteratorScriptObject(
-		ZetScript *_zs
+		ScriptEngine *_zs
 		,ObjectScriptObject *_so_ref
 	):RefScriptObject(_zs,_so_ref){
 		script_type_id=SCRIPT_TYPE_ID_OBJECT_ITERATOR_SCRIPT_OBJECT;
