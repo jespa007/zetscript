@@ -5,10 +5,10 @@ using zetscript::zs_int;
 using zetscript::zs_float;
 using zetscript::ArrayScriptObject;
 
-ArrayScriptObject *returnNewArray(ScriptEngine *_zs){
+ArrayScriptObject *returnNewArray(ScriptEngine *_se){
 
 	// instance new ArrayScriptObject using ScriptEngine context
-	ArrayScriptObject *array_object=new ArrayScriptObject(_zs);
+	ArrayScriptObject *array_object=new ArrayScriptObject(_se);
 
 	// push first value as integer 10
 	array_object->push<zs_int>(10);
@@ -27,13 +27,13 @@ ArrayScriptObject *returnNewArray(ScriptEngine *_zs){
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// registers returnNewArray
-	zs.registerFunction("returnNewArray",returnNewArray);
+	se.registerFunction("returnNewArray",returnNewArray);
 
 	// prints the value returned by returnNewArray
-	zs.compileAndRun("Console::outln(returnNewArray())");
+	se.compileAndRun("Console::outln(returnNewArray())");
 	
 	return 0;
 }

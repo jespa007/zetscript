@@ -220,7 +220,7 @@ namespace zetscript{
 						String class_element;
 						Symbol *member_symbol=NULL;
 
-						ScriptType *sc=compiler_data->zs->getScriptTypesFactory()->getScriptType(token_node_symbol->value);
+						ScriptType *sc=compiler_data->se->getScriptTypesFactory()->getScriptType(token_node_symbol->value);
 
 						//do{
 						IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,compiler_data,aux_p+2,line);

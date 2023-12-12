@@ -59,7 +59,7 @@ namespace zetscript{
 	}
 
 
-	void compiler_compile_and_link(ScriptEngine *_zs
+	void compiler_compile_and_link(ScriptEngine *_se
 			,const char * str_code
 			,CompilerData *_compiler_data_from
 			, const char *  _filename
@@ -68,7 +68,7 @@ namespace zetscript{
 	){
 		CompilerData *compiler_data=_compiler_data_from;//new CompilerData(zs);
 		if(_compiler_data_from==NULL){
-			compiler_data=new CompilerData(_zs);
+			compiler_data=new CompilerData(_se);
 		}
 
 		char *aux_p=NULL;
@@ -130,7 +130,7 @@ namespace zetscript{
 		}
 
 		// link function symbols
-		_zs->link();
+		_se->link();
 	}
 
 	ScriptScope * compiler_new_scope_function(CompilerData *compiler_data, ScriptScope *scope_parent){
@@ -380,7 +380,7 @@ namespace zetscript{
 
 						try{
 							// compile but not execute, it will execute the last compiler
-							compiler_data->zs->compileFile(str_symbol,compiler_data);
+							compiler_data->se->compileFile(str_symbol,compiler_data);
 						}catch(Exception & ex){
 							compiler_data->error=true;\
 							compiler_data->error_file=ex.getFilename();
@@ -638,22 +638,22 @@ namespace zetscript{
 			case BYTE_CODE_CALL:
 				if(compiler_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
 					compiler_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_CALL;
-					compiler_data->zs->addUnresolvedSymbol(sf,i);
+					compiler_data->se->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(compiler_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
-					compiler_data->zs->addUnresolvedSymbol(sf,i);
+					compiler_data->se->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_INSTANCEOF:
 				if(compiler_instruction->vm_instruction.value_op2==ZS_UNDEFINED_IDX){
-					compiler_data->zs->addUnresolvedSymbol(sf,i);
+					compiler_data->se->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_FIND_VARIABLE:
 				// add instruction reference to solve later
-				compiler_data->zs->addUnresolvedSymbol(sf,i);
+				compiler_data->se->addUnresolvedSymbol(sf,i);
 				break;
 			}
 

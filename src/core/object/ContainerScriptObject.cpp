@@ -9,9 +9,9 @@ namespace zetscript{
 
 
 	ContainerScriptObject::ContainerScriptObject(
-			ScriptEngine *_zs
+			ScriptEngine *_se
 			,ScriptTypeId _ref_script_type_id
-	):ScriptObject(_zs, _ref_script_type_id){
+	):ScriptObject(_se, _ref_script_type_id){
 		container_slots=new List<ContainerSlot *>;
 	}
 

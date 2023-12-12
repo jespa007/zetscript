@@ -1,11 +1,11 @@
 #include "zetscript.h"
 int main(){
 
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
-	zs.compileFileAndRun(
+	se.compileFileAndRun(
 		"file.zs"
 	);
 
-	zs.printGeneratedCode();
+	se.printGeneratedCode();
 }

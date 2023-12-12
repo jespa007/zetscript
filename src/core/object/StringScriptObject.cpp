@@ -17,14 +17,14 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	StringScriptObject * StringScriptObject::newStringScriptObject(ScriptEngine *_zs, const String & _str){
-		StringScriptObject *so=new StringScriptObject(_zs);
+	StringScriptObject * StringScriptObject::newStringScriptObject(ScriptEngine *_se, const String & _str){
+		StringScriptObject *so=new StringScriptObject(_se);
 		so->set(_str);
 
 		return so;
 	}
 
-	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ScriptEngine *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
+	StringScriptObject *StringScriptObject::newStringScriptObjectAddStk(ScriptEngine *_se,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		StringScriptObject *so_ref=NULL;
 		// we have to create an new string variable
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){
@@ -40,7 +40,7 @@ namespace zetscript{
 		}
 
 		//String *str;
-		StringScriptObject *so_string = ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
+		StringScriptObject *so_string = ZS_NEW_STRING_SCRIPT_OBJECT(_se);
 
 		String str1;
 		String str2;
@@ -69,7 +69,7 @@ namespace zetscript{
 			if(stk_src_item->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				*(*str_dst_it)=((ScriptObject *)stk_src_item->value)->toString();
 			}else{
-				*(*str_dst_it)=_zs->stackElementToString( stk_src_item);
+				*(*str_dst_it)=_se->stackElementToString( stk_src_item);
 			}
 
 			str_dst_it++;
@@ -84,7 +84,7 @@ namespace zetscript{
 
 
 	StringScriptObject * StringScriptObject::format(
-			ScriptEngine *_zs,
+			ScriptEngine *_se,
 			StackElement *_stk
 			, StackElement *_stk_args
 	){
@@ -110,7 +110,7 @@ namespace zetscript{
 			str_input=((ScriptObject *)stk.value)->toString().unescape();
 		}
 		else{
-			str_input=_zs->stackElementToString( &stk);
+			str_input=_se->stackElementToString( &stk);
 		}
 
 		if(_stk_args->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -228,7 +228,7 @@ namespace zetscript{
 								if(stk_arg.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 									str_format_results=((ScriptObject *)stk_arg.value)->toString();
 								}else{
-									str_format_results=_zs->stackElementToString(
+									str_format_results=_se->stackElementToString(
 										&stk_arg
 										,ptr_str_format_string
 									);
@@ -274,11 +274,11 @@ namespace zetscript{
 		}
 
 		if(error){
-			vm_set_error(_zs->getVirtualMachine(),str_error);
+			vm_set_error(_se->getVirtualMachine(),str_error);
 			return NULL;
 		}
 
-		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
+		StringScriptObject *str_out=ZS_NEW_STRING_SCRIPT_OBJECT(_se);
 		str_out->set(str_result);//str_in->default_str_value;
 
 
@@ -291,9 +291,9 @@ namespace zetscript{
 	//----------------------------------------------
 
 	StringScriptObject::StringScriptObject(
-			ScriptEngine *_zs
+			ScriptEngine *_se
 			,const String & _str
-	):ScriptObject(_zs,SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){
+	):ScriptObject(_se,SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){
 		default_str_value = _str;
 		str_ptr = &default_str_value;
 	}

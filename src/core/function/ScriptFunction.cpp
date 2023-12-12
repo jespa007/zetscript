@@ -17,7 +17,7 @@
 namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
-			ScriptEngine * _zs
+			ScriptEngine * _se
 			,int _idx_script_function
 			,ScriptTypeId _owner_script_type_id
 			,int _idx_position
@@ -50,10 +50,10 @@ namespace zetscript{
 		updateParams(_params,_params_len);
 
 		// factories
-		zs = _zs;
-		scope_factory = zs->getScriptScopesFactory();
-		script_function_factory= zs->getScriptFunctionsFactory();
-		script_types_factory=zs->getScriptTypesFactory();
+		zs = _se;
+		scope_factory = se->getScriptScopesFactory();
+		script_function_factory= se->getScriptFunctionsFactory();
+		script_types_factory=se->getScriptTypesFactory();
 
 		min_code_stack_needed=0;
 
@@ -384,7 +384,7 @@ namespace zetscript{
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,zs->getScriptTypesFactory()->getScriptTypeName(instruction->value_op2));
+						,se->getScriptTypesFactory()->getScriptTypeName(instruction->value_op2));
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
@@ -603,7 +603,7 @@ namespace zetscript{
 			// if function is main, we must initialize stack element at position local_variables->length()
 			// to prevent collect garbage information from previous evaluations where the stack element
 			// was used for temporal operations
-			vm_set_stack_element_at(zs->getVirtualMachine(),local_variables->length(),k_stk_undefined);
+			vm_set_stack_element_at(se->getVirtualMachine(),local_variables->length(),k_stk_undefined);
 		}
 
 		local_variables->push(symbol);
@@ -814,7 +814,7 @@ namespace zetscript{
 					// get type
 					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
 
-					sc_found=zs->getScriptTypesFactory()->getScriptType(copy_aux);
+					sc_found=se->getScriptTypesFactory()->getScriptType(copy_aux);
 
 					if(sc_found!=NULL){
 						// advance ::

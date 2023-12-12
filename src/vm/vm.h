@@ -21,7 +21,7 @@ namespace zetscript{
 
 	VirtualMachine *vm_new(ScriptEngine *zs);
 
-	void			vm_init(VirtualMachine *vm, ScriptEngine *_zs);
+	void			vm_init(VirtualMachine *vm, ScriptEngine *_se);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *object);

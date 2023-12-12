@@ -8,9 +8,9 @@
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define ZS_PRINT_DUAL_ERROR_OP(c)\
 	ZS_VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or type implements the metamethod",\
-		data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
+		data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
 		c,\
-		data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
+		data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
 
 #define ZS_PRINT_ERROR_OP(c)\
 ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\
@@ -192,7 +192,7 @@ namespace zetscript{
 		ScriptScopesFactory 						*	scope_factory;
 		MapInt								cyclic_container_instances;
 
-		VirtualMachineData(ScriptEngine *_zs){
+		VirtualMachineData(ScriptEngine *_se){
 			memset(&vm_stack,0,sizeof(vm_stack));
 
 			vm_stk_current=NULL;
@@ -202,7 +202,7 @@ namespace zetscript{
 			main_class_object=NULL;
 
 			current_call_c_function = NULL;
-			zs=_zs;
+			zs=_se;
 
 			script_function_factory=NULL;
 			script_types_factory=NULL;

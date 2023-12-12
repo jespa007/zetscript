@@ -7,18 +7,18 @@ using zetscript::zs_float;
 using zetscript::String;
 
 // print array contents
-void printObject(ScriptEngine *_zs,ObjectScriptObject *_object){
+void printObject(ScriptEngine *_se,ObjectScriptObject *_object){
 	printf("ScriptObject contents : %s",_object->toString().toConstChar());
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// registers printObject
-	zs.registerFunction("printObject",printObject);
+	se.registerFunction("printObject",printObject);
 
 	// calls printObject
-	zs.compileAndRun(
+	se.compileAndRun(
         "printObject({"
             "\"key1\":0"                 
             ",\"key2\":10.5"             

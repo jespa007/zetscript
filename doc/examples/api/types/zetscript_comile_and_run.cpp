@@ -1,9 +1,9 @@
 #include "zetscript.h"
 int main(){
 
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"Console::outln(\"Hello world\")"
 	);
 

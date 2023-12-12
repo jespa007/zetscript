@@ -57,9 +57,9 @@ using zetscript::ScriptEngine;
 
 int main()
 {
-	ScriptEngine zs;
+	ScriptEngine se;
 
-	zs.registerType<Number>("Number");
+	se.registerType<Number>("Number");
 	 	
  	// ...
  }
@@ -71,7 +71,7 @@ Now, let's suppose we want to instantiate a _Number_ type by evaluating the foll
 [source,cpp]
 ----
 	// It throws an error that 'Number' is not instantiable
- 	zs.compileAndRun(
+ 	se.compileAndRun(
  		"var number= new Number();"
  	);
 ----
@@ -100,7 +100,7 @@ To register instantiable type it's done also with _ScriptEngine::registerType_ b
 *Syntax*
 [source,cpp]
 ----
-Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ScriptEngine *_zs), void (*_delete_native_instance)(ScriptEngine *_zs, RegisteredType * _this));
+Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ScriptEngine *_se), void (*_delete_native_instance)(ScriptEngine *_se, RegisteredType * _this));
 ----
 
 [.underline]#Template# 
@@ -114,14 +114,14 @@ Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_n
 
 [source,cpp]
 ----
-RegsiteredType * RegisteredType_new(ScriptEngine *_zs);
+RegsiteredType * RegisteredType_new(ScriptEngine *_se);
 ----
 
 - __delete_native_instance_: A C function that deletes native instance. The SECOND parameter it must define the current instance,
 
 [source,cpp]
 ----
-void RegisteredType_delete(ScriptEngine *_zs, RegisteredType *_this);
+void RegisteredType_delete(ScriptEngine *_se, RegisteredType *_this);
 ----
 
 [.underline]#Returns# 
@@ -136,11 +136,11 @@ Let's define _NumberZs_new_ and _NumberZs_delete_ functions that creates and des
 
 [source,cpp]
 ----
-Number *NumberZs_new(ScriptEngine *_zs){
+Number *NumberZs_new(ScriptEngine *_se){
 	return new Number();
 }
 
-void NumberZs_delete(ScriptEngine *_zs,Number *_this){
+void NumberZs_delete(ScriptEngine *_se,Number *_this){
 	delete _this;
 }
 ----
@@ -150,9 +150,9 @@ Then, in the _NumberZs_register_ function, it registers _Number_ type as instant
 
 [source,cpp]
 ----
-void NumberZs_register(ScriptEngine *_zs){
+void NumberZs_register(ScriptEngine *_se){
 
-	_zs->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
+	_se->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 }
 ----
@@ -176,7 +176,7 @@ As parameters, the function must always include _ScriptEngine *_ as the FIRST pa
 
 [source,cpp]
 ----
-void RegisteredType_constructor(ScriptEngine *_zs, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+void RegisteredType_constructor(ScriptEngine *_se, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -220,11 +220,11 @@ The following code defines two functions that accepts a xref:language_data_types
 
 //...
 
-void NumberZs_constructor(ScriptEngine *_zs,Number *_this,zs_float *_value){
+void NumberZs_constructor(ScriptEngine *_se,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 
-void NumberZs_constructor(ScriptEngine *_zs,Number *_this,Number *_value){
+void NumberZs_constructor(ScriptEngine *_se,Number *_this,Number *_value){
 	_this->value=_value->value;
 }
 ----
@@ -235,13 +235,13 @@ Next, the functions _NumberZs_constructor_ are registered with _ScriptEngine::re
 ----
 
 
-void NumberZs_register(ScriptEngine *_zs){
+void NumberZs_register(ScriptEngine *_se){
 
 	//...
 
-	_zs->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_zs,Number *_this, zs_float *_value)>(&NumberZs_constructor));
+	_se->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_se,Number *_this, zs_float *_value)>(&NumberZs_constructor));
 
-	_zs->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_zs,Number *_this, Number *_value)>(&NumberZs_constructor));
+	_se->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_se,Number *_this, Number *_value)>(&NumberZs_constructor));
 
 	//...
 
@@ -272,7 +272,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _S
 
 [source,cpp]
 ----
-ReturnType RegisteredType_memberFunction(ScriptEngine *_zs, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+ReturnType RegisteredType_memberFunction(ScriptEngine *_se, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
 	....
 }
 ----
@@ -318,7 +318,7 @@ The following code defines a function that returns a xref:language_data_types.ad
 
 [source,cpp]
 ----
-zs_int NumberZs_toInteger(ScriptEngine *_zs,Number *_this){
+zs_int NumberZs_toInteger(ScriptEngine *_se,Number *_this){
 	return _this->value;
 }
 ----
@@ -328,11 +328,11 @@ Next, it registers _NumberZs_toInteger_ as member function named _toInteger_ thr
 [source,cpp]
 ----
 
-void NumberZs_register(ScriptEngine *_zs){
+void NumberZs_register(ScriptEngine *_se){
 
 	//...
 
-	_zs->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
+	_se->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
 
 	//...
 
@@ -368,7 +368,7 @@ As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _S
 
 [source,cpp]
 ----
-ReturnType RegisteredType_staticMemberFunction(ScriptEngine *_zs, ParamType *_arg1, ..., ParamType *_arg9 ){
+ReturnType RegisteredType_staticMemberFunction(ScriptEngine *_se, ParamType *_arg1, ..., ParamType *_arg9 ){
 	....
 }
 ----
@@ -417,7 +417,7 @@ The following code defines a function _NumberZs_pow_ that takes two arguments an
 
 //...
 
-zs_float NumberZs_pow(ScriptEngine *_zs,zs_float *_base, zs_float * _power){
+zs_float NumberZs_pow(ScriptEngine *_se,zs_float *_base, zs_float * _power){
 	return (*_base) * (*_power);
 }
 
@@ -428,11 +428,11 @@ Next, it registers _NumberZs_pow_ as static member function named _pow_ through 
 [source,cpp]
 ----
 
-void NumberZs_register(ScriptEngine *_zs){
+void NumberZs_register(ScriptEngine *_se){
 
 	//...
 
-	_zs->registerStaticMemberFunction<Number>("pow",&NumberZs_pow);
+	_se->registerStaticMemberFunction<Number>("pow",&NumberZs_pow);
 
 	//...
 
@@ -501,7 +501,7 @@ int main(){
 
 	// ...
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln("script argument is "+_arg1);\n"

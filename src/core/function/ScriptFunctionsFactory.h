@@ -17,7 +17,7 @@ namespace zetscript{
 
 		public:
 
-			ScriptFunctionsFactory(ScriptEngine *_zs);
+			ScriptFunctionsFactory(ScriptEngine *_se);
 
 			/**
 			 * Set/Get ScriptType Node by its idx, regarding current state.

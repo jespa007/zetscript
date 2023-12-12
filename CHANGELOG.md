@@ -244,7 +244,7 @@ Solved issues
 - #319 Detect when function member object is called and its own object is destroyed 
 - #323 Implement operator "==" for Array 
 - #323 Implement operator "==" for Array
-- #324 Mandatory Zetscript *_zs first param for to all binding functions 
+- #324 Mandatory ScriptEngine *_se first param for to all binding functions 
 - #325 evaluation inherited class doesn't update references from its parent 
 - #326 Constructor member as named "constructor" 
 - #330 When try to access property member from native class it gives a non apropiate message 

@@ -10,8 +10,8 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ArrayScriptObject * ArrayScriptObject::newArrayScriptObject(ScriptEngine *_zs){
-		return new ArrayScriptObject(_zs);
+	ArrayScriptObject * ArrayScriptObject::newArrayScriptObject(ScriptEngine *_se){
+		return new ArrayScriptObject(_se);
 	}
 
 	ArrayScriptObject * ArrayScriptObject::concat(
@@ -33,8 +33,8 @@ namespace zetscript{
 
 
 	ArrayScriptObject::ArrayScriptObject(
-			ScriptEngine *_zs
-	):ContainerScriptObject(_zs,SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT){
+			ScriptEngine *_se
+	):ContainerScriptObject(_se,SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT){
 	}
 
 	Vector<StackElement *> * ArrayScriptObject::getStkListElements(){ // return list of stack elements
@@ -55,7 +55,7 @@ namespace zetscript{
 
 		ScriptObject::unrefStackElementContainer(stk_dst);
 
-		zs->stackElementAssign(stk_dst,_stk_src);
+		se->stackElementAssign(stk_dst,_stk_src);
 
 		return stk_dst;
 	}
@@ -103,7 +103,7 @@ namespace zetscript{
 	}
 
 	void ArrayScriptObject::pushStackElement(const StackElement  * _stk){
-		zs->stackElementAssign(newSlot(),_stk);
+		se->stackElementAssign(newSlot(),_stk);
 	}
 
 	void 	ArrayScriptObject::pushStackElement(StackElement  _stk){

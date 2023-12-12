@@ -2,17 +2,17 @@
 
 int main()
 {
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
     // Evaluates ScriptEngine function 'returnString' that returns 'String' value
-    zs.compile(
+    se.compile(
  		"function returnString(){\n"
         "    return \"Hello World\";\n"
         "}\n"
  	);
 
     // It binds 'returnString' as 'const char *(void)'
-    auto returnString=zs.bindScriptFunction<const char *()>("returnString");
+    auto returnString=se.bindScriptFunction<const char *()>("returnString");
 
     // Calls ScriptEngine function and prints return value by console.
     printf("result : %s\n",returnString());

@@ -51,12 +51,12 @@ bool float_values_are_almost_the_same(
 // INTEGER OPERATIONS
 //
 void test_arithmetic_int_expression(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, zetscript::zs_int expr
 		,const char *str_expr
 ){ \
 	try{\
-		zetscript::StackElement stk=_zs->compileAndRun(zetscript::String("return Integer::parse(")+str_expr+")");\
+		zetscript::StackElement stk=_se->compileAndRun(zetscript::String("return Integer::parse(")+str_expr+")");\
 		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_INT){\
 			if((zetscript::zs_int)stk.value != expr){ \
 				throw std::runtime_error(zetscript::String::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zetscript::zs_int)stk.value))).toConstChar()); \
@@ -66,7 +66,7 @@ void test_arithmetic_int_expression(
 				zetscript::String::format(
 					"error test '%s' expected int but it was '%s'!\n"
 					,str_expr
-					,_zs->stackElementToString(&stk).toConstChar()
+					,_se->stackElementToString(&stk).toConstChar()
 				).toConstChar()
 			); \
 		} \
@@ -76,12 +76,12 @@ void test_arithmetic_int_expression(
 }
 
 void test_constant_int_expression(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, const char *str_expr
 		, zetscript::zs_int expected_value
 ) {
 	try{\
-		zetscript::StackElement stk=_zs->compileAndRun(str_expr);\
+		zetscript::StackElement stk=_se->compileAndRun(str_expr);\
 		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_INT){\
 			if((zetscript::zs_int)stk.value  != (expected_value)){ \
 				throw std::runtime_error(zetscript::String::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zetscript::zs_int)stk.value)).toConstChar()); \
@@ -91,7 +91,7 @@ void test_constant_int_expression(
 					zetscript::String::format(
 							"error test '%s' expected int but it was '%s'!\n"
 							,str_expr
-							,_zs->stackElementToString(&stk).toConstChar()).toConstChar()
+							,_se->stackElementToString(&stk).toConstChar()).toConstChar()
 					); \
 		} \
 	}catch(std::exception & ex){\
@@ -136,7 +136,7 @@ void test_constant_int_expression(
 }\
 
 void _complete_test_arithmetic_integer_op(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		,zetscript::zs_int val1
 		, zetscript::zs_int val2
 		, const char *str_format
@@ -178,8 +178,8 @@ void _complete_test_arithmetic_integer_op(
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk=_zs->compileAndRun(it_iod->str); \
-			if (_zs->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
+			zetscript::StackElement stk=_se->compileAndRun(it_iod->str); \
+			if (_se->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
 				throw std::runtime_error(zetscript::String::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.toConstChar(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).toConstChar());
 			}
 		}
@@ -191,7 +191,7 @@ void _complete_test_arithmetic_integer_op(
 }
 
 void _complete_test_arithmetic_integer_op_assign(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, zetscript::zs_int _val1
 		, zetscript::zs_int _val2
 		, const char *str_format
@@ -230,8 +230,8 @@ void _complete_test_arithmetic_integer_op_assign(
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk=_zs->compileAndRun(it_iod->str); \
-			if (_zs->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
+			zetscript::StackElement stk=_se->compileAndRun(it_iod->str); \
+			if (_se->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
 				throw std::runtime_error(zetscript::String::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.toConstChar(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).toConstChar());
 			}
 		}
@@ -253,7 +253,7 @@ void _complete_test_arithmetic_integer_op_assign(
 }
 
 void _complete_test_arithmetic_self_op(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
@@ -275,9 +275,9 @@ void _complete_test_arithmetic_self_op(
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk=_zs->compileAndRun(it_iod->str); \
+			zetscript::StackElement stk=_se->compileAndRun(it_iod->str); \
 
-			if (_zs->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
+			if (_se->stackElementTo<zetscript::zs_int>(stk) != (it_iod->val)) {
 				throw std::runtime_error(zetscript::String::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.toConstChar(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).toConstChar());
 			}
 
@@ -290,7 +290,7 @@ void _complete_test_arithmetic_self_op(
 
 
 void _complete_test_arithmetic_self_property_op(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
@@ -315,9 +315,9 @@ void _complete_test_arithmetic_self_property_op(
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk=_zs->compileAndRun(it_iod->str); \
+			zetscript::StackElement stk=_se->compileAndRun(it_iod->str); \
 
-			if (_zs->stackElementTo<zetscript::zs_int>(stk) != it_iod->val) {
+			if (_se->stackElementTo<zetscript::zs_int>(stk) != it_iod->val) {
 				throw std::runtime_error(zetscript::String::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.toConstChar(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).toConstChar());
 			}
 		}
@@ -333,13 +333,13 @@ void _complete_test_arithmetic_self_property_op(
 // FLOAT OPERATIONS
 //
 void test_constant_float_expression(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		,const char  *str_expr
 		, zetscript::zs_float expected_value
 ) {
 	try{
-		zetscript::StackElement stk=_zs->compileAndRun(str_expr);
-		zetscript::zs_float result=_zs->stackElementTo<zetscript::zs_float>(stk);
+		zetscript::StackElement stk=_se->compileAndRun(str_expr);
+		zetscript::zs_float result=_se->stackElementTo<zetscript::zs_float>(stk);
 		if(result  != expected_value){
 			throw std::runtime_error(zetscript::String::format("error test '%s' expected %f but it was %f!\n",str_expr,expected_value,result).toConstChar());
 		}
@@ -350,15 +350,15 @@ void test_constant_float_expression(
 }
 
 void test_arithmetic_float_expression(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		,zetscript::zs_float expr
 		, const char *str_expr
 		, bool print_warnings
 ) {
 
 	try {
-		zetscript::StackElement stk=_zs->compileAndRun(zetscript::String("return ")+str_expr);
-		zetscript::zs_float result = _zs->stackElementTo<zetscript::zs_float>(stk);
+		zetscript::StackElement stk=_se->compileAndRun(zetscript::String("return ")+str_expr);
+		zetscript::zs_float result = _se->stackElementTo<zetscript::zs_float>(stk);
 		if (!float_values_are_almost_the_same(result, expr)) {
 			double error = fabs(fabs(result) - fabs(expr));
 			if (error > 0.001) { /* Only error if the difference is more than expected */
@@ -376,7 +376,7 @@ void test_arithmetic_float_expression(
 
 #define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zetscript::String::format(str_format,toString(val1).toConstChar(),"%",toString(val2).toConstChar()), (zetscript::zs_float)fmod(val1,val2)}
 void _complete_test_arithmetic_float_op(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		,zetscript::zs_float val1
 		, zetscript::zs_float val2
 		, const char *str_format
@@ -420,8 +420,8 @@ void _complete_test_arithmetic_float_op(
 	_test_arithmetic_float_op_data *it_af = test_arithmetic_float_op_data;
 	while (!it_af->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk = _zs->compileAndRun(it_af->str);
-			zetscript::zs_float result=_zs->stackElementTo<zetscript::zs_float>(stk);
+			zetscript::StackElement stk = _se->compileAndRun(it_af->str);
+			zetscript::zs_float result=_se->stackElementTo<zetscript::zs_float>(stk);
 
 			if (!float_values_are_almost_the_same(result, it_af->val)) {
 				throw std::runtime_error(zetscript::String::format( "error test '%s' expected %f but it was %f!\n", it_af->str.toConstChar(), it_af->val, result).toConstChar());
@@ -439,9 +439,9 @@ void _complete_test_arithmetic_float_op(
 	// process second part
 	while (!it_afm->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk = _zs->compileAndRun(it_afm->str);
+			zetscript::StackElement stk = _se->compileAndRun(it_afm->str);
 
-			zetscript::zs_float result=_zs->stackElementTo<zetscript::zs_float>(stk);
+			zetscript::zs_float result=_se->stackElementTo<zetscript::zs_float>(stk);
 			if (!float_values_are_almost_the_same(result, it_afm->val)) {
 				throw std::runtime_error(zetscript::String::format("error test '%s' expected %f but it was %f!\n", it_afm->str.toConstChar(), it_afm->val, result).toConstChar()); \
 			}
@@ -454,7 +454,7 @@ void _complete_test_arithmetic_float_op(
 }
 
 void _complete_test_arithmetic_float_op_assign(
-		zetscript::ScriptEngine *_zs
+		zetscript::ScriptEngine *_se
 		, zetscript::zs_float _val1
 		, zetscript::zs_float _val2
 
@@ -493,8 +493,8 @@ void _complete_test_arithmetic_float_op_assign(
 	_test_arithmetic_float_op_data *it_iod = test_arithmetic_float_op_data;
 	while (!it_iod->str.isEmpty()) {
 		try {
-			zetscript::StackElement stk=_zs->compileAndRun(it_iod->str); \
-			zetscript::zs_float result=_zs->stackElementTo<zetscript::zs_float>(stk);
+			zetscript::StackElement stk=_se->compileAndRun(it_iod->str); \
+			zetscript::zs_float result=_se->stackElementTo<zetscript::zs_float>(stk);
 			if (float_values_are_almost_the_same(result,it_iod->val)==false) {
 				throw std::runtime_error(zetscript::String::format(
 					"error test '%s' expected '%.02f' but it was '%.02f'!\n"
@@ -517,9 +517,9 @@ void _complete_test_arithmetic_float_op_assign(
 //
 // BOOL OPERATIONS
 //
-void test_constant_bool_expression(zetscript::ScriptEngine *_zs,const char *str_expr, bool expected_value){
+void test_constant_bool_expression(zetscript::ScriptEngine *_se,const char *str_expr, bool expected_value){
 	try{
-		zetscript::StackElement stk = _zs->compileAndRun(str_expr);
+		zetscript::StackElement stk = _se->compileAndRun(str_expr);
 		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
 				throw std::runtime_error(zetscript::String::format("error test '%s' expected %s but it was %s!\n", str_expr,expected_value?"true":"false",(bool)stk.value?"true":"false").toConstChar());
@@ -529,7 +529,7 @@ void test_constant_bool_expression(zetscript::ScriptEngine *_zs,const char *str_
 					zetscript::String::format(
 							"error test '%s' expected bool type but it was '%s'!\n"
 							,str_expr
-							,_zs->stackElementToString(&stk).toConstChar()
+							,_se->stackElementToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -538,10 +538,10 @@ void test_constant_bool_expression(zetscript::ScriptEngine *_zs,const char *str_
 	}
 }
 
-void test_arithmetic_bool_expression(zetscript::ScriptEngine *_zs,bool expr, const char *str_expr){
+void test_arithmetic_bool_expression(zetscript::ScriptEngine *_se,bool expr, const char *str_expr){
 
 	try{
-		zetscript::StackElement stk = _zs->compileAndRun(zetscript::String("return ")+str_expr);
+		zetscript::StackElement stk = _se->compileAndRun(zetscript::String("return ")+str_expr);
 		if(stk.properties & zetscript::STACK_ELEMENT_PROPERTY_BOOL){
 			if((bool)stk.value  != (expr)){
 				throw std::runtime_error(zetscript::String::format("error test '%s' expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false").toConstChar());
@@ -551,7 +551,7 @@ void test_arithmetic_bool_expression(zetscript::ScriptEngine *_zs,bool expr, con
 					zetscript::String::format(
 							"error test '%s' expected bool but it was '%s'!\n"
 							,str_expr
-							,_zs->stackElementToString(&stk).toConstChar()
+							,_se->stackElementToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -567,11 +567,11 @@ void test_arithmetic_bool_expression(zetscript::ScriptEngine *_zs,bool expr, con
 // STRING OPERATIONS
 //
 
-void test_constant_string_expression(zetscript::ScriptEngine *_zs,const char * expected_value, const char *str_expr){
+void test_constant_string_expression(zetscript::ScriptEngine *_se,const char * expected_value, const char *str_expr){
 
 
 	try{
-		zetscript::StackElement stk = _zs->compileAndRun(zetscript::String("return ")+str_expr);
+		zetscript::StackElement stk = _se->compileAndRun(zetscript::String("return ")+str_expr);
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
 			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::String(expected_value)) {
@@ -582,7 +582,7 @@ void test_constant_string_expression(zetscript::ScriptEngine *_zs,const char * e
 					zetscript::String::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
 							,str_expr
-							,_zs->stackElementToString(&stk).toConstChar()
+							,_se->stackElementToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -591,11 +591,11 @@ void test_constant_string_expression(zetscript::ScriptEngine *_zs,const char * e
 	}
 }
 
-void test_arithmetitoConstCharing_expression(zetscript::ScriptEngine *_zs,const zetscript::String & expected_value, const char * str_expr){
+void test_arithmetitoConstCharing_expression(zetscript::ScriptEngine *_se,const zetscript::String & expected_value, const char * str_expr){
 
 
 	try{\
-		zetscript::StackElement stk = _zs->compileAndRun(zetscript::String("return ")+str_expr,__FILE__,__LINE__);
+		zetscript::StackElement stk = _se->compileAndRun(zetscript::String("return ")+str_expr,__FILE__,__LINE__);
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk)){
 			zetscript::StringScriptObject *so=(zetscript::StringScriptObject *)stk.value;
 			if (so->toString() != zetscript::String(expected_value)) {
@@ -603,12 +603,12 @@ void test_arithmetitoConstCharing_expression(zetscript::ScriptEngine *_zs,const 
 				exit(-1); \
 			} \
 			// destroy lifetime object when is not needed
-			_zs->unrefLifetimeObject(so);
+			_se->unrefLifetimeObject(so);
 		}else{
 			throw std::runtime_error(
 					zetscript::String::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
-							,str_expr,_zs->stackElementToString(&stk).toConstChar()
+							,str_expr,_se->stackElementToString(&stk).toConstChar()
 					).toConstChar()
 			);
 

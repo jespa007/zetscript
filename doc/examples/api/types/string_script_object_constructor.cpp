@@ -3,10 +3,10 @@
 using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
-StringScriptObject *returnNewStringScriptObject(ScriptEngine *_zs){
+StringScriptObject *returnNewStringScriptObject(ScriptEngine *_se){
 
 	// instance new StringScriptObject using ScriptEngine context
-	StringScriptObject *string_object=new StringScriptObject(_zs,"Hello World!");
+	StringScriptObject *string_object=new StringScriptObject(_se,"Hello World!");
 
 	// ...
 
@@ -15,13 +15,13 @@ StringScriptObject *returnNewStringScriptObject(ScriptEngine *_zs){
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// Registers returnNewStringScriptObject
-	zs.registerFunction("returnNewStringScriptObject",returnNewStringScriptObject);
+	se.registerFunction("returnNewStringScriptObject",returnNewStringScriptObject);
 
 	// prints the returning of new string object
-	zs.compileAndRun("Console::outln(returnNewStringScriptObject())");
+	se.compileAndRun("Console::outln(returnNewStringScriptObject())");
 	
 	return 0;
 }

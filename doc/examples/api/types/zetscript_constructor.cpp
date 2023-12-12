@@ -1,6 +1,6 @@
 #include "zetscript.h"
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	return 0;
 }

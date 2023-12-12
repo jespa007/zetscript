@@ -218,11 +218,11 @@ namespace zetscript{
 					return NULL;
 				}
 				ScriptObject *so=StringScriptObject::newStringScriptObject(data->zs, str_aux.toConstChar());
-				vm_create_shared_object(data->zs->getVirtualMachine(),so);
+				vm_create_shared_object(data->se->getVirtualMachine(),so);
 
 				//
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->zs->getVirtualMachine(),so);
+					vm_share_object(data->se->getVirtualMachine(),so);
 				}
 				stk_json_element->value=(intptr_t)so;
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
@@ -289,10 +289,10 @@ namespace zetscript{
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				vo=ArrayScriptObject::newArrayScriptObject(data->zs);
-				vm_create_shared_object(data->zs->getVirtualMachine(),vo);
+				vm_create_shared_object(data->se->getVirtualMachine(),vo);
 
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->zs->getVirtualMachine(),vo);
+					vm_share_object(data->se->getVirtualMachine(),vo);
 				}
 
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
@@ -343,17 +343,17 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?data->zs->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
+						,stk_json_element!=NULL?data->se->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				so=ObjectScriptObject::newObjectScriptObject(data->zs);
-				vm_create_shared_object(data->zs->getVirtualMachine(),so);
+				vm_create_shared_object(data->se->getVirtualMachine(),so);
 
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->zs->getVirtualMachine(),so);
+					vm_share_object(data->se->getVirtualMachine(),so);
 				}
 
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;

@@ -15,22 +15,22 @@ public:
 };
 
 // defines new function for Number object
-Number *NumberZs_new(ScriptEngine *_zs){
+Number *NumberZs_new(ScriptEngine *_se){
 	return new  Number();
 }
 
 // defines getter property for Number::x
-zs_float NumberZs_get_value(ScriptEngine *_zs, Number *_this){
+zs_float NumberZs_get_value(ScriptEngine *_se, Number *_this){
 	return _this->value;
 }
 
 // defines delete function for Number object
-void NumberZs_delete(ScriptEngine *_zs, Number *_this){
+void NumberZs_delete(ScriptEngine *_se, Number *_this){
 	delete _this;
 }
 
 // C function that returns classObject
-ClassScriptObject *returnNumber(ScriptEngine *_zs){
+ClassScriptObject *returnNumber(ScriptEngine *_se){
 
 	// Define script class object
 	ClassScriptObject *class_object=NULL;
@@ -42,26 +42,26 @@ ClassScriptObject *returnNumber(ScriptEngine *_zs){
 	number->value=10;
 
 	// instance new ClassScriptObject using ScriptEngine context and number instance
-	class_object=_zs->newClassScriptObject(number);
+	class_object=_se->newClassScriptObject(number);
 
 	// return class script object
     return class_object;
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// Register class Number as instanciable
-	zs.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	se.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// register property getter Number::value
-	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
+	se.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 	// register C function that returns Number ClassScriptObject
-    zs.registerFunction("returnNumber",returnNumber);
+    se.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
-    zs.compileAndRun(
+    se.compileAndRun(
         "Console::outln(\"result : \"+returnNumber());"
  	);
 

@@ -41,7 +41,7 @@ namespace zetscript{
 
 		Vector<ScriptTypeId>				*   base_script_type_ids; // list of idx of classes base
 
-		 ScriptType(ScriptEngine *_zs
+		 ScriptType(ScriptEngine *_se
 				 ,ScriptTypeId _id
 				 , const String & _name
 				 , ScriptScope *_scope

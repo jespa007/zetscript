@@ -4,8 +4,8 @@
  */
 namespace zetscript{
 
-	void 			ObjectIteratorScriptObjectZs_get(ScriptEngine *_zs,ObjectIteratorScriptObject *oi);
-	void			ObjectIteratorScriptObjectZs_next(ScriptEngine *_zs,ObjectIteratorScriptObject *oi);
-	bool			ObjectIteratorScriptObjectZs_end(ScriptEngine *_zs,ObjectIteratorScriptObject *oi);
+	void 			ObjectIteratorScriptObjectZs_get(ScriptEngine *_se,ObjectIteratorScriptObject *oi);
+	void			ObjectIteratorScriptObjectZs_next(ScriptEngine *_se,ObjectIteratorScriptObject *oi);
+	bool			ObjectIteratorScriptObjectZs_end(ScriptEngine *_se,ObjectIteratorScriptObject *oi);
 
 }

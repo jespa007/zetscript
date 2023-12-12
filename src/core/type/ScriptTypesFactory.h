@@ -53,7 +53,7 @@ namespace zetscript{
 
 	public:
 
-		ScriptTypesFactory(ScriptEngine *_zs);
+		ScriptTypesFactory(ScriptEngine *_se);
 		void init();
 		void setup();
 
@@ -110,8 +110,8 @@ namespace zetscript{
 		template<typename T>
 		ScriptType * registerScriptType(
 			const String & name
-			, T * (*_new_native_instance)(ScriptEngine *_zs)=NULL
-			, void (*_delete_native_instance)(ScriptEngine *_zs,T *)=NULL
+			, T * (*_new_native_instance)(ScriptEngine *_se)=NULL
+			, void (*_delete_native_instance)(ScriptEngine *_se,T *)=NULL
 			, const char *registered_file=""
 			,short registered_line=-1
 		);

@@ -51,7 +51,7 @@ namespace zetscript{
 		// Functions
 
 		ScriptScope(
-			ScriptEngine * _zs
+			ScriptEngine * _se
 			, int _idx_script_function
 			, ScriptScope * _scope_parent=NULL
 			,uint16_t _properties=0

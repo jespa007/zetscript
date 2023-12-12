@@ -5,16 +5,16 @@
 
 #include "test_arithmetic_common.h"
 
-void test_register_constants(zetscript::ScriptEngine *_zs) {
+void test_register_constants(zetscript::ScriptEngine *_se) {
 
 	//int n_test=0;
 
-	_zs->registerConstant("TEST_INT", 100);
-	_zs->registerConstant("TEST_FLOAT", 1.5f);
-	_zs->registerConstant("TEST_BOOL", true);
-	_zs->registerConstant("TEST_STRING", "constant_string");
+	_se->registerConstant("TEST_INT", 100);
+	_se->registerConstant("TEST_FLOAT", 1.5f);
+	_se->registerConstant("TEST_BOOL", true);
+	_se->registerConstant("TEST_STRING", "constant_string");
 
-	_zs->compileAndRun(
+	_se->compileAndRun(
 			"System::assert(TEST_INT==100,\"TEST_INT!=100\")\n"
 			"System::assert(TEST_FLOAT==1.5,\"TEST_FLOAT!=1.5\")\n"
 			"System::assert(TEST_BOOL==true,\"TEST_BOOL!=true\")\n"
@@ -25,7 +25,7 @@ void test_register_constants(zetscript::ScriptEngine *_zs) {
 
 #ifdef __MAIN__
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 	try{
 		test_register_constants(&zs);
 	}catch(std::exception & ex){

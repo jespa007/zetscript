@@ -12,43 +12,43 @@
 
 int main(){
 
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// register MyClass with name MyClass in script side.
-	zs.registerScriptType<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);
+	se.registerScriptType<MyClass>("MyClass",MyClassZs_new,MyClassZs_delete);
 
 	 // register MyClassExtend with name MyClassExtend in script side.
-	zs.registerScriptType<MyClassExtend>("MyClassExtend",MyClassExtendZs_new,MyClassExtendZs_delete);
+	se.registerScriptType<MyClassExtend>("MyClassExtend",MyClassExtendZs_new,MyClassExtendZs_delete);
 
 	// register data1 named data1 in script side as variable member and read/write.
-	zs.registerMemberPropertyMetamethod<MyClass>("data1","_set",&MyClassZs_set_data1);
-	zs.registerMemberPropertyMetamethod<MyClass>("data1","_get",&MyClassZs_get_data1);
+	se.registerMemberPropertyMetamethod<MyClass>("data1","_set",&MyClassZs_set_data1);
+	se.registerMemberPropertyMetamethod<MyClass>("data1","_get",&MyClassZs_get_data1);
 
 	// register data2 named data1 in script side as variable member (only read).
-	zs.registerMemberPropertyMetamethod<MyClass>("data2","_get",&MyClassZs_get_data2);
+	se.registerMemberPropertyMetamethod<MyClass>("data2","_get",&MyClassZs_get_data2);
 
 	// register data1 named data1 in script side as variable member (only write).
-	zs.registerMemberPropertyMetamethod<MyClass>("data3","_set",&MyClassZs_set_data3);
+	se.registerMemberPropertyMetamethod<MyClass>("data3","_set",&MyClassZs_set_data3);
 
 	// register function0 named function1 in script side as function member.
-	zs.registerMemberFunction<MyClass>("function0",&MyClassZs_function0);
+	se.registerMemberFunction<MyClass>("function0",&MyClassZs_function0);
 
 	// register function1 named function1 in script side as function member.
-	zs.registerMemberFunction<MyClass>("function1",&MyClassZs_function1);
+	se.registerMemberFunction<MyClass>("function1",&MyClassZs_function1);
 
 
 	// register data2 named data1 in script side as variable member.
-	zs.registerMemberPropertyMetamethod<MyClassExtend>("data4","_set",&MyClassExtendZs_set_data4);
-	zs.registerMemberPropertyMetamethod<MyClassExtend>("data4","_get",&MyClassExtendZs_get_data4);
+	se.registerMemberPropertyMetamethod<MyClassExtend>("data4","_set",&MyClassExtendZs_set_data4);
+	se.registerMemberPropertyMetamethod<MyClassExtend>("data4","_get",&MyClassExtendZs_get_data4);
 
 	// register function2 named function2 in script side as function member.
-	zs.registerMemberFunction<MyClassExtend>("function2",&MyClassExtendZs_function2);
+	se.registerMemberFunction<MyClassExtend>("function2",&MyClassExtendZs_function2);
 
 	// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-	zs.extends<MyClassExtend,MyClass>();
+	se.extends<MyClassExtend,MyClass>();
 
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"class ScriptMyClassExtend extends MyClassExtend{\n"
 		"	var data5;\n"
 		"	function function0(){\n"

@@ -62,7 +62,7 @@ namespace zetscript{
 		Vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
-				ScriptEngine *_zs
+				ScriptEngine *_se
 				,int _idx_script_function
 				,ScriptTypeId _owner_script_type_id
 				,int _idx_position

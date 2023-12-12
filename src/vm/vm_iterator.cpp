@@ -34,7 +34,7 @@ namespace zetscript{
 			if((data->vm_stk_current->properties & (STACK_ELEMENT_PROPERTY_OBJECT|STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)) == 0){
 				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,data->zs->stackElementToString(data->vm_stk_current).toConstChar()
+					,data->se->stackElementToString(data->vm_stk_current).toConstChar()
 				);
 				return false;
 			}
@@ -146,8 +146,8 @@ namespace zetscript{
 
 		 VM_POP_STK_TWO;
 
-		 stk_result_op1_aux=data->zs->unwrapStackElement(*stk_result_op1);
-		 stk_result_op2_aux=data->zs->unwrapStackElement(*stk_result_op2);
+		 stk_result_op1_aux=data->se->unwrapStackElement(*stk_result_op1);
+		 stk_result_op2_aux=data->se->unwrapStackElement(*stk_result_op2);
 
 
 		if(stk_result_op2_aux.properties & STACK_ELEMENT_PROPERTY_OBJECT){

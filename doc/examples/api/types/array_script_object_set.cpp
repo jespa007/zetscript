@@ -6,7 +6,7 @@ using zetscript::zs_float;
 using zetscript::ArrayScriptObject;
 using zetscript::StringScriptObject;
 
-void modifyArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
+void modifyArray(ScriptEngine *_se,ArrayScriptObject *_array_object){
 
 	for(int i=0; i < _array_object->length(); i++){
 		switch(i%3){
@@ -17,7 +17,7 @@ void modifyArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
 			_array_object->set<zs_float>(i,i*10.2);
 			break;
 		case 2: // set new string
-			_array_object->set<StringScriptObject *>(i,new StringScriptObject(_zs,"Hello"));
+			_array_object->set<StringScriptObject *>(i,new StringScriptObject(_se,"Hello"));
 			break;
 
 		}
@@ -25,14 +25,14 @@ void modifyArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// registers modifyArray
-	zs.registerFunction("modifyArray",modifyArray);
+	se.registerFunction("modifyArray",modifyArray);
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyArray'
-	zs.compileAndRun(
+	se.compileAndRun(
 		"var v=[0,\"hello\",10.0,0,1,2,\"world\"]\n"
 		"Console::outln(\"Before call 'modifyArray':{0}\",v);"
 		"modifyArray(v)\n"

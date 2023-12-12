@@ -4,17 +4,17 @@ using zetscript::ScriptEngine;
 using zetscript::String;
 
 // c function
-void paramString(ScriptEngine *_zs, String *_string){
+void paramString(ScriptEngine *_se, String *_string){
     printf("Result : '%s' (String *)\n",_string->toConstChar());
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
-    zs.registerFunction("paramString",paramString);
+    se.registerFunction("paramString",paramString);
 
     // call c function 
-    zs.compileAndRun(
+    se.compileAndRun(
         "paramString(\"Hello world!\");"
  	);
 

@@ -4,10 +4,10 @@ using zetscript::ObjectScriptObject;
 
 int main()
 {
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
     // Evaluates ScriptEngine class Number and function 'newNumber' that returns a new instance of type 'Number'
-    zs.compile(
+    se.compile(
       "class Number{ \n"
       "  var value=0;\n"
       "}\n"
@@ -20,7 +20,7 @@ int main()
  	);
 
     // It binds 'newNumber' as '(ObjectScriptObject *)(void)'
-    auto newNumber=zs.bindScriptFunction<ObjectScriptObject *()>("newNumber");
+    auto newNumber=se.bindScriptFunction<ObjectScriptObject *()>("newNumber");
 
    // Calls ScriptEngine function which it returns 'ObjectScriptObject *' reference
     auto number=newNumber();
@@ -29,7 +29,7 @@ int main()
     printf("result : %s\n",number->toString().toConstChar());
 
    // 'unrefLifetimeObject' it decreases the reference count of the script object to tell is not used anymore
-   zs.unrefLifetimeObject(number);    
+   se.unrefLifetimeObject(number);    
 
  	return 0;
 }

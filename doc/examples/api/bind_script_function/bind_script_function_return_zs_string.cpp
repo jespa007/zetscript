@@ -3,17 +3,17 @@
 using zetscript::String;
 
 int main(){
-   zetscript::ScriptEngine zs;
+   zetscript::ScriptEngine se;
 
    // Evaluates ScriptEngine function 'returnString' that returns 'String' value
-   zs.compile(
+   se.compile(
  		"function returnString(){\n"
         "    return \"Hello World\";\n"
         "}\n"
  	);
 
    // It binds 'returnString' as 'String(void)'
-   auto returnString=zs.bindScriptFunction<String()>("returnString");
+   auto returnString=se.bindScriptFunction<String()>("returnString");
 
    // Calls ScriptEngine function and prints return value by console.
    printf("result : %s\n",returnString().toConstChar());

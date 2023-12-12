@@ -2,17 +2,17 @@
 
 int main()
 {
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
     // Evaluates ScriptEngine function 'returnBoolean' that returns 'Boolean' value
-    zs.compile(
+    se.compile(
  		"function returnBoolean(){\n"
         "    return true;\n"
         "}\n"
  	);
 
     // It binds 'returnBoolean' as 'bool(void)'
-    auto returnBoolean=zs.bindScriptFunction<bool()>("returnBoolean");
+    auto returnBoolean=se.bindScriptFunction<bool()>("returnBoolean");
 
     // Calls ScriptEngine function and prints return value by console.
     printf("result : %s\n",returnBoolean()?"true":"false");

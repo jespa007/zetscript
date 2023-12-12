@@ -27,54 +27,54 @@ public:
 
 // MyCppType
 
-zs_int MyCppType_function1(ScriptEngine *_zs, MyCppType *_this, zs_int _arg){
+zs_int MyCppType_function1(ScriptEngine *_se, MyCppType *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
 // MyCppTypeExtend
 
-MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_zs){
+MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_se){
 	return new MyCppTypeExtend();
 }
 
-void MyCppTypeExtend_constructor(ScriptEngine *_zs, MyCppTypeExtend *_this, zs_int _data1){
+void MyCppTypeExtend_constructor(ScriptEngine *_se, MyCppTypeExtend *_this, zs_int _data1){
 	_this->data1=_data1;
 	_this->data2=_data1*10;
 }
 
-zs_int MyCppTypeExtend_function2(ScriptEngine *_zs, MyCppTypeExtend *_this, zs_int _arg){
+zs_int MyCppTypeExtend_function2(ScriptEngine *_se, MyCppTypeExtend *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
-void MyCppTypeExtend_delete(ScriptEngine *_zs, MyCppTypeExtend *_this){
+void MyCppTypeExtend_delete(ScriptEngine *_se, MyCppTypeExtend *_this){
 	delete _this;
 }
 
 //---- ZETSCRIPT-NATIVE INTERFACE FUNCTIONS
 
 int main(){
-	ScriptEngine zs; // instance zetscript
+	ScriptEngine se; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
-	zs.registerScriptType<MyCppType>("MyCppType");
+	se.registerScriptType<MyCppType>("MyCppType");
 
 	// Register MyCppType::constructor
-	//zs.registerConstructor<MyCppType>(MyCppType_constructor);
+	//se.registerConstructor<MyCppType>(MyCppType_constructor);
 
 	// Register MyCppType::function1
- 	zs.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
+ 	se.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
 
 	// Register MyCppTypeExtend as MyCppTypeExtend in script side as instantiable
-	zs.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
+	se.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
 
 	// Tells MyCppTypeExtends extends from MyCppType
-	zs.extends< MyCppTypeExtend,MyCppType >();
+	se.extends< MyCppTypeExtend,MyCppType >();
 
 	// Register MyCppTypeExtend::function2
-	zs.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
+	se.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
 
 	// eval print
-	zs.compileAndRun(
+	se.compileAndRun(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln(\"script argument : {0} \",_arg1);\n"

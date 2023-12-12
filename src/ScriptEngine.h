@@ -5,8 +5,8 @@
 #pragma once
 
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
- class_type * class_type##_New(ScriptEngine *_zs){ return new class_type(_zs);} \
- void class_type##_Delete(ScriptEngine *_zs,class_type *ptr){ ZS_UNUSUED_PARAM(_zs);delete  (class_type *)(ptr);}
+ class_type * class_type##_New(ScriptEngine *_se){ return new class_type(_se);} \
+ void class_type##_Delete(ScriptEngine *_se,class_type *ptr){ ZS_UNUSUED_PARAM(_se);delete  (class_type *)(ptr);}
 
 
 namespace zetscript{
@@ -124,8 +124,8 @@ namespace zetscript{
 		template<typename T>
 		ScriptType * registerScriptType(
 				const String & name
-				, T  * (*_new_native_instance)(ScriptEngine *_zs)=NULL
-				, void (*_delete_native_instance)(ScriptEngine *_zs,T *)=NULL
+				, T  * (*_new_native_instance)(ScriptEngine *_se)=NULL
+				, void (*_delete_native_instance)(ScriptEngine *_se,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
 		){
 			try{

@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	NumberZs_register(&zs);
 
-	zs.compileAndRun("var number=new Number();");
+	se.compileAndRun("var number=new Number();");
 
 	return 0;
 }

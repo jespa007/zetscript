@@ -7,8 +7,8 @@
 
 namespace zetscript{
 
-	zs_int ConsoleModule_readChar(ScriptEngine *_zs){
-		ZS_UNUSUED_PARAM(_zs);
+	zs_int ConsoleModule_readChar(ScriptEngine *_se){
+		ZS_UNUSUED_PARAM(_se);
 		return Console::readChar();
 	}
 

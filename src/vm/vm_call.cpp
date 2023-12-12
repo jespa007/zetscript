@@ -256,7 +256,7 @@ load_function:
 
 						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->zs->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 
@@ -269,12 +269,12 @@ load_function:
 						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->zs->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 						);
 					}else{ // STACK CALL
 						ZS_VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
-								,data->zs->stackElementToString(sf_call_stk_function_ref).toConstChar()
-								,data->zs->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->se->stackElementToString(sf_call_stk_function_ref).toConstChar()
+								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					}
@@ -417,7 +417,7 @@ execute_function:
 						break;
 					default:
 						ZS_VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
-							,data->zs->stackElementToStringTypeOf(&param->default_param_value).toConstChar()
+							,data->se->stackElementToStringTypeOf(&param->default_param_value).toConstChar()
 						);
 						break;
 
@@ -494,7 +494,7 @@ execute_function:
 
 							for( int k = 0; k < sf_call_n_args && all_check;k++){
 								StackElement *current_arg=sf_call_stk_start_arg_call+k;
-								all_check&=data->zs->canStackElementCastTo(current_arg,sf_found->params[k+start_param].script_type_id);
+								all_check&=data->se->canStackElementCastTo(current_arg,sf_found->params[k+start_param].script_type_id);
 							}
 
 							if(all_check==false){

@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	NumberZs_register(&zs);
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"Console::outln(\"Result _tostring => \"+new Number(10))"
 	);
 

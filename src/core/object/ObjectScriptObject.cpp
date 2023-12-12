@@ -10,8 +10,8 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ScriptEngine	*_zs){
-		return new ObjectScriptObject(_zs);
+	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ScriptEngine	*_se){
+		return new ObjectScriptObject(_se);
 	}
 
 	ObjectScriptObject * ObjectScriptObject::concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
@@ -49,8 +49,8 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ObjectScriptObject::ObjectScriptObject(
-			ScriptEngine	*_zs
-	):ContainerScriptObject(_zs, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
+			ScriptEngine	*_se
+	):ContainerScriptObject(_se, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 		map_fields=new MapString();
 	}
 
@@ -78,7 +78,7 @@ namespace zetscript{
 		}
 
 		if(_stk_src != NULL){
-			zs->stackElementAssign(stk_dst,_stk_src);
+			se->stackElementAssign(stk_dst,_stk_src);
 		}else{
 			*stk_dst=k_stk_undefined;
 		}

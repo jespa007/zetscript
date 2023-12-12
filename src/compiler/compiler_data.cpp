@@ -279,13 +279,13 @@ namespace zetscript{
 		String								error_file;
 		int 									error_line;
 
-		CompilerData(ScriptEngine * _zs){
+		CompilerData(ScriptEngine * _se){
 			current_parsing_file="";
 			current_function=NULL;
-			this->zs=_zs;
-			this->script_function_factory=zs->getScriptFunctionsFactory();
-			this->scope_factory=zs->getScriptScopesFactory();
-			this->script_types_factory=zs->getScriptTypesFactory();
+			this->zs=_se;
+			this->script_function_factory=se->getScriptFunctionsFactory();
+			this->scope_factory=se->getScriptScopesFactory();
+			this->script_types_factory=se->getScriptTypesFactory();
 			error=false;
 			parsing_loop=0;
 			error_line=-1;
@@ -550,9 +550,9 @@ namespace zetscript{
 
 	const char * get_mapped_name(CompilerData *compiler_data, const String & _mapped_name){
 		ZS_UNUSUED_PARAM(compiler_data);
-		char * key=(char *)compiler_data->zs->getCompiledSymbolName()->getKey(_mapped_name.toConstChar());
+		char * key=(char *)compiler_data->se->getCompiledSymbolName()->getKey(_mapped_name.toConstChar());
 		if(key==NULL){
-			auto node=compiler_data->zs->getCompiledSymbolName()->set(_mapped_name.toConstChar(),0);
+			auto node=compiler_data->se->getCompiledSymbolName()->set(_mapped_name.toConstChar(),0);
 			key=node->key;
 		}
 		return key;

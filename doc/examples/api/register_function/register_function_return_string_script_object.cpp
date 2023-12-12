@@ -4,10 +4,10 @@ using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
 // ScriptEngine C++ interface function
-StringScriptObject *returnString(ScriptEngine *_zs){
+StringScriptObject *returnString(ScriptEngine *_se){
 
 	// instance new StringScriptObject using ScriptEngine context
-	StringScriptObject *string=_zs->newStringScriptObject();
+	StringScriptObject *string=_se->newStringScriptObject();
 
     // set string value "Hello world (StringScriptObject)"
     string->set("Hello world (StringScriptObject)");
@@ -16,13 +16,13 @@ StringScriptObject *returnString(ScriptEngine *_zs){
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// Registers function interface
-    zs.registerFunction("returnString",returnString);
+    se.registerFunction("returnString",returnString);
 
     // Evaluates a script that calls the registered function and prints its result by console
-    zs.compileAndRun(
+    se.compileAndRun(
         "Console::outln(\"result : \"+returnString());"
  	);
 

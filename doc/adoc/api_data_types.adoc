@@ -1995,7 +1995,7 @@ The StringScriptObject constructor creates a new string script object as empty o
 
 [source,cpp]
 ----
-StringScriptObject(ScriptEngine *_zs, const String & _str="");
+StringScriptObject(ScriptEngine *_se, const String & _str="");
 ----
 
 [.underline]#Parameters#
@@ -2194,7 +2194,7 @@ The ArrayScriptObject constructor creates a new array script object. ArrayScript
 
 [source,cpp]
 ----
-ArrayScriptObject(ScriptEngine *_zs);
+ArrayScriptObject(ScriptEngine *_se);
 ----
 
 [.underline]#Parameters#
@@ -2446,7 +2446,7 @@ The ObjectScriptObject constructor creates a new object script object. ObjectScr
 
 [source,cpp]
 ----
-ObjectScriptObject(ScriptEngine *_zs);
+ObjectScriptObject(ScriptEngine *_se);
 ----
 
 [.underline]#Parameters#
@@ -2876,8 +2876,8 @@ include::../examples/api/eval/zetscript_register_constant.txt[]
 ----
 ScriptType * registerType(
 		const String & name
-		, T  * (*_new_native_instance)(ScriptEngine *_zs)=NULL
-		, void (*_delete_native_instance)(ScriptEngine *_zs,T *)=NULL
+		, T  * (*_new_native_instance)(ScriptEngine *_se)=NULL
+		, void (*_delete_native_instance)(ScriptEngine *_se,T *)=NULL
 		, const char *_registered_file="",short _registered_line=-1
 )
 ----

@@ -8,16 +8,16 @@
 namespace zetscript{
 
 	StringIteratorScriptObject * StringIteratorScriptObject::newStringIteratorScriptObject(
-			ScriptEngine *_zs
+			ScriptEngine *_se
 			, StringScriptObject *_so_ref
 	){
-		return new StringIteratorScriptObject(_zs,_so_ref);
+		return new StringIteratorScriptObject(_se,_so_ref);
 	}
 
 	StringIteratorScriptObject::StringIteratorScriptObject(
-			ScriptEngine *_zs
+			ScriptEngine *_se
 			, StringScriptObject *_so_ref
-	):RefScriptObject(_zs,_so_ref){
+	):RefScriptObject(_se,_so_ref){
 		script_type_id=SCRIPT_TYPE_ID_STRING_ITERATOR_SCRIPT_OBJECT;
 		idx=0;
 		stk_key.properties=STACK_ELEMENT_PROPERTY_INT;

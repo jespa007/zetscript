@@ -18,7 +18,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ObjectScriptObject * newObjectScriptObject(ScriptEngine	*_zs);
+		static ObjectScriptObject * newObjectScriptObject(ScriptEngine	*_se);
 		static ObjectScriptObject * concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		static void  append(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		//
@@ -27,7 +27,7 @@ namespace zetscript{
 		//----------------------------------------------
 
 
-		ObjectScriptObject(ScriptEngine	*_zs);
+		ObjectScriptObject(ScriptEngine	*_se);
 
 		/**
 		 * setters to set field value

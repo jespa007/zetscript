@@ -52,8 +52,8 @@ namespace zetscript{
 	template<class T>
 	ScriptType * ScriptTypesFactory::registerScriptType(
 		const String & name
-		,T * (*_new_native_instance)(ScriptEngine *_zs)
-		,void (*_delete_native_instance)(ScriptEngine *_zs,T *)
+		,T * (*_new_native_instance)(ScriptEngine *_se)
+		,void (*_delete_native_instance)(ScriptEngine *_se,T *)
 		,const char *registered_file
 		,short registered_line
 	){//, const String & base_class_name=""){

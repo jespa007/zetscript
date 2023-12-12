@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ScriptObject::ScriptObject(ScriptEngine *_zs, ScriptTypeId _script_type_id){
+	ScriptObject::ScriptObject(ScriptEngine *_se, ScriptTypeId _script_type_id){
 		script_type_id=_script_type_id;
 		shared_pointer=NULL;
 		properties=0;
@@ -18,8 +18,8 @@ namespace zetscript{
 
 		ref_objects=NULL;//new List<RefObject *>();
 
-		zs=_zs;
-		vm=_zs->getVirtualMachine();
+		zs=_se;
+		vm=_se->getVirtualMachine();
 
 		// init builtin
 		if(script_type_id >= SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && script_type_id < SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT){
@@ -117,11 +117,11 @@ namespace zetscript{
 	}
 
 	ScriptType * ScriptObject::getScriptType(){
-		return this->zs->getScriptTypesFactory()->getScriptType(script_type_id);
+		return this->se->getScriptTypesFactory()->getScriptType(script_type_id);
 	}
 
 	Symbol *ScriptObject::getGetter(){
-		ScriptType *type=this->zs->getScriptTypesFactory()->getScriptType(script_type_id);
+		ScriptType *type=this->se->getScriptTypesFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&type->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -131,7 +131,7 @@ namespace zetscript{
 	}
 
 	Vector<StackElement *> *ScriptObject::getSetterList(Metamethod _metamethod){
-		ScriptType *type=this->zs->getScriptTypesFactory()->getScriptType(script_type_id);
+		ScriptType *type=this->se->getScriptTypesFactory()->getScriptType(script_type_id);
 		MetamethodMembers *metamethod_members=&type->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -223,7 +223,7 @@ namespace zetscript{
 	}
 
 	ScriptTypesFactory		*	ScriptObject::getScriptTypesFactory(){
-		return zs->getScriptTypesFactory();
+		return se->getScriptTypesFactory();
 	}
 
 	void ScriptObject::onDettachRefObjectNode(ListNode<RefScriptObject *> *_current_node){

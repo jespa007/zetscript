@@ -6,7 +6,7 @@ using zetscript::zs_float;
 using zetscript::ObjectScriptObject;
 using zetscript::StringScriptObject;
 
-void printKeys(ScriptEngine *_zs,ObjectScriptObject *_object){
+void printKeys(ScriptEngine *_se,ObjectScriptObject *_object){
 
 	// instance new ObjectScriptObject using ScriptEngine context
 	auto keys=_object->getKeys();
@@ -21,12 +21,12 @@ void printKeys(ScriptEngine *_zs,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// registers printKeys
-	zs.registerFunction("printKeys",printKeys);
+	se.registerFunction("printKeys",printKeys);
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"var object={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

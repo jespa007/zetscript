@@ -8,7 +8,7 @@ using zetscript::String;
 
 
 // Print contents of an array.
-void printArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
+void printArray(ScriptEngine *_se,ArrayScriptObject *_array_object){
 	printf("Array contents : [");
 	for(int i=0; i < _array_object->length(); i++){
 		if(i>0){
@@ -28,13 +28,13 @@ void printArray(ScriptEngine *_zs,ArrayScriptObject *_array_object){
 }
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
 	// registers printString
-	zs.registerFunction("printArray",printArray);
+	se.registerFunction("printArray",printArray);
 
 	// calls printArray
-	zs.compileAndRun("printArray([0,10.5,\"Hello World\"])");
+	se.compileAndRun("printArray([0,10.5,\"Hello World\"])");
 	
 	return 0;
 }

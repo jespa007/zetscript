@@ -44,7 +44,7 @@ namespace zetscript{
 		}*/
 		
 		// it should be script object
-		ScriptType *registered_class_type = zs->getScriptTypesFactory()->getScriptTypeFromNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+		ScriptType *registered_class_type = se->getScriptTypesFactory()->getScriptTypeFromNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 		if (registered_class_type == NULL) {
 			ZS_THROW_RUNTIME_ERROR(

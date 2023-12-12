@@ -25,7 +25,7 @@ namespace zetscript{
 		uint16_t 								properties; // it tells its properties
 
 		ScriptObject(
-				ScriptEngine 		*	_zs
+				ScriptEngine 		*	_se
 				,ScriptTypeId _script_type_id=SCRIPT_TYPE_ID_INVALID
 		);
 

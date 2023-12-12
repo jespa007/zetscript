@@ -4,22 +4,22 @@ using zetscript::ScriptEngine;
 using zetscript::ScriptFunction;
 
 // c function
-void paramFunction(ScriptEngine *_zs, ScriptFunction *_script_function){
+void paramFunction(ScriptEngine *_se, ScriptFunction *_script_function){
 
 	// bind script function to be callable from C
-    auto function=_zs->bindScriptFunction<void(void)>(_script_function);
+    auto function=_se->bindScriptFunction<void(void)>(_script_function);
 
     // call script function
     function();
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
-    zs.registerFunction("paramFunction",paramFunction);
+    se.registerFunction("paramFunction",paramFunction);
 
     // call c function with string param
-    zs.compileAndRun(
+    se.compileAndRun(
         "paramFunction(function(){\n"
     	"	Console::outln(\"Hello world\");\n"
     	"});"

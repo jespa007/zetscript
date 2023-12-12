@@ -16,14 +16,14 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ArrayIteratorScriptObject * newArrayIteratorObject(ScriptEngine *_zs, ArrayScriptObject *_so_ref);
+		static ArrayIteratorScriptObject * newArrayIteratorObject(ScriptEngine *_se, ArrayScriptObject *_so_ref);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-		ArrayIteratorScriptObject(ScriptEngine *_zs,ArrayScriptObject *_so_ref);
+		ArrayIteratorScriptObject(ScriptEngine *_se,ArrayScriptObject *_so_ref);
 		void get();
 		void next();
 		bool end();

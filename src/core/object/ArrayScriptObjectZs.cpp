@@ -6,42 +6,42 @@
 
 namespace zetscript{
 
-	void    			ArrayScriptObjectZs_push(ScriptEngine *_zs,ArrayScriptObject *sv,StackElement  * stk){
-		ZS_UNUSUED_PARAM(_zs);
+	void    			ArrayScriptObjectZs_push(ScriptEngine *_se,ArrayScriptObject *sv,StackElement  * stk){
+		ZS_UNUSUED_PARAM(_se);
 		return sv->pushStackElement(stk);
 	}
 
-	void   	ArrayScriptObjectZs_pop(ScriptEngine *_zs,ArrayScriptObject *_this){
-		ZS_UNUSUED_PARAM(_zs);
+	void   	ArrayScriptObjectZs_pop(ScriptEngine *_se,ArrayScriptObject *_this){
+		ZS_UNUSUED_PARAM(_se);
 		_this->pop();
 	}
 
-	zs_int 			ArrayScriptObjectZs_length(ScriptEngine *_zs,ArrayScriptObject *_this){
-		ZS_UNUSUED_PARAM(_zs);
+	zs_int 			ArrayScriptObjectZs_length(ScriptEngine *_se,ArrayScriptObject *_this){
+		ZS_UNUSUED_PARAM(_se);
 		return _this->length();
 	}
 
-	void 			ArrayScriptObjectZs_insertAt(ScriptEngine *_zs,ArrayScriptObject *_this, zs_int idx,StackElement  * _stk){
+	void 			ArrayScriptObjectZs_insertAt(ScriptEngine *_se,ArrayScriptObject *_this, zs_int idx,StackElement  * _stk){
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
-		_zs->stackElementAssign(new_stk,_stk);
+		_se->stackElementAssign(new_stk,_stk);
 
 		Vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 		stk_user_list_elements->insert(idx,new_stk);
 	}
 
-	void 			ArrayScriptObjectZs_eraseAt(ScriptEngine *_zs,ArrayScriptObject *_this, zs_int idx){
-		ZS_UNUSUED_PARAM(_zs);
+	void 			ArrayScriptObjectZs_eraseAt(ScriptEngine *_se,ArrayScriptObject *_this, zs_int idx){
+		ZS_UNUSUED_PARAM(_se);
 		_this->eraseElementAt(idx);
 	}
 
-	void 			ArrayScriptObjectZs_clear(ScriptEngine *_zs,ArrayScriptObject *_this){
-		ZS_UNUSUED_PARAM(_zs);
+	void 			ArrayScriptObjectZs_clear(ScriptEngine *_se,ArrayScriptObject *_this){
+		ZS_UNUSUED_PARAM(_se);
 		_this->eraseAllElements();
 	}
 
-	StringScriptObject *		ArrayScriptObjectZs_join(ScriptEngine *_zs,ArrayScriptObject *_this, zs_int idx){
-		StringScriptObject *so_string = ZS_NEW_STRING_SCRIPT_OBJECT(_zs);
+	StringScriptObject *		ArrayScriptObjectZs_join(ScriptEngine *_se,ArrayScriptObject *_this, zs_int idx){
+		StringScriptObject *so_string = ZS_NEW_STRING_SCRIPT_OBJECT(_se);
 		String *ptr_str=so_string->str_ptr;
 		Vector<StackElement *> *stk_user_list_elements=_this->getStkListElements();
 
@@ -55,30 +55,30 @@ namespace zetscript{
 				ptr_str->append(((ScriptObject *)stk->value)->toString());
 			}
 			else{
-				ptr_str->append(_zs->stackElementToString(stk));
+				ptr_str->append(_se->stackElementToString(stk));
 			}
 		}
 
 		return so_string;
 	}
 
-	ArrayIteratorScriptObject * ArrayScriptObjectZs_iter(ScriptEngine *_zs,ArrayScriptObject *so){
-		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_ARRAY_ITERATOR_SCRIPT_OBJECT(_zs,so);
+	ArrayIteratorScriptObject * ArrayScriptObjectZs_iter(ScriptEngine *_se,ArrayScriptObject *so){
+		ZS_UNUSUED_PARAM(_se);
+		return ZS_NEW_ARRAY_ITERATOR_SCRIPT_OBJECT(_se,so);
 	}
 
-	ArrayScriptObject 			*	ArrayScriptObjectZs_concat(ScriptEngine *_zs,ArrayScriptObject *_so1, ArrayScriptObject *_so2){
+	ArrayScriptObject 			*	ArrayScriptObjectZs_concat(ScriptEngine *_se,ArrayScriptObject *_so1, ArrayScriptObject *_so2){
 
-		return ArrayScriptObject::concat(_zs,_so1, _so2);
+		return ArrayScriptObject::concat(_se,_so1, _so2);
 	}
 
-	void 							ArrayScriptObjectZs_extend(ScriptEngine *_zs,ArrayScriptObject *_this, ArrayScriptObject *_sv_extend){
-		ZS_UNUSUED_PARAM(_zs);
+	void 							ArrayScriptObjectZs_extend(ScriptEngine *_se,ArrayScriptObject *_this, ArrayScriptObject *_sv_extend){
+		ZS_UNUSUED_PARAM(_se);
 		_this->concat(_sv_extend);
 	}
 
-	bool 							ArrayScriptObjectZs_contains(ScriptEngine *_zs,ArrayScriptObject *sv, StackElement *stk_to_compare){
-		ZS_UNUSUED_PARAM(_zs);
+	bool 							ArrayScriptObjectZs_contains(ScriptEngine *_se,ArrayScriptObject *sv, StackElement *stk_to_compare){
+		ZS_UNUSUED_PARAM(_se);
 		bool found=false;
 		Vector<StackElement *> *stk_user_list_elements=sv->getStkListElements();
 
@@ -108,8 +108,8 @@ namespace zetscript{
 		return found;
 	}
 
-	bool 							ArrayScriptObjectZs_equal(ScriptEngine *_zs,ArrayScriptObject *so1, ArrayScriptObject *so2){
-		ZS_UNUSUED_PARAM(_zs);
+	bool 							ArrayScriptObjectZs_equal(ScriptEngine *_se,ArrayScriptObject *so1, ArrayScriptObject *so2){
+		ZS_UNUSUED_PARAM(_se);
 		bool equal=true;
 		Vector<StackElement *> *stk_user_list_elements_s1=so1->getStkListElements();
 		Vector<StackElement *> *stk_user_list_elements_s2=so2->getStkListElements();

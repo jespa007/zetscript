@@ -14,38 +14,38 @@ public:
 };
 
 // defines new function Number ClassScriptObject
-Number *NumberZs_new(ScriptEngine *_zs){
+Number *NumberZs_new(ScriptEngine *_se){
 	return new  Number();
 }
 
-void NumberZs_constructor(ScriptEngine *_zs, Number *_this, zs_int _value){
+void NumberZs_constructor(ScriptEngine *_se, Number *_this, zs_int _value){
 	_this->value=_value;
 }
 
 // defines getter property Number::x ClassScriptObject
-zs_int NumberZs_get_value(ScriptEngine *_zs, Number *_this){
+zs_int NumberZs_get_value(ScriptEngine *_se, Number *_this){
 	return _this->value;
 }
 
 // defines delete function Number ClassScriptObject
-void NumberZs_delete(ScriptEngine *_zs, Number *_this){
+void NumberZs_delete(ScriptEngine *_se, Number *_this){
 	delete _this;
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// Register class 'Number' as instantiable
-	zs.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	se.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register constructor
-	zs.registerConstructor<Number>(NumberZs_constructor);
+	se.registerConstructor<Number>(NumberZs_constructor);
 
 	// register property getter Number::value
-	zs.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
+	se.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 	// Evaluates function 'newNumber' that returns an instance of registered type 'Number'
-	zs.compile(
+	se.compile(
 		"// 'newNumber' instances a new 'Number' type\n"
 		"function newNumber(){\n"
 		"   return new Number(10);\n"
@@ -53,7 +53,7 @@ int main(){
 	);
 
 	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
-	auto newNumber=zs.bindScriptFunction<ClassScriptObject *()>("newNumber");
+	auto newNumber=se.bindScriptFunction<ClassScriptObject *()>("newNumber");
 
 	// Calls ScriptEngine function which it returns 'ClassScriptObject *' reference
 	auto class_object_number=newNumber();
@@ -68,6 +68,6 @@ int main(){
 	printf("From C++ pointer type : number->value=%f\n",number->value);
 
 	// 'unrefLifetimeObject' it decreases the reference count of script object to tell is not used anymore
-	zs.unrefLifetimeObject(class_object_number);
+	se.unrefLifetimeObject(class_object_number);
  	return 0;
 }

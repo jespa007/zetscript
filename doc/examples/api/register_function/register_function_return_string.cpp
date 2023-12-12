@@ -3,18 +3,18 @@
 using zetscript::ScriptEngine;
 using zetscript::String;
 
-String returnString(ScriptEngine *_zs){
+String returnString(ScriptEngine *_se){
     return "Hello world (String)";
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// Registers function interface
-    zs.registerFunction("returnString",returnString);
+    se.registerFunction("returnString",returnString);
 
     // Evaluates a script that calls the registered function and prints its result by console
-    zs.compileAndRun(
+    se.compileAndRun(
         "Console::outln(\"result : \"+returnString());"
  	);
     return 0;

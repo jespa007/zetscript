@@ -4,20 +4,20 @@
  */
 #include "zetscript.h"
 
-#define CALL_CONSTRUCTOR_CLASS(_zs,sc) (*((void *(*)(zetscript::ScriptEngine *))sc->new_native_instance))(_zs)
-#define CALL_DESTRUCTOR_CLASS(_zs,sc,obj) (*((void (*)(zetscript::ScriptEngine *, void *))sc->delete_native_instance))(_zs,obj)
+#define CALL_CONSTRUCTOR_CLASS(_se,sc) (*((void *(*)(zetscript::ScriptEngine *))sc->new_native_instance))(_se)
+#define CALL_DESTRUCTOR_CLASS(_se,sc,obj) (*((void (*)(zetscript::ScriptEngine *, void *))sc->delete_native_instance))(_se,obj)
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newClassScriptObject(ScriptEngine *_zs, ScriptTypeId _script_type_id,void *_c_object){
-		return new ClassScriptObject(_zs, _script_type_id,_c_object);
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ScriptEngine *_se, ScriptTypeId _script_type_id,void *_c_object){
+		return new ClassScriptObject(_se, _script_type_id,_c_object);
 	}
 
 	ClassScriptObject::ClassScriptObject(
-			ScriptEngine *_zs
+			ScriptEngine *_se
 			, ScriptTypeId _script_type_id
 			,void *_c_object
-	):ObjectScriptObject(_zs){
+	):ObjectScriptObject(_se){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -29,11 +29,11 @@ namespace zetscript{
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 
-		zs = _zs;
+		zs = _se;
 		StackElement *se;
 		String error;
 
-		vm=zs->getVirtualMachine();
+		vm=se->getVirtualMachine();
 
 		script_type_id=_script_type_id;
 		ScriptType *type=getScriptType();
@@ -78,7 +78,7 @@ namespace zetscript{
 			ScriptType *sc=type;
 			// get first type with c inheritance...
 			while((sc->base_script_type_ids->length()>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
+				sc=this->se->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
 					break;
@@ -116,7 +116,7 @@ namespace zetscript{
 		}
 
 		if(sc->base_script_type_ids->length()>0){
-			callConstructorMemberVariables(this->zs->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)));
+			callConstructorMemberVariables(this->se->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script type
@@ -188,7 +188,7 @@ namespace zetscript{
 						vm_unref_lifetime_object(this->vm,so);
 						// return
 					}else{
-						aux=zs->stackElementToString(&result);
+						aux=se->stackElementToString(&result);
 					}
 				}else{ // expect return an scriptobjectstring
 					String *str=NULL;

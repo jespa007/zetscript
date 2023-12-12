@@ -1,9 +1,9 @@
 #include "zetscript.h"
 
 int main(){
-	zetscript::ScriptEngine zs;
+	zetscript::ScriptEngine se;
 
-	zs.compileFileAndRun("file.zs");
+	se.compileFileAndRun("file.zs");
 	
 	return 0;
 }

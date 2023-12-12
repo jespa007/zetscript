@@ -5,17 +5,17 @@ using zetscript::StringScriptObject;
 
 int main()
 {
-  ScriptEngine zs;
+  ScriptEngine se;
 
   // Evaluates ScriptEngine function 'returnString' that returns 'String' value
-  zs.compile(
+  se.compile(
   "function returnString(){\n"
       "    return \"Hello World\";\n"
       "}\n"
  	);
 
   // It binds 'returnString' as 'StringScriptObject *(void)'
-  auto returnString=zs.bindScriptFunction<StringScriptObject *()>("returnString");
+  auto returnString=se.bindScriptFunction<StringScriptObject *()>("returnString");
 
   // Calls ScriptEngine function which it returns 'StringScriptObject *' reference
   auto object=returnString();
@@ -24,7 +24,7 @@ int main()
   printf("result : %s\n",object->get().toConstChar());
 
   // 'unrefLifetimeObject' it decreases the reference count of the script object to tell is not used anymore
-  zs.unrefLifetimeObject(object);
+  se.unrefLifetimeObject(object);
 
  	return 0;
 }

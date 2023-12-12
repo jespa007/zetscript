@@ -8,10 +8,10 @@ using zetscript::String;
 
 
 // Definition of the native function interface returnArray
-ArrayScriptObject *returnArray(ScriptEngine *_zs){
+ArrayScriptObject *returnArray(ScriptEngine *_se){
 
 	// instance new ArrayScriptObject using ScriptEngine context
-	ArrayScriptObject *array=_zs->newArrayScriptObject();
+	ArrayScriptObject *array=_se->newArrayScriptObject();
 
 	// push first value as integer 10
 	array->push<zs_int>(10);
@@ -30,13 +30,13 @@ ArrayScriptObject *returnArray(ScriptEngine *_zs){
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// bind native function returnArray named as 'returnArray'
-    zs.registerFunction("returnArray",returnArray);
+    se.registerFunction("returnArray",returnArray);
 
     // Eval script that calls native function 'returnArray'
-    zs.compileAndRun(
+    se.compileAndRun(
         "Console::outln(\"result : \"+returnArray());"
  	);
 

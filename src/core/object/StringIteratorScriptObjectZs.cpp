@@ -6,18 +6,18 @@
 
 namespace zetscript{
 
-	void	 StringIteratorScriptObjectZs_get(ScriptEngine *_zs,StringIteratorScriptObject *si){
-		ZS_UNUSUED_PARAM(_zs);
+	void	 StringIteratorScriptObjectZs_get(ScriptEngine *_se,StringIteratorScriptObject *si){
+		ZS_UNUSUED_PARAM(_se);
 		si->get();
 	}
 
-	void	 StringIteratorScriptObjectZs_next(ScriptEngine *_zs,StringIteratorScriptObject *si){
-		ZS_UNUSUED_PARAM(_zs);
+	void	 StringIteratorScriptObjectZs_next(ScriptEngine *_se,StringIteratorScriptObject *si){
+		ZS_UNUSUED_PARAM(_se);
 		si->next();
 	}
 
-	bool	 StringIteratorScriptObjectZs_end(ScriptEngine *_zs,StringIteratorScriptObject *si){
-		ZS_UNUSUED_PARAM(_zs);
+	bool	 StringIteratorScriptObjectZs_end(ScriptEngine *_se,StringIteratorScriptObject *si){
+		ZS_UNUSUED_PARAM(_se);
 		return si->end();
 	}
 

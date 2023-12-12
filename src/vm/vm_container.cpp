@@ -55,14 +55,14 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access '.%s' from variable type '%s'"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,data->zs->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 				);
 			}
 		}
@@ -162,8 +162,8 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,str_symbol_aux1
 				);
 			}
@@ -188,9 +188,9 @@ namespace zetscript{
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+							,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT?"Native type":"ScriptType"
-							,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+							,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,str_symbol_aux1
 						);
 					}
@@ -230,10 +230,10 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,(const char *)str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
-					,data->zs->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,(const char *)str_symbol_aux1
-					,data->zs->stackElementToStringTypeOf(stk_var).toConstChar()
+					,data->se->stackElementToStringTypeOf(stk_var).toConstChar()
 				);
 			}
 
@@ -400,7 +400,7 @@ namespace zetscript{
 			stk_var=(data->vm_stk_current-1);
 			if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'"
-					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
+					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
@@ -408,7 +408,7 @@ namespace zetscript{
 
 			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1) == 0){
 				ZS_VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
-					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 				);
 			}
 
@@ -431,7 +431,7 @@ namespace zetscript{
 			if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE(
 					"Expected vector but is type '%s'"
-					,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
+					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
@@ -503,7 +503,7 @@ namespace zetscript{
 			}\
 		}else{\
 			ZS_VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
-				,data->zs->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,&stk_src)\
+				,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,&stk_src)\
 			);\
 		}\
 		//----
@@ -640,7 +640,7 @@ lbl_exit_function:
 		}else{
 			ZS_VM_STOP_EXECUTE(
 				"Expected object for access '[]' operation but it was type '%s'"
-				,data->zs->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op1)
+				,data->se->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op1)
 			); \
 		}
 

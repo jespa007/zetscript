@@ -3,18 +3,18 @@
 using zetscript::ScriptEngine;
 
 // ScriptEngine C++ interface function
-void sayHelloWorld(ScriptEngine *_zs){
+void sayHelloWorld(ScriptEngine *_se){
     printf("Hello world\n");
 }
 
 int main(){
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
-    zs.registerFunction("sayHelloWorld",sayHelloWorld);
+    se.registerFunction("sayHelloWorld",sayHelloWorld);
 
     // Evaluates a script where it calls 'sayHelloWorld' function
-    zs.compileAndRun(
+    se.compileAndRun(
         "sayHelloWorld();"
  	);
 

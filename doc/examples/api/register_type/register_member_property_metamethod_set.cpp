@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine zs;
+	ScriptEngine se;
 
 	NumberZs_register(&zs);
 
-	zs.compileAndRun(
+	se.compileAndRun(
 		"var number=new Number(20);\n"
 		"Console::outln(\"On operation 'number=new Number(20)' then 'number.value' is => \"+number.value)\n"
 		"number.value = 10;\n"

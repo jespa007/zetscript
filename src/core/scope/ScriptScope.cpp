@@ -11,14 +11,14 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	ScriptScope::ScriptScope(ScriptEngine * _zs,int _idx_script_function, ScriptScope * _scope_parent, uint16_t _properties){
+	ScriptScope::ScriptScope(ScriptEngine * _se,int _idx_script_function, ScriptScope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
 		owner_type=NULL;
 		id=_idx_script_function;
-		zs=_zs;
+		zs=_se;
 		offset_instruction_push_scope=ZS_UNDEFINED_IDX;
-		scope_factory=_zs->getScriptScopesFactory();
+		scope_factory=_se->getScriptScopesFactory();
 		scopes=new Vector<ScriptScope *>;
 		symbol_variables=new Vector<Symbol *>;
 		symbol_functions=new Vector<Symbol *>;
@@ -154,7 +154,7 @@ namespace zetscript{
 		// check if you register a type...
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & SCRIPT_SCOPE_REGISTER_PROPERTY_NO_CHECK_CLASS_SYMBOLS)==0){
-			if(zs->getScriptTypesFactory()->getScriptTypeId(symbol_name) != ZS_UNDEFINED_IDX){
+			if(se->getScriptTypesFactory()->getScriptTypeId(symbol_name) != ZS_UNDEFINED_IDX){
 				ZS_THROW_EXCEPTION_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved word or script type",symbol_name.toConstChar());
 			}
 		}
