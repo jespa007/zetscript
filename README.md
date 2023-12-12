@@ -110,8 +110,8 @@ Zetscript supports class and inheritance. Function and variables members are ref
 // A class example
 class Test{
 
-	function1(a){
-		this.data1 =a;
+	function1(_a){
+		this.data1 =_a;
 		Console::outln("calling from Test. Data1:"+this.data1);
 	}
 };
@@ -151,17 +151,20 @@ To call C++ code from ZetScript is done by defining and registering a C function
 <pre lang="c++">
 #include "zetscript.h"
 using zetscript::ScriptEngine;
+
 // ZetScript C++ interface function
 void sayHelloWorld(ScriptEngine *_script_engine){
 	printf("Hello world\n");
 }
 int main(){
 	ScriptEngine script_engine;
+
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
 	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
+
 	// Evaluates a script where it calls 'sayHelloWorld' function
 	script_engine.eval(
-	"sayHelloWorld();"
+		"sayHelloWorld();"
 	);
 	return 0;
 }
@@ -229,6 +232,7 @@ int main(){
 
 	// Register member function 'MyClass::setData' using 'MyClassWrap_setData' wrapper
 	script_engine.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
+
 	script_engine.eval(
 		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
 		"myclass.setData(5);\n" // it prints "Int value as 5"
@@ -249,10 +253,10 @@ int main(){
 
 	script_engine.eval(
 		"class ScriptMyClass extends MyClass{\n"
-		"	setData(arg){\n"
+		"	setData(_arg){\n"
 		"		var i=this.data1;\n"
-		"		super(this.data1+arg);\n" // it calls MyClass::setData from C++ 
-		"		Console::outln(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
+		"		super(this.data1+_arg);\n" // it calls MyClass::setData from C++ 
+		"		Console::outln(\"result => \"+i+\"+\"+_arg+\"=\"+this.data1);\n"
 		"   }\n"
 		"};\n"
 
