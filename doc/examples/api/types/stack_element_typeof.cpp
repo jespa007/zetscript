@@ -1,8 +1,8 @@
 #include "zetscript.h"
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.compileAndRun("");
+	script_engine.eval("");
 	
 	return 0;
 }

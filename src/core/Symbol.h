@@ -53,6 +53,6 @@ namespace zetscript{
 
 	};
 
-	StackElement convertSymbolToStackElement(ScriptEngine * zs, Symbol *symbol,void *ptr_variable);
+	StackElement convertSymbolToStackElement(ScriptEngine * _script_engine, Symbol *symbol,void *ptr_variable);
 
 }

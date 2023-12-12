@@ -8,13 +8,13 @@ namespace zetscript{
 
 	// STATIC
 
-	StackElement convertSymbolToStackElement(ScriptEngine * zs, Symbol *symbol, void *ptr_variable) {
+	StackElement convertSymbolToStackElement(ScriptEngine * _script_engine, Symbol *symbol, void *ptr_variable) {
 
 		if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type
 			|| k_str_string_type_ptr == symbol->str_native_type
 			) {
-			StringScriptObject *s = ZS_NEW_STRING_SCRIPT_OBJECT(zs);
+			StringScriptObject *s = ZS_NEW_STRING_SCRIPT_OBJECT(_script_engine);
 
 
 			if (k_str_string_type_ptr == symbol->str_native_type) {
@@ -44,7 +44,7 @@ namespace zetscript{
 		}*/
 		
 		// it should be script object
-		ScriptType *registered_class_type = se->getScriptTypesFactory()->getScriptTypeFromNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+		ScriptType *registered_class_type = _script_engine->getScriptTypesFactory()->getScriptTypeFromNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 		if (registered_class_type == NULL) {
 			ZS_THROW_RUNTIME_ERROR(
@@ -54,7 +54,7 @@ namespace zetscript{
 			);
 		}
 
-		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(zs, registered_class_type->id, ptr_variable);
+		ClassScriptObject *var = ClassScriptObject::newClassScriptObject(_script_engine, registered_class_type->id, ptr_variable);
 
 		return{
 				(zs_int)var,

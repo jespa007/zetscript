@@ -4,17 +4,17 @@ using zetscript::zs_float;
 
 int main()
 {
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
     // Evaluates ScriptEngine function 'returnFloat' that returns 'Float' value
-    se.compile(
+    script_engine.compile(
  		"function returnFloat(){\n"
         "    return 10.5;\n"
         "}\n"
  	);
 
     // It binds 'returnFloat' as 'zs_float(void)'
-    auto returnFloat=se.bindScriptFunction<zs_float()>("returnFloat");
+    auto returnFloat=script_engine.bindScriptFunction<zs_float()>("returnFloat");
 
     // Calls ScriptEngine function and prints return value by console.
     printf("result : %f\n",returnFloat());

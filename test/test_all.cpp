@@ -27,7 +27,7 @@ const char *post_exe_name="";
 
 int main(int argc, char * argv[]) {
 	ZS_UNUSUED_2PARAMS(argc,argv);
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
 
 	printf("======================================\n\n");
@@ -36,7 +36,7 @@ int main(int argc, char * argv[]) {
 	// get all files in the path
 	typedef struct{
 		const char *name;
-		void (* fun)(zetscript::ScriptEngine *_se);
+		void (* fun)(zetscript::ScriptEngine *_script_engine);
 	}TestNativeFunctionIterator;
 
 	TestNativeFunctionIterator test_native_functions[]={
@@ -69,10 +69,10 @@ int main(int argc, char * argv[]) {
 		name[MAX_TEST_NAME_FIXED_LENGTH]=0;
 
 
-		se.clear();
+		script_engine.clear();
 		printf("* Test native %2i/%i - %s ... ",++n,test_native_total,name);
 		try{
-			it_test_native_functions->fun(&zs);
+			it_test_native_functions->fun(&script_engine);
 			n_test_native_success++;
 			printf("OK\n");
 		}catch(std::exception & ex){
@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
 		name[MAX_TEST_NAME_FIXED_LENGTH]=0;
 
 		// clear all vars in order to no have conflict with previous evaluations
-		se.clear();
+		script_engine.clear();
 		printf("* Test script %2i/%i - %s ... ",++n,test_script_total,name);
 		try{
 			zetscript::String filename=zetscript::String::format("%s/%s.zs",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it_test_script_files);
@@ -151,20 +151,20 @@ int main(int argc, char * argv[]) {
 				throw std::runtime_error("file not exist");
 			}
 
-			se.compileFileAndRun(filename.toConstChar());
+			script_engine.compileFileAndRun(filename.toConstChar());
 
 
 			if(strcmp(*it_test_script_files,"test_cyclic_references")==0){
 
 				// remove cyclic container instances
-				vm_deref_cyclic_references(se.getVirtualMachine());
+				vm_deref_cyclic_references(script_engine.getVirtualMachine());
 
 				vm_remove_empty_shared_pointers(
-						se.getVirtualMachine()
-					,vm_get_scope_block_main(se.getVirtualMachine())
+						script_engine.getVirtualMachine()
+					,vm_get_scope_block_main(script_engine.getVirtualMachine())
 				);
 
-				auto cyclic_container_instances=vm_get_cyclic_container_instances(se.getVirtualMachine());
+				auto cyclic_container_instances=vm_get_cyclic_container_instances(script_engine.getVirtualMachine());
 
 				if(cyclic_container_instances->count() > 0){
 					throw std::runtime_error("Some cyclic container instances still not freed");

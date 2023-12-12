@@ -4,17 +4,17 @@ using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
 // c function
-void funParamFloat(ScriptEngine *_se, zs_float *_number){
+void funParamFloat(ScriptEngine *_script_engine, zs_float *_number){
     printf("Result : %f\n",*_number);
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
-    se.registerFunction("funParamFloat",funParamFloat);
+    script_engine.registerFunction("funParamFloat",funParamFloat);
 
     // call c function 
-    se.compileAndRun(
+    script_engine.eval(
         "funParamFloat(10.5);"
  	);
 

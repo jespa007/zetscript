@@ -1,6 +1,6 @@
 [source,cpp]
 ----
-ReturnType (ScriptEngine *_se, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 )
+ReturnType (ScriptEngine *_script_engine, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 )
 ----
 
 Where,

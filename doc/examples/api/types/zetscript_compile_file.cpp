@@ -1,8 +1,8 @@
 #include "zetscript.h"
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.compileFile("file.zs");
+	script_engine.compileFile("file.zs");
 	
 	return 0;
 }

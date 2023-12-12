@@ -4,14 +4,14 @@
 int main(){
 
 	// instance ScriptEngine
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.registerConstant("MY_CONSTANT_INT",10);
-	se.registerConstant("MY_CONSTANT_STR","my_string");
-	se.registerConstant("MY_CONSTANT_BOOL",true);
-	se.registerConstant("MY_CONSTANT_FLOAT",2.5e-3);
+	script_engine.registerConstant("MY_CONSTANT_INT",10);
+	script_engine.registerConstant("MY_CONSTANT_STR","my_string");
+	script_engine.registerConstant("MY_CONSTANT_BOOL",true);
+	script_engine.registerConstant("MY_CONSTANT_FLOAT",2.5e-3);
 
-	se.compileAndRun(
+	script_engine.eval(
 		"Console::outln(\"MY_CONSTANT_INT:\"+MY_CONSTANT_INT);\n"
 		"Console::outln(\"MY_CONSTANT_STR:\"+MY_CONSTANT_STR);\n"
 		"Console::outln(\"MY_CONSTANT_BOOL:\"+MY_CONSTANT_BOOL);\n"

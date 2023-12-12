@@ -263,29 +263,29 @@ namespace zetscript{
 	}LoopBreakContinueInfo;
 
 	struct CompilerData{
-		ScriptEngine 						* 		zs;
-		ScriptScopesFactory 					* 		scope_factory;
+		ScriptEngine 					* 		script_engine;
+		ScriptScopesFactory 			* 		scope_factory;
 		ScriptFunctionsFactory 			* 		script_function_factory;
 		ScriptTypesFactory 				* 		script_types_factory;
 		EvalFunction					* 		current_function;
-		Vector<EvalFunction *>				compiler_functions;
+		Vector<EvalFunction *>					compiler_functions;
 
 		//Vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
 
 		const char *					 		current_parsing_file;
 		bool							  		error;
-		String								str_error;
-		String								error_file;
+		String									str_error;
+		String									error_file;
 		int 									error_line;
 
-		CompilerData(ScriptEngine * _se){
+		CompilerData(ScriptEngine * _script_engine){
 			current_parsing_file="";
 			current_function=NULL;
-			this->zs=_se;
-			this->script_function_factory=se->getScriptFunctionsFactory();
-			this->scope_factory=se->getScriptScopesFactory();
-			this->script_types_factory=se->getScriptTypesFactory();
+			this->script_engine=_script_engine;
+			this->script_function_factory=script_engine->getScriptFunctionsFactory();
+			this->scope_factory=script_engine->getScriptScopesFactory();
+			this->script_types_factory=script_engine->getScriptTypesFactory();
 			error=false;
 			parsing_loop=0;
 			error_line=-1;
@@ -550,9 +550,9 @@ namespace zetscript{
 
 	const char * get_mapped_name(CompilerData *compiler_data, const String & _mapped_name){
 		ZS_UNUSUED_PARAM(compiler_data);
-		char * key=(char *)compiler_data->se->getCompiledSymbolName()->getKey(_mapped_name.toConstChar());
+		char * key=(char *)compiler_data->script_engine->getCompiledSymbolName()->getKey(_mapped_name.toConstChar());
 		if(key==NULL){
-			auto node=compiler_data->se->getCompiledSymbolName()->set(_mapped_name.toConstChar(),0);
+			auto node=compiler_data->script_engine->getCompiledSymbolName()->set(_mapped_name.toConstChar(),0);
 			key=node->key;
 		}
 		return key;

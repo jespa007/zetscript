@@ -51,7 +51,7 @@ namespace zetscript{
 		// Functions
 
 		ScriptScope(
-			ScriptEngine * _se
+			ScriptEngine * _script_engine
 			, int _idx_script_function
 			, ScriptScope * _scope_parent=NULL
 			,uint16_t _properties=0
@@ -110,11 +110,11 @@ namespace zetscript{
 
 	private:
 
-		ScriptEngine *zs;
+		ScriptEngine 				*	script_engine;
 
-		Vector<ScriptScope *>		*scopes;  // local scopes from starting block { }
-		ScriptScopesFactory 			*scope_factory;
-		int 					id;
+		Vector<ScriptScope *>		*	scopes;  // local scopes from starting block { }
+		ScriptScopesFactory 		*	scope_factory;
+		int 							id;
 
 		void 	 checkPreRegisterSymbol(
 				const char * file

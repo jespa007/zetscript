@@ -28,7 +28,7 @@ int main(int argc, char * argv[]) {
 
 
 	uint16_t options=0;
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 	const char *param_script_filename="";
 	bool no_execution_time=false;
 
@@ -90,13 +90,13 @@ int main(int argc, char * argv[]) {
 
 			if(ZS_STRCMP(expression,==,"clear")){
 				printf("Clearing symbols...\n");
-				se.clear();
+				script_engine.clear();
 				continue;
 			}
 
 			if(ZS_STRCMP(expression,==,"save")){
 				printf("Saving state...\n");
-				se.saveState();
+				script_engine.saveState();
 				continue;
 			}
 
@@ -105,7 +105,7 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 
 				try{
-					se.compileAndRun(expression);
+					script_engine.eval(expression);
 				}catch(zetscript::Exception & ex){
 					fprintf(stderr,"[line %i] %s\n",ex.getLine(),ex.what());
 				}
@@ -126,12 +126,12 @@ int main(int argc, char * argv[]) {
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 			try{
-				se.compileFile(param_script_filename);
+				script_engine.compileFile(param_script_filename);
 				if(options & OPTION_PRINT_BYTE_CODE){
-					se.printGeneratedCode();
+					script_engine.printGeneratedCode();
 				}
 				if((options & OPTION_NO_EXECUTE) == false){
-					se.run();
+					script_engine.run();
 				}
 
 			}catch(zetscript::Exception & ex){

@@ -3,18 +3,18 @@
 using zetscript::ScriptEngine;
 using zetscript::zs_float;
 
-zs_float returnFloat(ScriptEngine *_se){
+zs_float returnFloat(ScriptEngine *_script_engine){
     return 10.5;
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	// Registers function interface
-    se.registerFunction("returnFloat",returnFloat);
+    script_engine.registerFunction("returnFloat",returnFloat);
 
     // Evaluates a script that calls the registered function and prints its result by console
-    se.compileAndRun(
+    script_engine.eval(
         "Console::outln(\"result : \"+returnFloat());"
  	);
     return 0;

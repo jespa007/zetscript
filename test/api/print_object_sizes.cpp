@@ -5,8 +5,8 @@
 #include "zetscript.h"
 
 int main(){
-	zetscript::ScriptEngine se;
-	se.printAllStructSizes();
+	zetscript::ScriptEngine script_engine;
+	script_engine.printAllStructSizes();
 	return 0;
 }
 

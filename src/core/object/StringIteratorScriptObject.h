@@ -17,7 +17,7 @@ namespace zetscript{
 		// Helpers
 		//
 		static StringIteratorScriptObject * newStringIteratorScriptObject(
-				ScriptEngine *_se
+				ScriptEngine *_script_engine
 				,StringScriptObject *_so_ref
 		);
 
@@ -28,7 +28,7 @@ namespace zetscript{
 
 		//StringIteratorScriptObject();
 		StringIteratorScriptObject(
-				ScriptEngine *_se
+				ScriptEngine *_script_engine
 				,StringScriptObject *_so_ref
 		);
 		void get();

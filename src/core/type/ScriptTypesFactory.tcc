@@ -52,8 +52,8 @@ namespace zetscript{
 	template<class T>
 	ScriptType * ScriptTypesFactory::registerScriptType(
 		const String & name
-		,T * (*_new_native_instance)(ScriptEngine *_se)
-		,void (*_delete_native_instance)(ScriptEngine *_se,T *)
+		,T * (*_new_native_instance)(ScriptEngine *_script_engine)
+		,void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)
 		,const char *registered_file
 		,short registered_line
 	){//, const String & base_class_name=""){
@@ -78,7 +78,7 @@ namespace zetscript{
 		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,name);
 
-		type = new ScriptType(zs,script_type_id,name,scope,native_name,SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF);
+		type = new ScriptType(script_engine,script_type_id,name,scope,native_name,SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF);
 		scope->setTypeOwner(type);
 
 		// in T there's no script constructor ...

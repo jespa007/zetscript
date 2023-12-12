@@ -1,7 +1,7 @@
 #include "zetscript.h"
 using zetscript::String;
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
     String s="My blue car with blue door and blue wheel";
 

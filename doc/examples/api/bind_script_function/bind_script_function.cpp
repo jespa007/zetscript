@@ -2,17 +2,17 @@
 
 int main(){
 
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
     // Evaluates ScriptEngine function 'sayHelloWorld' that prints a "Hello world" by console
-    se.compile(
+    script_engine.compile(
  		"function sayHelloWorld(){\n"
         "    Console::outln(\"Hello world\");\n"
         "}\n"
  	);
 
     // It binds 'sayHelloWorld' as 'void(void)'
-    auto sayHelloWorld=se.bindScriptFunction<void(void)>("sayHelloWorld");
+    auto sayHelloWorld=script_engine.bindScriptFunction<void(void)>("sayHelloWorld");
 
     // Calls ScriptEngine function
     sayHelloWorld();

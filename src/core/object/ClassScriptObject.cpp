@@ -4,20 +4,20 @@
  */
 #include "zetscript.h"
 
-#define CALL_CONSTRUCTOR_CLASS(_se,sc) (*((void *(*)(zetscript::ScriptEngine *))sc->new_native_instance))(_se)
-#define CALL_DESTRUCTOR_CLASS(_se,sc,obj) (*((void (*)(zetscript::ScriptEngine *, void *))sc->delete_native_instance))(_se,obj)
+#define CALL_CONSTRUCTOR_CLASS(_script_engine,sc) (*((void *(*)(zetscript::ScriptEngine *))sc->new_native_instance))(_script_engine)
+#define CALL_DESTRUCTOR_CLASS(_script_engine,sc,obj) (*((void (*)(zetscript::ScriptEngine *, void *))sc->delete_native_instance))(_script_engine,obj)
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newClassScriptObject(ScriptEngine *_se, ScriptTypeId _script_type_id,void *_c_object){
-		return new ClassScriptObject(_se, _script_type_id,_c_object);
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ScriptEngine *_script_engine, ScriptTypeId _script_type_id,void *_c_object){
+		return new ClassScriptObject(_script_engine, _script_type_id,_c_object);
 	}
 
 	ClassScriptObject::ClassScriptObject(
-			ScriptEngine *_se
+			ScriptEngine *_script_engine
 			, ScriptTypeId _script_type_id
 			,void *_c_object
-	):ObjectScriptObject(_se){
+	):ObjectScriptObject(_script_engine){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -29,11 +29,11 @@ namespace zetscript{
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 
-		zs = _se;
-		StackElement *se;
+		script_engine = _script_engine;
+		StackElement *stack_element;
 		String error;
 
-		vm=se->getVirtualMachine();
+		vm=script_engine->getVirtualMachine();
 
 		script_type_id=_script_type_id;
 		ScriptType *type=getScriptType();
@@ -45,7 +45,7 @@ namespace zetscript{
 			Symbol * symbol = (Symbol *)member_vars->get(i);
 
 			// we add symbol as field. In it will have the same idx as when were evaluated declared symbols on each type
-			if((se=addBuiltinField(
+			if((stack_element=addBuiltinField(
 				symbol->name
 			))==NULL){
 				return;
@@ -55,13 +55,13 @@ namespace zetscript{
 			{
 				// we know the type object so we assign the pointer ...
 				void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
-				*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+				*stack_element=convertSymbolToStackElement(this->script_engine,symbol,ptr_variable);
 			}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-				se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
-				se->properties=StackElementProperty::STACK_ELEMENT_PROPERTY_PTR_STK;
+				stack_element->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
+				stack_element->properties=StackElementProperty::STACK_ELEMENT_PROPERTY_PTR_STK;
 			}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-				se->value=(zs_int)(new StackElementMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
-				se->properties=STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY;
+				stack_element->value=(zs_int)(new StackElementMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
+				stack_element->properties=STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY;
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace zetscript{
 			ScriptType *sc=type;
 			// get first type with c inheritance...
 			while((sc->base_script_type_ids->length()>0) && (script_class_native==NULL)){
-				sc=this->se->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
+				sc=this->script_engine->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
 					break;
@@ -100,7 +100,7 @@ namespace zetscript{
 				);
 			}
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-			created_object = CALL_CONSTRUCTOR_CLASS(zs,script_class_native); // (*type->new_native_instance)();
+			created_object = CALL_CONSTRUCTOR_CLASS(_script_engine,script_class_native); // (*type->new_native_instance)();
 			was_created_by_constructor=true;
 			c_object = created_object;
 			delete_c_object_on_destroy=true; // destroy object when type is destroyed. It will be safe (in principle)
@@ -116,7 +116,7 @@ namespace zetscript{
 		}
 
 		if(sc->base_script_type_ids->length()>0){
-			callConstructorMemberVariables(this->se->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)));
+			callConstructorMemberVariables(this->script_engine->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script type
@@ -188,16 +188,16 @@ namespace zetscript{
 						vm_unref_lifetime_object(this->vm,so);
 						// return
 					}else{
-						aux=se->stackElementToString(&result);
+						aux=script_engine->stackElementToString(&result);
 					}
 				}else{ // expect return an scriptobjectstring
 					String *str=NULL;
 					switch(ptr_function->return_script_type_id){
 					case SCRIPT_TYPE_ID_STRING:
-							aux=((String (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
+							aux=((String (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(script_engine,this->c_object);
 							break;
 					case SCRIPT_TYPE_ID_STRING_PTR:
-							str=((String * (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
+							str=((String * (*)(ScriptEngine *,void *))(ptr_function->ref_native_function_ptr))(script_engine,this->c_object);
 							if(str == NULL){
 								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");
 							}
@@ -228,7 +228,7 @@ namespace zetscript{
 				);
 			}
 			 // only erases pointer if basic type or user/auto delete is required ...
-			CALL_DESTRUCTOR_CLASS(zs,script_class_native,created_object);//(*(script_class_native->delete_native_instance))(created_object);
+			CALL_DESTRUCTOR_CLASS(script_engine,script_class_native,created_object);//(*(script_class_native->delete_native_instance))(created_object);
 		}else if(was_created_by_constructor){
 			fprintf(stderr,"%s",String::format(ZS_FORMAT_FILE_LINE" Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)

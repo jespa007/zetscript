@@ -393,7 +393,7 @@ namespace zetscript{
 			result_instruction=new CompilerInstruction(
 					result_bc
 					, INSTRUCTION_VALUE_OP1_NOT_DEFINED
-					,(zs_int)compiler_data->se->registerStkConstantStringScriptObject(str_constant_key,result_op_str)
+					,(zs_int)compiler_data->script_engine->registerStkConstantStringScriptObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:

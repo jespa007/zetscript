@@ -195,8 +195,8 @@ namespace zetscript{
 
 			 // register constant...
 			str_key=String("\"")+symbol_value+"\"";
-			if((stk_key_object = compiler_data->se->getStkConstantStringScriptObject(str_key))==NULL){
-				stk_key_object=compiler_data->se->registerStkConstantStringScriptObject(str_key,symbol_value);
+			if((stk_key_object = compiler_data->script_engine->getStkConstantStringScriptObject(str_key))==NULL){
+				stk_key_object=compiler_data->script_engine->registerStkConstantStringScriptObject(str_key,symbol_value);
 			 }
 
 			// add instruction...

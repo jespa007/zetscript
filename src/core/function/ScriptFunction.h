@@ -34,35 +34,35 @@ namespace zetscript{
 	public:
 
 		// script function properties
-		int 				id;	// id from factory
-		String				name;
-		ScriptScope				*scope;
+		int 					id;	// id from factory
+		String					name;
+		ScriptScope			*	scope;
 
 
 		// script type
-		ScriptTypeId				return_script_type_id; 		// idx return type
-		ScriptTypeId				owner_script_type_id; 				// which type belongs to...
+		ScriptTypeId			return_script_type_id; 		// idx return type
+		ScriptTypeId			owner_script_type_id; 				// which type belongs to...
 
-		uint16_t			properties;
+		uint16_t				properties;
 
-		int					idx_position;			// idx position in array
+		int						idx_position;			// idx position in array
 
-		zs_int 				ref_native_function_ptr;
-		FunctionParam	*params;
-		int 				params_len;
-		int					min_code_stack_needed;
+		zs_int 					ref_native_function_ptr;
+		FunctionParam		*	params;
+		int 					params_len;
+		int						min_code_stack_needed;
 
-		PtrInstruction  	instructions; // The set of byte code instructions that executes the function
-		MapInt			instruction_last_native_call;
+		PtrInstruction  		instructions; // The set of byte code instructions that executes the function
+		MapInt					instruction_last_native_call;
 
 		// number of instructions
-		size_t				instructions_len;
+		size_t					instructions_len;
 
 		// local symbols for type or function...
 		Vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
-				ScriptEngine *_se
+				ScriptEngine *_script_engine
 				,int _idx_script_function
 				,ScriptTypeId _owner_script_type_id
 				,int _idx_position
@@ -155,13 +155,13 @@ namespace zetscript{
 
 	private:
 
-		ScriptEngine 				*zs;
-		ScriptFunctionsFactory 	*script_function_factory;
-		ScriptTypesFactory 		*script_types_factory;
-		ScriptScopesFactory 			*scope_factory;	// reference scope_factory
-		Vector<zs_int>		unresolved_symbols; // UnresolvedInstructionInfo
-		static String 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
-		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
+		ScriptEngine 				*	script_engine;
+		ScriptFunctionsFactory 		*	script_function_factory;
+		ScriptTypesFactory 			*	script_types_factory;
+		ScriptScopesFactory 		*	scope_factory;	// reference scope_factory
+		Vector<zs_int>					unresolved_symbols; // UnresolvedInstructionInfo
+		static String 					formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
+		InstructionSourceInfo 		* 	getInstructionInfo(Instruction *instruction);
 		void clearParams();
 
 	};

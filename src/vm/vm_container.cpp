@@ -55,14 +55,14 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access '.%s' from variable type '%s'"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 				);
 			}
 		}
@@ -115,7 +115,7 @@ namespace zetscript{
 			// case it has to be saved ...
 			if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0){
 
-				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)symbol_function_member->ref_ptr);
+				somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->script_engine,so_aux,(ScriptFunction *)symbol_function_member->ref_ptr);
 
 				 vm_create_shared_object(_vm,somf);
 
@@ -162,8 +162,8 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
-					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,str_symbol_aux1
 				);
 			}
@@ -188,9 +188,9 @@ namespace zetscript{
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-							,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+							,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT?"Native type":"ScriptType"
-							,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+							,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 							,str_symbol_aux1
 						);
 					}
@@ -230,10 +230,10 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,(const char *)str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
-					,data->se->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(data->vm_stk_current).toConstChar()
 					,(const char *)str_symbol_aux1
-					,data->se->stackElementToStringTypeOf(stk_var).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_var).toConstChar()
 				);
 			}
 
@@ -400,7 +400,7 @@ namespace zetscript{
 			stk_var=(data->vm_stk_current-1);
 			if(STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'"
-					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
+					,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
@@ -408,7 +408,7 @@ namespace zetscript{
 
 			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1) == 0){
 				ZS_VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
-					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+					,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 				);
 			}
 
@@ -431,7 +431,7 @@ namespace zetscript{
 			if(STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_var) == 0){
 				ZS_VM_STOP_EXECUTE(
 					"Expected vector but is type '%s'"
-					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
+					,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_var)
 				);
 			}
 
@@ -475,7 +475,7 @@ namespace zetscript{
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT){\
 
 			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk_src)){\
-				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
+				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->script_engine));\
 				stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;\
 				vm_create_shared_object(_vm,so_aux);
 				vm_share_object(_vm,so_aux);
@@ -503,7 +503,7 @@ namespace zetscript{
 			}\
 		}else{\
 			ZS_VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
-				,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,&stk_src)\
+				,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,&stk_src)\
 			);\
 		}\
 		//----
@@ -640,7 +640,7 @@ lbl_exit_function:
 		}else{
 			ZS_VM_STOP_EXECUTE(
 				"Expected object for access '[]' operation but it was type '%s'"
-				,data->se->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op1)
+				,data->script_engine->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op1)
 			); \
 		}
 

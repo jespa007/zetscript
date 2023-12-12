@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	NumberZs_register(&zs);
 
-	se.compileAndRun(
+	script_engine.eval(
 		"Console::outln(\"Number::pow(2,10) : \"+Number::pow(2,10))"
 	);
 

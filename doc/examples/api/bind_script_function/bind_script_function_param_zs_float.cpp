@@ -3,17 +3,17 @@
 using zetscript::zs_float;
 
 int main(){
-   zetscript::ScriptEngine se;
+   zetscript::ScriptEngine script_engine;
 
    // Evaluates ScriptEngine function 'printAdd' that prints the result of the operation '+' from two arguments
-   se.compile(
+   script_engine.compile(
  		"function printAdd(_value1,_value2){\n"
         "    Console::outln(\"result : \"+(_value1 + _value2));\n"
         "}\n"
  	);
 
    // It binds 'printAdd' as '(void *)(zs_float, zs_float *)'
-   auto printAdd=se.bindScriptFunction<void(zs_float *_value1, zs_float *_value2)>("printAdd");
+   auto printAdd=script_engine.bindScriptFunction<void(zs_float *_value1, zs_float *_value2)>("printAdd");
 
    // Prepare parameter values 
    zs_float value1=3.5;

@@ -48,10 +48,10 @@ namespace zetscript{
 		vm_remove_empty_shared_pointers(_vm,vm_get_scope_block_main(_vm));
 	}
 
-	VirtualMachine *vm_new(ScriptEngine *_se){
+	VirtualMachine *vm_new(ScriptEngine *_script_engine){
 
 		VirtualMachine *vm = (VirtualMachine *)ZS_MALLOC(sizeof(VirtualMachine));
-		VirtualMachineData *data = new VirtualMachineData(_se);
+		VirtualMachineData *data = new VirtualMachineData(_script_engine);
 		vm->data=data;
 
 		//-----------------------------------------------------------
@@ -61,14 +61,14 @@ namespace zetscript{
 
 	void vm_init(
 		VirtualMachine *_vm
-		,ScriptEngine *_se
+		,ScriptEngine *_script_engine
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		// script type factory should be created and initialized
-		data->script_function_factory=_se->getScriptFunctionsFactory();
-		data->script_types_factory=_se->getScriptTypesFactory();
-		data->scope_factory = _se->getScriptScopesFactory();
+		data->script_function_factory=_script_engine->getScriptFunctionsFactory();
+		data->script_types_factory=_script_engine->getScriptTypesFactory();
+		data->scope_factory = _script_engine->getScriptScopesFactory();
 		data->main_function_object = ZS_MAIN_FUNCTION(data);
 		data->main_class_object = ZS_TYPE_MAIN(data->script_types_factory);
 	}
@@ -433,7 +433,7 @@ namespace zetscript{
 
 			if(some_registers_without_file_line==true){
 				error+="\n\nSome lifetimes objects were returned/created from unknown file/line. Tip: Pass pass the file and line to all 'eval' function that it's calling from c++ in order to give you a clue where the 'lifetime object' was returned/created. For example,\n\n\n"
-						"\tStackElement var_from_script=se->eval(\"return new ScriptObject()\",__FILE__,__LINE__)\n";
+						"\tStackElement var_from_script=script_engine->eval(\"return new ScriptObject()\",__FILE__,__LINE__)\n";
 			}
 
 			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";
@@ -470,7 +470,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
 				, dst_container_ref->getScriptType()->name.toConstChar()
-				, data->se->stackElementToStringTypeOf( stk_obj).toConstChar()
+				, data->script_engine->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
 
@@ -484,7 +484,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
 				, dst_container_ref->getScriptType()->name.toConstChar()
-				, data->se->stackElementToStringTypeOf( stk_obj).toConstChar()
+				, data->script_engine->stackElementToStringTypeOf( stk_obj).toConstChar()
 
 			);
 

@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	NumberZs_register(&zs);
 
-	se.compileAndRun(
+	script_engine.eval(
 		"var number = new Number(0x8);\n"
 		"Console::outln(\"number.value>>=1 => {0}\",number.value>>=1)\n"
 	);

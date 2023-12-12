@@ -8,9 +8,9 @@
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define ZS_PRINT_DUAL_ERROR_OP(c)\
 	ZS_VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or type implements the metamethod",\
-		data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
+		data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
 		c,\
-		data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
+		data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
 
 #define ZS_PRINT_ERROR_OP(c)\
 ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\
@@ -167,8 +167,8 @@ namespace zetscript{
 	struct VirtualMachineData{
 
 		 bool									vm_error,vm_error_max_stack_reached;
-		 String								vm_error_description;
-		 String								vm_error_file;
+		 String									vm_error_description;
+		 String									vm_error_file;
 		 int 									vm_error_line;
 		 String 								vm_error_callstack_str;
 		 char									vm_str_metamethod_aux[ZS_VM_STR_AUX_MAX_LENGTH];
@@ -178,7 +178,7 @@ namespace zetscript{
 
 
 		 StackElement     						vm_stack[ZS_VM_STACK_MAX];
-		 Vector<InfoLifetimeObject *>		lifetime_object;
+		 Vector<InfoLifetimeObject *>			lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement 						*	vm_stk_current;
@@ -186,13 +186,13 @@ namespace zetscript{
 		ScriptType 							*	main_class_object;
 
 		const ScriptFunction 				*	current_call_c_function;
-		ScriptEngine *zs;
+		ScriptEngine 						*	script_engine;
 		ScriptFunctionsFactory 				*	script_function_factory;
 		ScriptTypesFactory 					*	script_types_factory;
-		ScriptScopesFactory 						*	scope_factory;
-		MapInt								cyclic_container_instances;
+		ScriptScopesFactory 				*	scope_factory;
+		MapInt									cyclic_container_instances;
 
-		VirtualMachineData(ScriptEngine *_se){
+		VirtualMachineData(ScriptEngine *_script_engine){
 			memset(&vm_stack,0,sizeof(vm_stack));
 
 			vm_stk_current=NULL;
@@ -202,7 +202,7 @@ namespace zetscript{
 			main_class_object=NULL;
 
 			current_call_c_function = NULL;
-			zs=_se;
+			script_engine=_script_engine;
 
 			script_function_factory=NULL;
 			script_types_factory=NULL;

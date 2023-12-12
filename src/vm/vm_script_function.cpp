@@ -283,7 +283,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value == 0){
@@ -295,7 +295,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value != 0){
@@ -518,14 +518,14 @@ namespace zetscript{
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_ARRAY: // Create new vector...
-					so_aux=ZS_NEW_ARRAY_SCRIPT_OBJECT(data->zs);
+					so_aux=ZS_NEW_ARRAY_SCRIPT_OBJECT(data->script_engine);
 					vm_create_shared_object(_vm,so_aux);
 					data->vm_stk_current->value=(zs_int)so_aux;
 					data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
-				 	so_aux=ZS_NEW_OBJECT_SCRIPT_OBJECT(data->zs);
+				 	so_aux=ZS_NEW_OBJECT_SCRIPT_OBJECT(data->script_engine);
 					vm_create_shared_object(_vm,so_aux);
 					(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 					continue;
@@ -621,7 +621,7 @@ namespace zetscript{
 						);
 					 }
 
-					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,_this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
+					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->script_engine,_this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
 
 					 vm_create_shared_object(_vm,so_aux);
 					 data->vm_stk_current->value=(zs_int)so_aux;
@@ -705,7 +705,7 @@ namespace zetscript{
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
-			str1=data->se->stackElementToString(_stk1);
+			str1=data->script_engine->stackElementToString(_stk1);
 		}
 
 
@@ -713,7 +713,7 @@ namespace zetscript{
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk2)){
 			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
-			str2=data->se->stackElementToString( _stk2);
+			str2=data->script_engine->stackElementToString( _stk2);
 		}
 
 		bool result=false;
@@ -770,7 +770,7 @@ namespace zetscript{
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
-				,data->se->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
+				,data->script_engine->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
 		case ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:
@@ -791,7 +791,7 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
+				,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
 				,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 			);\
@@ -808,7 +808,7 @@ namespace zetscript{
 					strncpy(name,__STR_PTR_SYMBOL_TO_FIND__,__STR_PTR_END_CLASS__-__STR_PTR_SYMBOL_TO_FIND__);
 
 
-					if(data->se->getScriptTypesFactory()->getScriptType(name) == NULL){
+					if(data->script_engine->getScriptTypesFactory()->getScriptType(name) == NULL){
 						vm_set_file_line_error(\
 								_vm \
 								,SFI_GET_FILE(_script_function,instruction)\
@@ -846,7 +846,7 @@ namespace zetscript{
 					,SFI_GET_LINE(_script_function,instruction)\
 					,"Symbol '%s' as type '%s' the metamethod '%s' (aka '%s') doesn't returns value to perform negate operation" \
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-					,data->se->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
+					,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 				);\
@@ -864,7 +864,7 @@ namespace zetscript{
 		//special case for constant string object (they don't are shared elements)
 		if(so_aux->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_aux->properties & OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
-			so_aux=ZS_NEW_STRING_SCRIPT_OBJECT(data->zs,so_aux->toString());
+			so_aux=ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine,so_aux->toString());
 			stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
@@ -929,7 +929,7 @@ namespace zetscript{
 		ScriptObject 		*	so_aux=NULL;
 
 
-		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
+		so_aux= StringScriptObject::newStringScriptObject(data->script_engine,_instruction->getConstantValueOp2ToString(false));
 		vm_create_shared_object(_vm,so_aux);
 		(*data->vm_stk_current++)={(zs_int)so_aux,STACK_ELEMENT_PROPERTY_OBJECT};
 	}

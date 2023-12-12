@@ -11,9 +11,9 @@
 
 int main(){
 
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.compileAndRun("Console::outln(\"Hello World from script!\")");
+	script_engine.eval("Console::outln(\"Hello World from script!\")");
 
 	return 0;
 }
@@ -152,15 +152,15 @@ To call C++ code from ZetScript is done by defining and registering a C function
 #include "zetscript.h"
 using zetscript::ScriptEngine;
 // ZetScript C++ interface function
-void sayHelloWorld(ScriptEngine *_se){
+void sayHelloWorld(ScriptEngine *_script_engine){
 	printf("Hello world\n");
 }
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
-	se.registerFunction("sayHelloWorld",sayHelloWorld);
+	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
 	// Evaluates a script where it calls 'sayHelloWorld' function
-	se.compileAndRun(
+	script_engine.eval(
 	"sayHelloWorld();"
 	);
 	return 0;
@@ -194,42 +194,42 @@ public:
 };
 
 // define new and delete functions
-MyClass *MyClassWrap_new(ScriptEngine *_se){
+MyClass *MyClassWrap_new(ScriptEngine *_script_engine){
 	return new MyClass;
 }
 
-void MyClassWrap_delete(ScriptEngine *_se,MyClass *_this){
+void MyClassWrap_delete(ScriptEngine *_script_engine,MyClass *_this){
 	delete _this;
 }
 
 // bind data1 member variable (read & write)
-void MyClassWrap_set_data1(ScriptEngine *_se,MyClass *_this, zs_int v){
+void MyClassWrap_set_data1(ScriptEngine *_script_engine,MyClass *_this, zs_int v){
 	_this->data1=v;
 }
 
-zs_int MyClassWrap_get_data1(ScriptEngine *_se,MyClass *_this){
+zs_int MyClassWrap_get_data1(ScriptEngine *_script_engine,MyClass *_this){
 	return _this->data1;
 }
 
 // 'MyClassWrap::setData' wrap function
-void MyClassWrap_setData(ScriptEngine *_se,MyClass *_this, zs_int v){
+void MyClassWrap_setData(ScriptEngine *_script_engine,MyClass *_this, zs_int v){
 	_this->setValue(v);
 }
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	// Register class type 'MyClass' as instantiable
-	se.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
 	// Register member variable 'MyClass::data1' through get/set metamethod using 'MyClassWrap_set_data1'/'MyClassWrap_get_data1' functions
-	se.registerMemberPropertyMetamethod<MyClass>("_set","data1",&MyClassWrap_set_data1);
-	se.registerMemberPropertyMetamethod<MyClass>("_get","data1",&MyClassWrap_get_data1);
+	script_engine.registerMemberPropertyMetamethod<MyClass>("_set","data1",&MyClassWrap_set_data1);
+	script_engine.registerMemberPropertyMetamethod<MyClass>("_get","data1",&MyClassWrap_get_data1);
 
 	// Register member function 'MyClass::setData' using 'MyClassWrap_setData' wrapper
-	se.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
-	se.compileAndRun(
+	script_engine.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
+	script_engine.eval(
 		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
 		"myclass.setData(5);\n" // it prints "Int value as 5"
 		"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:5"
@@ -247,7 +247,7 @@ int main(){
 
 	// ...
 
-	se.compileAndRun(
+	script_engine.eval(
 		"class ScriptMyClass extends MyClass{\n"
 		"	setData(arg){\n"
 		"		var i=this.data1;\n"
@@ -280,16 +280,16 @@ Once you have evaluated the script you can call function script from c++.
 
 void test_call_script_function(){
 
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.compileAndRun(
+	script_engine.eval(
 		"function sayHello(){\n"
 		"	Console::outln(\"hello from 'sayHello'!\")\n"
 		"}\n"
 	);
 
 	// instance ZetScript function 'sayHello'
-	auto  say_hello=se.bindScriptFunction<void ()>("sayHello");
+	auto  say_hello=script_engine.bindScriptFunction<void ()>("sayHello");
 
 	// it calls 'say_hello' script function from C++
 	say_hello();

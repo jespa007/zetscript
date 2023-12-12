@@ -7,7 +7,7 @@ using zetscript::zs_float;
 using zetscript::String;
 
 // Check whether the object element is type integer, float or string
-void testObjectElementInstanceOf(ScriptEngine *_se,ObjectScriptObject *_object){
+void testObjectElementInstanceOf(ScriptEngine *_script_engine,ObjectScriptObject *_object){
 
     auto keys=_object->getKeys();
 
@@ -32,13 +32,13 @@ void testObjectElementInstanceOf(ScriptEngine *_se,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
 	// registers testObjectElementInstanceOf
-	se.registerFunction("testObjectElementInstanceOf",testObjectElementInstanceOf);
+	script_engine.registerFunction("testObjectElementInstanceOf",testObjectElementInstanceOf);
 
 	// calls printObjectElementTypes
-	se.compileAndRun(
+	script_engine.eval(
         "testObjectElementInstanceOf({"
             "\"key1\":0"                // Element at key 'key1' is type 'Integer'
             ",\"key2\":10.5"             // Element at key 'key2': is type 'Float'

@@ -8,8 +8,8 @@ void sayHelloWorld(){
 
 
 int main(){
-	ScriptEngine se;
-	se.registerFunction("sayHelloWorld",sayHelloWorld);
-	se.compileAndRun("sayHelloWorld()");
+	ScriptEngine script_engine;
+	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
+	script_engine.eval("sayHelloWorld()");
 	return 0;
 }

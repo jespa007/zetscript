@@ -34,7 +34,7 @@ namespace zetscript{
 			if((data->vm_stk_current->properties & (STACK_ELEMENT_PROPERTY_OBJECT|STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)) == 0){
 				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-					,data->se->stackElementToString(data->vm_stk_current).toConstChar()
+					,data->script_engine->stackElementToString(data->vm_stk_current).toConstChar()
 				);
 				return false;
 			}
@@ -146,8 +146,8 @@ namespace zetscript{
 
 		 VM_POP_STK_TWO;
 
-		 stk_result_op1_aux=data->se->unwrapStackElement(*stk_result_op1);
-		 stk_result_op2_aux=data->se->unwrapStackElement(*stk_result_op2);
+		 stk_result_op1_aux=data->script_engine->unwrapStackElement(*stk_result_op1);
+		 stk_result_op2_aux=data->script_engine->unwrapStackElement(*stk_result_op2);
 
 
 		if(stk_result_op2_aux.properties & STACK_ELEMENT_PROPERTY_OBJECT){
@@ -158,7 +158,7 @@ namespace zetscript{
 			if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_INT){
 				ZS_VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
-						data->zs
+						data->script_engine
 						,((StringScriptObject *)so_aux)
 						,(zs_int)stk_result_op1->value
 					)
@@ -167,7 +167,7 @@ namespace zetscript{
 				String str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
 					StringScriptObjectZs_contains(
-						data->zs
+						data->script_engine
 						,(StringScriptObject *)so_aux
 						,&str_op1)
 				);
@@ -179,7 +179,7 @@ namespace zetscript{
 			//PUSH_STK_BOOLEAN(((ArrayScriptObject *)so_aux)->exists(stk_result_op1));
 				ZS_VM_PUSH_STK_BOOLEAN(
 				ArrayScriptObjectZs_contains(
-					data->zs,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
+					data->script_engine,(ArrayScriptObject *)so_aux,&stk_result_op1_aux
 				)
 			);
 			break;
@@ -188,7 +188,7 @@ namespace zetscript{
 				String str_op1=((StringScriptObject *)stk_result_op1_aux.value)->toString();
 				ZS_VM_PUSH_STK_BOOLEAN(
 					ObjectScriptObjectZs_contains(
-						data->zs,(ObjectScriptObject *)so_aux,&str_op1
+						data->script_engine,(ObjectScriptObject *)so_aux,&str_op1
 					)
 				);
 

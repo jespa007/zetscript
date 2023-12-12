@@ -12,7 +12,7 @@ Returns a constant property.
 
 [source,javascript]
 ----
-ReturnType RegisteredTypeProperty_get(ScriptEngine *_se, RegisteredType *_this)
+ReturnType RegisteredTypeProperty_get(ScriptEngine *_script_engine, RegisteredType *_this)
 ----
 
 [.underline]#Parameters#
@@ -31,7 +31,7 @@ The following code defines a function that returns the _value_ contents of curre
 [source,cpp]
 ----
 
-zs_float NumberZs_MAX_VALUE_get(ScriptEngine *_se,Number *_this){
+zs_float NumberZs_MAX_VALUE_get(ScriptEngine *_script_engine,Number *_this){
 	return FLT_MAX;
 }
 
@@ -42,11 +42,11 @@ Next, the function _NumberZs_MAX_VALUE_get_ is registered through _ScriptEngine:
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_get);
+	_script_engine->registerConstMemberProperty<Number>("MAX_VALUE",NumberZs_MAX_VALUE_get);
 
 	//...
 
@@ -79,7 +79,7 @@ __get_ returns the value of the property
 
 [source,javascript]
 ----
-ReturnType RegisteredTypeProperty_get(ScriptEngine *_se, RegisteredType *_this)
+ReturnType RegisteredTypeProperty_get(ScriptEngine *_script_engine, RegisteredType *_this)
 ----
 
 [.underline]#Parameters#
@@ -98,7 +98,7 @@ The following code defines a function as a _get_ property operation that returns
 [source,cpp]
 ----
 
-zs_float NumberZs_value_get(ScriptEngine *_se,Number *_this){
+zs_float NumberZs_value_get(ScriptEngine *_script_engine,Number *_this){
 	return _this->value;
 }
 
@@ -109,11 +109,11 @@ Next, the function _NumberZs_value_get_ is registered as member metamethod __get
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_value_get);
 
 	//...
 
@@ -144,7 +144,7 @@ Implements _assignment_ operator (aka = ) with a value entered by parameter as r
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_set(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_set(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -164,7 +164,7 @@ The following code defines a function that performs a _set_ to _value_ variable 
 [source,cpp]
 ----
 
-void NumberZs_value_set(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_set(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=*_value;
 }
 ----
@@ -174,11 +174,11 @@ Next, the function _NumberZs_value_set_ is registered as member metamethod _set_
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_set);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_value_set);
 
 	//...
 
@@ -209,7 +209,7 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_addset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_addset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -229,7 +229,7 @@ The following code defines a function that performs and _addset_ to _value_ vari
 
 [source,cpp]
 ----
-void NumberZs_value_addset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_addset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value+=*_value;
 }
 ----
@@ -239,11 +239,11 @@ Next, the function _NumberZs_value_addset_ is registered as member metamethod __
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_addset",NumberZs_value_addset));
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_addset",NumberZs_value_addset));
 
 	//...
 
@@ -274,7 +274,7 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_subset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_subset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -295,7 +295,7 @@ The following code defines a function that performs a _subset_ to _value_ variab
 [source,cpp]
 ----
 
-void NumberZs_value_subset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_subset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value-=*_value;
 }
 
@@ -306,11 +306,11 @@ Next, the function _NumberZs_value_subset_ is registered as member metamethod __
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_subset",NumberZs_value_subset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_subset",NumberZs_value_subset);
 
 	//...
 
@@ -341,7 +341,7 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_mulset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_mulset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -361,7 +361,7 @@ The following code defines a function that performs and _mulset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_mulset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_mulset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value*=*_value;
 }
 
@@ -371,11 +371,11 @@ Next, the function _NumberZs_value_mulset_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_mulset",NumberZs_value_mulset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_mulset",NumberZs_value_mulset);
 
 	//...
 
@@ -406,7 +406,7 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_divset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_divset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -427,7 +427,7 @@ The following code defines a function that performs and _divset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_divset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_divset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value/=*_value;
 }
 ----
@@ -437,11 +437,11 @@ Next, the function _NumberZs_value_divset_ is registered as member metamethod __
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_divset",NumberZs_value_divset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_divset",NumberZs_value_divset);
 
 	//...
 
@@ -472,7 +472,7 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_modset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_modset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -492,7 +492,7 @@ The following code defines a function that performs and _modset_ to _value_ vari
 
 [source,cpp]
 ----
-void NumberZs_value_modset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_modset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=fmod(_this->value,*_value);
 }
 ----
@@ -501,11 +501,11 @@ Next, the function _NumberZs_value_modset_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_modset",NumberZs_value_modset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_modset",NumberZs_value_modset);
 
 	//...
 
@@ -536,7 +536,7 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_andset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_andset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -557,7 +557,7 @@ The following code defines a function that performs and _andset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_andset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_andset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)&(int)(*_value);
 }
 ----
@@ -566,11 +566,11 @@ Next, the function _NumberZs_value_andset_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_andset",NumberZs_value_andset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_andset",NumberZs_value_andset);
 	
 	//...
 
@@ -601,7 +601,7 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_orset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_orset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -622,7 +622,7 @@ The following code defines a function that performs and _orset_ to _value_ varia
 [source,cpp]
 ----
 
-void NumberZs_value_orset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_orset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)|(int)(*_value);
 }
 ----
@@ -631,11 +631,11 @@ Next, the function _NumberZs_value_orset_ is registered as member metamethod __o
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_orset",NumberZs_value_orset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_orset",NumberZs_value_orset);
 
 	//...
 
@@ -666,7 +666,7 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_xorset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_xorset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -687,7 +687,7 @@ The following code defines a function that performs and _xorset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_xorset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_xorset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)^(int)(*_value);
 }
 ----
@@ -697,11 +697,11 @@ Next, the function _NumberZs_value_xorset_ is registered as member metamethod __
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_xorset",NumberZs_value_xorset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_xorset",NumberZs_value_xorset);
 
 	//...
 
@@ -733,7 +733,7 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_shrset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_shrset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -754,7 +754,7 @@ The following code defines a function that performs and _shrset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_shrset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_shrset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)>>(int)(*_value);
 }
 ----
@@ -763,11 +763,11 @@ Next, the function _NumberZs_value_shrset_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_shrset",NumberZs_value_shrset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_shrset",NumberZs_value_shrset);
 
 	//...
 
@@ -798,7 +798,7 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 
 [source,javascript]
 ----
-void RegisteredTypeProperty_shlset(ScriptEngine *_se, RegisteredType *_this, ParamType *_value)
+void RegisteredTypeProperty_shlset(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_value)
 ----
 
 [.underline]#Parameters#
@@ -819,7 +819,7 @@ The following code defines a function that performs and _shlset_ to _value_ vari
 [source,cpp]
 ----
 
-void NumberZs_value_shlset(ScriptEngine *_se,Number *_this,zs_float *_value){
+void NumberZs_value_shlset(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
 	_this->value=(int)(_this->value)<<(int)(*_value);
 }
 ----
@@ -828,11 +828,11 @@ Next, the function _NumberZs_value_shlset_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_shlset",NumberZs_value_shlset);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_shlset",NumberZs_value_shlset);
 
 	//...
 
@@ -864,7 +864,7 @@ Implements _post_increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_postinc(ScriptEngine *_se, RegisteredType *_this);
+ReturnType  RegisteredType_value_postinc(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -883,7 +883,7 @@ The following code defines a function that performs a _postinc_ of current insta
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_postinc(ScriptEngine *_se,Number *_this){
+zs_float  NumberZs_value_postinc(ScriptEngine *_script_engine,Number *_this){
 	return _this->value++;
 }
 
@@ -894,11 +894,11 @@ Next, the function _NumberZs_value_postinc_ is registered as member metamethod _
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberFunction<Number>("_postinc",NumberZs_postinc);
+	_script_engine->registerMemberFunction<Number>("_postinc",NumberZs_postinc);
 
 	//...
 
@@ -929,7 +929,7 @@ Implements _post_decrement_ operator (aka a-- )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_postdec(ScriptEngine *_se, RegisteredType *_this);
+ReturnType  RegisteredType_value_postdec(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -948,7 +948,7 @@ The following code defines a function that performs a _postdec_ of current insta
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_postdec(ScriptEngine *_se,Number *_this){
+zs_float  NumberZs_value_postdec(ScriptEngine *_script_engine,Number *_this){
 	return _this->value--;
 }
 
@@ -959,11 +959,11 @@ Next, the function _NumberZs_value_postdec_ is registered as member metamethod _
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberFunction<Number>("_postdec",NumberZs_postdec);
+	_script_engine->registerMemberFunction<Number>("_postdec",NumberZs_postdec);
 
 	//...
 
@@ -994,7 +994,7 @@ Implements _pre_increment_ operator (aka ++a )
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_preinc(ScriptEngine *_se, RegisteredType *_this);
+ReturnType  RegisteredType_value_preinc(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -1012,7 +1012,7 @@ The following code defines a function that performs a _preinc_ of current instan
 
 [source,cpp]
 ----
-zs_float  NumberZs_value_preinc(ScriptEngine *_se,Number *_this){
+zs_float  NumberZs_value_preinc(ScriptEngine *_script_engine,Number *_this){
 	return ++_this->value;
 }
 ----
@@ -1022,11 +1022,11 @@ Next, the function _NumberZs_value_preinc_ is registered as member metamethod __
 [source,cpp]
 ----
 
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_preinc",NumberZs_value_preinc);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_preinc",NumberZs_value_preinc);
 
 	//...
 
@@ -1053,7 +1053,7 @@ include::../examples/api/register_type/register_member_property_metamethod_prein
 
 [source,javascript]
 ----
-ReturnType  RegisteredType_value_predec(ScriptEngine *_se, RegisteredType *_this);
+ReturnType  RegisteredType_value_predec(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -1072,7 +1072,7 @@ The following code defines a function that performs a _predec_ of current instan
 [source,cpp]
 ----
 
-zs_float  NumberZs_value_predec(ScriptEngine *_se,Number *_this){
+zs_float  NumberZs_value_predec(ScriptEngine *_script_engine,Number *_this){
 	return --_this->value;
 }
 ----
@@ -1082,11 +1082,11 @@ Next, the function _NumberZs_value_predec_ is registered as member metamethod __
 
 [source,cpp]
 ----
-void NumberZs_register(zetscript::ScriptEngine *_se){
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
 
-	_se->registerMemberPropertyMetamethod<Number>("value","_predec",NumberZs_value_predec);
+	_script_engine->registerMemberPropertyMetamethod<Number>("value","_predec",NumberZs_value_predec);
 
 	//...
 

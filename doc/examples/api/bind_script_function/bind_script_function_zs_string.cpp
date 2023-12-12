@@ -4,15 +4,15 @@ using zetscript::String;
 
 int main()
 {
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-    se.compile(
+    script_engine.compile(
  		"function add(_a,_b){\n"
         "    return _a+_b;\n"
         "}\n"
  	);
 
-    auto add=se.bindScriptFunction<String(String *,String *)>("add");
+    auto add=script_engine.bindScriptFunction<String(String *,String *)>("add");
     String s1="Hello";
     String s2="World";
 

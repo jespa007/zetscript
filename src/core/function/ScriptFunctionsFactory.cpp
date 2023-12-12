@@ -6,9 +6,9 @@
 
 namespace zetscript{
 
-	ScriptFunctionsFactory::ScriptFunctionsFactory(ScriptEngine *_se){
-		zs = _se;
-		scope_factory = _se->getScriptScopesFactory();
+	ScriptFunctionsFactory::ScriptFunctionsFactory(ScriptEngine *_script_engine){
+		script_engine = _script_engine;
+		scope_factory = _script_engine->getScriptScopesFactory();
 		script_functions = new Vector<ScriptFunction *>();
 		idx_clear_checkpoint = 1; // by default MAIN function
 	}
@@ -47,7 +47,7 @@ namespace zetscript{
 				}
 			}
 
-			if(_function_name == se->getScriptTypesFactory()->getScriptTypeName(_script_type_id)){
+			if(_function_name == script_engine->getScriptTypesFactory()->getScriptTypeName(_script_type_id)){
 				_symbol_check_repeated|=SCRIPT_SCOPE_REGISTER_PROPERTY_NO_CHECK_CLASS_SYMBOLS;
 			}
 		}
@@ -67,7 +67,7 @@ namespace zetscript{
 		int id = script_functions->length();
 
 		ScriptFunction *script_function = new ScriptFunction(
-				zs
+				script_engine
 				,id
 				,_script_type_id
 				, symbol->idx_position

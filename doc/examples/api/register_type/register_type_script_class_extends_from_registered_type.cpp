@@ -27,54 +27,54 @@ public:
 
 // MyCppType
 
-zs_int MyCppType_function1(ScriptEngine *_se, MyCppType *_this, zs_int _arg){
+zs_int MyCppType_function1(ScriptEngine *_script_engine, MyCppType *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
 // MyCppTypeExtend
 
-MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_se){
+MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_script_engine){
 	return new MyCppTypeExtend();
 }
 
-void MyCppTypeExtend_constructor(ScriptEngine *_se, MyCppTypeExtend *_this, zs_int _data1){
+void MyCppTypeExtend_constructor(ScriptEngine *_script_engine, MyCppTypeExtend *_this, zs_int _data1){
 	_this->data1=_data1;
 	_this->data2=_data1*10;
 }
 
-zs_int MyCppTypeExtend_function2(ScriptEngine *_se, MyCppTypeExtend *_this, zs_int _arg){
+zs_int MyCppTypeExtend_function2(ScriptEngine *_script_engine, MyCppTypeExtend *_this, zs_int _arg){
 	return _this->function1(_arg);
 }
 
-void MyCppTypeExtend_delete(ScriptEngine *_se, MyCppTypeExtend *_this){
+void MyCppTypeExtend_delete(ScriptEngine *_script_engine, MyCppTypeExtend *_this){
 	delete _this;
 }
 
 //---- ZETSCRIPT-NATIVE INTERFACE FUNCTIONS
 
 int main(){
-	ScriptEngine se; // instance zetscript
+	ScriptEngine script_engine; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
-	se.registerScriptType<MyCppType>("MyCppType");
+	script_engine.registerScriptType<MyCppType>("MyCppType");
 
 	// Register MyCppType::constructor
-	//se.registerConstructor<MyCppType>(MyCppType_constructor);
+	//script_engine.registerConstructor<MyCppType>(MyCppType_constructor);
 
 	// Register MyCppType::function1
- 	se.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
+ 	script_engine.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
 
 	// Register MyCppTypeExtend as MyCppTypeExtend in script side as instantiable
-	se.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
+	script_engine.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
 
 	// Tells MyCppTypeExtends extends from MyCppType
-	se.extends< MyCppTypeExtend,MyCppType >();
+	script_engine.extends< MyCppTypeExtend,MyCppType >();
 
 	// Register MyCppTypeExtend::function2
-	se.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
+	script_engine.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
 
 	// eval print
-	se.compileAndRun(
+	script_engine.eval(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln(\"script argument : {0} \",_arg1);\n"

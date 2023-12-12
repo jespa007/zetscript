@@ -16,7 +16,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	ScriptType::ScriptType(ScriptEngine *_se
+	ScriptType::ScriptType(ScriptEngine *_script_engine
 			,ScriptTypeId _id
 			, const String & _class_name
 			, ScriptScope *_class_scope
@@ -39,10 +39,10 @@ namespace zetscript{
 		base_script_type_ids=new Vector<ScriptTypeId>;
 
 		// factories
-		zs = _se;
-		scope_factory = se->getScriptScopesFactory();
-		script_function_factory= se->getScriptFunctionsFactory();
-		script_types_factory=se->getScriptTypesFactory();
+		script_engine = _script_engine;
+		scope_factory = script_engine->getScriptScopesFactory();
+		script_function_factory= script_engine->getScriptFunctionsFactory();
+		script_types_factory=script_engine->getScriptTypesFactory();
 		sf_field_initializer=NULL; // will be created after register type and register member extension (if available)
 		properties=_properties;
 	}

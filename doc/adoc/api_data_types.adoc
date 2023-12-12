@@ -1995,7 +1995,7 @@ The StringScriptObject constructor creates a new string script object as empty o
 
 [source,cpp]
 ----
-StringScriptObject(ScriptEngine *_se, const String & _str="");
+StringScriptObject(ScriptEngine *_script_engine, const String & _str="");
 ----
 
 [.underline]#Parameters#
@@ -2194,7 +2194,7 @@ The ArrayScriptObject constructor creates a new array script object. ArrayScript
 
 [source,cpp]
 ----
-ArrayScriptObject(ScriptEngine *_se);
+ArrayScriptObject(ScriptEngine *_script_engine);
 ----
 
 [.underline]#Parameters#
@@ -2446,7 +2446,7 @@ The ObjectScriptObject constructor creates a new object script object. ObjectScr
 
 [source,cpp]
 ----
-ObjectScriptObject(ScriptEngine *_se);
+ObjectScriptObject(ScriptEngine *_script_engine);
 ----
 
 [.underline]#Parameters#
@@ -2716,7 +2716,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_out.txt[]
 ----
 
-===== ScriptEngine::compileAndRun()
+===== ScriptEngine::eval()
 
 It compiles an expression given by parameter and it runs after its compilation.
 
@@ -2724,7 +2724,7 @@ It compiles an expression given by parameter and it runs after its compilation.
 
 [source,cpp]
 ----
-StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
 
@@ -2876,8 +2876,8 @@ include::../examples/api/eval/zetscript_register_constant.txt[]
 ----
 ScriptType * registerType(
 		const String & name
-		, T  * (*_new_native_instance)(ScriptEngine *_se)=NULL
-		, void (*_delete_native_instance)(ScriptEngine *_se,T *)=NULL
+		, T  * (*_new_native_instance)(ScriptEngine *_script_engine)=NULL
+		, void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)=NULL
 		, const char *_registered_file="",short _registered_line=-1
 )
 ----

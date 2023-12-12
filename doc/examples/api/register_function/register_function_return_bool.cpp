@@ -2,19 +2,19 @@
 
 using zetscript::ScriptEngine;
 
-bool returnBoolean(ScriptEngine *_se){
+bool returnBoolean(ScriptEngine *_script_engine){
     return true;
 }
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	// Registers function
-    se.registerFunction("returnBoolean",returnBoolean);
+    script_engine.registerFunction("returnBoolean",returnBoolean);
 
     // Evaluates a script that calls the registered function and prints its result by console
-    se.compileAndRun(
+    script_engine.eval(
         "Console::outln(\"result : \"+returnBoolean());"
  	);
     return 0;

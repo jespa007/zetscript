@@ -7,11 +7,11 @@ namespace zetscript{
 	namespace json{
 
 		typedef struct{
-			const char *filename;
-			const char *str_start;
-			String str_error;
-			StackElement *first_element;
-			ScriptEngine *zs;
+			const char 		*	filename;
+			const char 		*	str_start;
+			String 				str_error;
+			StackElement 	*	first_element;
+			ScriptEngine 	*	script_engine;
 		}JsonDeserializeData;
 
 
@@ -217,12 +217,12 @@ namespace zetscript{
 				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				ScriptObject *so=StringScriptObject::newStringScriptObject(data->zs, str_aux.toConstChar());
-				vm_create_shared_object(data->se->getVirtualMachine(),so);
+				ScriptObject *so=StringScriptObject::newStringScriptObject(data->script_engine, str_aux.toConstChar());
+				vm_create_shared_object(data->script_engine->getVirtualMachine(),so);
 
 				//
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->se->getVirtualMachine(),so);
+					vm_share_object(data->script_engine->getVirtualMachine(),so);
 				}
 				stk_json_element->value=(intptr_t)so;
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
@@ -288,11 +288,11 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=ArrayScriptObject::newArrayScriptObject(data->zs);
-				vm_create_shared_object(data->se->getVirtualMachine(),vo);
+				vo=ArrayScriptObject::newArrayScriptObject(data->script_engine);
+				vm_create_shared_object(data->script_engine->getVirtualMachine(),vo);
 
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->se->getVirtualMachine(),vo);
+					vm_share_object(data->script_engine->getVirtualMachine(),vo);
 				}
 
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;
@@ -343,17 +343,17 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?data->se->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
+						,stk_json_element!=NULL?data->script_engine->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ObjectScriptObject::newObjectScriptObject(data->zs);
-				vm_create_shared_object(data->se->getVirtualMachine(),so);
+				so=ObjectScriptObject::newObjectScriptObject(data->script_engine);
+				vm_create_shared_object(data->script_engine->getVirtualMachine(),so);
 
 				if(stk_json_element != data->first_element){
-					vm_share_object(data->se->getVirtualMachine(),so);
+					vm_share_object(data->script_engine->getVirtualMachine(),so);
 				}
 
 				stk_json_element->properties=STACK_ELEMENT_PROPERTY_OBJECT;

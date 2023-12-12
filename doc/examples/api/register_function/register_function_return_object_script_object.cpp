@@ -8,12 +8,12 @@ using zetscript::ArrayScriptObject;
 using zetscript::ObjectScriptObject;
 
 // Definition of the native function interface returnObject
-ObjectScriptObject *returnObject(ScriptEngine *_se){
+ObjectScriptObject *returnObject(ScriptEngine *_script_engine){
 	// instance new ObjectScriptObject using ScriptEngine context
-	ObjectScriptObject *object=_se->newObjectScriptObject();
+	ObjectScriptObject *object=_script_engine->newObjectScriptObject();
 
 	// instance new ArrayScriptObject using ScriptEngine context
-	ArrayScriptObject *array=_se->newArrayScriptObject();
+	ArrayScriptObject *array=_script_engine->newArrayScriptObject();
 
 	// set field "a" as integer 10
 	object->set<zs_int>("a",10);
@@ -39,13 +39,13 @@ ObjectScriptObject *returnObject(ScriptEngine *_se){
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	// bind native function returnObject named as 'returnObject'
-    se.registerFunction("returnObject",returnObject);
+    script_engine.registerFunction("returnObject",returnObject);
 
     // Eval script that calls native function 'returnObject'
-    se.compileAndRun(
+    script_engine.eval(
         "Console::outln(\"result : \"+returnObject());"
  	);
 

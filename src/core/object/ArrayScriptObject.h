@@ -26,7 +26,7 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		ArrayScriptObject(ScriptEngine *_se);
+		ArrayScriptObject(ScriptEngine *_script_engine);
 
 		template<typename _T>
 		void 								set(int _pos, _T _element);

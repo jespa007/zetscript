@@ -9,7 +9,7 @@ The function must always include _zetscript::ScriptEngine *_ as the FIRST parame
 
 [source,cpp]
 ----
-ReturnType zetscriptCppInterface(ScriptEngine *_se, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 ){
+ReturnType zetscriptCppInterface(ScriptEngine *_script_engine, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 ){
 	....
 }
 ----

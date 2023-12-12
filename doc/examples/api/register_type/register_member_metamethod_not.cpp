@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	NumberZs_register(&zs);
 	
-	se.compileAndRun(
+	script_engine.eval(
 		"var number=new Number()\n"
 		"if(!number){\n"
 		"	Console::outln(\"Number is empty\")	\n"

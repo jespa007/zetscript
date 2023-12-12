@@ -6,9 +6,9 @@
 
 void test_call_script_function(){
 	// instances ScriptEngine
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.compileAndRun(
+	script_engine.eval(
 		// ScriptFunction 'say_hello'
 		"function say_hello(){\n"
 		"	Console::outln(\"hello from 'say_hello'!\")\n"
@@ -29,13 +29,13 @@ void test_call_script_function(){
 	);
 
 	// instance function delete_test function.
-	auto  say_hello=se.bindScriptFunction<void ()>("say_hello");
+	auto  say_hello=script_engine.bindScriptFunction<void ()>("say_hello");
 
 	// it calls "say_hello" function with no parameters
 	say_hello();
 
 	// instance member function test.function1.
-	auto  test_say_hello=se.bindScriptFunction<void (zetscript::zs_int)>("test.say_hello");
+	auto  test_say_hello=script_engine.bindScriptFunction<void (zetscript::zs_int)>("test.say_hello");
 
 	// it calls "test.function1" member function with 10 as parameter.
 	test_say_hello(10);

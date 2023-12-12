@@ -39,7 +39,7 @@ namespace zetscript{
 						||\
 					STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
+					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->script_engine,stk_result_op1,stk_result_op2);\
 					vm_create_shared_object(_vm,so_string);\
 					ZS_VM_PUSH_STK_OBJECT(so_string);\
 					return true;
@@ -48,7 +48,7 @@ namespace zetscript{
 					STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				object=ArrayScriptObject::concat(\
-							data->zs\
+							data->script_engine\
 							,(ArrayScriptObject *)stk_result_op1->value\
 							,(ArrayScriptObject *)stk_result_op2->value\
 					);\
@@ -60,7 +60,7 @@ namespace zetscript{
 					STACK_ELEMENT_IS_OBJECT_SCRIPT_OBJECT(stk_result_op2)\
 			){\
 				object=ObjectScriptObject::concat(\
-							data->zs\
+							data->script_engine\
 							,(ObjectScriptObject *)stk_result_op1->value\
 							,(ObjectScriptObject *)stk_result_op2->value\
 					);\
@@ -218,7 +218,7 @@ namespace zetscript{
 
 		if(_is_je_case){
 			ZS_VM_ERROR("Error evaluating case for variable as type '%s': %s"
-				,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+				,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 				,error_found.toConstChar()
 			);
 		}else{
@@ -231,9 +231,9 @@ namespace zetscript{
 				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
-					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
-					,data->se->stackElementToStringTypeOf(stk_result_op2).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_result_op2).toConstChar()
 					,error_found.isEmpty()?"":":"
 					,error_found.toConstChar()
 					,tip.toConstChar()
@@ -243,7 +243,7 @@ namespace zetscript{
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
-					,data->se->stackElementToStringTypeOf(stk_result_op1).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
 					,error_found.isEmpty()?"":":"
 					,error_found.toConstChar()
 					,tip.toConstChar()
@@ -281,7 +281,7 @@ namespace zetscript{
 		if(_metamethod == METAMETHOD_ADD_ASSIGN){
 			if(	STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
-						(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->se->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
+						(stk_result_op2->properties & STACK_ELEMENT_PROPERTY_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):data->script_engine->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,stk_result_op2)\
 				);\
 				ZS_VM_PUSH_STK_OBJECT(stk_result_op1->value);\
 				return true;
@@ -289,7 +289,7 @@ namespace zetscript{
 						&&\
 					STACK_ELEMENT_IS_ARRAY_SCRIPT_OBJECT(stk_result_op2)\
 			){\
-				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
+				ObjectScriptObject::append(data->script_engine, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
 				ZS_VM_PUSH_STK_OBJECT(stk_result_op1->value);\
 				return true;
 			}

@@ -16,11 +16,11 @@ public:
 
 Data *data=NULL;
 
-Data * getData(zetscript::ScriptEngine *_se){
+Data * getData(zetscript::ScriptEngine *_script_engine){
 	return data;
 }
 
-bool DataZs_in(zetscript::ScriptEngine *_se, Data *_this, zs_float *_value){
+bool DataZs_in(zetscript::ScriptEngine *_script_engine, Data *_this, zs_float *_value){
 	for(int i=0; i < _this->data.length(); i++){
 		if(*_value == _this->data.get(i)){
 			return true;
@@ -31,15 +31,15 @@ bool DataZs_in(zetscript::ScriptEngine *_se, Data *_this, zs_float *_value){
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	data=new Data();
 
-	se.registerScriptType<Data>("Data");
-	se.registerFunction("getData",getData);
-	se.registerMemberFunction<Data>("_in",DataZs_in);
+	script_engine.registerScriptType<Data>("Data");
+	script_engine.registerFunction("getData",getData);
+	script_engine.registerMemberFunction<Data>("_in",DataZs_in);
 
-	se.compileAndRun(
+	script_engine.eval(
 		"var data=getData();\n"
 		"if(10 in data){\n"
 		"	Console::outln(\"10 is content in data\")\n"

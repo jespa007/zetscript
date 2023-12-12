@@ -199,7 +199,7 @@ namespace zetscript{
 				switch(current_arg->properties & MSK_STACK_ELEMENT_TYPE_PROPERTIES){
 
 				default:
-					aux_string=data->se->stackElementToStringTypeOf(current_arg);
+					aux_string=data->script_engine->stackElementToStringTypeOf(current_arg);
 					break;
 				case STACK_ELEMENT_PROPERTY_INT:
 					aux_string=k_str_int_type;
@@ -350,7 +350,7 @@ namespace zetscript{
 
 
 		// First param is zetscript instance reference always
-		converted_param[0]=(zs_int)data->zs;
+		converted_param[0]=(zs_int)data->script_engine;
 
 
 		// special case that this is passed in static ref function
@@ -407,7 +407,7 @@ namespace zetscript{
 				if((stk_arg_current->properties & STACK_ELEMENT_PROPERTY_INT) && (_c_function->params[i].script_type_id == SCRIPT_TYPE_ID_FLOAT_PTR)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
-				}else if(!data->se->stackElementTo(
+				}else if(!data->script_engine->stackElementTo(
 					&_stk_arg_c_function[i-idx_arg_start]
 					,_c_function->params[i].script_type_id
 					,(zs_int *)&converted_param[i]
@@ -929,7 +929,7 @@ namespace zetscript{
 
 		// check for return values through stack
 
-		*data->vm_stk_current++=data->se->toStackElement(result,return_script_type_id);
+		*data->vm_stk_current++=data->script_engine->toStackElement(result,return_script_type_id);
 
 		StackElement *sf_call_stk_return=(_stk_arg_c_function+_n_args); // +1 points to starting return...
 		int sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;

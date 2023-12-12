@@ -7,15 +7,15 @@
 
 namespace zetscript{
 
-	VarRefObject * VarRefObject::newVarRefObject(ScriptEngine *_se,StackElement _stk){//,int idx_call){
-		VarRefObject *so=new VarRefObject(_se);
+	VarRefObject * VarRefObject::newVarRefObject(ScriptEngine *_script_engine,StackElement _stk){//,int idx_call){
+		VarRefObject *so=new VarRefObject(_script_engine);
 		so->setStackElement(_stk);
 		return so;
 	}
 
 	VarRefObject::VarRefObject(
-			ScriptEngine *_se
-	):ScriptObject(_se){
+			ScriptEngine *_script_engine
+	):ScriptObject(_script_engine){
 		script_type_id = SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT;
 		stk_var_ref.setUndefined();
 		//idx_call=ZS_UNDEFINED_IDX;
@@ -41,7 +41,7 @@ namespace zetscript{
 		if(stk_var_ref.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 			return ((ScriptObject *)stk_var_ref.value)->toString();
 		}
-		return se->stackElementToString(&stk_var_ref);
+		return script_engine->stackElementToString(&stk_var_ref);
 	}
 
 }

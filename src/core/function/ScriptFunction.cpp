@@ -17,7 +17,7 @@
 namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
-			ScriptEngine * _se
+			ScriptEngine * _script_engine
 			,int _idx_script_function
 			,ScriptTypeId _owner_script_type_id
 			,int _idx_position
@@ -50,10 +50,10 @@ namespace zetscript{
 		updateParams(_params,_params_len);
 
 		// factories
-		zs = _se;
-		scope_factory = se->getScriptScopesFactory();
-		script_function_factory= se->getScriptFunctionsFactory();
-		script_types_factory=se->getScriptTypesFactory();
+		script_engine = _script_engine;
+		scope_factory = script_engine->getScriptScopesFactory();
+		script_function_factory= script_engine->getScriptFunctionsFactory();
+		script_types_factory=script_engine->getScriptTypesFactory();
 
 		min_code_stack_needed=0;
 
@@ -69,7 +69,7 @@ namespace zetscript{
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		ScriptEngine *zs=sfo->zs;
+		ScriptEngine *script_engine=sfo->script_engine;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 		int req_stk;
@@ -384,7 +384,7 @@ namespace zetscript{
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,se->getScriptTypesFactory()->getScriptTypeName(instruction->value_op2));
+						,script_engine->getScriptTypesFactory()->getScriptTypeName(instruction->value_op2));
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
@@ -603,7 +603,7 @@ namespace zetscript{
 			// if function is main, we must initialize stack element at position local_variables->length()
 			// to prevent collect garbage information from previous evaluations where the stack element
 			// was used for temporal operations
-			vm_set_stack_element_at(se->getVirtualMachine(),local_variables->length(),k_stk_undefined);
+			vm_set_stack_element_at(script_engine->getVirtualMachine(),local_variables->length(),k_stk_undefined);
 		}
 
 		local_variables->push(symbol);
@@ -814,7 +814,7 @@ namespace zetscript{
 					// get type
 					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
 
-					sc_found=se->getScriptTypesFactory()->getScriptType(copy_aux);
+					sc_found=script_engine->getScriptTypesFactory()->getScriptType(copy_aux);
 
 					if(sc_found!=NULL){
 						// advance ::
@@ -906,7 +906,7 @@ namespace zetscript{
 	}
 
 	ScriptEngine *ScriptFunction::getScriptEngine(){
-		return zs;
+		return script_engine;
 	}
 
 	ScriptFunction::~ScriptFunction(){

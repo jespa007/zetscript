@@ -25,7 +25,7 @@ namespace zetscript{
 		uint16_t 								properties; // it tells its properties
 
 		ScriptObject(
-				ScriptEngine 		*	_se
+				ScriptEngine 		*	_script_engine
 				,ScriptTypeId _script_type_id=SCRIPT_TYPE_ID_INVALID
 		);
 
@@ -60,17 +60,17 @@ namespace zetscript{
 		void 									deattachRefObjectNode(ListNode<RefScriptObject *> * _ref_object_node);
 
 		void 									printAllMemberFunctions();
-		MapString 						*			getMapStringBuiltinFields();
+		MapString 						*		getMapStringBuiltinFields();
 
 		virtual 								~ScriptObject();
 	protected:
 
 		StackElement 							stk_this;
 
-		ScriptEngine 							*	zs; // 8
+		ScriptEngine 						*	script_engine; // 8
 		VirtualMachine 						*	vm; // 8
-		Vector<StackElement *>				stk_builtin_elements;
-		MapString    							*	map_builtin_fields; // to search faster each property by its name
+		Vector<StackElement *>					stk_builtin_elements;
+		MapString    						*	map_builtin_fields; // to search faster each property by its name
 
 		static void 							onDettachRefObjectNode(ListNode<RefScriptObject *> *node);
 		List<RefScriptObject *>	*	ref_objects;

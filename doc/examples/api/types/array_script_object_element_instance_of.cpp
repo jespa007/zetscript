@@ -7,7 +7,7 @@ using zetscript::zs_float;
 using zetscript::String;
 
 // Check whether the array element is type integer, float or string
-void testArrayElementInstanceOf(ScriptEngine *_se,ArrayScriptObject *_array_object){
+void testArrayElementInstanceOf(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
 
 	for(int i=0; i < _array_object->length(); i++){
                
@@ -30,13 +30,13 @@ void testArrayElementInstanceOf(ScriptEngine *_se,ArrayScriptObject *_array_obje
 }
 
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
 	// registers testArrayElementInstanceOf
-	se.registerFunction("testArrayElementInstanceOf",testArrayElementInstanceOf);
+	script_engine.registerFunction("testArrayElementInstanceOf",testArrayElementInstanceOf);
 
 	// calls printArrayElementTypes
-	se.compileAndRun(
+	script_engine.eval(
         "testArrayElementInstanceOf(["
             "0"                 // Element at position '1' is type 'Integer'
             ",10.5"             // Element at position '2: is type 'Float'

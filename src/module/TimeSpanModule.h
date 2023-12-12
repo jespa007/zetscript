@@ -7,14 +7,14 @@
 namespace zetscript{
 
 	// member functions
-	TimeSpan * 		TimeSpanModule_new(ScriptEngine *_se);
+	TimeSpan * 		TimeSpanModule_new(ScriptEngine *_script_engine);
 
-	zs_int 				TimeSpanModule_get_seconds(ScriptEngine *_se,TimeSpan *_this);
-	zs_int 				TimeSpanModule_get_minutes(ScriptEngine *_se,TimeSpan *_this);
-	zs_int 				TimeSpanModule_get_hours(ScriptEngine *_se,TimeSpan *_this);
+	zs_int 				TimeSpanModule_get_seconds(ScriptEngine *_script_engine,TimeSpan *_this);
+	zs_int 				TimeSpanModule_get_minutes(ScriptEngine *_script_engine,TimeSpan *_this);
+	zs_int 				TimeSpanModule_get_hours(ScriptEngine *_script_engine,TimeSpan *_this);
 
-	zs_int 				TimeSpanModule_get_days(ScriptEngine *_se,TimeSpan *_this);
+	zs_int 				TimeSpanModule_get_days(ScriptEngine *_script_engine,TimeSpan *_this);
 
-	void		 		TimeSpanModule_delete(ScriptEngine *_se,TimeSpan *_this);
+	void		 		TimeSpanModule_delete(ScriptEngine *_script_engine,TimeSpan *_this);
 
 }

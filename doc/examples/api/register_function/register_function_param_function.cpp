@@ -5,23 +5,23 @@ using zetscript::ScriptFunction;
 
 
 // The C function to register that binds and calls the script function passed by parameter
-void paramFunction(ScriptEngine *_se, ScriptFunction *_script_function){
+void paramFunction(ScriptEngine *_script_engine, ScriptFunction *_script_function){
 
     // bind script function to make it callable
-    auto script_function=_se->bindScriptFunction<void ()>(_script_function);
+    auto script_function=_script_engine->bindScriptFunction<void ()>(_script_function);
 
     // call script function
     script_function();
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
     // register C function
-    se.registerFunction("paramFunction",paramFunction);
+    script_engine.registerFunction("paramFunction",paramFunction);
 
     // Evaluates the script that calls C function with anonymous function as argument
-    se.compileAndRun(
+    script_engine.eval(
         "paramFunction(function(){\n"
         "    Console::out(\"Calling from script function\")\n"
         "})\n"

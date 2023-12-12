@@ -13,12 +13,12 @@ namespace zetscript{
 
 	static int n_eval_function=0;
 
-	zs_float SystemModule_clock(ScriptEngine *_se){
-		ZS_UNUSUED_PARAM(_se);
+	zs_float SystemModule_clock(ScriptEngine *_script_engine){
+		ZS_UNUSUED_PARAM(_script_engine);
 		return System::clock();
 	}
 
-	void SystemModule_eval(ScriptEngine *_se,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
+	void SystemModule_eval(ScriptEngine *_script_engine,StringScriptObject *_so_str_eval,ObjectScriptObject *_oo_param){
 		StringScriptObject *so_str_eval=NULL;
 		ObjectScriptObject *oo_param=NULL;
 		FunctionParam *function_params=NULL;
@@ -30,7 +30,7 @@ namespace zetscript{
 		StackElement **stk_params_data=NULL;
 		const char *str_start=NULL;
 		String str_unescaped_source="";
-		VirtualMachine *vm=_se->getVirtualMachine();
+		VirtualMachine *vm=_script_engine->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
@@ -77,7 +77,7 @@ namespace zetscript{
 		//    function(a,b){a+b}(1,2);
 		String  name=String::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	ScriptFunction(
-				_se
+				_script_engine
 				,ZS_FUNCTION_EVAL_IDX
 				,SCRIPT_TYPE_ID_CLASS_MAIN
 				,-1
@@ -89,8 +89,8 @@ namespace zetscript{
 				,0
 		);
 
-		ScriptScope *main_scope=((((_se)->getScriptScopesFactory())))->getMainScope();
-		sf_eval->scope=(((_se)->getScriptScopesFactory()))->newScope(sf_eval->id,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		ScriptScope *main_scope=((((_script_engine)->getScriptScopesFactory())))->getMainScope();
+		sf_eval->scope=(((_script_engine)->getScriptScopesFactory()))->newScope(sf_eval->id,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 
 		//--------------------------------------
 		// 2. register arg symbols
@@ -118,7 +118,7 @@ namespace zetscript{
 		// 3. Call zetscript->eval this function
 		try{
 			compiler_compile_and_link(
-					_se
+					_script_engine
 					,str_start
 					,NULL
 					,NULL
@@ -186,7 +186,7 @@ goto_eval_exit:
 
 		 sf_eval->scope->removeChildrenBlockTypes();
 		 sf_eval->scope->markAsUnusued();
-		 _se->getScriptScopesFactory()->clearUnusuedScopes();
+		 _script_engine->getScriptScopesFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;
 
@@ -209,13 +209,13 @@ goto_eval_exit:
 		data->vm_stk_current=stk_start_arg_call+n_ret_args;
 	}
 
-	void 	SystemModule_eval(ScriptEngine *_se, StringScriptObject *_so_str_eval){
-		SystemModule_eval(_se,_so_str_eval,NULL);
+	void 	SystemModule_eval(ScriptEngine *_script_engine, StringScriptObject *_so_str_eval){
+		SystemModule_eval(_script_engine,_so_str_eval,NULL);
 	}
 
-	void SystemModule_error(ScriptEngine *zs, StackElement *str, StackElement *args){
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
-		vm_set_error(se->getVirtualMachine(),str_out->toString().toConstChar());
+	void SystemModule_error(ScriptEngine *_script_engine, StackElement *str, StackElement *args){
+		StringScriptObject *str_out=StringScriptObject::format(_script_engine,str,args);
+		vm_set_error(_script_engine->getVirtualMachine(),str_out->toString().toConstChar());
 		delete str_out;
 
 	}

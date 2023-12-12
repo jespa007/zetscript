@@ -5,9 +5,9 @@
 
 namespace zetscript{
 	RefScriptObject::RefScriptObject(
-			ScriptEngine *_se
+			ScriptEngine *_script_engine
 			, ScriptObject *_so_ref
-	):ScriptObject(_se){
+	):ScriptObject(_script_engine){
 		ref_object=_so_ref;
 		ref_object_node=new ListNode<RefScriptObject *>;
 		ref_object_node->data=this;

@@ -3,18 +3,18 @@
 using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
-void printString(ScriptEngine *_se,StringScriptObject *_string_object){
+void printString(ScriptEngine *_script_engine,StringScriptObject *_string_object){
 	printf("%s\n",_string_object->getConstChar());
 }
 
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
 	// registers printString
-	se.registerFunction("printString",printString);
+	script_engine.registerFunction("printString",printString);
 
 	// calls printString
-	se.compileAndRun("printString(\"Hello World!\")");
+	script_engine.eval("printString(\"Hello World!\")");
 	
 	return 0;
 }

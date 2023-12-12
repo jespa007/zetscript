@@ -6,14 +6,14 @@
 
 namespace zetscript{
 
-	ArrayScriptObject *ObjectScriptObjectZs_keys(ScriptEngine *_se,ObjectScriptObject *o1){
-		VirtualMachine *vm=_se->getVirtualMachine();
-		ArrayScriptObject *sv= ZS_NEW_ARRAY_SCRIPT_OBJECT(_se);
+	ArrayScriptObject *ObjectScriptObjectZs_keys(ScriptEngine *_script_engine,ObjectScriptObject *o1){
+		VirtualMachine *vm=_script_engine->getVirtualMachine();
+		ArrayScriptObject *sv= ZS_NEW_ARRAY_SCRIPT_OBJECT(_script_engine);
 
 		MapString *fields=o1->getMapStringFields();
 		for(auto it=fields->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->newSlot();
-			StringScriptObject *so=ZS_NEW_STRING_SCRIPT_OBJECT(_se);
+			StringScriptObject *so=ZS_NEW_STRING_SCRIPT_OBJECT(_script_engine);
 			so->set(it.key);
 
 			// create and share pointer
@@ -33,27 +33,27 @@ namespace zetscript{
 	}*/
 
 
-	bool ObjectScriptObjectZs_contains(ScriptEngine *_se,ObjectScriptObject *o1, String * key){
-		ZS_UNUSUED_PARAM(_se);
+	bool ObjectScriptObjectZs_contains(ScriptEngine *_script_engine,ObjectScriptObject *o1, String * key){
+		ZS_UNUSUED_PARAM(_script_engine);
 		return o1->exists(key->toConstChar());
 	}
 
-	void ObjectScriptObjectZs_clear(ScriptEngine *_se,ObjectScriptObject *o1){
-		ZS_UNUSUED_PARAM(_se);
+	void ObjectScriptObjectZs_clear(ScriptEngine *_script_engine,ObjectScriptObject *o1){
+		ZS_UNUSUED_PARAM(_script_engine);
 		o1->eraseAll();
 	}
 
-	void ObjectScriptObjectZs_erase(ScriptEngine *_se,ObjectScriptObject *o1, String * key){
-		ZS_UNUSUED_PARAM(_se);
+	void ObjectScriptObjectZs_erase(ScriptEngine *_script_engine,ObjectScriptObject *o1, String * key){
+		ZS_UNUSUED_PARAM(_script_engine);
 		o1->erase(key->toConstChar());
 	}
 
-	ObjectIteratorScriptObject * ObjectScriptObjectZs_iter(ScriptEngine *_se,ObjectScriptObject *_oo){
-		return ZS_NEW_OBJECT_ITERATOR_SCRIPT_OBJECT(_se,_oo);
+	ObjectIteratorScriptObject * ObjectScriptObjectZs_iter(ScriptEngine *_script_engine,ObjectScriptObject *_oo){
+		return ZS_NEW_OBJECT_ITERATOR_SCRIPT_OBJECT(_script_engine,_oo);
 	}
 
-	void						 	ObjectScriptObjectZs_extend(ScriptEngine *_se,ObjectScriptObject *o1,ObjectScriptObject *o2){
-		ObjectScriptObject::append(_se,o1,o2);
+	void						 	ObjectScriptObjectZs_extend(ScriptEngine *_script_engine,ObjectScriptObject *o1,ObjectScriptObject *o2){
+		ObjectScriptObject::append(_script_engine,o1,o2);
 	}
 
 }

@@ -6,7 +6,7 @@ using zetscript::zs_float;
 using zetscript::ObjectScriptObject;
 using zetscript::StringScriptObject;
 
-void modifyObject(ScriptEngine *_se,ObjectScriptObject *_object){
+void modifyObject(ScriptEngine *_script_engine,ObjectScriptObject *_object){
 
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.length(); i++){
@@ -18,7 +18,7 @@ void modifyObject(ScriptEngine *_se,ObjectScriptObject *_object){
 			_object->set<zs_float>(keys.get(i),i*10.2);
 			break;
 		case 2: // set new string
-			_object->set<StringScriptObject *>(keys.get(i),new StringScriptObject(_se,"Hello"));
+			_object->set<StringScriptObject *>(keys.get(i),new StringScriptObject(_script_engine,"Hello"));
 			break;
 
 		}
@@ -26,14 +26,14 @@ void modifyObject(ScriptEngine *_se,ObjectScriptObject *_object){
 }
 
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
 	// registers modifyObject
-	se.registerFunction("modifyObject",modifyObject);
+	script_engine.registerFunction("modifyObject",modifyObject);
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyObject'
-	se.compileAndRun(
+	script_engine.eval(
 		"var o={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

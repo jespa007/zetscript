@@ -243,7 +243,7 @@ endif()
 
 # zs script
 add_executable(zs${POST_NAME}
-	${PROJECT_SOURCE_DIR}/se.cpp
+	${PROJECT_SOURCE_DIR}/zs.cpp
 )
 target_link_libraries(zs${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME} )
 

@@ -1705,7 +1705,7 @@ namespace zetscript{
 			ScriptObject *calling_obj=NULL;
 			Vector<String> access_var =function_access.split('.');
 			ScriptFunction * main_function = script_types_factory->getMainFunction();
-			StackElement *se=NULL;
+			StackElement *script_engine=NULL;
 			Symbol *symbol_sfm=NULL;
 
 
@@ -1748,10 +1748,10 @@ namespace zetscript{
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
-						se = calling_obj->getStackElementByKeyName(symbol_to_find);
-						if(se!=NULL){
-							if(se->properties & STACK_ELEMENT_PROPERTY_OBJECT){
-								calling_obj=(ScriptObject *)se->value;
+						script_engine = calling_obj->getStackElementByKeyName(symbol_to_find);
+						if(script_engine!=NULL){
+							if(script_engine->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+								calling_obj=(ScriptObject *)script_engine->value;
 							}else{
 								ZS_THROW_EXCEPTION_FILE_LINE(
 										file

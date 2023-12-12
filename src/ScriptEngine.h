@@ -5,8 +5,8 @@
 #pragma once
 
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
- class_type * class_type##_New(ScriptEngine *_se){ return new class_type(_se);} \
- void class_type##_Delete(ScriptEngine *_se,class_type *ptr){ ZS_UNUSUED_PARAM(_se);delete  (class_type *)(ptr);}
+ class_type * class_type##_New(ScriptEngine *_script_engine){ return new class_type(_script_engine);} \
+ void class_type##_Delete(ScriptEngine *_script_engine,class_type *ptr){ ZS_UNUSUED_PARAM(_script_engine);delete  (class_type *)(ptr);}
 
 
 namespace zetscript{
@@ -43,7 +43,7 @@ namespace zetscript{
 		void			compileFile(const String & _filename, CompilerData *_compiler_data=NULL);
 
 		void 			compile(const String & expresion);
-		StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 
 		StackElement 	run(const char *__invoke_file__="", int __invoke_line__=-1);
 
@@ -124,8 +124,8 @@ namespace zetscript{
 		template<typename T>
 		ScriptType * registerScriptType(
 				const String & name
-				, T  * (*_new_native_instance)(ScriptEngine *_se)=NULL
-				, void (*_delete_native_instance)(ScriptEngine *_se,T *)=NULL
+				, T  * (*_new_native_instance)(ScriptEngine *_script_engine)=NULL
+				, void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
 		){
 			try{
@@ -508,7 +508,7 @@ namespace zetscript{
 		//----
 		void clearMainFunction();
 		//StackElement evalInternal(const char * _code, unsigned short _options=0, const char  *_filename="",CompilerData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
-		//StackElement	compileAndRun(const String & expresion, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
+		//StackElement	eval(const String & expresion, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

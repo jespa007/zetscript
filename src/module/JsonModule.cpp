@@ -12,16 +12,16 @@ namespace zetscript{
 
 
 
-	void JsonModule_deserialize(ScriptEngine *_se,StringScriptObject *str_json){
+	void JsonModule_deserialize(ScriptEngine *_script_engine,StringScriptObject *str_json){
 		// deserialize ...
 
 		String str=str_json->toString().unescape();
-		VirtualMachine *vm=_se->getVirtualMachine();
+		VirtualMachine *vm=_script_engine->getVirtualMachine();
 		StackElement return_stack_element=k_stk_undefined;
 		json::JsonDeserializeData deserialize_data;
 		deserialize_data.filename=NULL;
 		deserialize_data.str_start=str.toConstChar();
-		deserialize_data.zs=_se;
+		deserialize_data.script_engine=_script_engine;
 		deserialize_data.first_element=&return_stack_element;
 		int line=1;
 

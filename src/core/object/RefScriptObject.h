@@ -6,7 +6,7 @@ namespace zetscript{
 
 	class RefScriptObject : public ScriptObject{
 	public:
-		RefScriptObject(ScriptEngine *_se, ScriptObject *_so_ref);
+		RefScriptObject(ScriptEngine *_script_engine, ScriptObject *_so_ref);
 		void setRefObject(ScriptObject *_ref_object);
 		ScriptObject *getRefObject();
 		~RefScriptObject();

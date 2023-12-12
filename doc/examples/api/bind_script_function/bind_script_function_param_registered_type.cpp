@@ -21,7 +21,7 @@ public:
 // REGISTER FUNCTIONS
 
 // defines getter property for Number::value
-zs_float NumberZs_get_value(ScriptEngine *_se, Number *_this){
+zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
 	return _this->value;
 }
 
@@ -30,24 +30,24 @@ zs_float NumberZs_get_value(ScriptEngine *_se, Number *_this){
 
 int main()
 {
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
    // Register class Number
-	se.registerScriptType<Number>("Number");
+	script_engine.registerScriptType<Number>("Number");
 
 	// register property getter Number::x
-	se.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
+	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 
     // Evaluates ScriptEngine function 'paramNumber' that prints the contents of '_number'
-    se.compile(
+    script_engine.compile(
  		"function paramNumber(_number){\n"
         "    Console::outln(\"result : \"+_number);\n"
         "}\n"
  	);
 
     // It binds 'concat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto paramNumber=se.bindScriptFunction<void(Number * _number)>("paramNumber");
+    auto paramNumber=script_engine.bindScriptFunction<void(Number * _number)>("paramNumber");
 
     // Prepare parameters
     auto number=Number(10);

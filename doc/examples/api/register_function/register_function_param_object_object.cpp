@@ -7,7 +7,7 @@ using zetscript::zs_float;
 using zetscript::MapString;
 
 // c function expects an array of integers and floats
-void paramObjectScriptObject(ScriptEngine *_se, ObjectScriptObject *_object){
+void paramObjectScriptObject(ScriptEngine *_script_engine, ObjectScriptObject *_object){
 	printf("Values in object:\n");
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.length();i++){
@@ -20,12 +20,12 @@ void paramObjectScriptObject(ScriptEngine *_se, ObjectScriptObject *_object){
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
-    se.registerFunction("paramObjectScriptObject",paramObjectScriptObject);
+    script_engine.registerFunction("paramObjectScriptObject",paramObjectScriptObject);
 
     // eval and call bind function
-    se.compileAndRun(
+    script_engine.eval(
         "paramObjectScriptObject({"
         "    a:0"
         "     ,b:1"

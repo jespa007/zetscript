@@ -7,21 +7,21 @@ using zetscript::String;
 
 int main()
 {
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
     // Evaluates ScriptEngine function 'printConcat' that prints the result of the operation '+' from two arguments
-    se.compile(
+    script_engine.compile(
  		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+(_value1+_value2));\n"
         "}\n"
  	);
 
     // It binds 'printConcat' as '(void *)(ArrayScriptObject *, ArrayScriptObject *)'
-    auto printConcat=se.bindScriptFunction<void(ArrayScriptObject * _value1, ArrayScriptObject * _value2)>("printConcat");
+    auto printConcat=script_engine.bindScriptFunction<void(ArrayScriptObject * _value1, ArrayScriptObject * _value2)>("printConcat");
 
     // Prepare param values
-    auto array1=se.newArrayScriptObject();
-    auto array2=se.newArrayScriptObject();
+    auto array1=script_engine.newArrayScriptObject();
+    auto array2=script_engine.newArrayScriptObject();
 
    // push values for array1
    array1->push<bool>(false);

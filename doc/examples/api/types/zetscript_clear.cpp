@@ -1,8 +1,8 @@
 #include "zetscript.h"
 int main(){
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.clear("");
+	script_engine.clear("");
 	
 	return 0;
 }

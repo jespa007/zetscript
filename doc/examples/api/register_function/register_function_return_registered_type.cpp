@@ -14,37 +14,37 @@ public:
 };
 
 // defines getter property for Number::value
-zs_float NumberZs_get_value(ScriptEngine *_se, Number *_this){
+zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
 	return _this->value;
 }
 
 Number *_number=NULL;
 
 // C function that returns a Number type pointer
-Number *returnNumber(ScriptEngine *_se){
+Number *returnNumber(ScriptEngine *_script_engine){
 
 	// return global _number
     return _number;
 }
 
 int main(){
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	// Creates number and init its field value
 	_number=new Number();
 	_number->value=10;
 
 	// Registers class Number as non instantiable type
-	se.registerScriptType<Number>("Number");
+	script_engine.registerScriptType<Number>("Number");
 
 	// registers property getter Number::value
-	se.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
+	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 	// registers C function that returns a Number type pointer
-    se.registerFunction("returnNumber",returnNumber);
+    script_engine.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
-    se.compileAndRun(
+    script_engine.eval(
         "Console::outln(\"result : \"+returnNumber());"
  	);
 

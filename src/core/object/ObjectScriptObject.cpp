@@ -10,8 +10,8 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ScriptEngine	*_se){
-		return new ObjectScriptObject(_se);
+	ObjectScriptObject * ObjectScriptObject::newObjectScriptObject(ScriptEngine	*_script_engine){
+		return new ObjectScriptObject(_script_engine);
 	}
 
 	ObjectScriptObject * ObjectScriptObject::concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
@@ -49,8 +49,8 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ObjectScriptObject::ObjectScriptObject(
-			ScriptEngine	*_se
-	):ContainerScriptObject(_se, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
+			ScriptEngine	*_script_engine
+	):ContainerScriptObject(_script_engine, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 		map_fields=new MapString();
 	}
 
@@ -78,7 +78,7 @@ namespace zetscript{
 		}
 
 		if(_stk_src != NULL){
-			se->stackElementAssign(stk_dst,_stk_src);
+			script_engine->stackElementAssign(stk_dst,_stk_src);
 		}else{
 			*stk_dst=k_stk_undefined;
 		}
@@ -147,7 +147,7 @@ namespace zetscript{
 
 	String ObjectScriptObject::toString(){
 		StackElement stk={(zs_int)this,STACK_ELEMENT_PROPERTY_OBJECT};
-		return json::serialize(zs,&stk,false,false);
+		return json::serialize(script_engine,&stk,false,false);
 	}
 
 	ObjectScriptObject::~ObjectScriptObject(){

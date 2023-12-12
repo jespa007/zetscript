@@ -8,17 +8,17 @@
 namespace zetscript{
 
 	ArrayIteratorScriptObject * ArrayIteratorScriptObject::newArrayIteratorObject(
-			ScriptEngine *_se
+			ScriptEngine *_script_engine
 			, ArrayScriptObject *_so_ref
 	){
-		return new ArrayIteratorScriptObject(_se,_so_ref);
+		return new ArrayIteratorScriptObject(_script_engine,_so_ref);
 	}
 
 
 	ArrayIteratorScriptObject::ArrayIteratorScriptObject(
-		ScriptEngine *_se
+		ScriptEngine *_script_engine
 		, ArrayScriptObject *_so_ref
-	):RefScriptObject(_se,_so_ref)
+	):RefScriptObject(_script_engine,_so_ref)
 	{
 		script_type_id=SCRIPT_TYPE_ID_ARRAY_ITERATOR_SCRIPT_OBJECT;
 		idx=0;

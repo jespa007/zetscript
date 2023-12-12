@@ -13,7 +13,7 @@ namespace zetscript{
 
 	public:
 		static VarRefObject * newVarRefObject(ScriptEngine *zs, StackElement _stk_var_ref); // idx call
-		VarRefObject(ScriptEngine *_se);
+		VarRefObject(ScriptEngine *_script_engine);
 
 		//void setIdxCall(int idx_call);
 		//int getIdxCall();

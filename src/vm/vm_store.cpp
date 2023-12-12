@@ -56,7 +56,7 @@ namespace zetscript{
 		 }else if((stk_dst->properties & STACK_ELEMENT_PROPERTY_CHAR_PTR)==0){
 			ZS_VM_STOP_EXECUTE(
 				"Expected l-value on assignment but it was type '%s'"
-				,data->se->stackElementToStringTypeOf(stk_dst).toConstChar()
+				,data->script_engine->stackElementToStringTypeOf(stk_dst).toConstChar()
 			);
 		}
 
@@ -246,7 +246,7 @@ namespace zetscript{
 					str_object=(StringScriptObject *)stk_dst->value;
 					unref_old_stk_object=false;
 				}else{ // Generates a String var
-					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_SCRIPT_OBJECT(data->zs));
+					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine));
 					stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					// create shared ptr
 					vm_create_shared_object(_vm,str_object);
@@ -314,7 +314,7 @@ namespace zetscript{
 
 			}else{
 				ZS_VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
-					,data->se->stackElementToStringTypeOf(stk_src).toConstChar()
+					,data->script_engine->stackElementToStringTypeOf(stk_src).toConstChar()
 				);
 			}
 

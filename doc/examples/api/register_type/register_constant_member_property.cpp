@@ -2,11 +2,11 @@
 
 int main(){
 
-	ScriptEngine se;
+	ScriptEngine script_engine;
 
 	NumberZs_register(&zs);
 
-	se.compileAndRun(
+	script_engine.eval(
 		"var number=new Number();\n"
 		"Console::outln(\"number::MAX_VALUE => {0}\",number::MAX_VALUE)\n"
 	);

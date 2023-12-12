@@ -7,25 +7,25 @@ using zetscript::ScriptEngine;
 Number *number=NULL;
 
 // function that returns number reference
-Number *getNumber(ScriptEngine *_se){
+Number *getNumber(ScriptEngine *_script_engine){
 	return 	number;
 }
 
 int main(){
 	
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
-	se.registerScriptType<Number>("Number");
+	script_engine.registerScriptType<Number>("Number");
 	
 	// create new 'Number'
 	number=new Number();
  	
  	 //register function 'getNumber' that return 'number' reference
- 	se.registerFunction("getNumber",getNumber);
+ 	script_engine.registerFunction("getNumber",getNumber);
  	
  	
 	// Evaluates ScriptEngine code that calls 'getNumber' to get 'number' object reference
- 	se.compileAndRun(
+ 	script_engine.eval(
  		"var number= getNumber();" 
  	);
  	

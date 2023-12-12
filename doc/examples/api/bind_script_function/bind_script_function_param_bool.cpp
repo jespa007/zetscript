@@ -2,17 +2,17 @@
 
 int main()
 {
-	zetscript::ScriptEngine se;
+	zetscript::ScriptEngine script_engine;
 
     // Evaluates ScriptEngine function 'paramBoolean' that prints the contents of '_value'
-    se.compile(
+    script_engine.compile(
  		"function paramBoolean(_value){\n"
         "    Console::outln(\"result : \"+_value);\n"
         "}\n"
  	);
 
     // It binds 'paramBoolean' as '(void *)(bool *)'
-    auto paramBoolean=se.bindScriptFunction<void(bool *)>("paramBoolean");
+    auto paramBoolean=script_engine.bindScriptFunction<void(bool *)>("paramBoolean");
 
     // Prepare parameter values 
     bool value=true;

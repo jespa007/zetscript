@@ -256,7 +256,7 @@ load_function:
 
 						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 
@@ -269,12 +269,12 @@ load_function:
 						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 						);
 					}else{ // STACK CALL
 						ZS_VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
-								,data->se->stackElementToString(sf_call_stk_function_ref).toConstChar()
-								,data->se->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementToString(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					}
@@ -320,7 +320,7 @@ execute_function:
 											,sf_call_script_function->name.toConstChar(),i+1);
 								}
 
-								VarRefObject *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
+								VarRefObject *sc=ZS_NEW_OBJECT_VAR_REF(data->script_engine,*stk_arg);
 								vm_create_shared_object(_vm,sc);
 								so_param=sc;
 								stk_arg->value=(intptr_t)sc;
@@ -346,7 +346,7 @@ execute_function:
 							if((stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_param->properties & OBJECT_PROPERTY_CONSTANT)){
-									StringScriptObject *sc=ZS_NEW_STRING_SCRIPT_OBJECT(data->zs);
+									StringScriptObject *sc=ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine);
 									vm_create_shared_object(_vm,sc);
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
 									so_param=sc;
@@ -360,7 +360,7 @@ execute_function:
 							var_args->pushStackElement(stk_arg); // we do not share pointer here due is already added in a vector
 						}else{
 							if(sfa_properties & MSK_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
-								var_args=ZS_NEW_ARRAY_SCRIPT_OBJECT(data->zs);
+								var_args=ZS_NEW_ARRAY_SCRIPT_OBJECT(data->script_engine);
 								vm_create_shared_object(_vm,var_args);
 
 								vm_share_object(_vm,var_args); // we share pointer +1 to not remove on pop in calling return
@@ -417,7 +417,7 @@ execute_function:
 						break;
 					default:
 						ZS_VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
-							,data->se->stackElementToStringTypeOf(&param->default_param_value).toConstChar()
+							,data->script_engine->stackElementToStringTypeOf(&param->default_param_value).toConstChar()
 						);
 						break;
 
@@ -494,7 +494,7 @@ execute_function:
 
 							for( int k = 0; k < sf_call_n_args && all_check;k++){
 								StackElement *current_arg=sf_call_stk_start_arg_call+k;
-								all_check&=data->se->canStackElementCastTo(current_arg,sf_found->params[k+start_param].script_type_id);
+								all_check&=data->script_engine->canStackElementCastTo(current_arg,sf_found->params[k+start_param].script_type_id);
 							}
 
 							if(all_check==false){
