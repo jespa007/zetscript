@@ -24,7 +24,7 @@ namespace zetscript{
 
 	StackElement	StackElement::typeOf(){
 		StackElement *stk= this;
-		StackElement result={-1,STACK_ELEMENT_PROPERTY_TYPE_ID};
+		StackElement result={-1,STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID};
 
 		if(stk->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;

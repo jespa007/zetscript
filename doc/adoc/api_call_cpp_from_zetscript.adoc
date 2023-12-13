@@ -1,7 +1,7 @@
 
 === Call C++ from ZetScript
 
-To call C&#43;&#43; code from _ScriptEngine_ it has to create a C function with the following signature,
+To call C&#43;&#43; code from _ZetScript_ it has to create a C function with the following signature,
 
 include::api_register_c_function_signature.adoc[]
 

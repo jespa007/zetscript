@@ -185,7 +185,7 @@ namespace zetscript{
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
-		symbol->properties |=SYMBOL_PROPERTY_TYPE;
+		symbol->properties |=SYMBOL_PROPERTY_SCRIPT_TYPE;
 
 		symbol_types->push(symbol);
 
@@ -230,7 +230,7 @@ namespace zetscript{
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
 		symbol->n_params	=_n_params;
-		symbol->properties |=SYMBOL_PROPERTY_FUNCTION;
+		symbol->properties |=SYMBOL_PROPERTY_SCRIPT_FUNCTION;
 
 		symbol_functions->push(symbol);
 

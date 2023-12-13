@@ -25,7 +25,7 @@ namespace zetscript{
 		bool ok=true;
 		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
-			if((static_symbol->properties & SYMBOL_PROPERTY_FUNCTION)){
+			if((static_symbol->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION)){
 				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
 			}else if(static_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){

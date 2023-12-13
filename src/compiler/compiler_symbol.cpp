@@ -170,11 +170,11 @@ namespace zetscript{
 
 						if((local_symbol=compiler_find_local_symbol(compiler_data,scope_info,default_str_value)) != NULL){ // local sy
 
-							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
+							if(local_symbol->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){
 								byte_code= BYTE_CODE_LOAD_FUNCTION;
 								value=(zs_int)local_symbol;
 
-							}else if(local_symbol->properties & SYMBOL_PROPERTY_TYPE){
+							}else if(local_symbol->properties & SYMBOL_PROPERTY_SCRIPT_TYPE){
 								byte_code= BYTE_CODE_LOAD_TYPE;
 								value=-1;
 							}else{

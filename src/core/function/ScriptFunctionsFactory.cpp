@@ -40,7 +40,7 @@ namespace zetscript{
 		if((_function_properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION)){
 			Symbol *p_irv = _scope->getSymbol(_function_name);
 			ScriptFunction *sf_repeaded=NULL;
-			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_FUNCTION)){
+			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION)){
 				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
 				if((sf_repeaded->properties & SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->owner_script_type_id != _script_type_id){
 					_symbol_check_repeated|=SCRIPT_SCOPE_REGISTER_PROPERTY_NO_CHECK_REPEATED_SYMBOLS;

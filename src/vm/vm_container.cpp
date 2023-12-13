@@ -56,7 +56,7 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,data->script_engine->stackElementToStringTypeOf(stk_result_op1).toConstChar()
-					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+					,stk_result_op1->properties & STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
@@ -470,7 +470,7 @@ namespace zetscript{
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_BOOL){\
 			stk_dst->properties=STACK_ELEMENT_PROPERTY_BOOL;\
 			*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
-		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
+		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
 			*stk_dst=stk_src;\
 		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT){\
 

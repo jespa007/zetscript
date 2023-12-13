@@ -244,7 +244,7 @@ namespace zetscript{
 		 for(int j =0; j < symbol_functions->length(); j++){
 			Symbol *symbol=(Symbol *)symbol_functions->get(j);
 
-			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
+			if(symbol->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){
 
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
@@ -469,7 +469,7 @@ namespace zetscript{
 			VirtualMachine *vm=this->getVirtualMachine();
 
 			// create new if constant
-			if(so->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so->properties & OBJECT_PROPERTY_CONSTANT)){
+			if(so->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 				StringScriptObject *sc=ZS_NEW_STRING_SCRIPT_OBJECT(this);
 				vm_create_shared_object(
 						vm
@@ -1084,7 +1084,7 @@ namespace zetscript{
 		stk_constants->set(_key.toConstChar(),(zs_int)stk);
 
 		so=ZS_NEW_STRING_SCRIPT_OBJECT(this);
-		so->properties=OBJECT_PROPERTY_CONSTANT;
+		so->properties=SCRIPT_OBJECT_PROPERTY_CONSTANT;
 
 		// swap values stk_ref/value
 		so->set(_value.toConstChar());

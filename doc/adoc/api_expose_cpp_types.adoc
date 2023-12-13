@@ -1,5 +1,5 @@
 <<<
-=== Exposing C++ types to ScriptEngine
+=== Exposing C++ types to ZetScript
 
 In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ScriptEngine.
 

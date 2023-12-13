@@ -1777,7 +1777,7 @@ namespace zetscript{
 				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.get(access_var.length()-1).toConstChar());
 				if(symbol_sfm!=NULL){
 					ScriptFunction *test_fun=NULL;
-					if(symbol_sfm->properties & SYMBOL_PROPERTY_FUNCTION){
+					if(symbol_sfm->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){
 						test_fun=(ScriptFunction *)symbol_sfm->ref_ptr;
 					}
 

@@ -108,7 +108,7 @@ namespace zetscript{
 		printf(" Total stack required: %i                                     \n",sfo->local_variables->length()+sfo->min_code_stack_needed);
 		printf(" Scopes: %i                                                   \n\n",sfo->scope->getScopes()->length());
 
-		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
+		printf(" NUM |RS|AS|               BYTE CODE                        	\n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
@@ -636,7 +636,7 @@ namespace zetscript{
 					String::format(ZS_FORMAT_FILE_LINE,Path::getFilename(symbol_repeat->file).toConstChar(),_line);
 
 
-			if(symbol_repeat->properties & SYMBOL_PROPERTY_FUNCTION){
+			if(symbol_repeat->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){
 				sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
 			}
 
@@ -848,7 +848,7 @@ namespace zetscript{
 				if(symbol_found !=NULL){ // symbol found
 
 					if(
-							(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION)
+							(symbol_found->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION)
 					){
 						// if symbol is function, then there's two possible actions:
 						// 1. call function

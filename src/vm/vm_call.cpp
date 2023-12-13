@@ -345,7 +345,7 @@ execute_function:
 
 							if((stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
-								if(so_param->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_param->properties & OBJECT_PROPERTY_CONSTANT)){
+								if(so_param->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_param->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 									StringScriptObject *sc=ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine);
 									vm_create_shared_object(_vm,sc);
 									sc->set(*(((StringScriptObject *)so_param)->str_ptr));

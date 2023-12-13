@@ -862,7 +862,7 @@ namespace zetscript{
 		ScriptObject *so_aux=(ScriptObject *)stk_var->value;
 
 		//special case for constant string object (they don't are shared elements)
-		if(so_aux->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_aux->properties & OBJECT_PROPERTY_CONSTANT)){
+		if(so_aux->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_aux->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
 			// if is not shared is constant...
 			so_aux=ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine,so_aux->toString());
 			stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;

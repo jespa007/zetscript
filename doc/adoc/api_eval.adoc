@@ -27,7 +27,7 @@ include::../examples/api/eval/file.zs[]
 
 Console output:
 
-At the c++ side, to eval `file.zs` file it's done through _evalFile_ function as it shows as it follows,
+At the c++ side, to eval `file.zs` file it's done through _compileFileAndRun_ function as it shows as it follows,
 
 [source,cpp]
 ----

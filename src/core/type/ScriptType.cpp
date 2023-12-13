@@ -183,7 +183,7 @@ namespace zetscript{
 			const char *what="is already defined";
 			if((symbol_member_property->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY)==0){
 
-				if(symbol_member_property->properties & SYMBOL_PROPERTY_FUNCTION){
+				if(symbol_member_property->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){
 					what="it conflicts with member function";
 				}else{
 					what="it conflicts with member variable";

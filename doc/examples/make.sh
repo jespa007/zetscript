@@ -41,7 +41,7 @@ done
 for i in "${api_example_dirs[@]}"
 do
 
-	dir_cpp="api/"$i"/string*.cpp"
+	dir_cpp="api/"$i"/script_engine*.cpp"
 	for j in $dir_cpp
 	do
 		base_file="$(basename $j .cpp)"

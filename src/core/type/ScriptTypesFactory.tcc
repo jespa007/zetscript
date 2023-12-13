@@ -197,7 +197,7 @@ namespace zetscript{
 			// duplicated symbols.
 			if(is_metamethod_function == false){
 				ScriptFunction *src_script_function =NULL;
-				if(src_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
+				if(src_symbol->properties & SYMBOL_PROPERTY_SCRIPT_FUNCTION){ // function
 					src_script_function=(ScriptFunction *)src_symbol->ref_ptr;
 					Symbol *dst_symbol=NULL;
 					ScriptFunction *dst_script_function=NULL;
