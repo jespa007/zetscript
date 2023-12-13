@@ -1465,379 +1465,9 @@ Console output:
 include::../examples/api/types/vector_data_out.txt[]
 ----
 
-==== ByteCode
+==== ScriptType
 
-ByteCode represents
-Here there's a meaning of each byte code
-
-[cols="1m,1m,2d"]
-|====
-|Instruction |Name| Description
-
-|BYTE_CODE_EQU
-|EQU
-|Logical equal
-
-|BYTE_CODE_NOT_EQU
-|NOT_EQU
-|Logical not equal
-
-|BYTE_CODE_LT
-|LT
-|Less than
-
-|BYTE_CODE_LTE
-|LTE
-|Less than equal
-
-|BYTE_CODE_GT
-|GT
-|Greather than		
-
-|BYTE_CODE_GTE
-|GTE
-|Greather than equal
-
-|BYTE_CODE_LOGIC_AND
-|LOGIC_AND
-|Login AND
-
-|BYTE_CODE_LOGIC_OR
-|LOGIC_OR
-|Logic OR
-
-|BYTE_CODE_INSTANCEOF
-|INSTANCEOF
-|Instanceof
-
-|BYTE_CODE_NOT
-|NOT
-|Not
-
-|BYTE_CODE_NEG
-|NEG
-|Negate
-
-|BYTE_CODE_ADD
-|ADD
-|Addition
-
-|BYTE_CODE_SUB
-|SUB
-|Substraction
-
-|BYTE_CODE_DIV
-|DIV
-|Division	
-
-|BYTE_CODE_MUL
-|MUL
-|Multiplication	
-
-|BYTE_CODE_MOD
-|MOD
-|Modulus
-
-|BYTE_CODE_AND
-|AND
-|Bitwise AND
-
-|BYTE_CODE_OR
-|OR
-|Bitwise OR
-
-|BYTE_CODE_XOR
-|XOR
-|Bitwise XOR
-
-|BYTE_CODE_SHL
-|SHL
-|Bitwise SHIFT LEFT
-
-|BYTE_CODE_SHR
-|SHR
-|Bitwise SHIFT RIGHT
-
-|BYTE_CODE_BWC
-|BWC
-|Bitwise complement
-
-|BYTE_CODE_ASSIGN
-|ASSIGN
-|Assign
-
-|BYTE_CODE_ADD_ASSIGN
-|ADD_ASSIGN
-|Addition and assignment
-
-|BYTE_CODE_SUB_ASSIGN
-|SUB_ASSIGN
-|Substraction and assignment
-
-|BYTE_CODE_MUL_ASSIGN
-|MUL_ASSIGN
-|Multiplication and assignment
-
-|BYTE_CODE_DIV_ASSIGN
-|DIV_ASSIGN
-|Division and assignment
-
-|BYTE_CODE_MOD_ASSIGN
-|MOD_ASSIGN
-|Modulus and assignment
-
-|BYTE_CODE_AND_ASSIGN
-|AND_ASSIGN
-|Bitwise AND and assignment
-
-|BYTE_CODE_OR_ASSIGN
-|OR_ASSIGN
-|Bitwise OR and assignment
-
-|BYTE_CODE_XOR_ASSIGN
-|XOR_ASSIGN
-|Bitwise XOR and assignment
-
-|BYTE_CODE_SHL_ASSIGN
-|SHL_ASSIGN
-|Bitwise SHIFT LEFT and assignment
-
-|BYTE_CODE_SHR_ASSIGN
-|SHR_ASSIGN
-|Bitwise SHIFT RIGHT and assignment
-
-|BYTE_CODE_PUSH_STK_GLOBAL_IRGO
-|PUSH_STK_GLOBAL_IRGO
-|Push global variable from return function to stack
-
-|BYTE_CODE_PUSH_STK_GLOBAL
-|PUSH_STK_GLOBAL
-|Push global variable to stack
-
-|BYTE_CODE_
-|PUSH_STK_LOCAL
-|Push local variable to stack
-			
-|BYTE_CODE_
-|PUSH_STK_REF
-|Push argument reference to stack
-
-|BYTE_CODE_
-|PUSH_STK_THIS
-|Push current object instance to stack
-
-|BYTE_CODE_
-|PUSH_STK_ARRAY@ITEM
-|Push array item to stack
-
-|BYTE_CODE_
-|PUSH_STK_OBJ@ITEM 
-|Push object item to stack
-
-|BYTE_CODE_
-|PUSH_STK_THIS@VAR
-|Push member variable to stack
-
-|BYTE_CODE_
-|LOAD_GLOBAL
-|Load global variable to stack
-
-|BYTE_CODE_
-|LOAD_LOCAL
-|Load local variable to stack
-
-|BYTE_CODE_
-|LOAD_REF
-|Load argument reference to stack
-
-|BYTE_CODE_
-|LOAD_THIS
-|Load current instance to stack
-
-|BYTE_CODE_
-|LOAD_CONSTRUCTOR_FUNCT
-|Load constructor function to stack
-
-|BYTE_CODE_
-|LOAD_???
-|Unresolved load symbol. It tries to resolve and load at runtime
-
-|BYTE_CODE_
-|CALL
-|Performs a direct call
-
-|BYTE_CODE_
-|CALL???
-|Unresolved direct call. It tries to load at runtime
-
-|BYTE_CODE_
-|STK_CALL
-|Performs a call from current stack
-
-|BYTE_CODE_
-|MEMBER_CALL
-|Performs member call
-
-|BYTE_CODE_
-|LOAD_THIS@VAR
-|Load member variable to stack
-
-|BYTE_CODE_
-|LOAD_THIS@FUN
-|Load member function to stack
-
-|BYTE_CODE_
-|LOAD_ARRAY@ITEM
-|Load array item to stack
-
-|BYTE_CODE_
-|LOAD_OBJ@ITEM
-|Load object item to stack
-
-|BYTE_CODE_
-|LOAD_FUN
-|Load function to stack
-
-|BYTE_CODE_
-|LOAD_UNDEFINED
-|Load undefined value to stack
-
-|BYTE_CODE_
-|LOAD_NULL
-|Load Null value to stack
-
-|BYTE_CODE_
-|LOAD_STK
-|Load stack element to stack
-
-|BYTE_CODE_
-|LOAD_STR
-|Load _String_ value to stack
-
-|BYTE_CODE_
-|LOAD_FLT
-|Load _Float_ value to stack
-
-|BYTE_CODE_
-|LOAD_BOOL
-|Load _Boolean_ value to stack
-
-|BYTE_CODE_
-|LOAD_INT
-|Load _Integer_ value to stack
-
-|BYTE_CODE_
-|LOAD_TYPE
-|Load _Type_ value to stack
-
-|BYTE_CODE_
-|JMP
-|Performs an unconditional jump.
-
-|BYTE_CODE_
-|JMP_CASE 
-|Performs a jump Switch-Case.
-			
-|BYTE_CODE_
-|JNT
-|Performs a jump if not true
-
-|BYTE_CODE_
-|JT
-|Performs jump if true.
-			
-|BYTE_CODE_
-|JE_CASE
-|Performs a jump if equal Switch-Case
-
-|BYTE_CODE_
-|CALL_CONSTRUCTOR
-|Performs a constructor call
-
-|BYTE_CODE_
-|NEW_ARRAY
-|Creates an array object
-
-|BYTE_CODE_			
-|PUSH_AITEM
-|Push array item to stack
-			
-|BYTE_CODE_
-|RET
-|Return
-
-|BYTE_CODE_
-|NEW_OBJECT_BY_TYPE
-|Creates new object by type
-
-|BYTE_CODE_
-|NEW_OBJECT_BY_VALUE
-|Creates new object by value
-			
-|BYTE_CODE_
-|DELETE
-|Deletes object
-
-|BYTE_CODE_
-|POP_SCOPE
-|Pop scope
-
-|BYTE_CODE_
-|PUSH_SCOPE
-|Push scope
-
-|BYTE_CODE_
-|PUSH_OITEM
-|Push object item
-
-|BYTE_CODE_
-|NEW_OBJECT
-|Creates new object
-
-|BYTE_CODE_
-|NEW_STR
-|Creates new string
-	
-|BYTE_CODE_	
-|IT_INIT
-|Performs iterator init
-
-|BYTE_CODE_
-|STORE_CONST
-|Performs a constant assignment
-
-|BYTE_CODE_			
-|PRE_INC
-|Performs a preincrement
-
-|BYTE_CODE_
-|PRE_DEC
-|Performs a predecrement
-
-|BYTE_CODE_
-|POST_INC
-|Performs a postincrement
-
-|BYTE_CODE_
-|POST_DEC
-|Performs a postdecrement
-
-|BYTE_CODE_
-|RESET_STACK
-|Resets stack
-			
-|BYTE_CODE_
-|TYPEOF
-|Typeof
-
-|BYTE_CODE_
-|IN
-|In operator
-|====
-
-==== Type
-
-Type is an type managed by ScriptEngine that defines a builtin or registered script type. Type has the following fields.
+ScriptType is an type managed by ScriptEngine that defines a builtin or registered script type. ScriptType has the following fields.
 
 - id: The script type id
 - name: The script type name
@@ -1935,7 +1565,7 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |Its value is a *StackElementMemberProperty &#42;*
 
 |STACK_ELEMENT_PROPERTY_OBJECT
-|Its value is a *Object &#42;*
+|Its value is a *ScriptObject &#42;*
 
 |STACK_ELEMENT_PROPERTY_CONTAINER_SLOT
 |Its value is a *ContainerSlot &#42;*
@@ -1949,9 +1579,9 @@ StackElement is the data used by the VirtualMachine.  StackElement contents _val
 |====
 
 
-==== Object
+==== ScriptObject
 
-_Object_ defines a the parent class of any object in TypeScript. This type is usually used internally by ScriptEngine. The _Object_ type has the following fields:
+_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ScriptEngine. The _ScriptObject_ type has the following fields:
 
 - type_id: The script type representated by the instance of script object. ScriptEngine it register primitive objects as which type_ids matches with the following,
 
@@ -1979,7 +1609,7 @@ _Object_ defines a the parent class of any object in TypeScript. This type is us
 |====
 |Name |Mask value|Description
 |OBJECT_PROPERTY_CONSTANT
-|Tells if Object represents a constant object
+|Tells if ScriptObject represents a constant object
 
 |====
 
@@ -2628,7 +2258,7 @@ Console output:
 include::../examples/api/types/object_script_object_to_string_out.txt[]
 ----
 
-====== ArrayScriptObject::getKeys()
+====== ObjectScriptObject::getKeys()
 
 Returns a vector of strings as the keys of the Object.
 
@@ -2706,14 +2336,14 @@ void	compile(const String & expresion,const char *__invoke_file__="", int __invo
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_compile.cpp[]
+include::../examples/api/types/script_engine_compile.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zetscript_compile_out.txt[]
+include::../examples/api/types/script_engine_compile_out.txt[]
 ----
 
 ===== ScriptEngine::compileAndRun()
@@ -2732,14 +2362,14 @@ StackElement	compileAndRun(const String & expresion, const char *__invoke_file__
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_compile_and_run.cpp[]
+include::../examples/api/types/script_engine_compile_and_run.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zetscript_compile_and_run_out.txt[]
+include::../examples/api/types/script_engine_compile_and_run_out.txt[]
 ----
 
 ===== ScriptEngine::compileFile()
@@ -2758,14 +2388,14 @@ void	compileFile(const String & _filename, CompileData *_compile_data=NULL, cons
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_compile_file.cpp[]
+include::../examples/api/types/script_engine_compile_file.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zetscript_compile_file_out.txt[]
+include::../examples/api/types/script_engine_compile_file_out.txt[]
 ----
 
 ===== ScriptEngine::compileFileAndRun()
@@ -2783,19 +2413,316 @@ StackElement	compileFileAndRun(const String & _filename, const char *__invoke_fi
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_compile_file_and_run.cpp[]
+include::../examples/api/types/script_engine_compile_file_and_run.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zetscript_compile_file_and_run_out.txt[]
+include::../examples/api/types/script_engine_compile_file_and_run_out.txt[]
 ----
 
 ===== ScriptEngine::printGeneratedCode()
 
-It prints generated byte code after compile script/s
+It prints the generated byte code of compiled script/s. The output console prints a header and a list of intructions
+
+*Header*
+
+The description of the header printed is the following,
+
+ - *Function*: Function name
+ - *Stack code*: Stack required for code
+ - *Stack local vars*: Stack required for local variables
+ - *Total stack required*: Total stack required
+ - *Scopes*: Total scopes
+
+*Instructions*
+
+The description per instruction with the following columns,
+
+- *NUM*: Instruction number
+- *RS*: Required Stack for current instruction
+- *AS*: Acumulated Stack in the current instruction
+- *INSTRUCTION*: Byte code and operands if it needs
+
+The list of byte code it can print is the following,
+
+
+[cols="1m,1m,2d"]
+|====
+|ByteCode |Description
+
+|EQU
+|Logical equal
+
+|NOT_EQU
+|Logical not equal
+
+|LT
+|Less than
+
+|LTE
+|Less than equal
+
+|GT
+|Greather than		
+
+|GTE
+|Greather than equal
+
+|LOGIC_AND
+|Login AND
+
+|LOGIC_OR
+|Logic OR
+
+|INSTANCEOF
+|Instanceof
+
+|NOT
+|Not
+
+|NEG
+|Negate
+
+|ADD
+|Addition
+
+|SUB
+|Substraction
+
+|DIV
+|Division	
+
+|MUL
+|Multiplication	
+
+|MOD
+|Modulus
+
+|AND
+|Bitwise AND
+
+|OR
+|Bitwise OR
+
+|XOR
+|Bitwise XOR
+
+|SHL
+|Bitwise SHIFT LEFT
+
+|SHR
+|Bitwise SHIFT RIGHT
+
+|BWC
+|Bitwise complement
+
+|ASSIGN
+|Assign
+
+|ADD_ASSIGN
+|Addition and assignment
+
+|SUB_ASSIGN
+|Substraction and assignment
+
+|MUL_ASSIGN
+|Multiplication and assignment
+
+|DIV_ASSIGN
+|Division and assignment
+
+|MOD_ASSIGN
+|Modulus and assignment
+
+|AND_ASSIGN
+|Bitwise AND and assignment
+
+|OR_ASSIGN
+|Bitwise OR and assignment
+
+|XOR_ASSIGN
+|Bitwise XOR and assignment
+
+|SHL_ASSIGN
+|Bitwise SHIFT LEFT and assignment
+
+|SHR_ASSIGN
+|Bitwise SHIFT RIGHT and assignment
+
+|PUSH_STK_GLOBAL_IRGO
+|Push global variable from return function to stack
+
+|PUSH_STK_GLOBAL
+|Push global variable to stack
+
+|PUSH_STK_LOCAL
+|Push local variable to stack
+			
+|PUSH_STK_REF
+|Push argument reference to stack
+
+|PUSH_STK_THIS
+|Push current object instance to stack
+
+|PUSH_STK_ARRAY@ITEM
+|Push array item to stack
+
+|PUSH_STK_OBJ@ITEM 
+|Push object item to stack
+
+|PUSH_STK_THIS@VAR
+|Push member variable to stack
+
+|LOAD_GLOBAL
+|Load global variable to stack
+
+|LOAD_LOCAL
+|Load local variable to stack
+
+|LOAD_REF
+|Load argument reference to stack
+
+|LOAD_THIS
+|Load current instance to stack
+
+|LOAD_CONSTRUCTOR_FUNCT
+|Load constructor function to stack
+
+|LOAD_???
+|Unresolved load symbol. It tries to resolve and load at runtime
+
+|CALL
+|Performs a direct call
+
+|CALL???
+|Unresolved direct call. It tries to load at runtime
+
+|STK_CALL
+|Performs a call from current stack
+
+|MEMBER_CALL
+|Performs member call
+
+|LOAD_THIS@VAR
+|Load member variable to stack
+
+|LOAD_THIS@FUN
+|Load member function to stack
+
+|LOAD_ARRAY@ITEM
+|Load array item to stack
+
+|LOAD_OBJ@ITEM
+|Load object item to stack
+
+|LOAD_FUN
+|Load function to stack
+
+|LOAD_UNDEFINED
+|Load undefined value to stack
+
+|LOAD_NULL
+|Load Null value to stack
+
+|LOAD_STK
+|Load stack element to stack
+
+|LOAD_STR
+|Load _String_ value to stack
+
+|LOAD_FLT
+|Load _Float_ value to stack
+
+|LOAD_BOOL
+|Load _Boolean_ value to stack
+
+|LOAD_INT
+|Load _Integer_ value to stack
+
+|LOAD_TYPE
+|Load _Type_ value to stack
+
+|JMP
+|Performs an unconditional jump.
+
+|JMP_CASE 
+|Performs a jump Switch-Case.
+			
+|JNT
+|Performs a jump if not true
+
+|JT
+|Performs jump if true.
+			
+|JE_CASE
+|Performs a jump if equal Switch-Case
+
+|CALL_CONSTRUCTOR
+|Performs a constructor call
+
+|NEW_ARRAY
+|Creates an array object
+
+|PUSH_AITEM
+|Push array item to stack
+			
+|RET
+|Return
+
+|NEW_OBJECT_BY_TYPE
+|Creates new object by type
+
+|NEW_OBJECT_BY_VALUE
+|Creates new object by value
+			
+|DELETE
+|Deletes object
+
+|POP_SCOPE
+|Pop scope
+
+|PUSH_SCOPE
+|Push scope
+
+|PUSH_OITEM
+|Push object item
+
+|NEW_OBJECT
+|Creates new object
+
+|NEW_STR
+|Creates new string
+	
+|IT_INIT
+|Performs iterator init
+
+|STORE_CONST
+|Performs a constant assignment
+
+|PRE_INC
+|Performs a preincrement
+
+|PRE_DEC
+|Performs a predecrement
+
+|POST_INC
+|Performs a postincrement
+
+|POST_DEC
+|Performs a postdecrement
+
+|RESET_STACK
+|Resets stack
+			
+|TYPEOF
+|Typeof
+
+|IN
+|In operator
+|====
 
 *Syntax*
 
@@ -2808,33 +2735,18 @@ void printGeneratedCode()
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_print_generated_code.cpp[]
+include::../examples/api/types/script_engine_print_generated_code.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_print_generated_code_out.txt[]
+include::../examples/api/eval/script_engine_print_generated_code_out.txt[]
 ----
 
-As we can see in the output _EVAL_OPTION_PRINT_BYTE_CODE_ option prints the byte code per each function. At the begin it prints summary,
-
- - *Function*: Function name
- - *Stack code*: Stack required for code
- - *Stack local vars*: Stack required for local variables
- - *Total stack required*: Total stack required
- - *Scopes*: Total scopes
-
-Apart there's a description per instruction with the following columns,
-
-- *NUM*: Instruction number
-- *RS*: Required Stack for current instruction
-- *AS*: Acumulated Stack in the current instruction
-- *INSTRUCTION*: Byte code and operands if it needs
 
 <<<
-Here there's a meaning of each byte code is seen on zetscript::ByteCode
 
 
 ===== ScriptEngine::registerConstant()
@@ -2858,14 +2770,14 @@ void registerConstant(const String & var_name, const char * v, const char *regis
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_constant.cpp[]
+include::../examples/api/types/script_engine_register_constant.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_constant.txt[]
+include::../examples/api/eval/script_engine_register_constant.txt[]
 ----
 
 ===== ScriptEngine::registerType()
@@ -2887,14 +2799,14 @@ ScriptType * registerType(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_type.cpp[]
+include::../examples/api/types/script_engine_register_type.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_type.txt[]
+include::../examples/api/eval/script_engine_register_type.txt[]
 ----
 
 ===== ScriptEngine::registerFunction()
@@ -2926,18 +2838,17 @@ The following example registers a C function _sayHelloWorld_ and it is called in
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_function.cpp[]
+include::../examples/api/types/script_engine_register_function.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/zetscript_register_function_out.txt[]
+include::../examples/api/types/script_engine_register_function_out.txt[]
 ----
 
 To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ScriptEngine]
-
 
 
 ===== ScriptEngine::extends()
@@ -2954,14 +2865,14 @@ void extends<T,B>()
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_extends.cpp[]
+include::../examples/api/types/script_engine_extends.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_extends.txt[]
+include::../examples/api/eval/script_engine_extends.txt[]
 ----
 
 ===== ScriptEngine::registerConstructor()        
@@ -2981,14 +2892,14 @@ void registerConstructor(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_constructor.cpp[]
+include::../examples/api/types/script_engine_register_constructor.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_constructor.txt[]
+include::../examples/api/eval/script_engine_register_constructor.txt[]
 ----
 
 ===== ScriptEngine::registerMemberFunction()
@@ -3009,14 +2920,14 @@ void	registerMemberFunction<T,F>(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_member_function.cpp[]
+include::../examples/api/types/script_engine_register_member_function.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_member_function.txt[]
+include::../examples/api/eval/script_engine_register_member_function.txt[]
 ----
 
 ===== ScriptEngine::registerConstMemberProperty()        
@@ -3038,14 +2949,14 @@ void	registerConstMemberProperty<T,F>(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_const_member_property.cpp[]
+include::../examples/api/types/script_engine_register_const_member_property.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_const_member_property.txt[]
+include::../examples/api/eval/script_engine_register_const_member_property.txt[]
 ----
 
 
@@ -3068,14 +2979,14 @@ void	registerMemberPropertyMetamethod<T,F>(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_member_property_metamethod.cpp[]
+include::../examples/api/types/script_engine_register_member_property_metamethod.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_member_property_metamethod_out.txt[]
+include::../examples/api/eval/script_engine_register_member_property_metamethod_out.txt[]
 ----
 
 
@@ -3098,14 +3009,14 @@ void registerStaticMemberFunction(
 
 [source,cpp]
 ----
-include::../examples/api/types/zetscript_register_static_member_function.cpp[]
+include::../examples/api/types/script_engine_register_static_member_function.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/zetscript_register_static_member_function_out.txt[]
+include::../examples/api/eval/script_engine_register_static_member_function_out.txt[]
 ----
 
 ===== ScriptEngine::unrefLifetimeObject()        
@@ -3114,7 +3025,7 @@ include::../examples/api/eval/zetscript_register_static_member_function_out.txt[
 
 [source,cpp]
 ----
-void unrefLifetimeObject(Object *so);
+void unrefLifetimeObject(ScriptObject *so);
 ----
 
 ===== ScriptEngine::bindScriptFunction()        

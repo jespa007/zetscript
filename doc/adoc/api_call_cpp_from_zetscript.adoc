@@ -1,48 +1,17 @@
 
-=== Call C++ from ScriptEngine
+=== Call C++ from ZetScript
 
-To call C&#43;&#43; code from _ScriptEngine_ it has to create and register a C function with a particular prototype. That C function acts as interface between ScriptEngine and C&#43;&#43;code. 
+To call C&#43;&#43; code from _ScriptEngine_ it has to create a C function with the following signature,
 
-The function must always include _zetscript::ScriptEngine *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters as a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type]. The function it can return nothing or it can return a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
-
-*Syntax*
-
-[source,cpp]
-----
-ReturnType zetscriptCppInterface(ScriptEngine *_script_engine, ParamType *_arg1, ParamType *_arg2, ..., ParamType *_arg9 ){
-	....
-}
-----
-
-Where,
-
-- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+include::api_register_c_function_signature.adoc[]
 
 
-After the C function is created is registered with xref:api_types#&#95;_zetscript_registerfunction[ScriptEngine::registerFunction]. 
+After the C function is created, it has to registered with xref:api_data_types#&#95;_scriptengine_registerfunction[ScriptEngine::registerFunction]. 
 
-
-
-*Example*
-
-The following example registers a C function _sayHelloWorld_ and it is called in ScriptEngine.
-
-[source,cpp]
-----
-include::../examples/api/register_function/register_function.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/register_function/register_function_out.txt[]
-----
 
 ==== Return types
 
-This section will explain how to register C functions that return the following ScriptEngine types,
+This section will explain how to register C functions that return the following ZetScript types,
 
 - Boolean
 - Integer
@@ -136,7 +105,7 @@ include::../examples/api/register_function/register_function_return_String_out.t
 
 ====== Return String as StringScriptObject &#42;
 
-To register a C function that returns a xref:language_data_types.adoc#&#95;string[String] it can specify _StringScriptObject &#42;_ as return type. The instantiation of _StringScriptObject &#42;_ it&#39;s done throught _ScriptEngine::newStringScriptObject_ using ScriptEngine context.
+To register a C function that returns a xref:language_data_types.adoc#&#95;string[String] it can specify xref:api_data_types.adoc#&#95;stringscriptobject[zetscript::StringScriptObject] pointer as return type. The instantiation of _StringScriptObject_ is done throught ScriptEngine instance.
 
 *Example*
 

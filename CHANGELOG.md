@@ -9,7 +9,6 @@ Main improvements:
 - VM speed up ~x2.5
 - VM save memory stack ~x2
 - Optimize size/compile times ~x2
-s- zetscript::ScriptEngine can be instanced more than once
 - Implements multiple Return/Assignments
 - Implements arguments with options: default, variable arguments and by reference
 - Implements setter/getter for member variables
