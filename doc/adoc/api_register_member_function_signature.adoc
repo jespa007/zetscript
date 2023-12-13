@@ -1,0 +1,19 @@
+[source,cpp]
+----
+ReturnType RegisteredType_memberFunction(ScriptEngine *_script_engine, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+	....
+}
+----
+
+Where,
+
+[.underline]#Type# 
+
+- _RegisteredType_: The registered type
+- _ReturnType_: Return type can be void, bool, zs_int,zs_float, String,  a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type
+
+[.underline]#Parameters# 
+
+- __zs_ : ScriptEngine context
+- __this_: The current instance
+- __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
