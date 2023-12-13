@@ -6,7 +6,7 @@ int main(){
 
 	NumberZs_register(&zs);
 	
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"var number=new Number()\n"
 		"if(!number){\n"
 		"	Console::outln(\"Number is empty\")	\n"

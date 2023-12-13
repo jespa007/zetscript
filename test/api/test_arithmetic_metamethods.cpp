@@ -95,7 +95,7 @@ void test_arithmetic_metamethods(zetscript::ScriptEngine *_script_engine,bool _s
 	// register wraps
 	NumberZs_register(_script_engine);
 
-	_script_engine->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	_script_engine->compileAndRun("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
 	// testing metamethods...
 	if(_show_print) printf("%i. testing arithmetic operations int cc...\n",++n_test);
@@ -133,7 +133,7 @@ void test_arithmetic_metamethods(zetscript::ScriptEngine *_script_engine,bool _s
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(_script_engine,5.2,2.0e2); // op1 > op2
 
 	if(_show_print) printf("%i. testing arithmetic operations integer assign ...\n",++n_test);
-	_script_engine->eval("var result_assign=new Number();");
+	_script_engine->compileAndRun("var result_assign=new Number();");
 	_complete_test_arithmetic_integer_op_assign(_script_engine,5,10,"result_assign%s%s;return result_assign.toInteger()");
 
 	if(_show_print) printf("%i. testing arithmetic operations float assign ...\n",++n_test);
@@ -143,12 +143,12 @@ void test_arithmetic_metamethods(zetscript::ScriptEngine *_script_engine,bool _s
 	_complete_test_arithmetic_integer_op_assign(_script_engine,10,5,"result_assign.value%s%s;return result_assign.toInteger()");
 
 	if(_show_print) printf("%i. testing arithmetic self operations ...\n",++n_test);
-	_script_engine->eval("result_assign=10;");
+	_script_engine->compileAndRun("result_assign=10;");
 	_complete_test_arithmetic_self_op(_script_engine,10,"%sresult_assign%s;return result_assign.toInteger()");
 
 	if(_show_print) printf("%i. testing arithmetic self operations property ...\n",++n_test);
-	_script_engine->eval("var source=new Number(10);");
-	_script_engine->eval("result_assign=100;");
+	_script_engine->compileAndRun("var source=new Number(10);");
+	_script_engine->compileAndRun("result_assign=100;");
 	_complete_test_arithmetic_self_property_op(_script_engine,10,"result_assign=%ssource.value%s;return result_assign.toInteger()");
 
 

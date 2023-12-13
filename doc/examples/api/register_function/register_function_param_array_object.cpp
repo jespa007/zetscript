@@ -20,7 +20,7 @@ int main(){
     script_engine.registerFunction("paramArrayScriptObject",paramArrayScriptObject);
 
     // call c function with string param
-    script_engine.eval(
+    script_engine.compileAndRun(
         "paramArrayScriptObject(["
         "    0,1,2,3,4,5"
         "]);"

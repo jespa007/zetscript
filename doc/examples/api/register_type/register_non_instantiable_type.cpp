@@ -25,7 +25,7 @@ int main(){
  	
  	
 	// Evaluates ScriptEngine code that calls 'getNumber' to get 'number' object reference
- 	script_engine.eval(
+ 	script_engine.compileAndRun(
  		"var number= getNumber();" 
  	);
  	

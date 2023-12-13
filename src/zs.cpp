@@ -105,7 +105,7 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 
 				try{
-					script_engine.eval(expression);
+					script_engine.compileAndRun(expression);
 				}catch(zetscript::Exception & ex){
 					fprintf(stderr,"[line %i] %s\n",ex.getLine(),ex.what());
 				}

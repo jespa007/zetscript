@@ -34,7 +34,7 @@ int main(){
 	script_engine.registerFunction("printArray",printArray);
 
 	// calls printArray
-	script_engine.eval("printArray([0,10.5,\"Hello World\"])");
+	script_engine.compileAndRun("printArray([0,10.5,\"Hello World\"])");
 	
 	return 0;
 }

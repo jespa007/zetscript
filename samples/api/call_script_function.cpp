@@ -8,7 +8,7 @@ void test_call_script_function(){
 	// instances ScriptEngine
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		// ScriptFunction 'say_hello'
 		"function say_hello(){\n"
 		"	Console::outln(\"hello from 'say_hello'!\")\n"

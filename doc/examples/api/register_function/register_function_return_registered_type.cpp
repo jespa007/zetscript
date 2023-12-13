@@ -44,7 +44,7 @@ int main(){
     script_engine.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
-    script_engine.eval(
+    script_engine.compileAndRun(
         "Console::outln(\"result : \"+returnNumber());"
  	);
 

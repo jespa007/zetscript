@@ -6,7 +6,7 @@ int main(){
 	zetscript::ScriptEngine script_engine;
 
     // Evaluates ScriptEngine function 'concat' that prints the result of the operation '+' from two arguments
-    script_engine.eval(
+    script_engine.compileAndRun(
  		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+_value1+\" \"+_value2);\n"
         "}\n"

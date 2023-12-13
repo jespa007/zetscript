@@ -14,7 +14,7 @@ int main(){
 	script_engine.registerFunction("printString",printString);
 
 	// calls printString
-	script_engine.eval("printString(\"Hello World!\")");
+	script_engine.compileAndRun("printString(\"Hello World!\")");
 	
 	return 0;
 }

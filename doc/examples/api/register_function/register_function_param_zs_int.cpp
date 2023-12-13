@@ -15,7 +15,7 @@ int main(){
     script_engine.registerFunction("add",add);
 
     // Evaluates the script that calls C function passing '10' and '20' values as arguments
-    script_engine.eval(
+    script_engine.compileAndRun(
         "add(10,20);"
  	);
 

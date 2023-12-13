@@ -39,7 +39,7 @@ int main(){
 	script_engine.registerFunction("getData",getData);
 	script_engine.registerMemberFunction<Data>("_in",DataZs_in);
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"var data=getData();\n"
 		"if(10 in data){\n"
 		"	Console::outln(\"10 is content in data\")\n"

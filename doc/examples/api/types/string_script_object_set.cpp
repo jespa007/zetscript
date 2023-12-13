@@ -16,7 +16,7 @@ int main(){
 	script_engine.registerFunction("returnString",returnString);
 
 	// prints the value returned by returnString
-	script_engine.eval("Console::outln(returnString())");
+	script_engine.compileAndRun("Console::outln(returnString())");
 	
 	return 0;
 }

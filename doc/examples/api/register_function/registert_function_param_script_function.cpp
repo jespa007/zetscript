@@ -19,7 +19,7 @@ int main(){
     script_engine.registerFunction("paramFunction",paramFunction);
 
     // call c function with string param
-    script_engine.eval(
+    script_engine.compileAndRun(
         "paramFunction(function(){\n"
     	"	Console::outln(\"Hello world\");\n"
     	"});"

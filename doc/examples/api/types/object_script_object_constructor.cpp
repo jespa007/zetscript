@@ -20,7 +20,7 @@ int main(){
 	script_engine.registerFunction("returnNewObject",returnNewObject);
 
 	// prints the contents of new array object (empty)
-	script_engine.eval("Console::outln(returnNewObject())");
+	script_engine.compileAndRun("Console::outln(returnNewObject())");
 	
 	return 0;
 }

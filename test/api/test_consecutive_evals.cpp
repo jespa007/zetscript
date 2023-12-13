@@ -8,33 +8,33 @@
 void test_anonymous_scopes(zetscript::ScriptEngine *_script_engine, bool _show_print=true){
 
 
-	_script_engine->eval("var a1=1\n");
-	_script_engine->eval("{var b=0}\n");
-	_script_engine->eval("var a2=2\n");
-	_script_engine->eval("{var d=0; { var e=1}}\n");
-	_script_engine->eval("{var d=0; { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("var a3=3\n");
-	_script_engine->eval("var a4=4\n");
-	_script_engine->eval("var a5=5\n"
+	_script_engine->compileAndRun("var a1=1\n");
+	_script_engine->compileAndRun("{var b=0}\n");
+	_script_engine->compileAndRun("var a2=2\n");
+	_script_engine->compileAndRun("{var d=0; { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0; { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("var a3=3\n");
+	_script_engine->compileAndRun("var a4=4\n");
+	_script_engine->compileAndRun("var a5=5\n"
 			 "{var d=0;  { var e=1}}\n"
 			 "var a6=6\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0; { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
-	_script_engine->eval("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0; { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
+	_script_engine->compileAndRun("{var d=0;  { var e=1}}\n");
 
-	_script_engine->eval("var a7=7\n");
-	_script_engine->eval("var a8=8\n");
+	_script_engine->compileAndRun("var a7=7\n");
+	_script_engine->compileAndRun("var a8=8\n");
 
 	if(_show_print){
 		_script_engine->printGeneratedCode();
@@ -99,7 +99,7 @@ void test_consistency_function_override(zetscript::ScriptEngine *_script_engine,
 	// should print
 	// from A
 	// from B
-	_script_engine->eval(
+	_script_engine->compileAndRun(
 			"new B()"
 	);
 }

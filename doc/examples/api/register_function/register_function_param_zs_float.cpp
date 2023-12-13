@@ -14,7 +14,7 @@ int main(){
     script_engine.registerFunction("funParamFloat",funParamFloat);
 
     // call c function 
-    script_engine.eval(
+    script_engine.compileAndRun(
         "funParamFloat(10.5);"
  	);
 

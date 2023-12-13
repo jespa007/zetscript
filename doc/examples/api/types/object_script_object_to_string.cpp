@@ -18,7 +18,7 @@ int main(){
 	script_engine.registerFunction("printObject",printObject);
 
 	// calls printObject
-	script_engine.eval(
+	script_engine.compileAndRun(
         "printObject({"
             "\"key1\":0"                 
             ",\"key2\":10.5"             

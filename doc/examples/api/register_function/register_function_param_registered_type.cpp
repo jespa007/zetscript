@@ -55,7 +55,7 @@ int main(){
     script_engine.registerFunction("mul10Number",mul10Number);
 
     // Eval script that calls native function 'mulNumber'
-    script_engine.eval(
+    script_engine.compileAndRun(
         "var number=new Number();\n"
         "number.value=10;\n"
         "Console::outln(\"before : \"+number);\n"

@@ -38,7 +38,7 @@ int main(){
 	script_engine.registerFunction("testObjectElementInstanceOf",testObjectElementInstanceOf);
 
 	// calls printObjectElementTypes
-	script_engine.eval(
+	script_engine.compileAndRun(
         "testObjectElementInstanceOf({"
             "\"key1\":0"                // Element at key 'key1' is type 'Integer'
             ",\"key2\":10.5"             // Element at key 'key2': is type 'Float'

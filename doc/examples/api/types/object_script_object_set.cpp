@@ -33,7 +33,7 @@ int main(){
 
 	// create a initialized array, it prints. then prints the 
 	// the array after call 'modifyObject'
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"var o={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

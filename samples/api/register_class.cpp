@@ -48,7 +48,7 @@ int main(){
 	script_engine.extends<MyClassExtend,MyClass>();
 
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"class ScriptMyClassExtend extends MyClassExtend{\n"
 		"	var data5;\n"
 		"	function function0(){\n"

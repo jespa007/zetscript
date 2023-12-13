@@ -10,6 +10,6 @@ void sayHelloWorld(){
 int main(){
 	ScriptEngine script_engine;
 	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
-	script_engine.eval("sayHelloWorld()");
+	script_engine.compileAndRun("sayHelloWorld()");
 	return 0;
 }

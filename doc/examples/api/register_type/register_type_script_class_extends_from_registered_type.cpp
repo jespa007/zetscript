@@ -74,7 +74,7 @@ int main(){
 	script_engine.registerMemberFunction<MyCppTypeExtend>("function2",MyCppTypeExtend_function2);
 
 	// eval print
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
 		"	function1(_arg1){\n"
 		"		Console::outln(\"script argument : {0} \",_arg1);\n"

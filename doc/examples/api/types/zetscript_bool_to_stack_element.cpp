@@ -2,7 +2,7 @@
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.eval("");
+	script_engine.compileAndRun("");
 	
 	return 0;
 }

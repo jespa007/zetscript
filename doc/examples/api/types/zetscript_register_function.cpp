@@ -14,7 +14,7 @@ int main(){
     script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
 
     // Evaluates a script where it calls 'sayHelloWorld' function
-    script_engine.eval(
+    script_engine.compileAndRun(
         "sayHelloWorld();"
  	);
 

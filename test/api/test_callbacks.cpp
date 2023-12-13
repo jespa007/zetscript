@@ -82,7 +82,7 @@ void test_call_script_c_script(zetscript::ScriptEngine *_script_engine, bool _sh
 	_script_engine->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptEngine *_script_engine,zetscript::ScriptFunction *_script_function,zetscript::ObjectScriptObject *_params)>(test_callback));
 
 
-	_script_engine->eval(
+	_script_engine->compileAndRun(
 		// ScriptType 'Test' declaration
 		"class Test{\n"
 		"	constructor(){\n"
@@ -129,7 +129,7 @@ void test_call_c_script_c(zetscript::ScriptEngine *_script_engine, bool _show_pr
 	_script_engine->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
 
-	_script_engine->eval(
+	_script_engine->compileAndRun(
 			zetscript::String::format(
 			"function test_1st_script_call(){\n"
 				"if(%s){\n"

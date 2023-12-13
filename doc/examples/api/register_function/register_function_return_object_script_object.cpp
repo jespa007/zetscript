@@ -45,7 +45,7 @@ int main(){
     script_engine.registerFunction("returnObject",returnObject);
 
     // Eval script that calls native function 'returnObject'
-    script_engine.eval(
+    script_engine.compileAndRun(
         "Console::outln(\"result : \"+returnObject());"
  	);
 

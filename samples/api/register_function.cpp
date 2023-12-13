@@ -24,7 +24,7 @@ int main(){
 	script_engine.registerFunction("add",static_cast<zetscript::zs_float (*)(zetscript::ScriptEngine *_script_engine,zetscript::zs_float *,zetscript::zs_float *)>(add));
 
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"Console::outln(\"result 5+4:\"+add(5,4));"       // prints "result 5+4:9"
 		"Console::outln(\"result 0.5+4.6:\"+add(0.5,4.6));"       // prints "result 5+4:9"
 	);

@@ -39,11 +39,11 @@ namespace zetscript{
 
 
 
-		StackElement	evalFile(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
 		void			compileFile(const String & _filename, CompilerData *_compiler_data=NULL);
 
 		void 			compile(const String & expresion);
-		StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 
 		StackElement 	run(const char *__invoke_file__="", int __invoke_line__=-1);
 

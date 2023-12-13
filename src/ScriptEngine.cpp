@@ -882,7 +882,7 @@ namespace zetscript{
 		);
 	}
 
-	StackElement ScriptEngine::eval(const String & _expresion, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ScriptEngine::compileAndRun(const String & _expresion, const char *__invoke_file__, int __invoke_line__)  {
 
 		compiler_compile_and_link(
 			this
@@ -890,8 +890,8 @@ namespace zetscript{
 		);
 
 		return run(
-				__invoke_file__
-				,__invoke_line__
+			__invoke_file__
+			,__invoke_line__
 		);
 	}
 
@@ -960,7 +960,7 @@ namespace zetscript{
 		}
 	}
 
-	StackElement ScriptEngine::evalFile(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
+	StackElement ScriptEngine::compileFileAndRun(const String &  _filename, const char *__invoke_file__, int __invoke_line__){
 
 		compileFile(_filename);
 

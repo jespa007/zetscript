@@ -288,7 +288,7 @@ void test_call_function_member(zetscript::ScriptEngine *_script_engine, bool _sh
 		_script_engine->clear();
 
 		try{
-		_script_engine->eval(
+		_script_engine->compileAndRun(
 			zetscript::String::format(
 					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
@@ -392,7 +392,7 @@ void test_native_function_with_nulls(
 void test_call_native_function_with_nulls(zetscript::ScriptEngine *_script_engine){
 
 
-	_script_engine->eval(
+	_script_engine->compileAndRun(
 		// calls C function 'test_native_function_with_nulls' passing all parameters as null.
 		"test_native_function_with_nulls(\n"
 			"null\n"

@@ -36,7 +36,7 @@ int main(){
     script_engine.registerFunction("returnArray",returnArray);
 
     // Eval script that calls native function 'returnArray'
-    script_engine.eval(
+    script_engine.compileAndRun(
         "Console::outln(\"result : \"+returnArray());"
  	);
 

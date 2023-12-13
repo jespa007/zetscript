@@ -26,7 +26,7 @@ int main(){
 	// registers printKeys
 	script_engine.registerFunction("printKeys",printKeys);
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"var object={"
 		"	\"key1\":0"
 		"	,\"key2\":\"hello\""

@@ -14,7 +14,7 @@ int main(){
     script_engine.registerFunction("paramBool",paramBool);
 
     // Evaluates the script that calls C function with 'true' value as argument
-    script_engine.eval(
+    script_engine.compileAndRun(
         "paramBool(true);"
  	);
 

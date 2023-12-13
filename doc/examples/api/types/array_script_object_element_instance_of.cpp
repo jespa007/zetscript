@@ -36,7 +36,7 @@ int main(){
 	script_engine.registerFunction("testArrayElementInstanceOf",testArrayElementInstanceOf);
 
 	// calls printArrayElementTypes
-	script_engine.eval(
+	script_engine.compileAndRun(
         "testArrayElementInstanceOf(["
             "0"                 // Element at position '1' is type 'Integer'
             ",10.5"             // Element at position '2: is type 'Float'

@@ -33,7 +33,7 @@ int main(){
 	script_engine.registerFunction("returnNewArray",returnNewArray);
 
 	// prints the value returned by returnNewArray
-	script_engine.eval("Console::outln(returnNewArray())");
+	script_engine.compileAndRun("Console::outln(returnNewArray())");
 	
 	return 0;
 }

@@ -14,7 +14,7 @@ int main(){
 	script_engine.registerFunction("checkStringLength",checkStringLength);
 
 	// calls checkStringLength
-	script_engine.eval("checkStringLength(\"Hello World!\")");
+	script_engine.compileAndRun("checkStringLength(\"Hello World!\")");
 	
 	return 0;
 }

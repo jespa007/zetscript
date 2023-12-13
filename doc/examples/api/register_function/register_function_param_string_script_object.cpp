@@ -14,7 +14,7 @@ int main(){
     script_engine.registerFunction("paramString",paramString);
 
     // call c function with string param
-    script_engine.eval(
+    script_engine.compileAndRun(
         "paramString(\"Hello World\");"
  	);
 

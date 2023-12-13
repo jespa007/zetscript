@@ -2716,7 +2716,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_out.txt[]
 ----
 
-===== ScriptEngine::eval()
+===== ScriptEngine::compileAndRun()
 
 It compiles an expression given by parameter and it runs after its compilation.
 
@@ -2724,7 +2724,7 @@ It compiles an expression given by parameter and it runs after its compilation.
 
 [source,cpp]
 ----
-StackElement	eval(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
 
@@ -2768,7 +2768,7 @@ Console output:
 include::../examples/api/types/zetscript_compile_file_out.txt[]
 ----
 
-===== ScriptEngine::evalFile()
+===== ScriptEngine::compileFileAndRun()
 
 It compiles a file given by parameter and it runs after its compilation.
 
@@ -2776,7 +2776,7 @@ It compiles a file given by parameter and it runs after its compilation.
 
 [source,cpp]
 ----
-StackElement	evalFile(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
+StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
 *Example*

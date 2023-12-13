@@ -24,7 +24,7 @@ int main(){
 	script_engine.registerFunction("add",static_cast<zetscript::zs_float (*)(zetscript::ScriptEngine *_script_engine,zetscript::zs_float *,zetscript::zs_float *)>(add));
 
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"for(var i=0; i < 10; i++){\n"
 		"if((i%2)==0){\n"
 		"	add(5,4);\n"

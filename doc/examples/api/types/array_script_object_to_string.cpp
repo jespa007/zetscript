@@ -18,7 +18,7 @@ int main(){
 	script_engine.registerFunction("printArray",printArray);
 
 	// calls printArray
-	script_engine.eval(
+	script_engine.compileAndRun(
         "printArray(["
             "0"                 
             ",10.5"             

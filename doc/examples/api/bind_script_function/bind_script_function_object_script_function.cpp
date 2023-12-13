@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    script_engine.eval(
+    script_engine.compileAndRun(
  		"class A{\n"
         "    print(){\n"
         "       Console::outln(\"Call from instanced object\")"

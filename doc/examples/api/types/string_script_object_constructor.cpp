@@ -21,7 +21,7 @@ int main(){
 	script_engine.registerFunction("returnNewStringScriptObject",returnNewStringScriptObject);
 
 	// prints the returning of new string object
-	script_engine.eval("Console::outln(returnNewStringScriptObject())");
+	script_engine.compileAndRun("Console::outln(returnNewStringScriptObject())");
 	
 	return 0;
 }

@@ -11,7 +11,7 @@ int main(){
 	script_engine.registerConstant("MY_CONSTANT_BOOL",true);
 	script_engine.registerConstant("MY_CONSTANT_FLOAT",2.5e-3);
 
-	script_engine.eval(
+	script_engine.compileAndRun(
 		"Console::outln(\"MY_CONSTANT_INT:\"+MY_CONSTANT_INT);\n"
 		"Console::outln(\"MY_CONSTANT_STR:\"+MY_CONSTANT_STR);\n"
 		"Console::outln(\"MY_CONSTANT_BOOL:\"+MY_CONSTANT_BOOL);\n"

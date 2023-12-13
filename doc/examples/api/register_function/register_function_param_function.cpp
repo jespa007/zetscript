@@ -21,7 +21,7 @@ int main(){
     script_engine.registerFunction("paramFunction",paramFunction);
 
     // Evaluates the script that calls C function with anonymous function as argument
-    script_engine.eval(
+    script_engine.compileAndRun(
         "paramFunction(function(){\n"
         "    Console::out(\"Calling from script function\")\n"
         "})\n"
