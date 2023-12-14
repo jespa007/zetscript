@@ -6,7 +6,7 @@ using zetscript::StringScriptObject;
 // ScriptEngine C++ interface function
 StringScriptObject *returnString(ScriptEngine *_script_engine){
 
-	// instance new StringScriptObject using ScriptEngine context
+	// instance new StringScriptObject using ScriptEngine instance
 	StringScriptObject *string=_script_engine->newStringScriptObject();
 
     // set string value "Hello world (StringScriptObject)"

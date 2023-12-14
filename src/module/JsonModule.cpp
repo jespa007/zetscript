@@ -37,15 +37,15 @@ namespace zetscript{
 		vm_push_stack_element(vm,return_stack_element);
 	}
 
-	StringScriptObject * JsonModule_serialize(ScriptEngine *zs,StackElement  *stk,bool *minimized){
+	StringScriptObject * JsonModule_serialize(ScriptEngine *_script_engine,StackElement  *stk,bool *minimized){
 		// iterate for all elements in the obj
-		return StringScriptObject::newStringScriptObject(zs,json::serialize(zs,stk,*minimized).toConstChar());
+		return StringScriptObject::newStringScriptObject(_script_engine,json::serialize(zs,stk,*minimized).toConstChar());
 	}
 
-	StringScriptObject * JsonModule_serialize(ScriptEngine *zs,StackElement *stk){
+	StringScriptObject * JsonModule_serialize(ScriptEngine *_script_engine,StackElement *stk){
 		// iterate for all elements in the obj
 		bool minimize=false;
-		return JsonModule_serialize(zs,stk,&minimize);
+		return JsonModule_serialize(_script_engine,stk,&minimize);
 
 	}
 }

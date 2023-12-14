@@ -14,9 +14,9 @@ namespace zetscript{
 		return new ObjectScriptObject(_script_engine);
 	}
 
-	ObjectScriptObject * ObjectScriptObject::concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+	ObjectScriptObject * ObjectScriptObject::concat(ScriptEngine *_script_engine,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		//String error;
-		ObjectScriptObject *obj = ZS_NEW_OBJECT_SCRIPT_OBJECT(zs);
+		ObjectScriptObject *obj = ZS_NEW_OBJECT_SCRIPT_OBJECT(_script_engine);
 
 		// get properties from object o1
 		MapString *map=o1->getMapStringFields();
@@ -32,8 +32,8 @@ namespace zetscript{
 		return obj;
 	}
 
-	void  ObjectScriptObject::append(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
-		ZS_UNUSUED_PARAM(zs);
+	void  ObjectScriptObject::append(ScriptEngine *_script_engine,ObjectScriptObject *o1,ObjectScriptObject *o2){
+		ZS_UNUSUED_PARAM(_script_engine);
 		String error;
 
 		// get properties from object o2

@@ -5,7 +5,7 @@ using zetscript::StringScriptObject;
 
 StringScriptObject *returnNewStringScriptObject(ScriptEngine *_script_engine){
 
-	// instance new StringScriptObject using ScriptEngine context
+	// instance new StringScriptObject using ScriptEngine instance
 	StringScriptObject *string_object=new StringScriptObject(_script_engine,"Hello World!");
 
 	// ...

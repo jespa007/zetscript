@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    // Evaluates ScriptEngine class Number and function 'newNumber' that returns a new instance of type 'Number'
+    // Evaluates ZetScript class Number and function 'newNumber' that returns a new instance of type 'Number'
     script_engine.compile(
       "class Number{ \n"
       "  var value=0;\n"
@@ -22,7 +22,7 @@ int main()
     // It binds 'newNumber' as '(ObjectScriptObject *)(void)'
     auto newNumber=script_engine.bindScriptFunction<ObjectScriptObject *()>("newNumber");
 
-   // Calls ScriptEngine function which it returns 'ObjectScriptObject *' reference
+   // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto number=newNumber();
 
     // Prints return value by console.

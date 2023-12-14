@@ -9,7 +9,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    // Evaluates ScriptEngine function 'printConcat' that prints the result of the operation '+' from two arguments
+    // Evaluates ZetScript function 'printConcat' that prints the result of the operation '+' from two arguments
     script_engine.compile(
  		"function printConcat(_value1, _value2){\n"
         "    Console::outln(\"result : \"+(_value1+_value2));\n"
@@ -34,7 +34,7 @@ int main()
     object2->set<const char *>("f","World");
 
 
-    // Calls binded ScriptEngine function with parameters
+    // Calls binded ZetScript function with parameters
     printConcat(object1,object2);
 
 

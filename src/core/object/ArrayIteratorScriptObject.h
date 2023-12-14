@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_ARRAY_ITERATOR_SCRIPT_OBJECT(zs,so) (ArrayIteratorScriptObject::newArrayIteratorObject(zs,so))
+#define ZS_NEW_ARRAY_ITERATOR_SCRIPT_OBJECT(script_engine,so) (ArrayIteratorScriptObject::newArrayIteratorObject(script_engine,so))
 
 namespace zetscript{
 

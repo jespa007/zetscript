@@ -336,7 +336,7 @@ namespace zetscript{
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
 				dst_container_slot=NULL; // because old_stk_dst had reference to dst_container now it sets as NULL to no be freed twice
 #ifdef __ZS_LOG_CONTAINER_SLOT__
-				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).toConstChar());
+				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->script_engine,stk_src).toConstChar());
 #endif
 			}
 		}

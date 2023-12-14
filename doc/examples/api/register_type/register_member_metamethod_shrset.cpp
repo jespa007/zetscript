@@ -5,7 +5,7 @@ int main(){
 
 	ScriptEngine script_engine;
 
-	NumberZs_register(&zs);
+	NumberZs_register(&script_engine);
 
 	script_engine.compileAndRun(
 		"var number=new Number(0x10);\n"

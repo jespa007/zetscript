@@ -7,7 +7,7 @@ using zetscript::ArrayScriptObject;
 
 ArrayScriptObject *returnNewArray(ScriptEngine *_script_engine){
 
-	// instance new ArrayScriptObject using ScriptEngine context
+	// instance new ArrayScriptObject using ScriptEngine instance
 	ArrayScriptObject *array_object=new ArrayScriptObject(_script_engine);
 
 	// push first value as integer 10

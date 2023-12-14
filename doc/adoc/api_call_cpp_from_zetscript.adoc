@@ -125,7 +125,7 @@ include::../examples/api/register_function/register_function_return_string_objec
 
 ===== Return Array
 
-To register a C function that returns a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ScriptEngine::newArrayScriptObject_ using ScriptEngine context.
+To register a C function that returns a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ScriptEngine::newArrayScriptObject_ using ScriptEngine instance.
 
 *Example*
 
@@ -145,7 +145,7 @@ include::../examples/api/register_function/register_function_return_array_object
 
 ===== Return Object
 
-To register a C function that returns a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectScriptObject &#42;_ as return type. The instantiation of _ObjectScriptObject &#42;_ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine context.
+To register a C function that returns a xref:language_data_types.adoc#lowbar;object[Object] it must specify _ObjectScriptObject &#42;_ as return type. The instantiation of _ObjectScriptObject &#42;_ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine instance.
 
 *Example*
 
@@ -177,7 +177,7 @@ To register a C function that returns a xref:api_expose_cpp_types#_register_type
 To register a C function that returns a xref:api_expose_cpp_types#_register_type[registered type] it must specify its native pointer type as return.
 
 ====
-ScriptEngine *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of ScriptEngine and accessible from a location where its lifetime is active during the execution of the script.
+ZetScript *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of ZetScript and accessible from a location where its lifetime is active during the execution of the script.
 ====
 
 Because the function it returns a native reference the type can be registered as instantiable or not instantiable (see xref:api_expose_cpp_types#&#x5f;register_a_type_as_instantiable[section 3.5.1])
@@ -203,12 +203,12 @@ include::../examples/api/register_function/register_function_return_registered_t
 
 ===== Return registered type by ClassObject &#42;
 
-To register a C function that returns a xref:api_expose_cpp_types#_register_type[registered type] it must specify _ClassObject &#42;_ as return type. To instantiate _ClassObject &#42;_  is done through _ScriptEngine::newClassObject_ using ScriptEngine context and the registered class instantiated.
+To register a C function that returns a xref:api_expose_cpp_types#_register_type[registered type] it must specify _ClassObject &#42;_ as return type. To instantiate _ClassObject &#42;_  is done through _ScriptEngine::newClassObject_ using ScriptEngine instance and the registered class instantiated.
 
-A difference from returning a pointer type of a registered type, when the C function returns a _ClassObject &#42;_ ScriptEngine is in charge to deallocate automatically when it has no more references to it. 
+A difference from returning a pointer type of a registered type, when the C function returns a _ClassObject &#42;_ ZetScript is in charge to deallocate automatically when it has no more references to it. 
 
 ====
-The action of return a _ClassObject &#42;_ ScriptEngine it considers the instance of a new object in the script code so it needs to register the type as INSTANTIABLE (See xref:api_expose_cpp_types#&#x5f;register_a_type_an_instantiable[section 3.5.1] to know how to register a type AS INSTANTIABLE)
+The action of return a _ClassObject &#42;_ ZetScript it considers the instance of a new object in the script code so it needs to register the type as INSTANTIABLE (See xref:api_expose_cpp_types#&#x5f;register_a_type_an_instantiable[section 3.5.1] to know how to register a type AS INSTANTIABLE)
 ====
 
 *Example*
@@ -357,7 +357,7 @@ include::../examples/api/register_function/register_function_param_object_object
 
 ===== Parameter Function
 
-To register a C function that accepts a xref:language_data_types.adoc#lowbar;function[Function] it must specify _Function &#42;_ as parameter type. To make  _Function_ callable from C++ must use _ScriptEngine::bindScriptFunction_ (see xref:_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ScriptEngine functions binding)
+To register a C function that accepts a xref:language_data_types.adoc#lowbar;function[Function] it must specify _Function &#42;_ as parameter type. To make  _Function_ callable from C++ must use _ScriptEngine::bindScriptFunction_ (see xref:_api_call_zetscript_from_cpp#&#x5f;call_zetscript_from_c[section 3.4] to know more about ZetScript functions binding)
 
 *Example*
 

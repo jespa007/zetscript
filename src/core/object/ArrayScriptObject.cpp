@@ -15,11 +15,11 @@ namespace zetscript{
 	}
 
 	ArrayScriptObject * ArrayScriptObject::concat(
-			ScriptEngine *zs
+			ScriptEngine *_script_engine
 			,ArrayScriptObject *v1
 			,ArrayScriptObject *v2
 	){
-		ArrayScriptObject *so_vector = ZS_NEW_ARRAY_SCRIPT_OBJECT(zs);
+		ArrayScriptObject *so_vector = ZS_NEW_ARRAY_SCRIPT_OBJECT(_script_engine);
 
 		so_vector->concat(v1);
 		so_vector->concat(v2);

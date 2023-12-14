@@ -9,10 +9,10 @@ using zetscript::ObjectScriptObject;
 
 // Definition of the native function interface returnObject
 ObjectScriptObject *returnObject(ScriptEngine *_script_engine){
-	// instance new ObjectScriptObject using ScriptEngine context
+	// instance new ObjectScriptObject using ScriptEngine instance
 	ObjectScriptObject *object=_script_engine->newObjectScriptObject();
 
-	// instance new ArrayScriptObject using ScriptEngine context
+	// instance new ArrayScriptObject using ScriptEngine instance
 	ArrayScriptObject *array=_script_engine->newArrayScriptObject();
 
 	// set field "a" as integer 10

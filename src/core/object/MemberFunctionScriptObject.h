@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_MEMBER_FUNCTION(zs,so_object, so_function) (MemberFunctionScriptObject::newObjectMemberFunction(zs,so_object,so_function))
+#define ZS_NEW_OBJECT_MEMBER_FUNCTION(script_engine,so_object, so_function) (MemberFunctionScriptObject::newObjectMemberFunction(script_engine,so_object,so_function))
 
 namespace zetscript{
 	class MemberFunctionScriptObject:public RefScriptObject{
@@ -25,7 +25,7 @@ namespace zetscript{
 		// Members
 		//
 		MemberFunctionScriptObject(
-				ScriptEngine *zs
+				ScriptEngine *_script_engine
 				,ScriptObject *_so_ref
 				, ScriptFunction *_sf_ref
 		);

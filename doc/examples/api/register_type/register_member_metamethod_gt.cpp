@@ -4,7 +4,7 @@ int main(){
 
 	ScriptEngine script_engine;
 
-	NumberZs_register(&zs);
+	NumberZs_register(&script_engine);
 
 	script_engine.compileAndRun(
 		"Console::outln(\"new Number(20) > new Number(20) => \"+(new Number(20) > new Number(20)))\n"

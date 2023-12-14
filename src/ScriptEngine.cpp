@@ -70,8 +70,8 @@ namespace zetscript{
 
 		// Json mod
 		cl=script_types_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *zs,StackElement *)>(JsonModule_serialize));
-		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *_script_engine,StackElement *)>(JsonModule_serialize));
+		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *_script_engine,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan

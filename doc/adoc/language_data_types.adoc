@@ -21,7 +21,7 @@ var i=null;
 
 ==== Integer
 
-The type _Integer_ represents an integer value from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ScriptEngine is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns _decimal_, _hexadecimal_, _binary_ or _character_ value.
+The type _Integer_ represents an integer value from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns _decimal_, _hexadecimal_, _binary_ or _character_ value.
 
 [source,javascript]
 ----
@@ -35,7 +35,7 @@ var d='b'; //  character
 
 ===== Operators
 
-ScriptEngine supports the following operators for _Integer_ variables,
+ZetScript supports the following operators for _Integer_ variables,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -125,7 +125,7 @@ include::../examples/scripts/integer/integer_parse_out.txt[]
 
 ==== Float
 
-The type _Float_ is represented as IEEE-754 floating point numbers in 32-bit or 64 bit depending whether ScriptEngine is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
+The type _Float_ is represented as IEEE-754 floating point numbers in 32-bit or 64 bit depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
 
 [source,javascript]
 ----
@@ -137,7 +137,7 @@ var b=2.0e-2 // cientific notation form value
 
 ===== Operators
 
-ScriptEngine supports the following operators for _Float_ variables,
+ZetScript supports the following operators for _Float_ variables,
 
 
 [cols="1d,1m,2d,2a"]

@@ -10,7 +10,7 @@ using zetscript::String;
 // Definition of the native function interface returnArray
 ArrayScriptObject *returnArray(ScriptEngine *_script_engine){
 
-	// instance new ArrayScriptObject using ScriptEngine context
+	// instance new ArrayScriptObject using ScriptEngine instance
 	ArrayScriptObject *array=_script_engine->newArrayScriptObject();
 
 	// push first value as integer 10

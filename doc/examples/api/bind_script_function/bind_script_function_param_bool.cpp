@@ -4,7 +4,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    // Evaluates ScriptEngine function 'paramBoolean' that prints the contents of '_value'
+    // Evaluates ZetScript function 'paramBoolean' that prints the contents of '_value'
     script_engine.compile(
  		"function paramBoolean(_value){\n"
         "    Console::outln(\"result : \"+_value);\n"
@@ -17,7 +17,7 @@ int main()
     // Prepare parameter values 
     bool value=true;
 
-    // Calls binded ScriptEngine function with parameters
+    // Calls binded ZetScript function with parameters
     paramBoolean(&value);
 
  	return 0;

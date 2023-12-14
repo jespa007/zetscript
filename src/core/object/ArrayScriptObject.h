@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_ARRAY_SCRIPT_OBJECT(zs) (ArrayScriptObject::newArrayScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassArray())))//,(void *)(new ArrayScriptObject())))
+#define ZS_NEW_ARRAY_SCRIPT_OBJECT(script_engine) (ArrayScriptObject::newArrayScriptObject(script_engine)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassArray())))//,(void *)(new ArrayScriptObject())))
 
 namespace zetscript{
 
@@ -16,8 +16,8 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ArrayScriptObject * 			newArrayScriptObject(ScriptEngine *zs);
-		static ArrayScriptObject * 			concat(ScriptEngine *zs,ArrayScriptObject *v1,ArrayScriptObject *v2);
+		static ArrayScriptObject * 			newArrayScriptObject(ScriptEngine *_script_engine);
+		static ArrayScriptObject * 			concat(ScriptEngine *_script_engine,ArrayScriptObject *v1,ArrayScriptObject *v2);
 
 
 

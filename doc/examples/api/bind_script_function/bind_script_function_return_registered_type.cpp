@@ -55,7 +55,7 @@ int main(){
 	// It binds 'newNumber' as '(ClassScriptObject *)(void)'
 	auto newNumber=script_engine.bindScriptFunction<ClassScriptObject *()>("newNumber");
 
-	// Calls ScriptEngine function which it returns 'ClassScriptObject *' reference
+	// Calls ZetScript function which it returns 'ClassScriptObject *' reference
 	auto class_object_number=newNumber();
 
 	// Prints the contents by console.

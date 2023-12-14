@@ -5,7 +5,7 @@
 #pragma once
 
 
-#define ZS_NEW_OBJECT_SCRIPT_OBJECT(zs) (ObjectScriptObject::newObjectScriptObject(zs))
+#define ZS_NEW_OBJECT_SCRIPT_OBJECT(script_engine) (ObjectScriptObject::newObjectScriptObject(script_engine))
 
 namespace zetscript{
 
@@ -19,8 +19,8 @@ namespace zetscript{
 		// Helpers
 		//
 		static ObjectScriptObject * newObjectScriptObject(ScriptEngine	*_script_engine);
-		static ObjectScriptObject * concat(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
-		static void  append(ScriptEngine *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
+		static ObjectScriptObject * concat(ScriptEngine *_script_engine,ObjectScriptObject *o1,ObjectScriptObject *o2);
+		static void  append(ScriptEngine *_script_engine,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		//
 		// Helpers
 		//

@@ -43,7 +43,7 @@ const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
 
 ==== Scope
 
-In ScriptEngine we have two types of basic scopes.
+In ZetScript we have two types of basic scopes.
 
 * Global
 * Local

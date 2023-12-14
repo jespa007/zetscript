@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    // Evaluates ScriptEngine function 'returnFloat' that returns 'Float' value
+    // Evaluates ZetScript function 'returnFloat' that returns 'Float' value
     script_engine.compile(
  		"function returnFloat(){\n"
         "    return 10.5;\n"
@@ -16,7 +16,7 @@ int main()
     // It binds 'returnFloat' as 'zs_float(void)'
     auto returnFloat=script_engine.bindScriptFunction<zs_float()>("returnFloat");
 
-    // Calls ScriptEngine function and prints return value by console.
+    // Calls ZetScript function and prints return value by console.
     printf("result : %f\n",returnFloat());
 
  	return 0;

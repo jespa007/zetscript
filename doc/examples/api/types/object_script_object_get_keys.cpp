@@ -8,7 +8,7 @@ using zetscript::StringScriptObject;
 
 void printKeys(ScriptEngine *_script_engine,ObjectScriptObject *_object){
 
-	// instance new ObjectScriptObject using ScriptEngine context
+	// instance new ObjectScriptObject using ScriptEngine instance
 	auto keys=_object->getKeys();
 	printf("keys : [");
 	for(int i=0; i < keys.length(); i++){

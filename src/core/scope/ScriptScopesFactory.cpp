@@ -8,8 +8,8 @@ namespace zetscript{
 
 
 	//-----------
-	ScriptScopesFactory::ScriptScopesFactory(ScriptEngine *zs){
-		this->zs=zs;
+	ScriptScopesFactory::ScriptScopesFactory(ScriptEngine *_script_engine){
+		this->script_engine=_script_engine;
 		this->scopes = new Vector<ScriptScope *>;
 		main_scope=NULL;
 		idx_clear_checkpoint=0;  // start from MAIN scope
@@ -21,7 +21,7 @@ namespace zetscript{
 	}
 
 	ScriptScope *	 ScriptScopesFactory::newScope(int idx_sf,ScriptScope * scope_parent,uint16_t _properties){
-		ScriptScope * scope_node = new ScriptScope(this->zs,idx_sf,scope_parent,_properties);
+		ScriptScope * scope_node = new ScriptScope(this->script_engine,idx_sf,scope_parent,_properties);
 		scopes->push(scope_node);
 		return scope_node;
 	}

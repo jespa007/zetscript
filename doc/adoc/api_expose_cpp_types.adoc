@@ -1,7 +1,7 @@
 <<<
 === Exposing C++ types to ZetScript
 
-In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ScriptEngine.
+In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
 
 ==== Register a type
 
@@ -12,7 +12,7 @@ There's two ways to register a type,
 
 ===== Register a type as non instantiable
 
-Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ScriptEngine using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
+Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
 
 To register a non instantible type it's done calling _ScriptEngine::registerType_ specifying the type in the template and passing the class name by parameter.
 
@@ -28,7 +28,7 @@ Type * registerType<_Type>(const String & _class_name);
 
 [.underline]#Parameters# 
 
-- _class_name: Class name that will be referenced in ScriptEngine
+- _class_name: Class name that will be referenced in ZetScript
 
 [.underline]#Returns# 
 
@@ -93,7 +93,7 @@ include::../examples/api/register_type/register_non_instantiable_type.cpp[]
 
 ===== Register a type as instantiable
 
-Register an instantiable type it means that it *CAN* create new objects of that 'type' in ScriptEngine code using operator _new_.
+Register an instantiable type it means that it *CAN* create new objects of that 'type' in ZetScript code using operator _new_.
 
 To register instantiable type it's done also with _ScriptEngine::registerType_ but, furthermore, it has to pass two additional parameters : A _new_ function and _delete_ function.
 
@@ -168,7 +168,7 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ScriptEngine, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
+To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
 
 As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
 
@@ -189,7 +189,7 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ScriptEngine context.
+- __script_engine_ : ScriptEngine instance.
 - __this_: The current instance.
 - __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -286,7 +286,7 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_: The current instance
 - __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
@@ -382,7 +382,7 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
 
 
@@ -492,7 +492,7 @@ include::../examples/api/register_type/register_type_inheritance_out.txt[]
 
 <<<
 
-A ScriptEngine script class can be extended from any registered type. In the following evaluates an script that a script class called _ScriptMyCppTypeExtend_ extends from registered type _MyCppTypeExtend_,
+A ZetScript script class can be extended from any registered type. In the following evaluates an script that a script class called _ScriptMyCppTypeExtend_ extends from registered type _MyCppTypeExtend_,
 
 [source,javascript]
 ----

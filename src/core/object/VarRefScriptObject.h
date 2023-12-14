@@ -5,14 +5,14 @@
 #pragma once
 
 
-#define ZS_NEW_OBJECT_VAR_REF(zs,stk) VarRefObject::newVarRefObject(zs,stk)
+#define ZS_NEW_OBJECT_VAR_REF(script_engine,stk) VarRefObject::newVarRefObject(script_engine,stk)
 
 namespace zetscript{
 
 	class  VarRefObject: public ScriptObject{
 
 	public:
-		static VarRefObject * newVarRefObject(ScriptEngine *zs, StackElement _stk_var_ref); // idx call
+		static VarRefObject * newVarRefObject(ScriptEngine *_script_engine, StackElement _stk_var_ref); // idx call
 		VarRefObject(ScriptEngine *_script_engine);
 
 		//void setIdxCall(int idx_call);

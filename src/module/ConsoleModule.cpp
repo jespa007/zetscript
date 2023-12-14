@@ -12,8 +12,8 @@ namespace zetscript{
 		return Console::readChar();
 	}
 
-	void ConsoleModule_outln(ScriptEngine *zs,StackElement *str, StackElement *args){
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
+	void ConsoleModule_outln(ScriptEngine *_script_engine,StackElement *str, StackElement *args){
+		StringScriptObject *str_out=StringScriptObject::format(_script_engine,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().toConstChar());
 			fflush(stdout);
@@ -22,8 +22,8 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModule_out(ScriptEngine *zs,StackElement *str, StackElement *args){
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
+	void ConsoleModule_out(ScriptEngine *_script_engine,StackElement *str, StackElement *args){
+		StringScriptObject *str_out=StringScriptObject::format(_script_engine,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s",str_out->toString().toConstChar());
 			fflush(stdout);
@@ -31,14 +31,14 @@ namespace zetscript{
 		}
 	}
 
-	void ConsoleModule_errorln(ScriptEngine *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_errorln(ScriptEngine *_script_engine,StackElement *str, StackElement *args){
 		if(str->properties==0){
 			fprintf(stderr,"\n");
 			fflush(stderr);
 			return;
 		}
 
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(_script_engine,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s\n",str_out->toString().toConstChar());
 			fflush(stderr);
@@ -47,12 +47,12 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModule_error(ScriptEngine *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_error(ScriptEngine *_script_engine,StackElement *str, StackElement *args){
 		if(str->properties==0){
 			return;
 		}
 
-		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(_script_engine,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s",str_out->toString().toConstChar());
 			fflush(stderr);

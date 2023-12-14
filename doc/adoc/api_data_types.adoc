@@ -1,11 +1,11 @@
 
 === Data types
 
-This section will describe the data types used in the ScriptEngine API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ScriptEngine internally but this documentation only will explain the relevant ones needed for the user.
+This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
 
 ==== zetscript::zs_int
 
-Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ScriptEngine is compiled for 32bits or 64bits. 
+Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ZetScript is compiled for 32bits or 64bits. 
 
 *Example*
 
@@ -16,7 +16,7 @@ zetscript::zs_int i=10;
 
 ==== zetscript::zs_float
 
-_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ScriptEngine is compiled for 32bits or 64bits.
+_zs_float_ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
 
 *Example*
 
@@ -1581,26 +1581,24 @@ _StackElement_ is the data type used by the VirtualMachine.  StackElement conten
 
 ==== ScriptObject
 
-_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ScriptEngine. The _ScriptObject_ type has the following fields:
+_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
 
-- script_type_id: The script type representated by the instance of script object. ScriptEngine it register primitive objects as which type_ids matches with the following,
+- script_type_id: The script type representated by the instance of script object. ZetScript has a primitive types   which _script_type_ids_ are the following,
 
 [cols="1d,2m,2d"]
 |====
 
 |Name|Description
 
-|SCRIPT_TYPE_ID_OBJECT_STRING
+|SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT
 |Tells that the object is an instance of StringScriptObject
 
-|SCRIPT_TYPE_ID_OBJECT_ARRAY
+|SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT
 |Tells that the object is an instance of ObjectArray
 
-|SCRIPT_TYPE_ID_DICTIONARY_OBJECT
+|SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
 |Tells that the object is an instance of ObjectScriptObject
 
-|SCRIPT_TYPE_ID_OBJECT_CLASS
-|Tells that the object is an instance of ClassObject
 |====
 
 - properties: A integer value composed of the following mask values,  
@@ -1630,7 +1628,7 @@ StringScriptObject(ScriptEngine *_script_engine, const String & _str="");
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ScriptEngine instance.
+- _&#95;script_engine_ : ScriptEngine instance.
 - _&#95;str_ : String value as a initialize value (empty by default).
 
 *Example*
@@ -1818,7 +1816,7 @@ _ArrayScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ScriptEngine context.
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ScriptEngine instance.
 
 *Syntax*
 
@@ -1829,7 +1827,7 @@ ArrayScriptObject(ScriptEngine *_script_engine);
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ScriptEngine instance.
+- _&#95;script_engine_ : ScriptEngine instance.
 
 *Example*
 
@@ -2069,7 +2067,7 @@ _ObjectScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ScriptEngine context.
+The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ScriptEngine instance.
 
 
 *Syntax*
@@ -2081,7 +2079,7 @@ ObjectScriptObject(ScriptEngine *_script_engine);
 
 [.underline]#Parameters#
 
-- _&#95;zs_ : ScriptEngine instance.
+- _&#95;script_engine_ : ScriptEngine instance.
 
 *Example*
 
@@ -2293,7 +2291,7 @@ include::../examples/api/types/object_script_object_get_keys_out.txt[]
 
 ==== zetscript::ClassScriptObject
 
-_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in _ScriptEngine_. Also it is used as a wrapper to instance a registered type.
+_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper to instance a registered type.
 
 
 template<typename _C>
@@ -2326,7 +2324,7 @@ _ScriptFunction_ is a script function type object. _ScriptFunction_ type contain
 
 ==== zetscript::ScriptEngine
 
-_ScriptEngine_ is the engine is the main type used by the user an it aims to register function, register types, compile, execute scripts and much more.
+_ScriptEngine_ is the main type of ZetScript in order to register function, register types, compile, execute scripts and much more.
 
 ===== ScriptEngine::compile()
 
@@ -2827,11 +2825,11 @@ void registerFunction( const String & _function_name,F _c_function, const char *
 
 [.underline]#Parameters#
 
-- _&#95;function_name_ : The function name to be refered in ScriptEngine.
+- _&#95;function_name_ : The function name to be refered in ZetScript.
 
 - _&#95;c_function_ : A C function to register with the following signature,
 
-include::api_register_c_function_signature.adoc[]
+include::api_register_function_signature.adoc[]
 
 
 - _&#95;registered_file_ : Source file where the function was registered
@@ -2839,7 +2837,7 @@ include::api_register_c_function_signature.adoc[]
 
 *Example*
 
-The following example registers a C function _sayHelloWorld_ and it is called in ScriptEngine.
+The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
 
 [source,cpp]
 ----
@@ -3035,7 +3033,7 @@ void unrefLifetimeObject(ScriptObject *so);
 
 ===== ScriptEngine::bindScriptFunction()        
 
-_ScriptEngine::bindScriptFunction_ it binds ScriptEngine function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
+_ScriptEngine::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
 
 *Syntax*
 

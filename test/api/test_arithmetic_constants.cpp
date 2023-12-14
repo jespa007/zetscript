@@ -7,40 +7,40 @@
 
 #define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(_script_engine,val1,val2) _complete_test_arithmetic_integer_op(_script_engine,val1, val2, "return %s%s%s")
 
-#define COMPLETE_TEST_COMPARE_OP(zs,val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,val1<val2); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,val1*10<-val2/10); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,-(val1+10)<(val2-8)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(-val1-100)<(-val2+100)); \
+#define COMPLETE_TEST_COMPARE_OP(script_engine,val1,val2) \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,val1<val2); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,val1*10<-val2/10); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,-(val1+10)<(val2-8)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(-val1-100)<(-val2+100)); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1+10)>(val2-80)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,val1*70>(-val2+300)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,-val1*60>val2*90); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,-val1*90>-val2*60); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1+10)>(val2-80)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,val1*70>(-val2+300)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,-val1*60>val2*90); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,-val1*90>-val2*60); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1+10)<=10*val2); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,val1*10<=-80/val2); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,-val1/10<=val2*70); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(-val1-10)<=-val2*10); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1+10)<=10*val2); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,val1*10<=-80/val2); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,-val1/10<=val2*70); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(-val1-10)<=-val2*10); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,val1*70>=val2); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,-val1/10>=-(val2+90)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(-val1+10)>=val2*10/10); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(-val1-val1)>=-(val2-val2-10)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,val1*70>=val2); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,-val1/10>=-(val2+90)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(-val1+10)>=val2*10/10); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(-val1-val1)>=-(val2-val2-10)); \
 
-#define COMPLETE_TEST_LOGIC_OP(zs,val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,!(val1>0)&&(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<0)&&(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1>=0)&&!(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)&&(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)&&!(false)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)&&(true)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1>0)||!(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<0)||(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1>=0)||(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,!(val1<=0)||(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)||(false)); \
-		TEST_ARITHMETIC_BOOL_EXPRESSION(zs,(val1<=0)||(true));
+#define COMPLETE_TEST_LOGIC_OP(script_engine,val1,val2) \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,!(val1>0)&&(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<0)&&(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1>=0)&&!(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<=0)&&(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<=0)&&!(false)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<=0)&&(true)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1>0)||!(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<0)||(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1>=0)||(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,!(val1<=0)||(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<=0)||(false)); \
+		TEST_ARITHMETIC_BOOL_EXPRESSION(script_engine,(val1<=0)||(true));
 
 void test_arithmetic_constants(zetscript::ScriptEngine *_script_engine, bool _show_print=true) {
 

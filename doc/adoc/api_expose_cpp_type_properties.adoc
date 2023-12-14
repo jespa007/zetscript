@@ -1,7 +1,7 @@
 
 ==== Properties
 
-the ScriptEngine API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
+ZetScript API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
 
 
 ===== Register constant property
@@ -17,7 +17,7 @@ ReturnType RegisteredTypeProperty_get(ScriptEngine *_script_engine, RegisteredTy
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context.
+- __script_engine_ : ScriptEngine instance.
 - __this_ : The current instance.
 
 [.underline]#Returns#
@@ -84,7 +84,7 @@ ReturnType RegisteredTypeProperty_get(ScriptEngine *_script_engine, RegisteredTy
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -149,7 +149,7 @@ void RegisteredTypeProperty_set(ScriptEngine *_script_engine, RegisteredType *_t
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -214,7 +214,7 @@ void RegisteredTypeProperty_addset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -279,7 +279,7 @@ void RegisteredTypeProperty_subset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -346,7 +346,7 @@ void RegisteredTypeProperty_mulset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -411,7 +411,7 @@ void RegisteredTypeProperty_divset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -477,7 +477,7 @@ void RegisteredTypeProperty_modset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -541,7 +541,7 @@ void RegisteredTypeProperty_andset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -606,7 +606,7 @@ void RegisteredTypeProperty_orset(ScriptEngine *_script_engine, RegisteredType *
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -671,7 +671,7 @@ void RegisteredTypeProperty_xorset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -738,7 +738,7 @@ void RegisteredTypeProperty_shrset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -803,7 +803,7 @@ void RegisteredTypeProperty_shlset(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 - __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types#_types[primitive types] or a pointer of other xref:api_expose_cpp_types#_register_a_type[registered type].
 
@@ -869,7 +869,7 @@ ReturnType  RegisteredType_value_postinc(ScriptEngine *_script_engine, Registere
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -934,7 +934,7 @@ ReturnType  RegisteredType_value_postdec(ScriptEngine *_script_engine, Registere
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -999,7 +999,7 @@ ReturnType  RegisteredType_value_preinc(ScriptEngine *_script_engine, Registered
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 
 [.underline]#Returns#
@@ -1058,7 +1058,7 @@ ReturnType  RegisteredType_value_predec(ScriptEngine *_script_engine, Registered
 
 [.underline]#Parameters#
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
 
 [.underline]#Returns#

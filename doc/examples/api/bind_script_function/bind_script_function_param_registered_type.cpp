@@ -39,7 +39,7 @@ int main()
 	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);
 
 
-    // Evaluates ScriptEngine function 'paramNumber' that prints the contents of '_number'
+    // Evaluates ZetScript function 'paramNumber' that prints the contents of '_number'
     script_engine.compile(
  		"function paramNumber(_number){\n"
         "    Console::outln(\"result : \"+_number);\n"
@@ -52,7 +52,7 @@ int main()
     // Prepare parameters
     auto number=Number(10);
 
-    // Calls binded ScriptEngine function with parameters
+    // Calls binded ZetScript function with parameters
     paramNumber(&number);
 
 

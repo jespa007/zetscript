@@ -15,7 +15,7 @@
 #define ZS_PRINT_ERROR_OP(c)\
 ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\
 	c,\
-	stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1));\
+	stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->script_engine,stk_result_op1));\
 	return NULL;
 
 

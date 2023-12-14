@@ -4,7 +4,6 @@
  */
 #pragma once
 
-//#define zs_print_error_cr(s, ...) 		ScriptEngine::log::print(__FILE__,__LINE__,ScriptEngine::String::LOG_LEVEL_ERROR	, true,s, ##__VA_ARGS__)
 #define ZS_LOG_WARNING(s, ...)   			zetscript::Log::print(__FILE__,__LINE__,zetscript::Log::LOG_LEVEL_WARNING	, true,s, ##__VA_ARGS__)
 #define ZS_LOG_INFO(s, ...)   				zetscript::Log::print(__FILE__,__LINE__,zetscript::Log::LOG_LEVEL_INFO	, true,s, ##__VA_ARGS__)
 #ifdef __ZS_VERBOSE_MESSAGE__

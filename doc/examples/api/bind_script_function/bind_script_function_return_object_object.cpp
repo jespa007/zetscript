@@ -6,7 +6,7 @@ int main()
 {
 	zetscript::ScriptEngine script_engine;
 
-    // Evaluates ScriptEngine function 'returnObject' that returns 'ScriptObject' value
+    // Evaluates ZetScript function 'returnObject' that returns 'ScriptObject' value
     script_engine.compile(
  		"function returnObject(){\n"
         "    return {a:1,b:true,c:\"String\"};\n"
@@ -16,7 +16,7 @@ int main()
     // It binds 'returnObject' as 'ObjectScriptObject *(void)'
     auto returnObject=script_engine.bindScriptFunction<ObjectScriptObject *()>("returnObject");
 
-    // Calls ScriptEngine function which it returns 'ObjectScriptObject *' reference
+    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto object_object=returnObject();
 
     // Prints its value by console.

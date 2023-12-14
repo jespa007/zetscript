@@ -7,7 +7,7 @@ int main()
 {
   ScriptEngine script_engine;
 
-  // Evaluates ScriptEngine function 'returnString' that returns 'String' value
+  // Evaluates ZetScript function 'returnString' that returns 'String' value
   script_engine.compile(
   "function returnString(){\n"
       "    return \"Hello World\";\n"
@@ -17,7 +17,7 @@ int main()
   // It binds 'returnString' as 'StringScriptObject *(void)'
   auto returnString=script_engine.bindScriptFunction<StringScriptObject *()>("returnString");
 
-  // Calls ScriptEngine function which it returns 'StringScriptObject *' reference
+  // Calls ZetScript function which it returns 'StringScriptObject *' reference
   auto object=returnString();
 
   // Prints its value by console.

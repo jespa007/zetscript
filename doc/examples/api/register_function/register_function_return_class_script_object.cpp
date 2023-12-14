@@ -41,7 +41,7 @@ ClassScriptObject *returnNumber(ScriptEngine *_script_engine){
 	// initializes value
 	number->value=10;
 
-	// instance new ClassScriptObject using ScriptEngine context and number instance
+	// instance new ClassScriptObject using ScriptEngine instance and number instance
 	class_object=_script_engine->newClassScriptObject(number);
 
 	// return class script object

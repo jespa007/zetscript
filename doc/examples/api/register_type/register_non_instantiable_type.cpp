@@ -24,7 +24,7 @@ int main(){
  	script_engine.registerFunction("getNumber",getNumber);
  	
  	
-	// Evaluates ScriptEngine code that calls 'getNumber' to get 'number' object reference
+	// Evaluates ZetScript code that calls 'getNumber' to get 'number' object reference
  	script_engine.compileAndRun(
  		"var number= getNumber();" 
  	);

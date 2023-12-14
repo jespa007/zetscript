@@ -19,7 +19,7 @@ namespace zetscript{
 		void *data;
 	};
 
-	VirtualMachine *vm_new(ScriptEngine *zs);
+	VirtualMachine *vm_new(ScriptEngine *_script_engine);
 
 	void			vm_init(VirtualMachine *vm, ScriptEngine *_script_engine);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);

@@ -5,7 +5,7 @@ using zetscript::ArrayScriptObject;
 
 ArrayScriptObject *returnNewArrayScriptObject(ScriptEngine *_script_engine){
 
-	// instance new StringScriptObject using ScriptEngine context
+	// instance new StringScriptObject using ScriptEngine instance
 	ArrayScriptObject *array_object=new ArrayScriptObject(_script_engine);
 
 	//...

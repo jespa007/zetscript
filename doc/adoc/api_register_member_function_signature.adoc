@@ -14,6 +14,6 @@ Where,
 
 [.underline]#Parameters# 
 
-- __zs_ : ScriptEngine context
+- __script_engine_ : ScriptEngine instance
 - __this_: The current instance
 - __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
