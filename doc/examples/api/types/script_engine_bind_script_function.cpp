@@ -2,7 +2,16 @@
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.compileAndRun("");
+	// Compiles 'printHelloWorld' function
+	script_engine.compile("function printHelloWorld(){\n"
+		"Console::outln(\"Hello world!!\");\n"
+	"}");
+
+	// binds ZetScript 'printHelloWorld' to std::function
+	auto print_hello_world=script_engine.bindScriptFunction<void()>("printHelloWorld");
+
+	// invoke 'printHelloWorld'
+	print_hello_world();
 	
 	return 0;
 }
