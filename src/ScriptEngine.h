@@ -55,10 +55,10 @@ namespace zetscript{
 		// STACKELEMENT
 		//
 		// it gives stackelement as string (the result should be deleted)
-		void 					setStackElementUndefined();
-		StackElement   			intToStackElement(zs_int);
-		StackElement    		floatToStackElement(zs_float);
-		StackElement    		boolToStackElement(bool);
+		void 			setStackElementUndefined();
+		StackElement   	intToStackElement(zs_int);
+		StackElement    floatToStackElement(zs_float);
+		StackElement    boolToStackElement(bool);
 
 		bool			stackElementTo(
 			StackElement * _stack_element
@@ -66,7 +66,7 @@ namespace zetscript{
 			, zs_int *_ptr_var
 			, String  & _error
 		);
-		
+
 		template<typename _C>
 		_C 				stackElementTo(StackElement * _stk);
 
