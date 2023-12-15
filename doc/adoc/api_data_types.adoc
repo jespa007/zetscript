@@ -2326,6 +2326,76 @@ _ScriptFunction_ is a script function type object. _ScriptFunction_ type contain
 
 _ScriptEngine_ is the main type of ZetScript in order to register function, register types, compile, execute scripts and much more.
 
+
+===== ScriptEngine::bindScriptFunction()        
+
+_ScriptEngine::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
+
+*Syntax*
+
+[source,cpp]
+----
+ ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
+
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
+
+
+std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function);
+
+
+----
+[.underline]#Template#
+
+- _F_ : A C function with the following signature,
+
+ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)
+
+Where,
+
+- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
+- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+
+[.underline]#Parameters#
+
+ - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
+ - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+ - __script_function_: _ScriptEngine::String_ or _Function *_ as the name or the script function reference to be registered.
+
+
+[.underline]#Returns#
+
+Returns a _std::function_ with the signature provided.
+
+*Example*
+
+The following example it binds a _sayHelloWorld_ function.
+
+[source,cpp]
+----
+include::../examples/api/bind_script_function/bind_script_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/bind_script_function/bind_script_function_out.txt[]
+----
+
+
+===== ScriptEngine::clear()
+
+
+*Syntax*
+
+[source,cpp]
+----
+void clear();
+----
+
 ===== ScriptEngine::compile()
 
 It compiles an expression given by parameter.
@@ -2452,280 +2522,7 @@ Below the header it appears a list of the instructions of generated code with th
 
 The meaning of all byte codes possibles that it can shown are described as the following,
 
-[cols="1m,2d"]
-|====
-|ByteCode |Description
-
-|EQU
-|Logical equal
-
-|NOT_EQU
-|Logical not equal
-
-|LT
-|Less than
-
-|LTE
-|Less than equal
-
-|GT
-|Greather than		
-
-|GTE
-|Greather than equal
-
-|LOGIC_AND
-|Login AND
-
-|LOGIC_OR
-|Logic OR
-
-|INSTANCEOF
-|Instanceof
-
-|NOT
-|Not
-
-|NEG
-|Negate
-
-|ADD
-|Addition
-
-|SUB
-|Substraction
-
-|DIV
-|Division	
-
-|MUL
-|Multiplication	
-
-|MOD
-|Modulus
-
-|AND
-|Bitwise AND
-
-|OR
-|Bitwise OR
-
-|XOR
-|Bitwise XOR
-
-|SHL
-|Bitwise SHIFT LEFT
-
-|SHR
-|Bitwise SHIFT RIGHT
-
-|BWC
-|Bitwise complement
-
-|ASSIGN
-|Assign
-
-|ADD_ASSIGN
-|Addition and assignment
-
-|SUB_ASSIGN
-|Substraction and assignment
-
-|MUL_ASSIGN
-|Multiplication and assignment
-
-|DIV_ASSIGN
-|Division and assignment
-
-|MOD_ASSIGN
-|Modulus and assignment
-
-|AND_ASSIGN
-|Bitwise AND and assignment
-
-|OR_ASSIGN
-|Bitwise OR and assignment
-
-|XOR_ASSIGN
-|Bitwise XOR and assignment
-
-|SHL_ASSIGN
-|Bitwise SHIFT LEFT and assignment
-
-|SHR_ASSIGN
-|Bitwise SHIFT RIGHT and assignment
-
-|PUSH_STK_GLOBAL_IRGO
-|Push global variable from return function to stack
-
-|PUSH_STK_GLOBAL
-|Push global variable to stack
-
-|PUSH_STK_LOCAL
-|Push local variable to stack
-			
-|PUSH_STK_REF
-|Push argument reference to stack
-
-|PUSH_STK_THIS
-|Push current object instance to stack
-
-|PUSH_STK_ARRAY@ITEM
-|Push array item to stack
-
-|PUSH_STK_OBJ@ITEM 
-|Push object item to stack
-
-|PUSH_STK_THIS@VAR
-|Push member variable to stack
-
-|LOAD_GLOBAL
-|Load global variable to stack
-
-|LOAD_LOCAL
-|Load local variable to stack
-
-|LOAD_REF
-|Load argument reference to stack
-
-|LOAD_THIS
-|Load current instance to stack
-
-|LOAD_CONSTRUCTOR_FUNCT
-|Load constructor function to stack
-
-|LOAD_???
-|Unresolved load symbol. It tries to resolve and load at runtime
-
-|CALL
-|Performs a direct call
-
-|CALL???
-|Unresolved direct call. It tries to load at runtime
-
-|STK_CALL
-|Performs a call from current stack
-
-|MEMBER_CALL
-|Performs member call
-
-|LOAD_THIS@VAR
-|Load member variable to stack
-
-|LOAD_THIS@FUN
-|Load member function to stack
-
-|LOAD_ARRAY@ITEM
-|Load array item to stack
-
-|LOAD_OBJ@ITEM
-|Load object item to stack
-
-|LOAD_FUN
-|Load function to stack
-
-|LOAD_UNDEFINED
-|Load undefined value to stack
-
-|LOAD_NULL
-|Load Null value to stack
-
-|LOAD_STK
-|Load stack element to stack
-
-|LOAD_STR
-|Load _String_ value to stack
-
-|LOAD_FLT
-|Load _Float_ value to stack
-
-|LOAD_BOOL
-|Load _Boolean_ value to stack
-
-|LOAD_INT
-|Load _Integer_ value to stack
-
-|LOAD_TYPE
-|Load _Type_ value to stack
-
-|JMP
-|Performs an unconditional jump.
-
-|JMP_CASE 
-|Performs a jump Switch-Case.
-			
-|JNT
-|Performs a jump if not true
-
-|JT
-|Performs jump if true.
-			
-|JE_CASE
-|Performs a jump if equal Switch-Case
-
-|CALL_CONSTRUCTOR
-|Performs a constructor call
-
-|NEW_ARRAY
-|Creates an array object
-
-|PUSH_AITEM
-|Push array item to stack
-			
-|RET
-|Return
-
-|NEW_OBJECT_BY_TYPE
-|Creates new object by type
-
-|NEW_OBJECT_BY_VALUE
-|Creates new object by value
-			
-|DELETE
-|Deletes object
-
-|POP_SCOPE
-|Pop scope
-
-|PUSH_SCOPE
-|Push scope
-
-|PUSH_OITEM
-|Push object item
-
-|NEW_OBJECT
-|Creates new object
-
-|NEW_STR
-|Creates new string
-	
-|IT_INIT
-|Performs iterator init
-
-|STORE_CONST
-|Performs a constant assignment
-
-|PRE_INC
-|Performs a preincrement
-
-|PRE_DEC
-|Performs a predecrement
-
-|POST_INC
-|Performs a postincrement
-
-|POST_DEC
-|Performs a postdecrement
-
-|RESET_STACK
-|Resets stack
-			
-|TYPEOF
-|Typeof
-
-|IN
-|In operator
-|====
+include::api_byte_code_table.adoc[]
 
 *Syntax*
 
@@ -2748,9 +2545,7 @@ Console output:
 include::../examples/api/types/script_engine_print_generated_code_out.txt[]
 ----
 
-
 <<<
-
 
 ===== ScriptEngine::registerConstant()
 
@@ -2905,34 +2700,6 @@ Console output:
 include::../examples/api/eval/script_engine_register_constructor.txt[]
 ----
 
-===== ScriptEngine::registerMemberFunction()
-
-*Syntax*
-
-[source,cpp]
-----
-void	registerMemberFunction<T,F>(
-		const String & _name_script_function
-		,F _c_function
-		, const char *_registered_file=""
-		,short _registered_line=-1
-)
-----
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/script_engine_register_member_function.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/eval/script_engine_register_member_function.txt[]
-----
-
 ===== ScriptEngine::registerConstMemberProperty()        
 
 *Syntax*
@@ -2962,6 +2729,33 @@ Console output:
 include::../examples/api/eval/script_engine_register_const_member_property.txt[]
 ----
 
+===== ScriptEngine::registerMemberFunction()
+
+*Syntax*
+
+[source,cpp]
+----
+void	registerMemberFunction<T,F>(
+		const String & _name_script_function
+		,F _c_function
+		, const char *_registered_file=""
+		,short _registered_line=-1
+)
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_member_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/script_engine_register_member_function.txt[]
+----
 
 ===== ScriptEngine::registerMemberPropertyMetamethod()
 
@@ -2991,8 +2785,6 @@ Console output:
 ----
 include::../examples/api/eval/script_engine_register_member_property_metamethod_out.txt[]
 ----
-
-
 
 ===== ScriptEngine::registerStaticMemberFunction()
 
@@ -3031,82 +2823,6 @@ include::../examples/api/eval/script_engine_register_static_member_function_out.
 void unrefLifetimeObject(ScriptObject *so);
 ----
 
-===== ScriptEngine::bindScriptFunction()        
-
-_ScriptEngine::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
-
-*Syntax*
-
-[source,cpp]
-----
- ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
-
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
-
-
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
-
-
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function);
-
-
-----
-[.underline]#Template#
-
-- _F_ : A C function with the following signature,
-
-ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)
-
-Where,
-
-- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
-
-[.underline]#Parameters#
-
- - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
- - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
- - __script_function_: _ScriptEngine::String_ or _Function *_ as the name or the script function reference to be registered.
-
-
-[.underline]#Returns#
-
-Returns a _std::function_ with the signature provided.
-
-*Example*
-
-The following example it binds a _sayHelloWorld_ function.
-
-[source,cpp]
-----
-include::../examples/api/bind_script_function/bind_script_function.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/bind_script_function/bind_script_function_out.txt[]
-----
-
-*Syntax*
-
-[source,cpp]
-----
-
-
-----
-
-
-===== ScriptEngine::clear()
-
-
-*Syntax*
-
-[source,cpp]
-----
-void clear();
-----
 
 ===== ScriptEngine::saveState()
 
