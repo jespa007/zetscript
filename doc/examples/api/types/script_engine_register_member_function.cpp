@@ -46,7 +46,7 @@ int main(){
 	// Register member function Number::getValue
 	script_engine.registerMemberFunction<Number>("getValue",NumberZs_getValue);
 
-    // Prints the result of the script by console
+    // Prints the result of the evaluated script by console
     script_engine.compileAndRun(
         "var n=new Number(20.5);\n"
 		"Console::outln(\"n.getValue() : \"+n.getValue())\n"
