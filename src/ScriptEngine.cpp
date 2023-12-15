@@ -603,6 +603,7 @@ namespace zetscript{
 		return false;
 	}
 
+
 	bool ScriptEngine::stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id_to_convert, zs_int *_ptr_var, String  & _error){
 		zs_int val_ret=0;
 

@@ -14,7 +14,7 @@ namespace zetscript{
 			ZS_THROW_EXCEPTION("key '%s' not exist",_key.toConstChar());
 		}
 
-		return this->script_engine->stackElementInstanceOf<_T>(stk);
+		return this->script_engine->isStackElementInstanceOf<_T>(stk);
 	}
 
 	template<typename _T>

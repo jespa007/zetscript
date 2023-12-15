@@ -82,7 +82,7 @@ namespace zetscript{
 		}	
 
 		template<typename _C>
-		bool ScriptEngine::stackElementInstanceOf(
+		bool ScriptEngine::isStackElementInstanceOf(
 			StackElement * _stack_element
 		){
 

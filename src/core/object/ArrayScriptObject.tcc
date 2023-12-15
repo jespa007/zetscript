@@ -11,7 +11,7 @@ namespace zetscript{
 			ZS_THROW_EXCEPTION("_pos index out of bounds (%i)",_pos);
 		}
 
-		return this->script_engine->stackElementInstanceOf<_T>(stk_elements.get(_pos));
+		return this->script_engine->isStackElementInstanceOf<_T>(stk_elements.get(_pos));
 	}
 
 	template<typename _T>

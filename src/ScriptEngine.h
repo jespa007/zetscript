@@ -60,30 +60,41 @@ namespace zetscript{
 		StackElement    		floatToStackElement(zs_float);
 		StackElement    		boolToStackElement(bool);
 
+		bool			stackElementTo(
+			StackElement * _stack_element
+			, ScriptTypeId _script_type_id
+			, zs_int *_ptr_var
+			, String  & _error
+		);
+		
 		template<typename _C>
-		_C stackElementTo(StackElement * _stk);
+		_C 				stackElementTo(StackElement * _stk);
 
 		template<typename _C>
-		bool canStackElementCastTo(StackElement * _stack_element);
+		_C 				stackElementTo(StackElement   _stk);
+
+		String			stackElementToString(StackElement *_stk,const String & _format="");
+		const char	*	stackElementToString(char *_str_out,int _str_out_len, StackElement *_stk,const String & _format="");
+		String			stackElementToStringTypeOf(StackElement *_stk);
+		const char	*	stackElementToStringTypeOf(char *_str_out, StackElement *_stk);
+
 
 		template<typename _C>
-		bool stackElementInstanceOf(StackElement * _stack_element);
-
+		bool 			canStackElementCastTo(StackElement * _stack_element);
+		bool			canStackElementCastTo(StackElement * _stack_element,ScriptTypeId _script_type_id, bool _strict = false);
 
 		template<typename _C>
-		_C stackElementTo(StackElement   _stk);
+		bool 			isStackElementInstanceOf(StackElement * _stack_element);
 
-		String		stackElementToString(StackElement *_stk,const String & _format="");
-		const char		*stackElementToString(char *_str_out,int _str_out_len, StackElement *_stk,const String & _format="");
+
+
 		StackElement	unwrapStackElement(StackElement _stk);
 
-		String		stackElementToStringTypeOf(StackElement *_stk);
-		const char		*stackElementToStringTypeOf(char *_str_out, StackElement *_stk);
 
 		void			stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src);
 		StackElement 	toStackElement(zs_int ptr_var, ScriptTypeId _script_type_id);
-		bool			stackElementTo(StackElement * _stack_element, ScriptTypeId _script_type_id, zs_int *_ptr_var, String  & _error);
-		bool			canStackElementCastTo(StackElement * _stack_element,ScriptTypeId _script_type_id, bool _strict = false);
+
+		
 
 		template<typename _C>
 		StackElement	toStackElement( _C _val);
