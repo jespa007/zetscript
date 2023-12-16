@@ -12,7 +12,7 @@ int main(){
 	script_engine.registerConstant("MY_CONSTANT_BOOL",true);
 	script_engine.registerConstant("MY_CONSTANT_FLOAT",2.5e-3);
 
-	// Prints the result of the evaluated script by console
+	// Prints the value of each registered constant
 	script_engine.compileAndRun(
 		"Console::outln(\"MY_CONSTANT_INT:\"+MY_CONSTANT_INT);\n"
 		"Console::outln(\"MY_CONSTANT_STR:\"+MY_CONSTANT_STR);\n"

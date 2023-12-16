@@ -70,7 +70,7 @@ include::../examples/api/types/string_constructor_out.txt[]
 npos is a static member constant value with the greatest possible value.
 
 
-==== Static functions
+===== Static functions
 
 ====== String::format()
 
@@ -85,128 +85,10 @@ String format(const char *_format,...);
 
 [.underline]#Parameters#
 
+- _&#95;format_ : C string that contains the text to be returned as String. It can optionally contain embedded format specifiers that are replaced by the values specified in subsequent additional arguments and formatted as requested. 
+Format specifier follows the same prototype as C printf: 
 
-- _&#95;format_ : C string that contains the text to be returned as String. It can optionally contain embedded format specifiers that are replaced by the values specified in subsequent additional arguments and formatted as requested. A format specifier follows the same prototype as C printf: %[flags][width][.precision][length]specifier
-
-[cols="1m,3d,3d"]
-|====
-|Specifier |Output|Example
-|d or i	
-|Signed decimal integer	
-|392
-|u	
-|Unsigned decimal integer
-|7235
-|o
-|Unsigned octal
-|610
-|x
-|Unsigned hexadecimal integer
-|7fa
-|X
-|Unsigned hexadecimal integer (uppercase)
-|7FA
-|f
-|Decimal floating point, lowercase
-|392.65
-|F	
-|Decimal floating point, uppercase
-|392.65
-|e	
-|Scientific notation (mantissa/exponent), lowercase
-|3.9265e+2
-|E	
-|Scientific notation (mantissa/exponent), uppercase
-|3.9265E+2
-|g	
-|Use the shortest representation: %e or %f
-|392.65
-|G
-|Use the shortest representation: %E or %F
-|392.65
-|a
-|Hexadecimal floating point, lowercase
-|-0xc.90fep-2
-|A
-|Hexadecimal floating point, uppercase
-|-0XC.90FEP-2
-|c
-|Character
-|a
-|s
-|String of characters
-|sample
-|p	
-|Pointer address
-|b8000000
-|n
-|Nothing printed.
-The corresponding argument must be a pointer to a signed int.
-The number of characters written so far is stored in the pointed location.	
-|%
-|A % followed by another % character will write a single % to the stream.
-|%
-|====
-
-
-The format specifier can also contain sub-specifiers: flags, width, .precision and modifiers (in that order), which are optional and follow these specifications:
-
-[cols="1m,3d"]
-|====
-|flags
-|description
-|-
-|Left-justify within the given field width; Right justification is the default (see width sub-specifier).
-|+
-|Forces to preceed the result with a plus or minus sign (+ or -) even for positive numbers. By default, only negative numbers are preceded with a - sign.
-(space)	If no sign is going to be written, a blank space is inserted before the value.
-|#
-|Used with o, x or X specifiers the value is preceeded with 0, 0x or 0X respectively for values different than zero. Used with a, A, e, E, f, F, g or G it forces the written output to contain a decimal point even if no more digits follow. By default, if no digits follow, no decimal point is written.
-|0
-|Left-pads the number with zeroes (0) instead of spaces when padding is specified (see width sub-specifier).
-|====
-
-
-[cols="1m,3d"]
-|====
-|width
-|description
-|(number)
-|Minimum number of characters to be printed. If the value to be printed is shorter than this number, the result is padded with blank spaces. The value is not truncated even if the result is larger.
-|*
-|The width is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.
-|====
-
-[cols="1m,3d"]
-|====
-|.precision	
-|description
-|.number
-|For integer specifiers (d, i, o, u, x, X): precision specifies the minimum number of digits to be written. If the value to be written is shorter than this number, the result is padded with leading zeros. The value is not truncated even if the result is longer. A precision of 0 means that no character is written for the value 0.
-For a, A, e, E, f and F specifiers: this is the number of digits to be printed after the decimal point (by default, this is 6).
-For g and G specifiers: This is the maximum number of significant digits to be printed.
-For s: this is the maximum number of characters to be printed. By default all characters are printed until the ending null character is encountered.
-If the period is specified without an explicit value for precision, 0 is assumed.
-|.*
-|The precision is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted.
-|====
-
-The length sub-specifier modifies the length of the data type. This is a chart showing the types used to interpret the corresponding arguments with and without length specifier (if a different type is used, the proper type promotion or conversion is performed, if allowed):
-
-
-
-
-specifiers
-length	d i	u o x X	f F e E g G a A	c	s	p	n
-(none)	int	unsigned int	double	int	char*	void*	int*
-hh	signed char	unsigned char					signed char*
-h	short int	unsigned short int					short int*
-l	long int	unsigned long int		wint_t	wchar_t*		long int*
-ll	long long int	unsigned long long int					long long int*
-j	intmax_t	uintmax_t					intmax_t*
-z	size_t	size_t					size_t*
-t	ptrdiff_t	ptrdiff_t					ptrdiff_t*
-L			long double	
+include::string_format_format_specifier.adoc[]
 
 [.underline]#Return#
 
@@ -1077,20 +959,20 @@ npos is a static member constant value with the greatest possible value.
 
 ===== Member functions
 
-====== Vector::push()
+====== Vector::clear()
 
-Appends an element at the end of current contents.
+Erases the contents of the vector.
 
 *Syntax*
 
 [source,cpp]
 ----
-bool 		push( const _T & _element);
+void 		clear();
 ----
 
 [.underline]#Parameters#
 
-- _&#95;element_ : The element to append.
+None
 
 [.underline]#Return#
 
@@ -1100,144 +982,25 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_push.cpp[]
-----
-
-====== Vector::length()
-
-Returns the number of elements of the vector. 
-
-*Syntax*
-
-[source,cpp]
-----
-int	length() const;
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-The number of elements in the vector.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/vector_length.cpp[]
+include::../examples/api/types/vector_clear.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/vector_length_out.txt[]
+include::../examples/api/types/vector_clear_out.txt[]
 ----
 
-====== Vector::set()
+====== Vector::concat()
 
-Replaces the element from a position.
+Copies all elements from other vector at the end of current contents.
 
 *Syntax*
 
 [source,cpp]
 ----
-void 		set( int  _pos_, const _T & _element);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : The integer value as the position.
-- _&#95;element_ : The element to replace.
-
-[.underline]#Return#
-
-none
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/vector_set.cpp[]
-----
-
-====== Vector::get()
-
-Returns a reference to the element from a position.
-
-*Syntax*
-
-[source,cpp]
-----
-const _T &	get( int  _pos);
-----
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : The integer value as the position.
-
-[.underline]#Return#
-
-The element at the specified position in the vector.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/vector_get.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/vector_get_out.txt[]
-----
-
-====== Vector::pop()
-
-Returns the last element by copy and erases the last element.
-
-*Syntax*
-
-[source,cpp]
-----
-void    		pop();
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/vector_pop_back.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/vector_pop_back_out.txt[]
-----
-
-====== Vector::operator=()
-
-Replaces current content by the set of elements from other vector.
-
-*Syntax*
-
-[source,cpp]
-----
-Vector& operator=(const Vector& _vector);		
+void 		concat(const Vector<_T>  & _vector);
 ----
 
 [.underline]#Parameters#
@@ -1246,22 +1009,54 @@ Vector& operator=(const Vector& _vector);
 
 [.underline]#Return#
 
-*this
+None
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_operator_assign.cpp[]
+include::../examples/api/types/vector_concat.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/vector_operator_assign_out.txt[]
+include::../examples/api/types/vector_concat_out.txt[]
 ----
 
+====== Vector::data()
+
+Returns the pointer to the array of the elements.
+
+*Syntax*
+
+[source,cpp]
+----
+_T *data();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A pointer of elements of the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_data.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_data_out.txt[]
+----
 
 ====== Vector::erase()
 
@@ -1296,37 +1091,37 @@ Console output:
 include::../examples/api/types/vector_erase_out.txt[]
 ----
 
-====== Vector::concat()
+====== Vector::get()
 
-Copies all elements from other vector at the end of current contents.
+Returns a reference to the element from a position.
 
 *Syntax*
 
 [source,cpp]
 ----
-void 		concat(const Vector<_T>  & _vector);
+const _T &	get( int  _pos);
 ----
 
 [.underline]#Parameters#
 
-- _&#95;vector_ : A vector object.
+- _&#95;pos_ : The integer value as the position.
 
 [.underline]#Return#
 
-None
+The element at the specified position in the vector.
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_concat.cpp[]
+include::../examples/api/types/vector_get.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/vector_concat_out.txt[]
+include::../examples/api/types/vector_get_out.txt[]
 ----
 
 ====== Vector::insert()        
@@ -1365,15 +1160,81 @@ Console output:
 include::../examples/api/types/vector_insert_out.txt[]
 ----
 
-====== Vector::clear()
+====== Vector::length()
 
-Erases the contents of the vector.
+Returns the number of elements of the vector. 
 
 *Syntax*
 
 [source,cpp]
 ----
-void 		clear();
+int	length() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_length_out.txt[]
+----
+
+====== Vector::operator=()
+
+Replaces current content by the set of elements from other vector.
+
+*Syntax*
+
+[source,cpp]
+----
+Vector& operator=(const Vector& _vector);		
+----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A vector object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_operator_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_operator_assign_out.txt[]
+----
+
+====== Vector::pop()
+
+Returns the last element by copy and erases the last element.
+
+*Syntax*
+
+[source,cpp]
+----
+void    		pop();
 ----
 
 [.underline]#Parameters#
@@ -1388,14 +1249,40 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_clear.cpp[]
+include::../examples/api/types/vector_pop_back.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/vector_clear_out.txt[]
+include::../examples/api/types/vector_pop_back_out.txt[]
+----
+
+====== Vector::push()
+
+Appends an element at the end of current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+bool 		push( const _T & _element);
+----
+
+[.underline]#Parameters#
+
+- _&#95;element_ : The element to append.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_push.cpp[]
 ----
 
 ====== Vector::resize()
@@ -1431,38 +1318,31 @@ Console output:
 include::../examples/api/types/vector_resize_out.txt[]
 ----
 
+====== Vector::set()
 
-====== Vector::data()
-
-Returns the pointer to the array of the elements.
+Replaces the element from a position.
 
 *Syntax*
 
 [source,cpp]
 ----
-_T *data();
+void 		set( int  _pos_, const _T & _element);
 ----
 
 [.underline]#Parameters#
 
-None
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
 
 [.underline]#Return#
 
-A pointer of elements of the vector.
+none
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_data.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/vector_data_out.txt[]
+include::../examples/api/types/vector_set.cpp[]
 ----
 
 ==== zetscript::ScriptType
@@ -1474,7 +1354,7 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 - native_name: Native name of script type
 - properties: A integer value composed of the following mask values,  
 
-[cols="1d,2m,2d"]
+[cols="1m,2d"]
 |====
 |Name |Description
 
@@ -1487,7 +1367,7 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 |====
 
 
-==== Symbol
+==== zetscript::Symbol
 
 _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _Symbol_ type has the following fields:
 
@@ -1497,7 +1377,7 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 - n_params; Number of parameters in case the symbol is refers a function.
 - properties: A integer value composed of the following mask values,  
 
-[cols="1d,2m,2d"]
+[cols="1m,2d"]
 |====
 |Name |Description
 |SYMBOL_PROPERTY_NATIVE_OBJECT_REF
@@ -1528,9 +1408,12 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 
 ==== zetscript::StackElement
 
-_StackElement_ is the data type used by the VirtualMachine.  StackElement contents _value and _properties_ fields that defines the type of StackElement and how to fetch its contents in function of its properties.
+_StackElement_ is the data type in the stack used by the VirtualMachine.  StackElement has the following fields:
 
-[cols="1d,2m,2d"]
+_value: The value of StackElement
+_properties_ : Defines the content of value by the following mask values,
+
+[cols="1m,2d"]
 |====
 |Value|Description
 
@@ -1579,13 +1462,13 @@ _StackElement_ is the data type used by the VirtualMachine.  StackElement conten
 |====
 
 
-==== ScriptObject
+==== zetscript::ScriptObject
 
 _ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
 
 - script_type_id: The script type representated by the instance of script object. ZetScript has a primitive types   which _script_type_ids_ are the following,
 
-[cols="1d,2m,2d"]
+[cols="1m,2d"]
 |====
 
 |Name|Description
@@ -1603,7 +1486,7 @@ _ScriptObject_ defines a the parent class of any object in TypeScript. This type
 
 - properties: A integer value composed of the following mask values,  
 
-[cols="1d,2m,2d"]
+[cols="1m,2d"]
 |====
 |Value|Description
 |SCRIPT_OBJECT_PROPERTY_CONSTANT
@@ -1611,13 +1494,13 @@ _ScriptObject_ defines a the parent class of any object in TypeScript. This type
 
 |====
 
-==== StringScriptObject
+==== zetscript::StringScriptObject
 
 _StringScriptObject_ defines a string script object.
 
 ===== Constructor
 
-The StringScriptObject constructor creates a new string script object as empty or initialized with a string.  The StringScriptObject constructor needs a _ScriptEngine_ instance.
+The StringScriptObject constructor creates a new string object as empty or initialized with a string. StringScriptObject constructor requires a _ScriptEngine_ instance as a parameter.
 
 *Syntax*
 
@@ -1647,38 +1530,6 @@ include::../examples/api/types/string_script_object_constructor_out.txt[]
 
 ===== Member functions
 
-====== StringScriptObject::set()
-
-Replaces current string value.
-
-*Syntax*
-
-[source,cpp]
-----
-void set(const String & _str);
-----
-
-[.underline]#Parameters#
-
-- _&#95;str_ : The string value.
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/string_script_object_set.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_script_object_set_out.txt[]
-----
 
 ====== StringScriptObject::get()
 
@@ -1746,6 +1597,70 @@ Console output:
 include::../examples/api/types/string_script_object_get_const_char_out.txt[]
 ----
 
+====== StringScriptObject::length()
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+virtual int length();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_length_out.txt[]
+----
+
+====== StringScriptObject::set()
+
+Replaces current string value.
+
+*Syntax*
+
+[source,cpp]
+----
+void set(const String & _str);
+----
+
+[.underline]#Parameters#
+
+- _&#95;str_ : The string value.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_set_out.txt[]
+----
+
 ====== StringScriptObject::toString()
 
 Gets its current string value
@@ -1779,44 +1694,14 @@ Console output:
 include::../examples/api/types/string_script_object_to_string_out.txt[]
 ----
 
-====== StringScriptObject::length()
-
-Returns the length of the string, in terms of bytes.
-
-*Syntax*
-
-[source,cpp]
-----
-virtual int length();
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-The number of bytes in the string.
-
-[source,cpp]
-----
-include::../examples/api/types/string_script_object_length.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_script_object_length_out.txt[]
-----
-		
+	
 ==== ArrayScriptObject
 
 _ArrayScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor needs a ScriptEngine instance.
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor requires a _ScriptEngine_ instance as a parameter.
 
 *Syntax*
 
@@ -1844,114 +1729,6 @@ include::../examples/api/types/array_script_object_constructor_out.txt[]
 ----
 
 ===== Member functions
-
-====== ArrayScriptObject::push()
-
-Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
-
-*Syntax*
-
-[source,cpp]
-----
-void push(_T _element);
-----
-
-[.underline]#Template#
-
-- _&#95;T_ : Zetscript data type or a registered type.
-
-[.underline]#Parameters#
-
-- _&#95;element_ : The element to append.
-
-[.underline]#Return#
-
-None
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/array_script_object_push.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/array_script_object_push_out.txt[]
-----
-
-====== ArrayScriptObject::length()
-
-Returns the number of the elements of the array.
-
-*Syntax*
-
-[source,cpp]
-----
-int length();
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-The number of elements in the array.
-
-[source,cpp]
-----
-include::../examples/api/types/string_array_script_object_length.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_array_script_object_length_out.txt[]
-----
-
-====== ArrayScriptObject::set()
-
-Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
-
-*Syntax*
-
-[source,cpp]
-----
-void set<_T>(int _pos, _T _element);
-----
-
-[.underline]#Template#
-
-- _&#95;T_ : Zetscript data type or a registered type.
-
-[.underline]#Parameters#
-
-- _&#95;pos_ : The integer value as the position.
-- _&#95;element_ : The element to replace.
-
-[.underline]#Return#
-
-None
-
-
-*Example*
-
-
-[source,cpp]
-----
-include::../examples/api/types/array_script_object_set.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/array_script_object_set_out.txt[]
-----
 
 ====== ArrayScriptObject::elementInstanceOf()
 
@@ -2028,6 +1805,117 @@ Console output:
 include::../examples/api/types/array_script_object_get_out.txt[]
 ----
 
+
+====== ArrayScriptObject::length()
+
+Returns the number of the elements of the array.
+
+*Syntax*
+
+[source,cpp]
+----
+int length();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the array.
+
+[source,cpp]
+----
+include::../examples/api/types/string_array_script_object_length.cpp[]
+----
+
+====== ArrayScriptObject::push()
+
+Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
+
+*Syntax*
+
+[source,cpp]
+----
+void push(_T _element);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;element_ : The element to append.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_push.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_push_out.txt[]
+----
+
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_array_script_object_length_out.txt[]
+----
+
+====== ArrayScriptObject::set()
+
+Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
+
+*Syntax*
+
+[source,cpp]
+----
+void set<_T>(int _pos, _T _element);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+None
+
+
+*Example*
+
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_set_out.txt[]
+----
+
+
 ====== ArrayScriptObject::toString()
 
 Returns a string as the array contents in json format.
@@ -2067,7 +1955,7 @@ _ObjectScriptObject_ it defines a array script object.
 
 ===== Contructor
 
-The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor needs a ScriptEngine instance.
+The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor requires a _ScriptEngine_ instance.
 
 
 *Syntax*
@@ -2095,48 +1983,7 @@ Console output:
 include::../examples/api/types/object_script_object_constructor_out.txt[]
 ----
 
-
 ===== Member functions
-
-
-====== ObjectScriptObject::set()
-
-Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
-
-*Syntax*
-
-[source,cpp]
-----
-void ObjectScriptObject::set(int _key, _T _element)
-----
-
-[.underline]#Template#
-
-- _&#95;T_ : Zetscript data type or a registered type.
-
-[.underline]#Parameters#
-
-- _&#95;key_ : The string value as the key.
-- _&#95;element_ : The element to replace.
-
-[.underline]#Return#
-
-None
-
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/object_script_object_set.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/object_script_object_set_out.txt[]
-----
 
 ====== ObjectScriptObject::elementInstanceOf()
 
@@ -2186,28 +2033,17 @@ Returns element of type _&#x5f;T_ at key __key_.
 _T 	get(const String & _key);
 ----
 
-====== ArrayScriptObject::get()
-
-Returns a reference element at key.
-
-*Syntax*
-
-[source,cpp]
-----
-_T 	get(const String & _key);
-----
-
 [.underline]#Template#
 
 - _&#95;T_ : Zetscript data type or a registered type.
 
 [.underline]#Parameters#
 
-- _&#95;key_ : The integer value as the position.
+- _&#95;key_ : The string value as the key.
 
 [.underline]#Return#
 
-The element at the specified position in the array.
+The element at the specified key in the object.
 
 *Example*
 
@@ -2221,39 +2057,6 @@ Console output:
 [source,txt]
 ----
 include::../examples/api/types/object_script_object_get_out.txt[]
-----
-
-====== ObjectScriptObject::toString()
-
-Returns a string as the object contents in json format.
-
-*Syntax*
-
-[source,cpp]
-----
-String toString();
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Return#
-
-A string of the object contents in json format.
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/object_script_object_to_string.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/object_script_object_to_string_out.txt[]
 ----
 
 ====== ObjectScriptObject::getKeys()
@@ -2289,13 +2092,83 @@ Console output:
 include::../examples/api/types/object_script_object_get_keys_out.txt[]
 ----
 
+====== ObjectScriptObject::set()
+
+Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
+
+*Syntax*
+
+[source,cpp]
+----
+void ObjectScriptObject::set(int _key, _T _element)
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;key_ : The string value as the key.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+None
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_set_out.txt[]
+----
+
+
+====== ObjectScriptObject::toString()
+
+Returns a string as the object contents in json format.
+
+*Syntax*
+
+[source,cpp]
+----
+String toString();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A string of the object contents in json format.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_to_string_out.txt[]
+----
+
+
 ==== zetscript::ClassScriptObject
 
 _ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper to instance a registered type.
-
-
-template<typename _C>
-_C to();
 
 
 ==== zetscript::ScriptFunction
@@ -2329,7 +2202,7 @@ _ScriptEngine_ is the main type of ZetScript in order to register function, regi
 
 ===== ScriptEngine::bindScriptFunction()        
 
-_ScriptEngine::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43; function signature and the symbol name or _Function_ object.
+_ScriptEngine::bindScriptFunction_ binds ZetScript function from its name or ZetScript function type to be invokable from C++.
 
 *Syntax*
 
@@ -2337,32 +2210,26 @@ _ScriptEngine::bindScriptFunction_ it binds ZetScript function by the C&#43;&#43
 ----
  ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
 
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
+std::function<F> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
 
 
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
+std::function<F> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
 
 
-std::function<ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)> bindScriptFunction(ScriptFunction *_script_function);
-
+std::function<F> bindScriptFunction(ScriptFunction *_script_function);
 
 ----
 [.underline]#Template#
 
-- _F_ : A C function with the following signature,
-
-ReturnType(ParamType1 *, ParamType2 *, ..., ParamType9 *)
-
-Where,
-
-- _ReturnType_: It can be _void_ , a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type] (See next section)
-- _ParamType_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
+- _F_ : The template C function with the following signature,
+include::api_bind_script_function_signature.adoc[]
 
 [.underline]#Parameters#
 
- - _ReturnType_: It can be void, a xref:api_types#_types[primitive type] or a xref:api_expose_cpp_types#_register_a_type[registered type].
- - _ParamTypeX_: It can be a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
- - __script_function_: _ScriptEngine::String_ or _Function *_ as the name or the script function reference to be registered.
+ - _&#95;script_function_name_: the the ZetScript function name to bind
+ - _&#95;member_function_script_object_: the ZetScript function member function to bind
+ - _&#95;object_: the ZetScript object of the function member to bind
+ - _&#95;script_function_: the ZetScript script function to bind 
 
 
 [.underline]#Returns#
@@ -2371,23 +2238,24 @@ Returns a _std::function_ with the signature provided.
 
 *Example*
 
-The following example it binds a _sayHelloWorld_ function.
+The following example it binds a ZetScript function _sayHelloWorld_.
 
 [source,cpp]
 ----
-include::../examples/api/bind_script_function/bind_script_function.cpp[]
+include::../examples/api/types/script_engine_bind_script_function.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/bind_script_function/bind_script_function_out.txt[]
+include::../examples/api/types/script_engine_bind_script_function_out.txt[]
 ----
 
 
 ===== ScriptEngine::clear()
 
+It clears all symbols, types, variables from last saved stated.
 
 *Syntax*
 
@@ -2396,16 +2264,50 @@ include::../examples/api/bind_script_function/bind_script_function_out.txt[]
 void clear();
 ----
 
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_clear.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_clear_out.txt[]
+----
+
+
 ===== ScriptEngine::compile()
 
-It compiles an expression given by parameter.
+Compiles a ZetScript expression. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
 
 *Syntax*
 
 [source,cpp]
 ----
-void	compile(const String & expresion,const char *__invoke_file__="", int __invoke_line__=-1);
+void	compile(const String & _expresion,const char *__invoke_file__="", int __invoke_line__=-1);
 ----
+
+[.underline]#Parameters#
+
+ - _&#95;expresion_: The string as expression to compile
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+None
 
 *Example*
 
@@ -2423,14 +2325,25 @@ include::../examples/api/types/script_engine_compile_out.txt[]
 
 ===== ScriptEngine::compileAndRun()
 
-It compiles an expression given by parameter and it runs after its compilation.
+Compiles a ZetScript expression and runs generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
 
 *Syntax*
 
 [source,cpp]
 ----
-StackElement	compileAndRun(const String & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+StackElement	compileAndRun(const String & _expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
+
+[.underline]#Parameters#
+
+ - _&#95;expresion_: The string as expression to compile
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+xref:api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
 
 *Example*
 
@@ -2448,13 +2361,13 @@ include::../examples/api/types/script_engine_compile_and_run_out.txt[]
 
 ===== ScriptEngine::compileFile()
 
-It compiles a file given by parameter.
+It compiles a ZetScript file. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
 
 *Syntax*
 
 [source,cpp]
 ----
-void	compileFile(const String & _filename, CompileData *_compile_data=NULL, const har *__invoke_file__="", int __invoke_line__=-1);
+void	compileFile(const String & _filename, CompileData *_compile_data=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
 
@@ -2463,6 +2376,13 @@ void	compileFile(const String & _filename, CompileData *_compile_data=NULL, cons
 [source,cpp]
 ----
 include::../examples/api/types/script_engine_compile_file.cpp[]
+----
+
+The source of file.zs is,
+
+[source,javascript]
+----
+include::../examples/api/types/file.zs[]
 ----
 
 Console output:
@@ -2474,7 +2394,7 @@ include::../examples/api/types/script_engine_compile_file_out.txt[]
 
 ===== ScriptEngine::compileFileAndRun()
 
-It compiles a file given by parameter and it runs after its compilation.
+It compiles a ZetScript file and runs current generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
 
 *Syntax*
 
@@ -2490,6 +2410,13 @@ StackElement	compileFileAndRun(const String & _filename, const char *__invoke_fi
 include::../examples/api/types/script_engine_compile_file_and_run.cpp[]
 ----
 
+The source of 'file.zs' is,
+
+[source,javascript]
+----
+include::../examples/api/types/file.zs[]
+----
+
 Console output:
 
 [source,txt]
@@ -2499,13 +2426,13 @@ include::../examples/api/types/script_engine_compile_file_and_run_out.txt[]
 
 ===== ScriptEngine::printGeneratedCode()
 
-It prints a header and instructions of generated code per each function after a compilation.
+It prints information of generated code of the main and other function, script functions.
 
 *Header*
 
 The header describes the following,
 
- - *Function*: The function name
+ - *Function*: The function name. The main function is described as @MainFunction.
  - *Stack code*: Stack required for code
  - *Stack local vars*: Stack required for local variables
  - *Total stack required*: Total stack required
@@ -2549,6 +2476,8 @@ include::../examples/api/types/script_engine_print_generated_code_out.txt[]
 
 ===== ScriptEngine::registerConstant()
 
+It registers a constant value.
+
 *Syntax*
 
 [source,cpp]
@@ -2563,6 +2492,8 @@ void registerConstant(const String & var_name, const String & v, const char *reg
 
 void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 ----
+
+
 
 *Example*
 

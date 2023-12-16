@@ -119,7 +119,7 @@ int main(int argc, char * argv[]) {
 
 		}while(!exit);// && (instr[++idx_ptr] != NULL));
 
-	}else{ // eval script file
+	}else{ // Process file
 
 		if(zetscript::File::exists(param_script_filename)){
 

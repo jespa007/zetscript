@@ -24,7 +24,7 @@ int main(){
 
     script_engine.registerFunction("paramObjectScriptObject",paramObjectScriptObject);
 
-    // eval and call bind function
+    // Calls registered "paramObjectScriptObject" with an Object as a parameter
     script_engine.compileAndRun(
         "paramObjectScriptObject({"
         "    a:0"
