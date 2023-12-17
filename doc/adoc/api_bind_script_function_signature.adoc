@@ -28,6 +28,8 @@ _ReturnType_ it can be a registered type or one of the following types,
 |Returns xref:language_data_types#_object[Object]
 |xref:api_data_types#_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
 |Returns registered type
+|T *
+|Returns a pointer of a register type T
 |====
 
 As a parameters, a maximmum of 9 parameters type _ParamType_ as a pointer of registered native type or one of the following types,
@@ -51,4 +53,6 @@ As a parameters, a maximmum of 9 parameters type _ParamType_ as a pointer of reg
 |Calling function in script must pass xref:language_data_types#_array[Array] type
 |xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
 |Calling function in script must pass xref:language_data_types#_object[Object] type
+|T *
+|Calling function in script must pass an instance of a register type T
 |====

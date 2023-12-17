@@ -2219,6 +2219,7 @@ std::function<F> bindScriptFunction(ScriptFunction *_script_function, ScriptObje
 std::function<F> bindScriptFunction(ScriptFunction *_script_function);
 
 ----
+
 [.underline]#Template#
 
 - _F_ : The template C function with the following signature,
@@ -2424,6 +2425,31 @@ Console output:
 include::../examples/api/types/script_engine_compile_file_and_run_out.txt[]
 ----
 
+===== ScriptEngine::extends()
+
+Inherits methods from other registered type
+
+*Syntax*
+
+[source,cpp]
+----
+void extends<T,B>()
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_extends.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_extends.txt[]
+----
+
 ===== ScriptEngine::printGeneratedCode()
 
 It prints information of generated code of the main and other function, script functions.
@@ -2482,16 +2508,32 @@ It registers a constant value.
 
 [source,cpp]
 ----
-void registerConstant(const String & var_name, int value, const char *registered_file="", short registered_line=-1);
+void registerConstant(const String & _const_name, int _i_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+void registerConstant(const String & _const_name, zs_float _f_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
+void registerConstant(const String & _const_name, bool _b_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
+void registerConstant(const String & _const_name, const String & _str_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+void registerConstant(const String & _const_name, const char * _str_value, const char *registered_file="", short registered_line=-1);
 ----
+
+[.underline]#Function parameters# 
+
+- _&#95;const_name_	: Constant name
+- _&#95;b_value_	: Constant as Boolean value
+- _&#95;i_value_	: Constant as Integer value
+- _&#95;f_value_	: Constant as Float value
+- _&#95;s_value_	: Constant as String value from const char * or zetscript::String 
+
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
+
+
+[.underline]#Returns#
+
+None
 
 
 
@@ -2506,41 +2548,99 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/script_engine_register_constant.txt[]
+include::../examples/api/types/script_engine_register_constant.txt[]
 ----
 
-===== ScriptEngine::registerType()
+
+===== ScriptEngine::registerConstMemberProperty
+
+Registers a C function as a constant member property of a registered type.
 
 *Syntax*
 
 [source,cpp]
 ----
-ScriptType * registerType(
-		const String & name
-		, T  * (*_new_native_instance)(ScriptEngine *_script_engine)=NULL
-		, void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)=NULL
-		, const char *_registered_file="",short _registered_line=-1
-)
+void	registerConstMemberProperty<T>(
+		const String & _property_name
+		,F _c_function
+		, const char *_registered_file=""
+		,short _registered_line=-1
+);
 ----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- __property_name_	: Property name
+- __&#95;c_function_: A C function that returns a type as a value of the property with the following signature,
+
+include::api_register_const_member_property_signature.adoc[]
+
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
+
+
+[.underline]#Returns#
+
+None
 
 
 *Example*
 
 [source,cpp]
 ----
-include::../examples/api/types/script_engine_register_type.cpp[]
+include::../examples/api/types/script_engine_register_const_member_property.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/script_engine_register_type.txt[]
+include::../examples/api/types/script_engine_register_const_member_property.txt[]
+----
+
+===== ScriptEngine::registerConstructor() 
+
+Registers C function as a constructor of a registered type.
+
+*Syntax*
+[source,cpp]
+----
+void registerConstructor<T>( F _c_function);
+----
+
+[.underline]#Types# 
+
+- T: The registered type
+
+[.underline]#Parameters#
+
+- __function_: C function reference to be registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_constructor.txt[]
 ----
 
 ===== ScriptEngine::registerFunction()
 
-ScriptEngine::registerFunction is used to call C&#43;&#43; code from _ZetScript_. The function needs a C function with a particular prototype to connects both sides (i.e native and script). 
+Registers a C function to be callable from ZetScript.
 
 *Syntax*
 
@@ -2561,6 +2661,10 @@ include::api_register_function_signature.adoc[]
 - _&#95;registered_file_ : Source file where the function was registered
 - _&#95;registered_line_ : Line file where the function was registered
 
+[.underline]#Returns#
+
+None
+
 *Example*
 
 The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
@@ -2580,101 +2684,42 @@ include::../examples/api/types/script_engine_register_function_out.txt[]
 To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ZetScript]
 
 
-===== ScriptEngine::extends()
-
-
-*Syntax*
-
-[source,cpp]
-----
-void extends<T,B>()
-----
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/script_engine_extends.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/eval/script_engine_extends.txt[]
-----
-
-===== ScriptEngine::registerConstructor()        
-
-*Syntax*
-
-[source,cpp]
-----
-void registerConstructor(
-	 F _c_function
-   , const char *_registered_file=""
-	,short _registered_line=-1
-)
-----
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/script_engine_register_constructor.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/eval/script_engine_register_constructor.txt[]
-----
-
-===== ScriptEngine::registerConstMemberProperty()        
-
-*Syntax*
-
-[source,cpp]
-----
-void	registerConstMemberProperty<T,F>(
-		const String & _property_name
-		,F _c_function
-		 , const char *_registered_file=""
-		,short _registered_line=-1
-)
-----
-
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/script_engine_register_const_member_property.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/eval/script_engine_register_const_member_property.txt[]
-----
-
 ===== ScriptEngine::registerMemberFunction()
 
-*Syntax*
+Registers a C function as a member function of a registered type.
 
+*Syntax*
 [source,cpp]
 ----
-void	registerMemberFunction<T,F>(
-		const String & _name_script_function
-		,F _c_function
-		, const char *_registered_file=""
-		,short _registered_line=-1
-)
+void registerMemberFunction<T>(
+	const String & __member_function_name_
+	,F _c_function
+	,const char *_registered_file=""
+	,short _registered_line=-1
+);
 ----
 
+[.underline]#Template parameters# 
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- __member_function_name_	: Member function name
+- __&#95;c_function_: A C function with the following signature,
+
+include::api_register_member_function_signature.adoc[]
+
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
+
+
 *Example*
+
 
 [source,cpp]
 ----
@@ -2685,23 +2730,45 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/script_engine_register_member_function.txt[]
+include::../examples/api/types/script_engine_register_member_function_out.txt[]
 ----
 
 ===== ScriptEngine::registerMemberPropertyMetamethod()
+
+Registers C function as member property metamethod of a registered type
 
 *Syntax*
 
 [source,cpp]
 ----
-void	registerMemberPropertyMetamethod<T,F>(
+void	registerMemberPropertyMetamethod<T>(
 		const String & _property_name
 		,const String & _metamethod_name
 		,F _c_function
-			, const char *_registered_file=""
+		, const char *_registered_file=""
 		,short _registered_line=-1
 );
 ----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- __member_function_name_	: Member function name
+- __&#95;c_function_: A C function with the following signature,
+
+include::api_register_member_function_signature.adoc[]
+
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
+
+
+[.underline]#Returns#
+
+None
+
 
 *Example*
 
@@ -2714,22 +2781,38 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/script_engine_register_member_property_metamethod_out.txt[]
+include::../examples/api/types/script_engine_register_member_property_metamethod_out.txt[]
 ----
 
 ===== ScriptEngine::registerStaticMemberFunction()
 
-*Syntax*
+Registers a C function as static member function of a registered type.
 
+*Syntax*
 [source,cpp]
 ----
-void registerStaticMemberFunction(
-	const String & _name_script_function
-	,F _c_function
-	, const char *_registered_file=""
-	,short _registered_line=-1
-);
+void registerStaticMemberFunction<T>(const String & _static_member_name, F _function);
 ----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+
+[.underline]#Function parameters#
+
+- _&#95;function_name_ : The function name to be refered in ZetScript.
+
+- _&#95;c_function_ : A C function to register with the following signature,
+
+include::api_register_function_signature.adoc[]
+
+- _&#95;registered_file_ : Source file where the function was registered
+- _&#95;registered_line_ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
 
 *Example*
 
@@ -2742,20 +2825,109 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/eval/script_engine_register_static_member_function_out.txt[]
+include::../examples/api/types/script_engine_register_static_member_function_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerScriptType()
+
+Registers a C++ type to be exposed in ZetScript. A registered types can be static (not instantiable) or instantiable if the create and destroy functions are or not defined.
+
+*Syntax*
+[source,cpp]
+----
+ScriptType * registerScriptType<T>(const String & _script_type_name, F _new_c_function=NULL, F _delete_c_function=NULL);
+----
+
+[.underline]#Template parameters# 
+
+- _T_: The type to register.
+
+[.underline]#Parameters# 
+
+- _&#95;script_type_name_: The script type name.
+- _&#95;new_c_function_ (Optional):  It defines the c function that creates the native type when an instance of this type is created in ZetScript (Optional if it's instantiable). The signature of the c function is,
+
+[source,cpp]
+----
+T * (ScriptEngine *_script_engine);
+----
+
+- _&#95;delete_c_function_ : It defines the c function that destroys the native type when a instance of this type is destroyed in ZetScript (Optional if it's instantiable). The signature of the c function is,
+
+
+[source,cpp]
+----
+void RegisteredType_delete(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+*Example*
+
+In the following example it will show an example of registered type as static (not instantiable),
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_script_type_not_instantiable.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_script_type_not_instantiable.txt[]
+----
+
+In the following example it will show an example of registered type instantiable,
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_script_type_instantiable.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_script_type_instantiable_out.txt[]
 ----
 
 ===== ScriptEngine::unrefLifetimeObject()        
+
+Dereferences a binded script object.
 
 *Syntax*
 
 [source,cpp]
 ----
-void unrefLifetimeObject(ScriptObject *so);
+void unrefLifetimeObject(ScriptObject *_script_object);
 ----
 
+[.underline]#Parameters# 
+
+- _&#95;script_object_: Script object to be dereferenced.
+
+[.underline]#Returns# 
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_unref_lifetime_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_unref_lifetime_object_out.txt[]
+----
 
 ===== ScriptEngine::saveState()
+
+Saves the current registered symbols as variables, types ot functions
 
 *Syntax*
 
@@ -2764,5 +2936,66 @@ void unrefLifetimeObject(ScriptObject *so);
 void saveState();
 ----
 
+[.underline]#Parameters# 
+
+None
+
+[.underline]#Returns# 
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_save_state.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engin_save_state_out.txt[]
+----
+
+===== ScriptEngine::stackElementTo()
+
+Binds StackElement to a primitive or registered type
+
+*Syntax*
+
+[source,cpp]
+----
+
+template<typename _C>
+		_C 				stackElementTo(StackElement * _stack_element);
+----
+
+[.underline]#Template parameters# 
+
+- _C_ : The type to be converted Class can be the following,
+
+include::api_stack_element_to_return.adoc
+
+[.underline]#Parameters# 
+
+- _stack_element: Stack element to convert
 
 
+[.underline]#Returns# 
+
+The type converted
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_stack_element_to.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_stack_element_to_out.txt[]
+----

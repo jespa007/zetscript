@@ -19,12 +19,12 @@ To register a non instantible type it's done calling _ScriptEngine::registerType
 *Syntax*
 [source,cpp]
 ----
-Type * registerType<_Type>(const String & _class_name);
+Type * registerType<T>(const String & _class_name);
 ----
 
 [.underline]#Template# 
 
-- _Type: C&#43;&#43; struct/class type
+- T: C&#43;&#43; struct/class type
 
 [.underline]#Parameters# 
 
@@ -32,7 +32,7 @@ Type * registerType<_Type>(const String & _class_name);
 
 [.underline]#Returns# 
 
-A _Type_ object
+A _ScriptType_ object
 
 *Example*
 
@@ -168,48 +168,7 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function with a particular prototype. In ZetScript, that function it acts as constuctor seen in xref:language_class.adoc#_constructor[section 2.10.3].
-
-As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
-
-*Syntax*
-
-[source,cpp]
-----
-void RegisteredType_constructor(ScriptEngine *_script_engine, RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
-	....
-}
-----
-
-Where,
-
-[.underline]#Types# 
-
-- _RegisteredType_: The registered type
-
-[.underline]#Parameters# 
-
-- __script_engine_ : ScriptEngine instance.
-- __this_: The current instance.
-- __arg1_ .. __arg8_: Arguments which is a pointer of xref:api_types#_types[primitive type] or a pointer of xref:api_expose_cpp_types#_register_a_type[registered type].
-
-After the constructor function is defined it has to be registered with _ScriptEngine::registerConstructor_. _registerConstructor_ it has the following signature,
-
-*Syntax*
-[source,cpp]
-----
-void registerConstructor<_RegisteredType>( Function _function);
-----
-
-[.underline]#Types# 
-
-- __RegisteredType_: The registered type
-- _Function_ : Function signature
-
-[.underline]#Parameters# 
-
-- __function_: C function reference to be registered
-
+To register a constructor function it has to create and register a C&#43;&#43; function in section xref:api_data_types.adoc#_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
 
 *Example*
 
@@ -262,54 +221,7 @@ include::../examples/api/register_type/register_instantiable_type_with_construct
 
 ===== Register member function
 
-To register a member function it has to create and register a C function with a particular prototype.
-
-As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till the EIGHTH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
-
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
-
-*Syntax*
-
-[source,cpp]
-----
-ReturnType RegisteredType_memberFunction(ScriptEngine *_script_engine, _RegisteredType *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
-	....
-}
-----
-
-Where,
-
-[.underline]#Type# 
-
-- _RegisteredType_: The registered type
-- _ReturnType_: Return type can be void, bool, zs_int,zs_float, String,  a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type
-
-[.underline]#Parameters# 
-
-- __script_engine_ : ScriptEngine instance
-- __this_: The current instance
-- __arg1_ .. __arg8_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
-
-
-After the member function is defined it has to be registered with _ScriptEngine::registerMemberFunction_. _ScriptEngine::registerMemberFunction_ it has the following signature,
-
-
-*Syntax*
-[source,cpp]
-----
-void registerMemberFunction<RegisteredType>(const String & __member_function_name_, Function _function);
-----
-
-[.underline]#Types# 
-
-- _RegisteredType_: The registered C&#43;&#43;type
-- _Function_ : Function signature
-
-
-[.underline]#Parameters# 
-
-- __member_function_name_	: Member function name
-- __function_: C function reference to be registered
+To register a member function it has to create and register a C function explained in section xref:api_data_types.adoc#_scriptengineregistermemberfunction[ScriptEngine::registerMemberFunction].
 
 *Example*
 
@@ -355,58 +267,10 @@ The ouput is the following,
 include::../examples/api/register_type/register_member_function_out.txt[]
 ----
 
-
 ===== Register static member function
 
-To register a static member function it has to create and register a C function with a particular prototype.
+To register a static member function it has to create and register a C function explained in section xref:api_data_types.adoc#_scriptengineregisterstaticmemberfunction[ScriptEngine::registerStaticMemberFunction].
 
-As parameters, the function must always include _ScriptEngine *_ as the FIRST parameter and the SECOND till the NINETH parameter as a pointer of  xref:api_types#_types[primitive type] or a pointer of a xref:api_expose_cpp_types#_register_a_type[registered type]. 
-
-As a return, the function it can return _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
-
-*Syntax*
-
-[source,cpp]
-----
-ReturnType RegisteredType_staticMemberFunction(ScriptEngine *_script_engine, ParamType *_arg1, ..., ParamType *_arg9 ){
-	....
-}
-----
-
-Where,
-
-[.underline]#Type# 
-
-- _RegisteredType_: The registered type
-- _ReturnType_: Return type can be _void_, _bool_, _zs_int_, _zs_float_, _String_, a new instance of _StringScriptObject_, _ArrayScriptObject_, ObjectScriptObject or new instance/reference of a registered type.
-
-[.underline]#Parameters# 
-
-- __script_engine_ : ScriptEngine instance
-- __arg1_ .. __arg9_: Arguments which types are pointers of xref:api_types#_types[primitive types] or a pointer of a registered type.
-
-
-After the constructor function is defined it has to be registered with _ScriptEngine::registerStaticMemberFunction_. _ScriptEngine::registerStaticMemberFunction_ it has the following signature,
-
-
-*Syntax*
-[source,cpp]
-----
-void registerStaticMemberFunction<RegisteredType>(const String & _static_member_name, Function _function);
-----
-
-[.underline]#Types# 
-
-- _RegisteredType_: The registered C&#43;&#43;type
-- _Function_ : Function signature
-
-
-[.underline]#Parameters# 
-
-- __static_member_name_ : Static member function name
-- __function_: Member function C reference
-
-<<<
 
 *Example*
 
