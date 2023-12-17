@@ -1,8 +1,6 @@
 [cols="1m,2d"]
 |====
 |ReturnType| Description
-|void
-|Returns nothing
 |bool
 |Returns xref:language_data_types#_boolean[Boolean]
 |xref:api_data_types#_zetscriptzs_int[zetscript::zs_int]
@@ -17,8 +15,6 @@
 |Returns xref:language_data_types#_array[Array]
 |xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
 |Returns xref:language_data_types#_object[Object]
-|xref:api_data_types#_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
-|Returns a pointer of register type wrapped in a script class object
 |T *
 |Returns a pointer of a register type T
 |====

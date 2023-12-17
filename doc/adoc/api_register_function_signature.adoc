@@ -29,7 +29,7 @@ _ReturnType_ it can be a registered type or one of the following types,
 |xref:api_data_types#_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
 |Returns a pointer of register type wrapped in a script class object
 |T *
-|Returns a pointer of a register type
+|Returns a pointer of a register type T
 |====
 
 As a parameters, the function must always include _zetscript::ScriptEngine *_ as the FIRST parameter and from SECOND till a maximmum of 9 parameters type _ParamType_ as one of the following types,
@@ -54,5 +54,5 @@ As a parameters, the function must always include _zetscript::ScriptEngine *_ as
 |xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
 |Calling function in script must pass xref:language_data_types#_object[Object] type
 |T *
-|Calling function in script must pass an instance of a register type
+|Calling function in script must pass an instance of a register type T
 |====
