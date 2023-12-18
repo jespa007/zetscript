@@ -1699,7 +1699,7 @@ include::../examples/api/types/string_script_object_to_string_out.txt[]
 
 _ArrayScriptObject_ it defines a array script object.
 
-===== Contructor
+===== Constructor
 
 The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor requires a _ScriptEngine_ instance as a parameter.
 
@@ -1953,7 +1953,7 @@ include::../examples/api/types/array_script_object_tostring_out.txt[]
 
 _ObjectScriptObject_ it defines a array script object.
 
-===== Contructor
+===== Constructor
 
 The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor requires a _ScriptEngine_ instance.
 
@@ -2208,7 +2208,7 @@ Binds script function to be callable from C++.
 
 [source,cpp]
 ----
-ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
+std::function<F> bindScriptFunction(const String & _script_function_name);
 
 std::function<F> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
 
@@ -2224,10 +2224,10 @@ include::api_bind_script_function_signature.adoc[]
 
 [.underline]#Parameters#
 
- - _&#95;script_function_name_: the the ZetScript function name to bind
- - _&#95;member_function_script_object_: the ZetScript function member function to bind
- - _&#95;object_: the ZetScript object of the function member to bind
- - _&#95;script_function_: the ZetScript script function to bind 
+ - _&#95;script_function_name_: Bind script function by script function name to bind
+ - _&#95;member_function_script_object_: Script member function instance
+ - _&#95;object_: Script object instance owner of the script member function
+ - _&#95;script_function_: Script function instance
 
 
 [.underline]#Returns#
@@ -2786,10 +2786,8 @@ void	registerMemberPropertyMetamethod<T>(
 
 [.underline]#Function parameters# 
 
-- _&#95;property_name_	: Property name
+- _&#95;property_name_	: Property name has to be one of the properties seen on xref:language_class.adoc#_member_functions[Properties - Member functions]
 - _&#95;metamethod_name_ : One of the following metamethod names,
-
-include::api_register_metamethod_names.adoc[]
 
 - __&#95;c_function_: A C function.
 
@@ -2801,7 +2799,6 @@ include::api_register_member_property_metamethod_signature.adoc[]
 [.underline]#Returns#
 
 None
-
 
 *Example*
 
@@ -2833,7 +2830,8 @@ void registerStaticMemberFunction<T>(const String & _static_member_name, F _func
 
 [.underline]#Function parameters#
 
-- _&#95;function_name_ : The function name to be refered in ZetScript.
+- _&#95;function_name_ : The function name to be refered in ZetScript. A static member function can be defined as metamethod if _&#95;function_name_ matches some of the name of the metamethod seen at xref:language_class.adoc#_static_metamethods[The language.Class.Member Functions. Static metamethods]
+
 
 - _&#95;c_function_ : A C function to register with the following signature,
 
@@ -2845,6 +2843,8 @@ include::api_register_function_signature.adoc[]
 [.underline]#Returns#
 
 None
+
+
 
 *Example*
 
@@ -2957,6 +2957,40 @@ Console output:
 include::../examples/api/types/script_engine_unref_lifetime_object_out.txt[]
 ----
 
+===== ScriptEngine::stackElementTo()
+
+Binds StackElement to a primitive or registered type
+
+*Syntax*
+
+[source,cpp]
+----
+
+template<typename C>
+C	stackElementTo(StackElement * _stack_element);
+----
+
+[.underline]#Template parameters# 
+
+- _C_ : The type to be converted as the one of the following,
+
+include::api_stack_element_to_return.adoc[]
+
+[.underline]#Parameters# 
+
+- _stack_element: Stack element to converted from
+
+[.underline]#Returns# 
+
+A _C_ type as a result of conversion
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_stack_element_to.cpp[]
+----
+
 ===== ScriptEngine::saveState()
 
 Saves the current registered symbols as variables, types ot functions
@@ -2987,46 +3021,5 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engin_save_state_out.txt[]
-----
-
-===== ScriptEngine::stackElementTo()
-
-Binds StackElement to a primitive or registered type
-
-*Syntax*
-
-[source,cpp]
-----
-
-template<typename C>
-		C 				stackElementTo(StackElement * _stack_element);
-----
-
-[.underline]#Template parameters# 
-
-- _C_ : The type to be converted as the one of the following,
-
-include::api_stack_element_to_return.adoc[]
-
-[.underline]#Parameters# 
-
-- _stack_element: Stack element to converted from
-
-[.underline]#Returns# 
-
-A _C_ type as a result of conversion
-
-*Example*
-
-[source,cpp]
-----
-include::../examples/api/types/script_engine_stack_element_to.cpp[]
-----
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/script_engine_stack_element_to_out.txt[]
+include::../examples/api/types/script_engine_save_state_out.txt[]
 ----

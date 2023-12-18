@@ -20,13 +20,8 @@ Number *NumberZs_new(ScriptEngine *_script_engine){
 }
 
 // defines new function for Number constructor
-void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this, zs_float _value){
-	_this->value=_value;
-}
-
-// defines getter property for Number::x
-zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
-	return _this->value;
+void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this, zs_float * _value){
+	_this->value=*_value;
 }
 
 // defines delete function for Number object

@@ -3,6 +3,7 @@
 using zetscript::ScriptEngine;
 using zetscript::zs_int;
 using zetscript::zs_float;
+using zetscript::String;
 using zetscript::ArrayScriptObject;
 using zetscript::ObjectScriptObject;
 

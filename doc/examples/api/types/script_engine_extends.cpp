@@ -32,8 +32,8 @@ int main(){
 
 	// Print typeof 'script_my_cpp_type_extend'
 	script_engine.compileAndRun(
-		"var script_my_cpp_type_extend=new ScriptMyCppTypeExtend();\n"
-		"Console::outln(\"tyoeof(object) => \"+typeof(script_my_cpp_type_extend));\n"
+		"var script_my_cpp_type_extend=new MyCppTypeExtend();\n"
+		"Console::outln(\"tyoeof(object) => \"+typeof script_my_cpp_type_extend);\n"
 	);
 	return 0;
 }

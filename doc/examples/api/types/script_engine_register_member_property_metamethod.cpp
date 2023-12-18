@@ -20,8 +20,8 @@ Number *NumberZs_new(ScriptEngine *_script_engine){
 }
 
 // defines new function for Number constructor
-void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this, zs_float _value){
-	_this->value=_value;
+void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this, zs_float *_value){
+	_this->value=*_value;
 }
 
 // defines get negative

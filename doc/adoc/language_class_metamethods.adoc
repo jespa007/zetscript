@@ -3,79 +3,10 @@
 
 Metamethods are special member functions that able to define operators seen on xref:language_operators.adoc:#_operators[section 2.6]. Metamethods can be static or member function depending whether the operation affects or not the object itself. 
 
-===== Member functions
+===== Member metamethods
 
-====== _tostring()
 
-Returns custom string when string operation operation is invoved.
-
-*Syntax*
-
-[source,javascript]
-----
-_tostring()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-A string as a result when string operation operation is invoved.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_tostring.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_tostring_out.txt[]
-----
-
-<<<
-
-====== _set()
-
-Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_set(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ :Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_set.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_set_out.txt[]
-----
-
-<<<
-
-====== _addset()
+====== _addassign()
 
 Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
 
@@ -83,7 +14,7 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-_addset(_value)
+_addassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -98,159 +29,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_addset.zs[]
+include::../examples/language/class/class_metamethod_addassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_addset_out.txt[]
+include::../examples/language/class/class_metamethod_addassign_out.txt[]
 ----
 
 <<<
 
-====== _subset()
-
-Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_subset(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_subset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_subset_out.txt[]
-----
-
-<<<
-
-====== _mulset()
-
-Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_mulset(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_mulset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_mulset_out.txt[]
-----
-
-<<<
-
-====== _divset()
-
-Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_divset(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_divset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_divset_out.txt[]
-----
-
-<<<
-
-====== _modset()
-
-Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_modset(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_modset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_modset_out.txt[]
-----
-
-<<<
-
-====== _andset()
+====== _andassign()
 
 Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
 
@@ -258,7 +49,7 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 
 [source,javascript]
 ----
-_andset(_value)
+_andassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -273,27 +64,27 @@ None.
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_andset.zs[]
+include::../examples/language/class/class_metamethod_andassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_andset_out.txt[]
+include::../examples/language/class/class_metamethod_andassign_out.txt[]
 ----
 
 <<<
 
-====== _orset()
+====== _divassign()
 
-Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
 
 *Syntax*
 
 [source,javascript]
 ----
-_andset(_value)
+_divassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -308,329 +99,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_orset.zs[]
+include::../examples/language/class/class_metamethod_divassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_orset_out.txt[]
-----
-
-<<<
-
-====== _xorset()
-
-Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_xorset(_value)
-----
-
-[.underline]#Parameters#
-
-- __op1_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_xorset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_xorset_out.txt[]
-----
-
-<<<
-
-====== _shrset()
-
-Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_shrset(_value)
-----
-
-[.underline]#Parameters#
-
-- __op1_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_shrset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_shrset_out.txt[]
-----
-
-<<<
-
-====== _shlset()
-
-Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
-
-*Syntax*
-
-[source,javascript]
-----
-_shrset(_value)
-----
-
-[.underline]#Parameters#
-
-- __value_ : Value or variable as right operand.
-
-[.underline]#Returns#
-
-None.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_shlset.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_shlset_out.txt[]
-----
-
-<<<
-
-====== _not()
-
-Implements _not_ pre operator (aka !a).  
-
-*Syntax*
-
-[source,javascript]
-----
-_not()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-- Boolean value as a result of not operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_not.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_not_out.txt[]
-----
-
-<<<
-
-====== _neg()
-
-Implements _negate_ pre operator (aka -a ). 
-
-*Syntax*
-
-[source,javascript]
-----
-_neg()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-- A new object as result of negate operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_neg.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_neg_out.txt[]
-----
-
-<<<
-
-====== _postinc()
-
-Implements _post increment_ operator (aka a++ ). 
-
-*Syntax*
-
-[source,javascript]
-----
-_postinc()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-A new object with a value before perform post increment operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_postinc.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_postinc_out.txt[]
-----
-
-<<<
-
-====== _postdec()
-
-Implements _post decrement_ operator (aka a-- ).
-
-*Syntax*
-
-[source,javascript]
-----
-_postdec()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-A new object with a value before perform post decrement operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_postdec.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_postdec_out.txt[]
-----
-
-<<<
-
-====== _preinc()
-
-Implements _pre increment_ operator (aka ++a ). 
-
-*Syntax*
-
-[source,javascript]
-----
-_preinc()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-A new object with a value before perform pre increment operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_preinc.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_preinc_out.txt[]
-----
-
-<<<
-
-====== _predec()
-
-Implements _pre decrement_ operator (aka --a ).
-
-*Syntax*
-
-[source,javascript]
-----
-_predec()
-----
-
-[.underline]#Parameters#
-
-None
-
-[.underline]#Returns#
-
-A new object with a value before perform pre decrement operation.
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_predec.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_predec_out.txt[]
+include::../examples/language/class/class_metamethod_divassign_out.txt[]
 ----
 
 <<<
@@ -670,7 +146,640 @@ include::../examples/language/class/class_metamethod_in_out.txt[]
 
 <<<
 
-===== Static functions
+====== _modassign()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_modassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_modassign_out.txt[]
+----
+
+<<<
+
+====== _mulassign()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_mulassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_mulassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_mulassign_out.txt[]
+----
+
+<<<
+
+====== _neg()
+
+Implements _negate_ pre operator (aka -a ). 
+
+*Syntax*
+
+[source,javascript]
+----
+_neg()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+- A new object as result of negate operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_neg.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_neg_out.txt[]
+----
+
+<<<
+
+====== _not()
+
+Implements _not_ pre operator (aka !a).  
+
+*Syntax*
+
+[source,javascript]
+----
+_not()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+- Boolean value as a result of not operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_not.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_not_out.txt[]
+----
+
+<<<
+
+====== _orassign()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_orassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_orassign_out.txt[]
+----
+
+<<<
+
+====== _postdec()
+
+Implements _post decrement_ operator (aka a-- ).
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A new object with a value before perform post decrement operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_postdec.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_postdec_out.txt[]
+----
+
+<<<
+
+====== _postinc()
+
+Implements _post increment_ operator (aka a++ ). 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A new object with a value before perform post increment operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_postinc.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_postinc_out.txt[]
+----
+
+<<<
+
+====== _predec()
+
+Implements _pre decrement_ operator (aka --a ).
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A new object with a value before perform pre decrement operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_predec.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_predec_out.txt[]
+----
+
+<<<
+
+====== _preinc()
+
+Implements _pre increment_ operator (aka ++a ). 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A new object with a value before perform pre increment operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_preinc.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_preinc_out.txt[]
+----
+
+<<<
+
+====== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ :Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_set.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_set_out.txt[]
+----
+
+<<<
+
+====== _shlassign()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_shlassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_shlassign_out.txt[]
+----
+
+<<<
+
+====== _shrassign()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __op1_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_shrassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_shrassign_out.txt[]
+----
+
+<<<
+
+====== _subassign()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_subassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __value_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_subassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_subassign_out.txt[]
+----
+
+<<<
+
+====== _tostring()
+
+Returns custom string when string operation operation is invoved.
+
+*Syntax*
+
+[source,javascript]
+----
+_tostring()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+A string as a result when string operation operation is invoved.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_tostring.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_tostring_out.txt[]
+----
+
+<<<
+
+====== _xorassign()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorassign(_value)
+----
+
+[.underline]#Parameters#
+
+- __op1_ : Value or variable as right operand.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_xorassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_xorassign_out.txt[]
+----
+
+<<<
+
+===== Static metamethods
+
+====== _add()
+
+Implements _add_ operator (aka + ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_add(_op1,_op2)
+----  
+
+[.underline]#Parameters#
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of add operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_add.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_add_out.txt[]
+----
+
+<<<
+
+====== _and()
+
+Implements _bitwise AND_ operator (aka & ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_and(_op1,_op2)
+----   
+
+[.underline]#Parameters#
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise and operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_and.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_and_out.txt[]
+----
+
+<<<	
+
+====== _div()
+
+Implements _division_ operator (aka / ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_div(_op1,_op2)
+----  
+
+[.underline]#Parameters#
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of division operation 
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_div.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_div_out.txt[]
+----
+
+<<<
 
 ====== _equ()
 
@@ -705,117 +814,6 @@ Console output:
 [source,text]
 ----
 include::../examples/language/class/class_metamethod_equ_out.txt[]
-----
-
-<<<
-
-====== _nequ()
-
-Implements _not equal_ operator (aka != ) between first operand and second operand
-
-*Syntax*
-
-[source,javascript]
-----
-_nequ(_op1,_op2)
----- 
-
-[.underline]#Parameters#
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-[.underline]#Returns#
-
-- True if op1 and op2 are NOT EQUAL
-- False if op1 and op2 are EQUAL
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_nequ.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_nequ_out.txt[]
-----
-
-<<<
-
-====== _lt()
-
-Implements _less than_ operator (aka < ) between first operand and second operand
-
-*Syntax*
-
-[source,javascript]
-----
-_lt(_op1,_op2)
----- 
-
-[.underline]#Parameters#
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-[.underline]#Returns#
-
-- True if op1 is LESS THAN op2
-- False if op1 is GRATHER EQUAL THAN op2
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_lt.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_lt_out.txt[]
-----
-
-<<<
-
-====== _lte()
-
-Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
-
-*Syntax*
-
-[source,javascript]
-----
-_lte(_op1,_op2)
----- 
-
-[.underline]#Parameters#
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-[.underline]#Returns#
-
-- True if op1 is LESS THAN OR EQUAL op2
-- False if op1 is GRATHER THAN op2
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_lte.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_lte_out.txt[]
 ----
 
 <<<
@@ -892,18 +890,18 @@ Console output:
 include::../examples/language/class/class_metamethod_gte_out.txt[]
 ----
 
-<<<
+<<<	
 
-====== _add()
+====== _lt()
 
-Implements _add_ operator (aka + ) between first operand and second operand
+Implements _less than_ operator (aka < ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_add(_op1,_op2)
-----  
+_lt(_op1,_op2)
+---- 
 
 [.underline]#Parameters#
 
@@ -912,34 +910,35 @@ _add(_op1,_op2)
 
 [.underline]#Returns#
 
-- A new object as a result of add operation 
+- True if op1 is LESS THAN op2
+- False if op1 is GRATHER EQUAL THAN op2
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_add.zs[]
+include::../examples/language/class/class_metamethod_lt.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_add_out.txt[]
+include::../examples/language/class/class_metamethod_lt_out.txt[]
 ----
 
 <<<
 
-====== _div()
+====== _lte()
 
-Implements _division_ operator (aka / ) between first operand and second operand
+Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_div(_op1,_op2)
-----  
+_lte(_op1,_op2)
+---- 
 
 [.underline]#Parameters#
 
@@ -948,56 +947,21 @@ _div(_op1,_op2)
 
 [.underline]#Returns#
 
-- A new object as a result of division operation 
+- True if op1 is LESS THAN OR EQUAL op2
+- False if op1 is GRATHER THAN op2
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_div.zs[]
+include::../examples/language/class/class_metamethod_lte.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_div_out.txt[]
-----
-
-<<<
-
-====== _mul()
-
-Implements _multiplication_ operator (aka * ) between first operand and second operand
-
-*Syntax*
-
-[source,javascript]
-----
-_mul(_op1,_op2)
-----   
-
-[.underline]#Parameters#
-
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
-
-[.underline]#Returns#
-
-- A new object as a result of multiplication operation 
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/language/class/class_metamethod_mul.zs[]
-----
-
-Console output:
-
-[source,text]
-----
-include::../examples/language/class/class_metamethod_mul_out.txt[]
+include::../examples/language/class/class_metamethod_lte_out.txt[]
 ----
 
 <<<
@@ -1038,15 +1002,15 @@ include::../examples/language/class/class_metamethod_mod_out.txt[]
 
 <<<
 
-====== _and()
+====== _mul()
 
-Implements _bitwise AND_ operator (aka & ) between first operand and second operand
+Implements _multiplication_ operator (aka * ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_and(_op1,_op2)
+_mul(_op1,_op2)
 ----   
 
 [.underline]#Parameters#
@@ -1056,20 +1020,57 @@ _and(_op1,_op2)
 
 [.underline]#Returns#
 
-- A new object as a result of bitwise and operation 
+- A new object as a result of multiplication operation 
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_and.zs[]
+include::../examples/language/class/class_metamethod_mul.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_and_out.txt[]
+include::../examples/language/class/class_metamethod_mul_out.txt[]
+----
+
+<<<
+
+====== _nequ()
+
+Implements _not equal_ operator (aka != ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_nequ(_op1,_op2)
+---- 
+
+[.underline]#Parameters#
+
+- __op1_ : 1st operand.
+- __op2_ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 and op2 are NOT EQUAL
+- False if op1 and op2 are EQUAL
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_metamethod_nequ.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_metamethod_nequ_out.txt[]
 ----
 
 <<<
@@ -1110,15 +1111,15 @@ include::../examples/language/class/class_metamethod_or_out.txt[]
 
 <<<
 
-====== _xor()
+====== _shl()
 
-Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
+Implements _bitwise SHIFT LEFT_ operator (aka << ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_xor(_op1,_op2)
+_shl(_op1,_op2)
 ----   
 
 [.underline]#Parameters#
@@ -1128,23 +1129,22 @@ _xor(_op1,_op2)
 
 [.underline]#Returns#
 
-- A new object as a result of bitwise xor operation 
+- A new object as a result of bitwise shift left operation 
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_xor.zs[]
+include::../examples/language/class/class_metamethod_shl.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_xor_out.txt[]
+include::../examples/language/class/class_metamethod_shl_out.txt[]
 ----
 
-<<<
 
 ====== _shr()
 
@@ -1182,15 +1182,16 @@ include::../examples/language/class/class_metamethod_shr_out.txt[]
 
 <<<
 
-====== _shl()
 
-Implements _bitwise SHIFT LEFT_ operator (aka << ) between first operand and second operand
+====== _xor()
+
+Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
 
 *Syntax*
 
 [source,javascript]
 ----
-_shl(_op1,_op2)
+_xor(_op1,_op2)
 ----   
 
 [.underline]#Parameters#
@@ -1200,18 +1201,20 @@ _shl(_op1,_op2)
 
 [.underline]#Returns#
 
-- A new object as a result of bitwise shift left operation 
+- A new object as a result of bitwise xor operation 
 
 *Example*
 
 [source,javascript]
 ----
-include::../examples/language/class/class_metamethod_shl.zs[]
+include::../examples/language/class/class_metamethod_xor.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/language/class/class_metamethod_shl_out.txt[]
+include::../examples/language/class/class_metamethod_xor_out.txt[]
 ----
+
+<<<

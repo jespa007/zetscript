@@ -24,14 +24,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/console/console_out.zs[]
+include::../examples/language/console/console_out.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/console/console_out_out.txt[]
+include::../examples/language/console/console_out_out.txt[]
 ----
 
 ===== Console::outln()
@@ -56,14 +56,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/console/console_outln.zs[]
+include::../examples/language/console/console_outln.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/console/console_outln_out.txt[]
+include::../examples/language/console/console_outln_out.txt[]
 ----
 
 <<<
@@ -158,14 +158,14 @@ The amount of time in seconds as _Float_ type.
 
 [source,zetscript]
 ----
-include::../examples/scripts/system/system_clock.zs[]
+include::../examples/language/system/system_clock.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/system/system_clock_out.txt[]
+include::../examples/language/system/system_clock_out.txt[]
 ----
 
 ===== System::eval()
@@ -188,14 +188,14 @@ System::eval(_expression_,_args)
 
 [source,zetscript]
 ----
-include::../examples/scripts/system/system_eval.zs[]
+include::../examples/language/system/system_eval.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/system/system_eval_out.txt[]
+include::../examples/language/system/system_eval_out.txt[]
 ----
 
 ===== System::assert()
@@ -285,14 +285,14 @@ Math::PI
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_pi.zs[]
+include::../examples/language/math/math_pi.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/math/math_pi_out.txt[]
+include::../examples/language/math/math_pi_out.txt[]
 ----
 
 ===== Static functions
@@ -318,14 +318,14 @@ A _Float_ value as result of sinus of __radians_ between 0..1.
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_sin.zs[]
+include::../examples/language/math/math_sin.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/math/math_sin_out.txt[]
+include::../examples/language/math/math_sin_out.txt[]
 ----
 
 ====== Math::cos()
@@ -351,14 +351,14 @@ A _Float_ value as result of cosinus of __radians_ between 0..1.
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_cos.zs[]
+include::../examples/language/math/math_cos.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/math/math_cos_out.txt[]
+include::../examples/language/math/math_cos_out.txt[]
 ----
 
 ====== Math::abs()
@@ -382,14 +382,14 @@ A _Float_ value as the absolute value.
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_abs.zs[]
+include::../examples/language/math/math_abs.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/math/math_abs_out.txt[]
+include::../examples/language/math/math_abs_out.txt[]
 ----
 
 ====== Math::pow()
@@ -414,14 +414,14 @@ A _Float_ value as the result of raising __base_ to the _&#95;power_ exponent.
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_pow.zs[]
+include::../examples/language/math/math_pow.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_pow_out.txt[]
+include::../examples/language/math/math_pow_out.txt[]
 ----
 
 <<<
@@ -447,14 +447,14 @@ A _Float_ value as the result of __degrees_ as radians
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_deg_to_rad.zs[]
+include::../examples/language/math/math_deg_to_rad.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_deg_to_rad_out.txt[]
+include::../examples/language/math/math_deg_to_rad_out.txt[]
 ----
 
 ====== Math::random()
@@ -478,14 +478,14 @@ A _Float_ value between [0..1)
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_random.zs[]
+include::../examples/language/math/math_random.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_random_out.txt[]
+include::../examples/language/math/math_random_out.txt[]
 ----
 
 <<<
@@ -512,14 +512,14 @@ The maximum of __v1_ and __v2_
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_max.zs[]
+include::../examples/language/math/math_max.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_max_out.txt[]
+include::../examples/language/math/math_max_out.txt[]
 ----
 
 ====== Math::min()
@@ -544,14 +544,14 @@ The minimmum of __v1_ and __v2_
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_min.zs[]
+include::../examples/language/math/math_min.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_min_out.txt[]
+include::../examples/language/math/math_min_out.txt[]
 ----
 
 ====== Math::sqrt()
@@ -577,14 +577,14 @@ A _Float_ value as the result of the square root of __value_
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_sqrt.zs[]
+include::../examples/language/math/math_sqrt.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_sqrt_out.txt[]
+include::../examples/language/math/math_sqrt_out.txt[]
 ----
 
 ====== Math::floor()
@@ -608,14 +608,14 @@ A _Float_ value as __x_ rounded downward
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_floor.zs[]
+include::../examples/language/math/math_floor.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_floor_out.txt[]
+include::../examples/language/math/math_floor_out.txt[]
 ----
 
 ====== Math::ceil()
@@ -640,14 +640,14 @@ A _Float_ as the largest integral value that is not greater than __x_
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_ceil.zs[]
+include::../examples/language/math/math_ceil.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_ceil_out.txt[]
+include::../examples/language/math/math_ceil_out.txt[]
 ----
 
 ====== Math::round()
@@ -671,14 +671,14 @@ A _Float_ value as __x_ to the nearest integral.
 
 [source,zetscript]
 ----
-include::../examples/scripts/math/math_round.zs[]
+include::../examples/language/math/math_round.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/math/math_round_out.txt[]
+include::../examples/language/math/math_round_out.txt[]
 ----
 
 <<<
@@ -709,14 +709,14 @@ A _String_ as the result of the serialization.
 
 [source,zetscript]
 ----
-include::../examples/scripts/json/json_serialize.zs[]
+include::../examples/language/json/json_serialize.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/json/json_serialize_out.txt[]
+include::../examples/language/json/json_serialize_out.txt[]
 ----
 
 <<<
@@ -742,14 +742,14 @@ A _Object_ as a result of the deserialization.
 
 [source,zetscript]
 ----
-include::../examples/scripts/json/json_deserialize.zs[]
+include::../examples/language/json/json_deserialize.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/json/json_deserialize_out.txt[]
+include::../examples/language/json/json_deserialize_out.txt[]
 ----
 
 <<<
@@ -808,14 +808,14 @@ A _TimeSpan_ a result of __op1_ - __op2_.
 
 [source,javascript]
 ----
-include::../examples/scripts/datetime/datetime_metamethod_sub.zs[]
+include::../examples/language/datetime/datetime_metamethod_sub.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_metamethod_sub_out.txt[]
+include::../examples/language/datetime/datetime_metamethod_sub_out.txt[]
 ----
 
 ====== DateTime::now()
@@ -831,14 +831,14 @@ DateTime::now()
 
 [source,javascript]
 ----
-include::../examples/scripts/datetime/datetime_now.zs[]
+include::../examples/language/datetime/datetime_now.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_now_out.txt[]
+include::../examples/language/datetime/datetime_now_out.txt[]
 ----
 
 ====== DateTime::nowUtc()
@@ -853,7 +853,7 @@ DateTime::nowUtc()
 
 [source,javascript]
 ----
-include::../examples/scripts/datetime/datetime_now_utc.zs[]
+include::../examples/language/datetime/datetime_now_utc.zs[]
 ----
 
 <<<
@@ -862,7 +862,7 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_now_utc_out.txt[]
+include::../examples/language/datetime/datetime_now_utc_out.txt[]
 ----
 
 ===== Member function
@@ -894,14 +894,14 @@ A _DateTime_ object.
 
 [source,javascript]
 ----
-include::../examples/scripts/datetime/datetime_constructor.zs[]
+include::../examples/language/datetime/datetime_constructor.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_constructor_out.txt[]
+include::../examples/language/datetime/datetime_constructor_out.txt[]
 ----
 
 ===== Member properties
@@ -938,14 +938,14 @@ Datetime has the following member properties,
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_member_properties.zs[]
+include::../examples/language/datetime/datetime_member_properties.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_member_properties_out.txt[]
+include::../examples/language/datetime/datetime_member_properties_out.txt[]
 ----
 
 ===== Member functions
@@ -971,14 +971,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_seconds.zs[]
+include::../examples/language/datetime/datetime_add_seconds.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_seconds_out.txt[]
+include::../examples/language/datetime/datetime_add_seconds_out.txt[]
 ----
 
 <<<
@@ -1004,14 +1004,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_minutes.zs[]
+include::../examples/language/datetime/datetime_add_minutes.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_minutes_out.txt[]
+include::../examples/language/datetime/datetime_add_minutes_out.txt[]
 ----
 
 ====== DateTime::addHours()
@@ -1035,14 +1035,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_hours.zs[]
+include::../examples/language/datetime/datetime_add_hours.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_hours_out.txt[]
+include::../examples/language/datetime/datetime_add_hours_out.txt[]
 ----
 
 <<<
@@ -1068,14 +1068,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_days.zs[]
+include::../examples/language/datetime/datetime_add_days.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_days_out.txt[]
+include::../examples/language/datetime/datetime_add_days_out.txt[]
 ----
 
 ====== DateTime::addMonths()
@@ -1099,14 +1099,14 @@ None
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_months.zs[]
+include::../examples/language/datetime/datetime_add_months.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_months_out.txt[]
+include::../examples/language/datetime/datetime_add_months_out.txt[]
 ----
 
 ====== DateTime::addYears()
@@ -1124,13 +1124,13 @@ DateTime::addYears(_years)
 
 [source,zetscript]
 ----
-include::../examples/scripts/datetime/datetime_add_years.zs[]
+include::../examples/language/datetime/datetime_add_years.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/datetime/datetime_add_years_out.txt[]
+include::../examples/language/datetime/datetime_add_years_out.txt[]
 ----
 

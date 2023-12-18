@@ -113,14 +113,14 @@ _Integer_ as a result of converted value
 
 [source,javascript]
 ----
-include::../examples/scripts/integer/integer_parse.zs[]
+include::../examples/language/integer/integer_parse.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/integer/integer_parse_out.txt[]
+include::../examples/language/integer/integer_parse_out.txt[]
 ----
 
 ==== Float
@@ -210,14 +210,14 @@ _Float_ as a result of converted value.
 
 [source,javascript]
 ----
-include::../examples/scripts/float/float_parse.zs[]
+include::../examples/language/float/float_parse.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/float/float_parse_out.txt[]
+include::../examples/language/float/float_parse_out.txt[]
 ----
 
 ==== Boolean
@@ -248,14 +248,14 @@ Returns the length of the string.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_length.zs[]
+include::../examples/language/string/string_length.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_length_out.txt[]
+include::../examples/language/string/string_length_out.txt[]
 ----
 
 ===== Member functions
@@ -284,14 +284,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_insert_at.zs[]
+include::../examples/language/string/string_insert_at.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_insert_at_out.txt[]
+include::../examples/language/string/string_insert_at_out.txt[]
 ----
 
 ====== String::eraseAt(_position)
@@ -310,14 +310,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_erase_at.zs[]
+include::../examples/language/string/string_erase_at.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_erase_at_out.txt[]
+include::../examples/language/string/string_erase_at_out.txt[]
 ----
 
 ====== String::toUpperCase()
@@ -343,14 +343,14 @@ A copy of the string converted to uppercase.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_to_upper_case.zs[]
+include::../examples/language/string/string_to_upper_case.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_to_upper_case_out.txt[]
+include::../examples/language/string/string_to_upper_case_out.txt[]
 ----
 
 ====== String::toLowerCase()
@@ -376,14 +376,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_to_lower_case.zs[]
+include::../examples/language/string/string_to_lower_case.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_to_lower_case_out.txt[]
+include::../examples/language/string/string_to_lower_case_out.txt[]
 ----
 
 ====== String::clear()
@@ -409,14 +409,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_clear.zs[]
+include::../examples/language/string/string_clear.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/string/string_clear_out.txt[]
+include::../examples/language/string/string_clear_out.txt[]
 ----
 
 ====== String::replace()
@@ -443,14 +443,14 @@ A new _String_ as a copy of this with __matching_string_ replaced by __remplacem
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_replace.zs[]
+include::../examples/language/string/string_replace.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/string/string_replace_out.txt[]
+include::../examples/language/string/string_replace_out.txt[]
 ----
 
 ====== String::split()
@@ -478,14 +478,14 @@ An _Array_ of strings as a result of splitting the string by the __separator_.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_split.zs[]
+include::../examples/language/string/string_split.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_split_out.txt[]
+include::../examples/language/string/string_split_out.txt[]
 ----
 
 ====== String::contains()
@@ -511,14 +511,14 @@ A _Boolean_ as _true_ if substring exist or _false_ if not.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_contains.zs[]
+include::../examples/language/string/string_contains.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/string/string_contains_out.txt[]
+include::../examples/language/string/string_contains_out.txt[]
 ----
 
 ====== String::indexOf()
@@ -544,7 +544,7 @@ An _Integer_ value >=0 representing the index position of first occurrence found
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_index_of.zs[]
+include::../examples/language/string/string_index_of.zs[]
 ----
 
 <<<
@@ -553,7 +553,7 @@ Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_index_of_out.txt[]
+include::../examples/language/string/string_index_of_out.txt[]
 ----
 
 ====== String::startsWith()
@@ -579,14 +579,14 @@ A _Boolean_ as _true_ if __value_ matches starting string, otherwise it returns 
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_starts_with.zs[]
+include::../examples/language/string/string_starts_with.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_starts_with_out.txt[]
+include::../examples/language/string/string_starts_with_out.txt[]
 ----
 
 ====== String::endsWith()
@@ -612,14 +612,14 @@ A _Boolean_ as _true_ if __value_ matches ending string, otherwise it returns _f
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_ends_with.zs[]
+include::../examples/language/string/string_ends_with.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_ends_with_out.txt[]
+include::../examples/language/string/string_ends_with_out.txt[]
 ----
 
 <<<
@@ -648,14 +648,14 @@ A copy of the string between __start_index_ and __end_index_.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_substring.zs[]
+include::../examples/language/string/string_substring.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/string/string_substring_out.txt[]
+include::../examples/language/string/string_substring_out.txt[]
 ----
 
 ====== String::append()
@@ -681,14 +681,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_append.zs[]
+include::../examples/language/string/string_append.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_append_out.txt[]
+include::../examples/language/string/string_append_out.txt[]
 ----
 
 <<<
@@ -731,14 +731,14 @@ A new _String_ as a result of formatting __string_ with __args_.
 
 [source,javascript]
 ----
-include::../examples/scripts/string/string_format.zs[]
+include::../examples/language/string/string_format.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/string/string_format_out.txt[]
+include::../examples/language/string/string_format_out.txt[]
 ----
 
 ==== Array
@@ -777,14 +777,14 @@ Returns the number of elements in the array.
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_length.zs[]
+include::../examples/language/array/array_length.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_length_out.txt[]
+include::../examples/language/array/array_length_out.txt[]
 ----
 
 ===== Member functions
@@ -812,14 +812,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_push.zs[]
+include::../examples/language/array/array_push.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_push_out.txt[]
+include::../examples/language/array/array_push_out.txt[]
 ----
 
 ====== Array::pop()
@@ -843,7 +843,7 @@ Last element of the array before be removed.
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_pop.zs[]
+include::../examples/language/array/array_pop.zs[]
 ----
 
 <<<
@@ -852,7 +852,7 @@ Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_pop_out.txt[]
+include::../examples/language/array/array_pop_out.txt[]
 ----
 
 ====== Array::insertAt()
@@ -873,14 +873,14 @@ Array::insertAt(_position,_element)
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_insert_at.zs[]
+include::../examples/language/array/array_insert_at.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/string/string_insert_at_out.txt[]
+include::../examples/language/string/string_insert_at_out.txt[]
 ----
 
 ====== Array::eraseAt()
@@ -904,14 +904,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_erase_at.zs[]
+include::../examples/language/array/array_erase_at.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_erase_at_out.txt[]
+include::../examples/language/array/array_erase_at_out.txt[]
 ----
 
 ====== Array::clear()
@@ -937,14 +937,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_clear.zs[]
+include::../examples/language/array/array_clear.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/array/array_clear_out.txt[]
+include::../examples/language/array/array_clear_out.txt[]
 ----
 
 ====== Array::join()
@@ -968,14 +968,14 @@ A string as a concatenation of all array elements with __separator_.
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_join.zs[]
+include::../examples/language/array/array_join.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_join_out.txt[]
+include::../examples/language/array/array_join_out.txt[]
 ----
 
 ====== Array::contains()
@@ -999,7 +999,7 @@ A _Boolean_ as _true_ if the element exist or _false_ if not.
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_contains.zs[]
+include::../examples/language/array/array_contains.zs[]
 ----
 
 <<<
@@ -1008,7 +1008,7 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/array/array_contains_out.txt[]
+include::../examples/language/array/array_contains_out.txt[]
 ----
 
 ====== Array::extend()
@@ -1032,14 +1032,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_extend.zs[]
+include::../examples/language/array/array_extend.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_extend_out.txt[]
+include::../examples/language/array/array_extend_out.txt[]
 ----
 
 ===== Static functions
@@ -1068,14 +1068,14 @@ A new array as a result of merging all elements from __array1_ and __array2_.
 
 [source,javascript]
 ----
-include::../examples/scripts/array/array_concat.zs[]
+include::../examples/language/array/array_concat.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/array/array_concat_out.txt[]
+include::../examples/language/array/array_concat_out.txt[]
 ----
 
 <<<
@@ -1143,14 +1143,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_clear.zs[]
+include::../examples/language/object/object_clear.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/object/object_clear_out.txt[]
+include::../examples/language/object/object_clear_out.txt[]
 ----
 
 ====== Object::erase()
@@ -1177,14 +1177,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_erase.zs[]
+include::../examples/language/object/object_erase.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/object/object_erase_out.txt[]
+include::../examples/language/object/object_erase_out.txt[]
 ----
 
 ====== Object::contains()
@@ -1211,14 +1211,14 @@ A _Boolean_ as _true_ if the key exist or _false_ if not.
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_contains.zs[]
+include::../examples/language/object/object_contains.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/object/object_contains_out.txt[]
+include::../examples/language/object/object_contains_out.txt[]
 ----
 
 ====== Object::extend()
@@ -1245,14 +1245,14 @@ None
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_extend.zs[]
+include::../examples/language/object/object_extend.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/object/object_extend_out.txt[]
+include::../examples/language/object/object_extend_out.txt[]
 ----
 
 ====== Object::concat()
@@ -1279,14 +1279,14 @@ A new object as a result of merging all fields from __object1_ and __object2_.
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_concat.zs[]
+include::../examples/language/object/object_concat.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/object/object_concat_out.txt[]
+include::../examples/language/object/object_concat_out.txt[]
 ----
 
 ====== Object::keys()
@@ -1314,14 +1314,14 @@ An array of strings as key names of __object_.
 
 [source,javascript]
 ----
-include::../examples/scripts/object/object_keys.zs[]
+include::../examples/language/object/object_keys.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/object/object_keys_out.txt[]
+include::../examples/language/object/object_keys_out.txt[]
 ----
 
 ==== Function

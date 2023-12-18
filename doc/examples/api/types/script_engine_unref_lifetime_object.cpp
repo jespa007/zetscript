@@ -1,36 +1,23 @@
 #include "zetscript.h"
 
 using zetscript::ScriptEngine;
-using zetscript::StackElement;
-using zetscript::zs_int;
-using zetscript::ArrayScriptObject;
+using zetscript::ObjectScriptObject;
 
 int main(){
 	ScriptEngine script_engine;
 
-	// Compiles script function 'returnNewArray' that returns a 'Object' type as result and it leaves a reference
-	script_engine.compile("function returnNewArray(){\n"
-		"return [0,1,2,3];\n"
-	"}\n");
+    // Eval an expression that returns a 'Object' type as result
+	auto result=script_engine.compileAndRun("return {f1:10,f2:20,f4:40}");
 
-	auto returnNewArray=script_engine.bindScriptFunction<ArrayScriptObject *()>("returnNewArray");
+	// Converts stack element to ObjectScriptObject
+	ObjectScriptObject *result_object=script_engine.stackElementTo<ObjectScriptObject *>(result);
 
-	auto array_object = returnNewArray();
+	// ...
+	// perform some operations with 'result_object'
+	// ...
 
-	printf("array_object : [");
-
-	// Prints ObjectScriptObject
-	for(int i=0; i < array_object->length(); i++){
-		if(i > 0){
-			printf(",");	
-		}
-		printf("%i",array_object->get<zs_int>(i));
-	}
-
-	printf("]\n");
-
-	// unref lifetime array object due is not needed anymore.
-	script_engine.unrefLifetimeObject(array_object);
-
+	// unref lifetime object due is not needed anymore.
+	script_engine.unrefLifetimeObject(result_object);
+	
 	return 0;
 }

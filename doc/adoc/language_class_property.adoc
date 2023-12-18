@@ -42,14 +42,14 @@ Returns the value of the property
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_get.zs[]
+include::../examples/language/class/class_property_metamethod_get.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_get_out.txt[]
+include::../examples/language/class/class_property_metamethod_get_out.txt[]
 ----
 
 <<<
@@ -77,19 +77,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_set.zs[]
+include::../examples/language/class/class_property_metamethod_set.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_set_out.txt[]
+include::../examples/language/class/class_property_metamethod_set_out.txt[]
 ----
 
 <<<
 
-====== _addset()
+====== _addassign()
 
 Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
 
@@ -97,7 +97,7 @@ Implements _addition assignment_ operator (aka += ) with a value entered by para
 
 [source,javascript]
 ----
-_addset(_value)
+_addassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -112,19 +112,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_addset.zs[]
+include::../examples/language/class/class_property_metamethod_addassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_addset_out.txt[]
+include::../examples/language/class/class_property_metamethod_addassign_out.txt[]
 ----
 
 <<<
 
-====== _subset()
+====== _subassign()
 
 Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
 
@@ -133,7 +133,7 @@ Implements _substraction assignment_ operator (aka -= ) with a value entered by 
 
 [source,javascript]
 ----
-_subset(_value)
+_subassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -148,19 +148,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_subset.zs[]
+include::../examples/language/class/class_property_metamethod_subassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_subset_out.txt[]
+include::../examples/language/class/class_property_metamethod_subassign_out.txt[]
 ----
 
 <<<
 
-====== _mulset()
+====== _mulassign()
 
 Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
 
@@ -168,7 +168,7 @@ Implements _multiplication assignment_ operator (aka *= ) with a value entered b
 
 [source,javascript]
 ----
-_mulset(_value)
+_mulassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -183,19 +183,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_mulset.zs[]
+include::../examples/language/class/class_property_metamethod_mulassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_mulset_out.txt[]
+include::../examples/language/class/class_property_metamethod_mulassign_out.txt[]
 ----
 
 <<<
 
-====== _divset()
+====== _divassign()
 
 Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
 
@@ -203,7 +203,7 @@ Implements _division assignment_ operator (aka /= ) with a value entered by para
 
 [source,javascript]
 ----
-_divset(_value)
+_divassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -218,19 +218,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_divset.zs[]
+include::../examples/language/class/class_property_metamethod_divassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_divset_out.txt[]
+include::../examples/language/class/class_property_metamethod_divassign_out.txt[]
 ----
 
 <<<	
 
-====== _modset()
+====== _modassign()
 
 Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
 
@@ -238,7 +238,7 @@ Implements _modulus assignment_ operator (aka %= ) with a value entered by param
 
 [source,javascript]
 ----
-_modset(_value)
+_modassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -253,19 +253,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_modset.zs[]
+include::../examples/language/class/class_property_metamethod_modassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_modset_out.txt[]
+include::../examples/language/class/class_property_metamethod_modassign_out.txt[]
 ----
 
 <<<
 
-====== _andset()
+====== _andassign()
 
 Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
 
@@ -273,7 +273,7 @@ Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by p
 
 [source,javascript]
 ----
-_andset(_value)
+_andassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -288,19 +288,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_andset.zs[]
+include::../examples/language/class/class_property_metamethod_andassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_andset_out.txt[]
+include::../examples/language/class/class_property_metamethod_andassign_out.txt[]
 ----
 
 <<<
 
-====== _orset()
+====== _orassign()
 
 Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
 
@@ -308,7 +308,7 @@ Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by pa
 
 [source,javascript]
 ----
-_orset(_value)
+_orassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -323,19 +323,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_orset.zs[]
+include::../examples/language/class/class_property_metamethod_orassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_orset_out.txt[]
+include::../examples/language/class/class_property_metamethod_orassign_out.txt[]
 ----
 
 <<<
 
-====== _xorset()
+====== _xorassign()
 
 Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
 
@@ -343,7 +343,7 @@ Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by p
 
 [source,javascript]
 ----
-_xorset(_value)
+_xorassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -358,19 +358,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_xorset.zs[]
+include::../examples/language/class/class_property_metamethod_xorassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_xorset_out.txt[]
+include::../examples/language/class/class_property_metamethod_xorassign_out.txt[]
 ----
 
 <<<
 
-====== _shrset()
+====== _shrassign()
 
 Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
 
@@ -378,7 +378,7 @@ Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value ent
 
 [source,javascript]
 ----
-_shrset(_value)
+_shrassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -393,19 +393,19 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_shrset.zs[]
+include::../examples/language/class/class_property_metamethod_shrassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_shrset_out.txt[]
+include::../examples/language/class/class_property_metamethod_shrassign_out.txt[]
 ----
 
 <<<
 
-====== _shlset()
+====== _shlassign()
 
 Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
 
@@ -413,7 +413,7 @@ Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value ente
 
 [source,javascript]
 ----
-_shlset(_value)
+_shlassign(_value)
 ----
 
 [.underline]#Parameters#
@@ -428,14 +428,14 @@ None.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_shlset.zs[]
+include::../examples/language/class/class_property_metamethod_shlassign.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_shlset_out.txt[]
+include::../examples/language/class/class_property_metamethod_shlassign_out.txt[]
 ----
 
 <<<
@@ -464,14 +464,14 @@ The value before perform post increment operation.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_postinc.zs[]
+include::../examples/language/class/class_property_metamethod_postinc.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_postinc_out.txt[]
+include::../examples/language/class/class_property_metamethod_postinc_out.txt[]
 ----
 
 <<<
@@ -499,14 +499,14 @@ The value before perform post decrement operation.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_postdec.zs[]
+include::../examples/language/class/class_property_metamethod_postdec.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_postdec_out.txt[]
+include::../examples/language/class/class_property_metamethod_postdec_out.txt[]
 ----
 
 <<<
@@ -534,14 +534,14 @@ The value before perform pre increment operation.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_preinc.zs[]
+include::../examples/language/class/class_property_metamethod_preinc.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_preinc_out.txt[]
+include::../examples/language/class/class_property_metamethod_preinc_out.txt[]
 ----
 
 <<<
@@ -569,13 +569,13 @@ The value before perform pre decrement operation.
 
 [source,javascript]
 ----
-include::../examples/scripts/class/class_property_metamethod_predec.zs[]
+include::../examples/language/class/class_property_metamethod_predec.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/class/class_property_metamethod_predec_out.txt[]
+include::../examples/language/class/class_property_metamethod_predec_out.txt[]
 ----
 

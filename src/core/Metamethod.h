@@ -28,17 +28,17 @@ namespace zetscript{
 		METAMETHOD_XOR, // ^ logic xor
 		METAMETHOD_SHL, // << shift left
 		METAMETHOD_SHR, // >> shift right
-		METAMETHOD_ADD_ASSIGN, // set '+='
-		METAMETHOD_SUB_ASSIGN, // set '-='
-		METAMETHOD_MUL_ASSIGN, // set '*='
-		METAMETHOD_DIV_ASSIGN, // set '/='
-		METAMETHOD_MOD_ASSIGN, // set '%='
-		METAMETHOD_AND_ASSIGN, // set '&='
-		METAMETHOD_OR_ASSIGN,  // set '|='
-		METAMETHOD_XOR_ASSIGN, // set '^='
-		METAMETHOD_SHL_ASSIGN, // set '<<'
-		METAMETHOD_SHR_ASSIGN, // set '>>'
-		METAMETHOD_BTWST, // set '~'
+		METAMETHOD_ADD_ASSIGN, // '+='
+		METAMETHOD_SUB_ASSIGN, // '-='
+		METAMETHOD_MUL_ASSIGN, // '*='
+		METAMETHOD_DIV_ASSIGN, // '/='
+		METAMETHOD_MOD_ASSIGN, // '%='
+		METAMETHOD_AND_ASSIGN, // '&='
+		METAMETHOD_OR_ASSIGN,  // '|='
+		METAMETHOD_XOR_ASSIGN, // '^='
+		METAMETHOD_SHL_ASSIGN, // '<<='
+		METAMETHOD_SHR_ASSIGN, // '>>='
+		METAMETHOD_BWC_ASSIGN, // '~='
 
 		//METAMETHOD_GET, // get '='
 		METAMETHOD_NOT, // !

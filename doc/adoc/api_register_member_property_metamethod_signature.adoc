@@ -1,4 +1,4 @@
-For setters (i.e _set,_addset,etc) the following signature,
+For setters (i.e _set,_addassign,etc) the following signature,
 
 [source,cpp]
 ----
@@ -15,7 +15,6 @@ ReturnType (ScriptEngine *_script_engine, T *_this){
 	....
 }
 ----
-
 
 Where,
 

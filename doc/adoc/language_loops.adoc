@@ -17,14 +17,14 @@ while(condition){
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_while.zs[]
+include::../examples/language/loop/loop_while.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/loop/loop_while_out.txt[]
+include::../examples/language/loop/loop_while_out.txt[]
 ----
 
 ==== do-while loop
@@ -44,7 +44,7 @@ do{
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_do_while.zs[]
+include::../examples/language/loop/loop_do_while.zs[]
 ----
 
 <<<
@@ -53,7 +53,7 @@ Console output:
 
 [source,text]
 ----
-include::../examples/scripts/loop/loop_do_while_out.txt[]
+include::../examples/language/loop/loop_do_while_out.txt[]
 ----
 
 ==== The for loop
@@ -77,14 +77,14 @@ for(statement1;statement2;statement3){
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_for.zs[]
+include::../examples/language/loop/loop_for.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/loop/loop_for_out.txt[]
+include::../examples/language/loop/loop_for_out.txt[]
 ----
 
 
@@ -111,14 +111,14 @@ for(var k,v in array){
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_for_in.zs[]
+include::../examples/language/loop/loop_for_in.zs[]
 ----
 
 Console output:
 
 [source,text]
 ----
-include::../examples/scripts/loop/loop_for_in_out.txt[]
+include::../examples/language/loop/loop_for_in_out.txt[]
 ----
 
 ==== The break and continue
@@ -131,14 +131,14 @@ The _break_ statement is used to jump out of body loop.
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_break.zs[]
+include::../examples/language/loop/loop_break.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/loop/loop_break_out.txt[]
+include::../examples/language/loop/loop_break_out.txt[]
 ----
 
 
@@ -150,12 +150,12 @@ The _continue_ statement breaks one iteration and continues with the next iterat
 
 [source,javascript]
 ----
-include::../examples/scripts/loop/loop_continue.zs[]
+include::../examples/language/loop/loop_continue.zs[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/scripts/loop/loop_continue_out.txt[]
+include::../examples/language/loop/loop_continue_out.txt[]
 ----

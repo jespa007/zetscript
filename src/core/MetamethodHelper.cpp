@@ -28,17 +28,17 @@ namespace zetscript{
 			case	METAMETHOD_SHL:		return  "<<"; 		// bitwise shift left
 			case	METAMETHOD_SHR:		return  ">>"; 		// bitwise shift right
 			case	METAMETHOD_SET:		return  "=";		// _set
-			case	METAMETHOD_ADD_ASSIGN:	return  "+=";		// _set_add
-			case	METAMETHOD_SUB_ASSIGN:	return  "-=";		// _set_sub
+			case	METAMETHOD_ADD_ASSIGN:	return  "+=";		// _addassign
+			case	METAMETHOD_SUB_ASSIGN:	return  "-=";		// _subassign
 			case 	METAMETHOD_MUL_ASSIGN:   return  "*=";		// _mulassign
-			case	METAMETHOD_DIV_ASSIGN:	return  "/=";		// _set_div
-			case	METAMETHOD_MOD_ASSIGN:	return  "%=";		// _set_mod
-			case	METAMETHOD_AND_ASSIGN:	return  "&=";		// _set_and
-			case	METAMETHOD_OR_ASSIGN:	return  "|=";		// _set_or
-			case	METAMETHOD_XOR_ASSIGN:	return  "^=";		// _set_xor
-			case	METAMETHOD_SHL_ASSIGN:	return  "<<=";		// _set_shl
-			case	METAMETHOD_SHR_ASSIGN:	return  ">>=";		// _set_shr
-			case	METAMETHOD_BTWST:	return  "~=";		// _set_btw
+			case	METAMETHOD_DIV_ASSIGN:	return  "/=";		// _divassign
+			case	METAMETHOD_MOD_ASSIGN:	return  "%=";		// _modassign
+			case	METAMETHOD_AND_ASSIGN:	return  "&=";		// _andassign
+			case	METAMETHOD_OR_ASSIGN:	return  "|=";		// _orassign
+			case	METAMETHOD_XOR_ASSIGN:	return  "^=";		// _xorassign
+			case	METAMETHOD_SHL_ASSIGN:	return  "<<=";		// _shlassign
+			case	METAMETHOD_SHR_ASSIGN:	return  ">>=";		// _shrassign
+			case	METAMETHOD_BWC_ASSIGN:	return  "~=";		// _btwassign
 			//case	METAMETHOD_GET:		return  "_get";		// _get
 			case	METAMETHOD_TO_STRING: return  "_tostring";// _tostring
 			case 	METAMETHOD_POST_INC: 	return  "++";		// i++
@@ -76,17 +76,17 @@ namespace zetscript{
 			case	METAMETHOD_SHL:				return  "_shl"; 	// bitwise shift left
 			case	METAMETHOD_SHR:				return  "_shr"; 	// bitwise shift right
 			case	METAMETHOD_SET:				return  "_set"; 	// _set
-			case	METAMETHOD_ADD_ASSIGN:		return  "_addassign";	// _set_add
-			case	METAMETHOD_SUB_ASSIGN:		return  "_subassign";	// _set_sub
+			case	METAMETHOD_ADD_ASSIGN:		return  "_addassign";	// _addassign
+			case	METAMETHOD_SUB_ASSIGN:		return  "_subassign";	// _subassign
 			case	METAMETHOD_MUL_ASSIGN:		return  "_mulassign";	// _mulassign
-			case	METAMETHOD_DIV_ASSIGN:		return  "_divassign";	// _set_div
-			case	METAMETHOD_MOD_ASSIGN:		return  "_modassign";	// _set_mod
-			case	METAMETHOD_AND_ASSIGN:		return  "_andassign";	// _set_and
-			case	METAMETHOD_OR_ASSIGN:		return  "_orassign"; 	// _set_or
-			case	METAMETHOD_XOR_ASSIGN:		return  "_xorassign";	// _set_xor
-			case	METAMETHOD_SHL_ASSIGN:		return  "_shlassign";	// _set_shl
-			case	METAMETHOD_SHR_ASSIGN:		return  "_shrassign";	// _set_shr
-			case	METAMETHOD_BTWST:			return  "_btwassign";	// _set_btw
+			case	METAMETHOD_DIV_ASSIGN:		return  "_divassign";	// _divassign
+			case	METAMETHOD_MOD_ASSIGN:		return  "_modassign";	// _modassign
+			case	METAMETHOD_AND_ASSIGN:		return  "_andassign";	// _andassign
+			case	METAMETHOD_OR_ASSIGN:		return  "_orassign"; 	// _orassign
+			case	METAMETHOD_XOR_ASSIGN:		return  "_xorassign";	// _xorassign
+			case	METAMETHOD_SHL_ASSIGN:		return  "_shlassign";	// _shlassign
+			case	METAMETHOD_SHR_ASSIGN:		return  "_shrassign";	// _shrassign
+			case	METAMETHOD_BWC_ASSIGN:			return  "_btwassign";	// _btwassign
 
 			//case	METAMETHOD_GET:		return  "_get"; 	// _get
 			case	METAMETHOD_TO_STRING:		return  "_tostring";// _tostring
