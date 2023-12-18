@@ -35,7 +35,7 @@ dir_zs="api/types/*.zs"
 for j in $dir_zs
 do
 	base_file="$(basename $j .zs)"
-	cp "api/eval/"$base_file".zs" "api/build/"$base_file".zs"
+	cp "api/types/"$base_file".zs" "api/build/"$base_file".zs"
 done
 
 for i in "${api_example_dirs[@]}"
