@@ -2202,22 +2202,19 @@ _ScriptEngine_ is the main type of ZetScript in order to register function, regi
 
 ===== ScriptEngine::bindScriptFunction()        
 
-_ScriptEngine::bindScriptFunction_ binds ZetScript function from its name or ZetScript function type to be invokable from C++.
+Binds script function to be callable from C++.
 
 *Syntax*
 
 [source,cpp]
 ----
- ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
+ScriptEngine::bindScriptFunction<F>(const String & _script_function_name);
 
 std::function<F> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
 
-
 std::function<F> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
 
-
 std::function<F> bindScriptFunction(ScriptFunction *_script_function);
-
 ----
 
 [.underline]#Template#
@@ -2341,7 +2338,6 @@ StackElement	compileAndRun(const String & _expresion, const char *__invoke_file_
  - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
  - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
 
-
 [.underline]#Returns#
 
 xref:api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
@@ -2371,6 +2367,16 @@ It compiles a ZetScript file. This operation doesn't removes generated code, var
 void	compileFile(const String & _filename, CompileData *_compile_data=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
+[.underline]#Parameters#
+
+ - _&#95;filename_: The file to compile.
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+None
 
 *Example*
 
@@ -2404,6 +2410,19 @@ It compiles a ZetScript file and runs current generated code. This operation doe
 StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
 ----
 
+
+[.underline]#Parameters#
+
+ - _&#95;filename_: The file to compile and run.
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+xref:api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
+
+
 *Example*
 
 [source,cpp]
@@ -2435,6 +2454,17 @@ Inherits methods from other registered type
 ----
 void extends<T,B>()
 ----
+
+
+[.underline]#Template parameters#
+
+ - _T_: The type to be extended to.
+ - _B_: The type to be extended from.
+ 
+
+====
+The method do not supports (by now) a forward register to an extended types when any member o property is being registered on  _B_. So, it is important to register *FIRST* all members and properties of _B_ *BEFORE* before apply the extension to _T_.
+====
 
 *Example*
 
@@ -2651,7 +2681,7 @@ void registerFunction( const String & _function_name,F _c_function, const char *
 
 [.underline]#Parameters#
 
-- _&#95;function_name_ : The function name to be refered in ZetScript.
+- _&#95;function_name_ : Function name.
 
 - _&#95;c_function_ : A C function to register with the following signature,
 
@@ -2756,14 +2786,17 @@ void	registerMemberPropertyMetamethod<T>(
 
 [.underline]#Function parameters# 
 
-- __member_function_name_	: Member function name
-- __&#95;c_function_: A C function with the following signature,
+- _&#95;property_name_	: Property name
+- _&#95;metamethod_name_ : One of the following metamethod names,
 
-include::api_register_member_function_signature.adoc[]
+include::api_register_metamethod_names.adoc[]
+
+- __&#95;c_function_: A C function.
+
+include::api_register_member_property_metamethod_signature.adoc[]
 
 - _&#95;registered_file_ : Source file where the function was registered
 - _&#95;registered_line_ : Line file where the function was registered
-
 
 [.underline]#Returns#
 
@@ -2797,7 +2830,6 @@ void registerStaticMemberFunction<T>(const String & _static_member_name, F _func
 [.underline]#Template parameters#
 
 - _T_: The registered type
-
 
 [.underline]#Function parameters#
 
@@ -2967,24 +2999,23 @@ Binds StackElement to a primitive or registered type
 [source,cpp]
 ----
 
-template<typename _C>
-		_C 				stackElementTo(StackElement * _stack_element);
+template<typename C>
+		C 				stackElementTo(StackElement * _stack_element);
 ----
 
 [.underline]#Template parameters# 
 
-- _C_ : The type to be converted Class can be the following,
+- _C_ : The type to be converted as the one of the following,
 
-include::api_stack_element_to_return.adoc
+include::api_stack_element_to_return.adoc[]
 
 [.underline]#Parameters# 
 
-- _stack_element: Stack element to convert
-
+- _stack_element: Stack element to converted from
 
 [.underline]#Returns# 
 
-The type converted
+A _C_ type as a result of conversion
 
 *Example*
 

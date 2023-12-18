@@ -1,0 +1,53 @@
+
+
+[cols="1m,2d"]
+|====
+|Metamethod | Description
+|_get
+|__get_ returns the value of the property
+
+|_set
+|Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+|_addset
+|Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+|_subset
+|Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+|_mulset
+|Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+|_divset
+|Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+|_modset
+|Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+|_andset
+|Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+|_orset
+|Implements _bitwise OR assignment_ operator (aka \|= ) with a value entered by parameter as right operand.
+
+|_xorset
+|Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+|_shrset
+|Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+|_shlset
+|Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+|_postinc
+|Implements _post_increment_ operator (aka a++ ) 
+
+|_postdec()
+|Implements _post_decrement_ operator (aka a-- ) 
+
+|_preinc()
+|Implements _pre_increment_ operator (aka ++a ) 
+
+|_predec()
+|Implements _pre_decrement_ operator (aka ++a ) 
+|====

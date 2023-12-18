@@ -81,7 +81,7 @@ The evaluation will fail with the following output,
  'Number' type is not instantiable
 
 
-The only way to operate with a 'Number' object non intanciable is by a reference returned by a registered function as it shows in the following example,
+The only way to operate with a 'Number' object non instantiable is by a reference returned by a registered function as it shows in the following example,
 
 
 [source,cpp]
@@ -93,9 +93,9 @@ include::../examples/api/register_type/register_non_instantiable_type.cpp[]
 
 ===== Register a type as instantiable
 
-Register an instantiable type it means that it *CAN* create new objects of that 'type' in ZetScript code using operator _new_.
+Register an instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator _new_.
 
-To register instantiable type it's done also with _ScriptEngine::registerType_ but, furthermore, it has to pass two additional parameters : A _new_ function and _delete_ function.
+To register instantiable type its done by passing two c functions as to create and destroy native type.
 
 *Syntax*
 [source,cpp]
@@ -319,24 +319,8 @@ include::../examples/api/register_type/register_static_member_function_out.txt[]
 
 ==== Inheritance
 
-To register a type and tell that is base of other type is done through _ScriptEngine::extends_.
+To register a type and tell that is base of other type is done through xref:api_data_types#_scriptengineextends[ScriptEngine::extends].
 
-*Syntax*
-
-[source,cpp]
-----
-
-ScriptEngine::extends<_RegisteredBaseType, _RegisteredType>();
-----
-
-[.underline]#Type#
-
-- __RegisteredBaseType_: Registeted C&#43;&#43;type where it will extended.
-- __RegisteredType_ : Registered C&#43;&#43;type to be extended.
-
-====
-The method do not supports (by now) a forward register to an extended types when any member o property is being registered on  _&#x5f;RegisteredBaseType_. So, it is important to register *FIRST* all members and properties of _&#x5f;RegisteredBaseType_ *BEFORE* before apply the extension to __RegisterType_, otherwise it cannot find symbols from _&#x5f;RegisteredBaseType_.
-====
 
 *Example*
 

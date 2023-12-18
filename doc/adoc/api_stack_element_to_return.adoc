@@ -1,20 +1,8 @@
-[cols="1m,2d"]
-|====
-|ReturnType| Description
-|bool
-|Returns xref:language_data_types#_boolean[Boolean]
-|xref:api_data_types#_zetscriptzs_int[zetscript::zs_int]
-|Returns xref:language_data_types#_integer[Integer]
-|xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] 
-|Returns xref:language_data_types#_float[Float]
-|xref:api_data_types#_zetscriptstring[zetscript::String]
-|Returns xref:language_data_types#_string[String]
-|xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
-|Returns xref:language_data_types#_stringscriptobject[String]
-|xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
-|Returns xref:language_data_types#_array[Array]
-|xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
-|Returns xref:language_data_types#_object[Object]
-|T *
-|Returns a pointer of a register type T
-|====
+** bool
+** xref:api_data_types#_zetscriptzs_int[zetscript::zs_int]
+** xref:api_data_types#_zetscriptzs_float[zetscript::zs_float] 
+** xref:api_data_types#_zetscriptstring[zetscript::String]
+** xref:api_data_types#_zetscriptstring[zetscript::StringScriptObject] *
+** xref:api_data_types#_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
+** xref:api_data_types#_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
+** A pointer of a register type
