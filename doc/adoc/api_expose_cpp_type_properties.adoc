@@ -464,8 +464,6 @@ include::../examples/api/register_type/register_member_property_metamethod_mulas
 <<<
 
 
-
-
 ====== _orassign()
 
 Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
