@@ -56,12 +56,7 @@ String(String && _str);
 include::../examples/api/types/string_constructor.cpp[]
 ----
 
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_constructor_out.txt[]
-----
+<<<
 
 ===== Static constants
 
@@ -94,6 +89,8 @@ include::string_format_format_specifier.adoc[]
 
 A formated String
 
+<<<
+
 *Example*
 
 [source,cpp]
@@ -107,6 +104,8 @@ Console output:
 ----
 include::../examples/api/types/string_format_out.txt[]
 ----
+
+<<<
 
 ===== Member functions
 
@@ -151,6 +150,7 @@ Console output:
 include::../examples/api/types/string_append_out.txt[]
 ----
 
+<<<
 
 ====== String::at()
 
@@ -186,6 +186,8 @@ Console output:
 include::../examples/api/types/string_at_out.txt[]
 ----
 
+<<<
+
 ====== String::clear()
 
 Erases the contents of the string.
@@ -218,6 +220,8 @@ Console output:
 ----
 include::../examples/api/types/string_clear_out.txt[]
 ----
+
+<<<
 
 ====== String::contains()
 
@@ -252,7 +256,9 @@ Console output:
 include::../examples/api/types/string_contains_out.txt[]
 ----
 
-====== String::endsWidth()
+<<<
+
+====== String::endsWith()
 
 Returns whether the string ends with the specified character(s).
 
@@ -260,7 +266,7 @@ Returns whether the string ends with the specified character(s).
 
 [source,cpp]
 ----
-bool startsWidth() const;
+bool startsWith() const;
 ----
 
 [.underline]#Parameters#
@@ -285,6 +291,8 @@ Console output:
 include::../examples/api/types/string_ends_with_out.txt[]
 ----
 
+<<<
+
 ====== String::erase()
 
 Erases part of the string, reducing its length.
@@ -299,7 +307,7 @@ void erase(int _pos);
 
 [.underline]#Parameters#
 
-- _&#95;pos_ : Position of the first character to be erased.
+- _&#95;#pos_ : Position of the first character to be erased.
 - _&#95;len_ : Number of characters to erase.
 
 [.underline]#Return#
@@ -319,6 +327,8 @@ Console output:
 ----
 include::../examples/api/types/string_erase_out.txt[]
 ----
+
+<<<
 
 ======  String::find()
 
@@ -355,6 +365,8 @@ Console output:
 ----
 include::../examples/api/types/string_find_out.txt[]
 ----
+
+<<<
 
 ====== String::findLastOf()
 
@@ -394,6 +406,8 @@ Console output:
 include::../examples/api/types/string_find_last_of_out.txt[]
 ----
 
+<<<
+
 ====== String::getSubstring()
 
 Returns a new string with its value initialized to a copy of a substring of this object.
@@ -428,6 +442,7 @@ Console output:
 include::../examples/api/types/string_get_substring_out.txt[]
 ----
 
+<<<
 
 ====== String::insert()
 
@@ -465,6 +480,8 @@ Console output:
 include::../examples/api/types/string_insert_out.txt[]
 ----
 
+<<<
+
 ====== String::isEmpty()
 
 Returns whether the string is empty.
@@ -498,6 +515,8 @@ Console output:
 include::../examples/api/types/string_is_empty_out.txt[]
 ----
 
+<<<
+
 ====== String::length()
 
 Returns the length of the string, in terms of bytes.
@@ -530,6 +549,8 @@ Console output:
 ----
 include::../examples/api/types/string_length_out.txt[]
 ----
+
+<<<
 
 ====== String::operator=()
 
@@ -567,6 +588,8 @@ Console output:
 include::../examples/api/types/string_operator_assign_out.txt[]
 ----
 
+<<<
+
 ======  String::operator+=()
 
 Appends string at the end of current contents.
@@ -603,6 +626,8 @@ Console output:
 include::../examples/api/types/string_operator_add_assign_out.txt[]
 ----
 
+<<<
+
 ====== String::operator[]()
 
 Returns a reference to the character from a position.
@@ -636,6 +661,8 @@ Console output:
 ----
 include::../examples/api/types/string_operator_access_out.txt[]
 ----
+
+<<<
 
 ====== String::split()
 
@@ -671,7 +698,9 @@ Console output:
 include::../examples/api/types/string_split_out.txt[]
 ----
 
-====== String::startsWidth()
+<<<
+
+====== String::startsWith()
 
 Returns whether the string starts with the specified character(s).
 
@@ -679,7 +708,7 @@ Returns whether the string starts with the specified character(s).
 
 [source,cpp]
 ----
-bool startsWidth() const;
+bool startsWith() const;
 ----
 
 [.underline]#Parameters#
@@ -703,6 +732,8 @@ Console output:
 ----
 include::../examples/api/types/string_starts_with_out.txt[]
 ----
+
+<<<
 
 ====== String::toConstChar()
 
@@ -737,6 +768,8 @@ Console output:
 include::../examples/api/types/string_to_const_char_out.txt[]
 ----
 
+<<<
+
 ====== String::toLowerCase()
 
 Returns current string as lowe case
@@ -769,6 +802,8 @@ Console output:
 ----
 include::../examples/api/types/string_to_lower_case_out.txt[]
 ----
+
+<<<
 
 ====== String::toUpperCase()
 
@@ -803,6 +838,7 @@ Console output:
 include::../examples/api/types/string_to_upper_case_out.txt[]
 ----
 
+<<<
 
 ====== String::setSubstring()
 
@@ -838,6 +874,8 @@ Console output:
 ----
 include::../examples/api/types/string_set_substring_out.txt[]
 ----
+
+<<<
 
 ===== Static functions
 
@@ -880,6 +918,8 @@ Console output:
 include::../examples/api/types/string_operator_add_out.txt[]
 ----
 
+<<<
+
 ====== Relational operators
 
 String implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operation between the left operand and right operand.
@@ -918,10 +958,11 @@ Console output:
 include::../examples/api/types/string_relational_operators_out.txt[]
 ----
 
+<<<
+
 ==== zetscript::Vector
 
 _Vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
-
 
 ===== Constructor
 
@@ -933,6 +974,10 @@ Vector();
 Vector(const Vector & _vector);
 ----
 
+[.underline]#Parameters#
+
+- _&#95;vector_ : A vector object.
+
 *Example*
 
 [source,cpp]
@@ -940,22 +985,13 @@ Vector(const Vector & _vector);
 include::../examples/api/types/vector_constructor.cpp[]
 ----
 
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/vector_constructor_out.txt[]
-----
-
-[.underline]#Parameters#
-
-- _&#95;vector_ : A vector object.
-
 ===== Static constants
 
 ====== Vector::n_pos
 
 npos is a static member constant value with the greatest possible value.
+
+<<<
 
 ===== Member functions
 
@@ -992,6 +1028,8 @@ Console output:
 include::../examples/api/types/vector_clear_out.txt[]
 ----
 
+<<<
+
 ====== Vector::concat()
 
 Copies all elements from other vector at the end of current contents.
@@ -1024,6 +1062,8 @@ Console output:
 ----
 include::../examples/api/types/vector_concat_out.txt[]
 ----
+
+<<<
 
 ====== Vector::data()
 
@@ -1058,6 +1098,8 @@ Console output:
 include::../examples/api/types/vector_data_out.txt[]
 ----
 
+<<<
+
 ====== Vector::erase()
 
 Erases an element from a position.
@@ -1091,6 +1133,8 @@ Console output:
 include::../examples/api/types/vector_erase_out.txt[]
 ----
 
+<<<
+
 ====== Vector::get()
 
 Returns a reference to the element from a position.
@@ -1123,6 +1167,8 @@ Console output:
 ----
 include::../examples/api/types/vector_get_out.txt[]
 ----
+
+<<<
 
 ====== Vector::insert()        
 
@@ -1160,6 +1206,8 @@ Console output:
 include::../examples/api/types/vector_insert_out.txt[]
 ----
 
+<<<
+
 ====== Vector::length()
 
 Returns the number of elements of the vector. 
@@ -1192,6 +1240,8 @@ Console output:
 ----
 include::../examples/api/types/vector_length_out.txt[]
 ----
+
+<<<
 
 ====== Vector::operator=()
 
@@ -1226,6 +1276,8 @@ Console output:
 include::../examples/api/types/vector_operator_assign_out.txt[]
 ----
 
+<<<
+
 ====== Vector::pop()
 
 Returns the last element by copy and erases the last element.
@@ -1249,15 +1301,17 @@ None
 
 [source,cpp]
 ----
-include::../examples/api/types/vector_pop_back.cpp[]
+include::../examples/api/types/vector_pop.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/vector_pop_back_out.txt[]
+include::../examples/api/types/vector_pop_out.txt[]
 ----
+
+<<<
 
 ====== Vector::push()
 
@@ -1284,6 +1338,8 @@ None
 ----
 include::../examples/api/types/vector_push.cpp[]
 ----
+
+<<<
 
 ====== Vector::resize()
 
@@ -1318,6 +1374,8 @@ Console output:
 include::../examples/api/types/vector_resize_out.txt[]
 ----
 
+<<<
+
 ====== Vector::set()
 
 Replaces the element from a position.
@@ -1345,6 +1403,9 @@ none
 include::../examples/api/types/vector_set.cpp[]
 ----
 
+
+<<<
+
 ==== zetscript::ScriptType
 
 ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
@@ -1366,6 +1427,7 @@ ScriptType is an type managed by ZetScript that defines a builtin or registered 
 
 |====
 
+<<<
 
 ==== zetscript::Symbol
 
@@ -1405,6 +1467,8 @@ _Symbol_ is a type managed internally by ZetScript that defines a symbol. The _S
 |Tells that the _Symbol_ an allocated StackElement
 
 |====
+
+<<<
 
 ==== zetscript::StackElement
 
@@ -1462,6 +1526,8 @@ _properties_ : Defines the content of value by the following mask values,
 |====
 
 
+<<<
+
 ==== zetscript::ScriptObject
 
 _ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
@@ -1493,6 +1559,8 @@ _ScriptObject_ defines a the parent class of any object in TypeScript. This type
 |Tells that _ScriptObject_ is constant
 
 |====
+
+<<<
 
 ==== zetscript::StringScriptObject
 
@@ -1528,8 +1596,9 @@ Console output:
 include::../examples/api/types/string_script_object_constructor_out.txt[]
 ----
 
-===== Member functions
+<<<
 
+===== Member functions
 
 ====== StringScriptObject::get()
 
@@ -1564,6 +1633,8 @@ Console output:
 include::../examples/api/types/string_script_object_get_out.txt[]
 ----
 
+<<<
+
 ====== StringScriptObject::getConstChar()
 
 Gets its current string value as array of characters
@@ -1597,6 +1668,8 @@ Console output:
 include::../examples/api/types/string_script_object_get_const_char_out.txt[]
 ----
 
+<<<
+
 ====== StringScriptObject::length()
 
 Returns the length of the string, in terms of bytes.
@@ -1627,6 +1700,8 @@ Console output:
 ----
 include::../examples/api/types/string_script_object_length_out.txt[]
 ----
+
+<<<
 
 ====== StringScriptObject::set()
 
@@ -1661,6 +1736,8 @@ Console output:
 include::../examples/api/types/string_script_object_set_out.txt[]
 ----
 
+<<<
+
 ====== StringScriptObject::toString()
 
 Gets its current string value
@@ -1694,7 +1771,8 @@ Console output:
 include::../examples/api/types/string_script_object_to_string_out.txt[]
 ----
 
-	
+<<<
+
 ==== ArrayScriptObject
 
 _ArrayScriptObject_ it defines a array script object.
@@ -1727,6 +1805,8 @@ Console output:
 ----
 include::../examples/api/types/array_script_object_constructor_out.txt[]
 ----
+
+<<<
 
 ===== Member functions
 
@@ -1767,6 +1847,7 @@ Console output:
 include::../examples/api/types/array_script_object_element_instance_of_out.txt[]
 ----
 
+<<<
 
 ====== ArrayScriptObject::get()
 
@@ -1805,6 +1886,7 @@ Console output:
 include::../examples/api/types/array_script_object_get_out.txt[]
 ----
 
+<<<
 
 ====== ArrayScriptObject::length()
 
@@ -1825,10 +1907,21 @@ None
 
 The number of elements in the array.
 
+*Example*
+
 [source,cpp]
 ----
-include::../examples/api/types/string_array_script_object_length.cpp[]
+include::../examples/api/types/array_script_object_length.cpp[]
 ----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_length_out.txt[]
+----
+
+<<<
 
 ====== ArrayScriptObject::push()
 
@@ -1867,13 +1960,7 @@ Console output:
 include::../examples/api/types/array_script_object_push_out.txt[]
 ----
 
-
-Console output:
-
-[source,txt]
-----
-include::../examples/api/types/string_array_script_object_length_out.txt[]
-----
+<<<
 
 ====== ArrayScriptObject::set()
 
@@ -1899,7 +1986,6 @@ void set<_T>(int _pos, _T _element);
 
 None
 
-
 *Example*
 
 
@@ -1915,6 +2001,7 @@ Console output:
 include::../examples/api/types/array_script_object_set_out.txt[]
 ----
 
+<<<
 
 ====== ArrayScriptObject::toString()
 
@@ -1939,15 +2026,17 @@ A string of the array contents in json format.
 
 [source,cpp]
 ----
-include::../examples/api/types/array_script_object_tostring.cpp[]
+include::../examples/api/types/array_script_object_to_string.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/array_script_object_tostring_out.txt[]
+include::../examples/api/types/array_script_object_to_string_out.txt[]
 ----
+
+<<<
 
 ==== ObjectScriptObject
 
@@ -1982,6 +2071,8 @@ Console output:
 ----
 include::../examples/api/types/object_script_object_constructor_out.txt[]
 ----
+
+<<<
 
 ===== Member functions
 
@@ -2022,6 +2113,8 @@ Console output:
 include::../examples/api/types/object_script_object_element_instance_of_out.txt[]
 ----
 
+<<<
+
 ====== ObjectScriptObject::get()
 
 Returns element of type _&#x5f;T_ at key __key_.
@@ -2059,6 +2152,8 @@ Console output:
 include::../examples/api/types/object_script_object_get_out.txt[]
 ----
 
+<<<
+
 ====== ObjectScriptObject::getKeys()
 
 Returns a vector of strings as the keys of the Object.
@@ -2091,6 +2186,8 @@ Console output:
 ----
 include::../examples/api/types/object_script_object_get_keys_out.txt[]
 ----
+
+<<<
 
 ====== ObjectScriptObject::set()
 
@@ -2131,6 +2228,7 @@ Console output:
 include::../examples/api/types/object_script_object_set_out.txt[]
 ----
 
+<<<
 
 ====== ObjectScriptObject::toString()
 
@@ -2165,11 +2263,13 @@ Console output:
 include::../examples/api/types/object_script_object_to_string_out.txt[]
 ----
 
+<<<
 
 ==== zetscript::ClassScriptObject
 
 _ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper to instance a registered type.
 
+<<<
 
 ==== zetscript::ScriptFunction
 
@@ -2194,6 +2294,8 @@ _ScriptFunction_ is a script function type object. _ScriptFunction_ type contain
 |SCRIPT_FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME
 |Tells that the symbol of script function is not resolved yet and it will be resolved at runtime. This situation happens only on registered functions when it registers two or more functions with the same name but different number of parameter or diferent parameter types
 |====
+
+<<<
 
 ==== zetscript::ScriptEngine
 
@@ -2250,6 +2352,7 @@ Console output:
 include::../examples/api/types/script_engine_bind_script_function_out.txt[]
 ----
 
+<<<
 
 ===== ScriptEngine::clear()
 
@@ -2284,6 +2387,7 @@ Console output:
 include::../examples/api/types/script_engine_clear_out.txt[]
 ----
 
+<<<
 
 ===== ScriptEngine::compile()
 
@@ -2321,6 +2425,8 @@ Console output:
 include::../examples/api/types/script_engine_compile_out.txt[]
 ----
 
+<<<
+
 ===== ScriptEngine::compileAndRun()
 
 Compiles a ZetScript expression and runs generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
@@ -2340,7 +2446,7 @@ StackElement	compileAndRun(const String & _expresion, const char *__invoke_file_
 
 [.underline]#Returns#
 
-xref:api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
+xref:api_data_types.adoc#\_zetscriptstackelement[StackElement] as a result of the value returned
 
 *Example*
 
@@ -2355,6 +2461,8 @@ Console output:
 ----
 include::../examples/api/types/script_engine_compile_and_run_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::compileFile()
 
@@ -2399,6 +2507,8 @@ Console output:
 include::../examples/api/types/script_engine_compile_file_out.txt[]
 ----
 
+<<<
+
 ===== ScriptEngine::compileFileAndRun()
 
 It compiles a ZetScript file and runs current generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
@@ -2420,7 +2530,7 @@ StackElement	compileFileAndRun(const String & _filename, const char *__invoke_fi
 
 [.underline]#Returns#
 
-xref:api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
+xref:api_data_types.adoc#\_zetscriptstackelement[StackElement] as a result of the value returned
 
 
 *Example*
@@ -2443,6 +2553,8 @@ Console output:
 ----
 include::../examples/api/types/script_engine_compile_file_and_run_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::extends()
 
@@ -2477,8 +2589,10 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engine_extends.txt[]
+include::../examples/api/types/script_engine_extends_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::printGeneratedCode()
 
@@ -2565,8 +2679,6 @@ void registerConstant(const String & _const_name, const char * _str_value, const
 
 None
 
-
-
 *Example*
 
 [source,cpp]
@@ -2578,9 +2690,10 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engine_register_constant.txt[]
+include::../examples/api/types/script_engine_register_constant_out.txt[]
 ----
 
+<<<
 
 ===== ScriptEngine::registerConstMemberProperty
 
@@ -2629,8 +2742,10 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engine_register_const_member_property.txt[]
+include::../examples/api/types/script_engine_register_const_member_property_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::registerConstructor() 
 
@@ -2665,8 +2780,10 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engine_register_constructor.txt[]
+include::../examples/api/types/script_engine_register_constructor_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::registerFunction()
 
@@ -2711,8 +2828,9 @@ Console output:
 include::../examples/api/types/script_engine_register_function_out.txt[]
 ----
 
-To see more and complete examples see xref:api_call_cpp_from_zetscript#_call_c_from_zetscript[Call C++ from ZetScript]
+To see more and complete examples see xref:api_call_cpp_from_zetscript.adoc#\_call_c_from_zetscript[Call C++ from ZetScript]
 
+<<<
 
 ===== ScriptEngine::registerMemberFunction()
 
@@ -2747,9 +2865,7 @@ include::api_register_member_function_signature.adoc[]
 
 None
 
-
 *Example*
-
 
 [source,cpp]
 ----
@@ -2762,6 +2878,8 @@ Console output:
 ----
 include::../examples/api/types/script_engine_register_member_function_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::registerMemberPropertyMetamethod()
 
@@ -2786,7 +2904,7 @@ void	registerMemberPropertyMetamethod<T>(
 
 [.underline]#Function parameters# 
 
-- _&#95;property_name_	: Property name has to be one of the properties seen on xref:language_class.adoc#_member_functions[Properties - Member functions]
+- _&#95;property_name_	: Property name has to be one of the properties seen on xref:language_class.adoc#\_member_functions[Properties - Member functions]
 - _&#95;metamethod_name_ : One of the following metamethod names,
 
 - __&#95;c_function_: A C function.
@@ -2814,6 +2932,8 @@ Console output:
 include::../examples/api/types/script_engine_register_member_property_metamethod_out.txt[]
 ----
 
+<<<
+
 ===== ScriptEngine::registerStaticMemberFunction()
 
 Registers a C function as static member function of a registered type.
@@ -2830,7 +2950,7 @@ void registerStaticMemberFunction<T>(const String & _static_member_name, F _func
 
 [.underline]#Function parameters#
 
-- _&#95;function_name_ : The function name to be refered in ZetScript. A static member function can be defined as metamethod if _&#95;function_name_ matches some of the name of the metamethod seen at xref:language_class.adoc#_static_metamethods[The language.Class.Member Functions. Static metamethods]
+- _&#95;function_name_ : The function name to be refered in ZetScript. A static member function can be defined as metamethod if _&#95;function_name_ matches some of the name of the metamethod seen at xref:language_class.adoc#\_static_metamethods[The language.Class.Member Functions. Static metamethods]
 
 
 - _&#95;c_function_ : A C function to register with the following signature,
@@ -2843,8 +2963,6 @@ include::api_register_function_signature.adoc[]
 [.underline]#Returns#
 
 None
-
-
 
 *Example*
 
@@ -2862,14 +2980,14 @@ include::../examples/api/types/script_engine_register_static_member_function_out
 
 <<<
 
-===== ScriptEngine::registerScriptType()
+===== ScriptEngine::registerType()
 
 Registers a C++ type to be exposed in ZetScript. A registered types can be static (not instantiable) or instantiable if the create and destroy functions are or not defined.
 
 *Syntax*
 [source,cpp]
 ----
-ScriptType * registerScriptType<T>(const String & _script_type_name, F _new_c_function=NULL, F _delete_c_function=NULL);
+ScriptType * registerType<T>(const String & _script_type_name, F _new_c_function=NULL, F _delete_c_function=NULL);
 ----
 
 [.underline]#Template parameters# 
@@ -2907,7 +3025,7 @@ Console output:
 
 [source,txt]
 ----
-include::../examples/api/types/script_engine_register_script_type_not_instantiable.txt[]
+include::../examples/api/types/script_engine_register_script_type_not_instantiable_out.txt[]
 ----
 
 In the following example it will show an example of registered type instantiable,
@@ -2923,6 +3041,8 @@ Console output:
 ----
 include::../examples/api/types/script_engine_register_script_type_instantiable_out.txt[]
 ----
+
+<<<
 
 ===== ScriptEngine::unrefLifetimeObject()        
 
@@ -2957,6 +3077,8 @@ Console output:
 include::../examples/api/types/script_engine_unref_lifetime_object_out.txt[]
 ----
 
+<<<
+
 ===== ScriptEngine::stackElementTo()
 
 Binds StackElement to a primitive or registered type
@@ -2990,6 +3112,8 @@ A _C_ type as a result of conversion
 ----
 include::../examples/api/types/script_engine_stack_element_to.cpp[]
 ----
+
+<<<
 
 ===== ScriptEngine::saveState()
 

@@ -33,7 +33,7 @@ int main()
 	ScriptEngine script_engine;
 
    // Register class Number
-	script_engine.registerScriptType<Number>("Number");
+	script_engine.registerType<Number>("Number");
 
 	// register property getter Number::x
 	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);

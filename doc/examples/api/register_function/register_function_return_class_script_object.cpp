@@ -52,7 +52,7 @@ int main(){
 	ScriptEngine script_engine;
 
 	// Register class Number as instanciable
-	script_engine.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// register property getter Number::value
 	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);

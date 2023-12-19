@@ -28,7 +28,7 @@ then
 	mkdir -p api/build
 fi
 
-api_example_dirs=(types bind_script_function register_function builtin_type register_type)
+api_example_dirs=(types bind_script_function register_function register_type)
 #api_example_dirs=(types)
 
 dir_zs="api/types/*.zs"

@@ -34,7 +34,7 @@ int main(){
 	ScriptEngine script_engine;
 
 	// Register class Number as instanciable
-	script_engine.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register class Number constructor
 	script_engine.registerConstructor<Number>(NumberZs_constructor);

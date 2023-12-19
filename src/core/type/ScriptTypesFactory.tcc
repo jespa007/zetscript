@@ -50,7 +50,7 @@ namespace zetscript{
 	 * Register T Class. Return index registered class
 	 */
 	template<class T>
-	ScriptType * ScriptTypesFactory::registerScriptType(
+	ScriptType * ScriptTypesFactory::registerType(
 		const String & name
 		,T * (*_new_native_instance)(ScriptEngine *_script_engine)
 		,void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)

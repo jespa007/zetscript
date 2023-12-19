@@ -34,14 +34,14 @@ int main(){
 	ScriptEngine script_engine;
 
 	// Register class Number as instanciable
-	script_engine.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// register C function that returns Number ClassScriptObject
     script_engine.registerFunction("returnNumber",returnNumber);
 
     // Eval script that C function and prints the result by console
     script_engine.compileAndRun(
-        "Console::outln(\"return typeOf : \"+typeOf(returnNumber()));"
+        "Console::outln(\"return typeOf : \"+(typeof returnNumber()));"
  	);
 
     return 0;

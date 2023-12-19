@@ -3,18 +3,18 @@
 using zetscript::ScriptEngine;
 using zetscript::StringScriptObject;
 
-void checkStringLength(ScriptEngine *_script_engine,StringScriptObject *_string_object){
+void printStringLength(ScriptEngine *_script_engine,StringScriptObject *_string_object){
 	printf("The length of '%s' is %i\n",_string_object->toString().toConstChar(),_string_object->length());
 }
 
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	// registers checkStringLength
-	script_engine.registerFunction("checkStringLength",checkStringLength);
+	// registers printStringLength
+	script_engine.registerFunction("printStringLength",printStringLength);
 
-	// calls checkStringLength
-	script_engine.compileAndRun("checkStringLength(\"Hello World!\")");
+	// calls printStringLength
+	script_engine.compileAndRun("printStringLength(\"Hello World!\")");
 	
 	return 0;
 }

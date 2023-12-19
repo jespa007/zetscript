@@ -55,10 +55,10 @@ System::assert("abc".indexOf('b')==1,"\"abc\".indexOf('b')!=1");
 // Test indexOf. Get index first ocurrence of string "world"
 System::assert("hello world".indexOf("world")==6,"\"hello world\".indexOf(\"world\")!=6");
 
-// Test startsWidth. Check whether string starts with "hello" 
+// Test startsWith. Check whether string starts with "hello" 
 System::assert("hello world".startsWith("hello"),"\"hello world\".startsWith(\"hello\")");
 
-// Test endsWidth. Check whether string ends with "world" 
+// Test endsWith. Check whether string ends with "world" 
 System::assert("hello world".endsWith("world"),"\"hello world\".endsWith(\"world\")");
 
 // Test substring. Check whether substring == "hello world" 

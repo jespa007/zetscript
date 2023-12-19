@@ -4,7 +4,7 @@ int main(){
 	Vector<int> vector;
 
 	for(int i=0; i < 10; i++){
-		vector.append(i);
+		vector.push(i);
 	}
 
 	vector.clear();

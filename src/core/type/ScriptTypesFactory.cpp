@@ -13,7 +13,7 @@
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerScriptType<_class_type>(ZS_STR(_class_type));
+	registerType<_class_type>(ZS_STR(_class_type));
 
 
 #define SCF_REGISTER_CLASS(_script_type_id, _script_type_name, _class_type )\
@@ -28,28 +28,28 @@
 		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerScriptType<_class_type>(_script_type_name,_class_type##_New,_class_type##_Delete);
+	registerType<_class_type>(_script_type_name,_class_type##_New,_class_type##_Delete);
 
 #define SCF_REGISTER_SINGLETON_CLASS(_script_type_id, _class_type )\
 	if(types->length()!=_script_type_id){\
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_class_type));\
 		return;\
 	}\
-	registerScriptType<_class_type>(ZS_STR(_class_type));
+	registerType<_class_type>(ZS_STR(_class_type));
 
 #define SCF_REGISTER_SINGLETON_NAME_CLASS(_script_type_id, _script_type_name, _native_type )\
 	if(types->length()!=_script_type_id){\
 		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(_native_type));\
 		return;\
 	}\
-	registerScriptType<_native_type>(_script_type_name);
+	registerType<_native_type>(_script_type_name);
 /*
 #define SCF_REGISTER_NATIVE_TYPE(_script_type_id, _native_type)\
 	if(types->length()!=_script_type_id){\
 		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		ScriptType *script_type=registerScriptType(ZS_STR(_native_type),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
+		ScriptType *script_type=registerType(ZS_STR(_native_type),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
 		script_type->scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		script_type->properties=SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF;\
 		script_type->native_name=(typeid(_native_type).name());\
@@ -61,7 +61,7 @@
 		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(_native_type));\
 		return;\
 	}else{\
-		ScriptType *type=registerScriptType(_script_type_name);\
+		ScriptType *type=registerType(_script_type_name);\
 		type->scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		type->properties=SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF;\
 		type->native_name=(typeid(_native_type).name());\
@@ -72,7 +72,7 @@
 		ZS_THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",_script_type_name);\
 		return;\
 	}else{\
-		registerScriptType(_script_type_name);\
+		registerType(_script_type_name);\
 	}
 
 namespace zetscript{
@@ -115,7 +115,7 @@ namespace zetscript{
 		String error;
 
 		// ScriptFunctionsFactory has to be created
-		main_object=registerScriptType(MAIN_SCRIPT_CLASS_NAME); // 0
+		main_object=registerType(MAIN_SCRIPT_CLASS_NAME); // 0
 		ZS_MAIN_SCOPE(this)->owner_type=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
@@ -401,7 +401,7 @@ namespace zetscript{
 		}
 	}
 
-	ScriptType * ScriptTypesFactory::registerScriptType(
+	ScriptType * ScriptTypesFactory::registerType(
 			const String & _script_type_name
 			 ,const String & _base_script_type_name
 			 ,uint16_t _properties

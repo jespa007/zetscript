@@ -35,7 +35,7 @@ int main(){
 	_number->value=10;
 
 	// Registers class Number as non instantiable type
-	script_engine.registerScriptType<Number>("Number");
+	script_engine.registerType<Number>("Number");
 
 	// registers property getter Number::value
 	script_engine.registerMemberPropertyMetamethod<Number>("value","_get",NumberZs_get_value);

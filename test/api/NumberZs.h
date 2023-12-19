@@ -582,7 +582,7 @@ zs_float NumberZs_MAX_VALUE_get(ScriptEngine *_script_engine,Number *_this){
 
 void NumberZs_register(ScriptEngine *_script_engine){
 
-	_script_engine->registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	_script_engine->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	//-------------------------------------------------------------------------------------
 	// CONSTRUCTORS

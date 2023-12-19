@@ -36,7 +36,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// Math mod
-		ScriptType *cl=script_types_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		ScriptType *cl=script_types_factory->registerType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
 		cl->registerConstMemberProperty("PI",MathModule_PI);
 		cl->registerStaticMemberFunction("sin",MathModule_sin);
@@ -53,7 +53,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("round",MathModule_round);
 
 		// Console mod
-		cl=script_types_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_types_factory->registerType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("readChar",ConsoleModule_readChar);
 		cl->registerStaticMemberFunction("outNative",ConsoleModule_out);
 		cl->registerStaticMemberFunction("outlnNative",ConsoleModule_outln);
@@ -61,7 +61,7 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
-		cl=script_types_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_types_factory->registerType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("clock",SystemModule_clock);
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ScriptEngine *, StringScriptObject *)>(SystemModule_eval));
 		cl->registerStaticMemberFunction("eval",static_cast<void(*)(ScriptEngine *, StringScriptObject *,ObjectScriptObject *)>(SystemModule_eval));
@@ -69,13 +69,13 @@ namespace zetscript{
 		cl->registerStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
-		cl=script_types_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl=script_types_factory->registerType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *_script_engine,StackElement *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ScriptEngine *_script_engine,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// TimeSpan
-		cl=registerScriptType<TimeSpan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
+		cl=registerType<TimeSpan>("TimeSpan",TimeSpanModule_new,TimeSpanModule_delete);
 		registerMemberPropertyMetamethod<TimeSpan>("days","_get",TimeSpanModule_get_days);
 		registerMemberPropertyMetamethod<TimeSpan>("hour","_get",TimeSpanModule_get_hours);
 		registerMemberPropertyMetamethod<TimeSpan>("minute","_get",TimeSpanModule_get_minutes);
@@ -83,7 +83,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// DateTime
-		cl=registerScriptType<DateTime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
+		cl=registerType<DateTime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 		registerConstructor<DateTime>(DateTimeModule_constructor);
 		/*registerStaticMemberFunction<DateTime>("_add",DateTimeModule_add);*/
 		registerStaticMemberFunction<DateTime>("_sub",DateTimeModule_sub);

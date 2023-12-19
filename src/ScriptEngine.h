@@ -133,14 +133,14 @@ namespace zetscript{
 		 * Register T Class. Return index registered class
 		 */
 		template<typename T>
-		ScriptType * registerScriptType(
+		ScriptType * registerType(
 				const String & name
 				, T  * (*_new_native_instance)(ScriptEngine *_script_engine)=NULL
 				, void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)=NULL
 				, const char *_registered_file="",short _registered_line=-1
 		){
 			try{
-				return script_types_factory->registerScriptType<T>(name, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
+				return script_types_factory->registerType<T>(name, _new_native_instance, _delete_native_instance, _registered_file,_registered_line);
 			}catch(Exception & _ex){
 				ZS_THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,Rtti::demangle(typeid(T).name()).toConstChar(),name.toConstChar(),_ex.what());
 				return NULL;

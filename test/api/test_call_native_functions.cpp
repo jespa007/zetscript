@@ -407,14 +407,14 @@ void test_call_native_function_with_nulls(zetscript::ScriptEngine *_script_engin
 
 void test_call_native_function(zetscript::ScriptEngine *_script_engine, bool _show_print=true){
 
-	_script_engine->registerScriptType<ClassA>("ClassA", ClassA_new, ClassA_delete);
-	_script_engine->registerScriptType<ClassB>("ClassB",ClassB_new,ClassB_delete);
-	_script_engine->registerScriptType<ClassC>("ClassC",ClassC_new,ClassC_delete);
-	_script_engine->registerScriptType<Num>("Num");
-	_script_engine->registerScriptType<ClassD>("ClassD");
+	_script_engine->registerType<ClassA>("ClassA", ClassA_new, ClassA_delete);
+	_script_engine->registerType<ClassB>("ClassB",ClassB_new,ClassB_delete);
+	_script_engine->registerType<ClassC>("ClassC",ClassC_new,ClassC_delete);
+	_script_engine->registerType<Num>("Num");
+	_script_engine->registerType<ClassD>("ClassD");
 
-	_script_engine->registerScriptType<ParamA>("ParamA",ParamA_new,ParamA_delete);
-	_script_engine->registerScriptType<ParamB>("ParamB",ParamB_new,ParamB_delete);
+	_script_engine->registerType<ParamA>("ParamA",ParamA_new,ParamA_delete);
+	_script_engine->registerType<ParamB>("ParamB",ParamB_new,ParamB_delete);
 
 
 	_script_engine->registerFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);

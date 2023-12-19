@@ -3,9 +3,9 @@ using zetscript::Vector;
 int main(){
 	Vector<int> vector;
 
-	vector.append(1);
-	vector.append(100);
-	vector.append(3);
+	vector.push(1);
+	vector.push(100);
+	vector.push(3);
 
 	vector.set(1,2); // vector = [1,2,3]
 	

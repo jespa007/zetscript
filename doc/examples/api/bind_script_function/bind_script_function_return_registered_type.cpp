@@ -36,7 +36,7 @@ int main(){
 	ScriptEngine script_engine;
 
 	// Register class 'Number' as instantiable
-	script_engine.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register constructor
 	script_engine.registerConstructor<Number>(NumberZs_constructor);

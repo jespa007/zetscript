@@ -60,7 +60,7 @@ namespace zetscript{
 		 /**
 		  * Class management region
 		  */
-		ScriptType * 					registerScriptType(
+		ScriptType * 					registerType(
 											 const String & name
 											,const String & base_class_name=""
 											,uint16_t _properties=0
@@ -108,7 +108,7 @@ namespace zetscript{
 		 * Instenceable Register T type
 		 */
 		template<typename T>
-		ScriptType * registerScriptType(
+		ScriptType * registerType(
 			const String & name
 			, T * (*_new_native_instance)(ScriptEngine *_script_engine)=NULL
 			, void (*_delete_native_instance)(ScriptEngine *_script_engine,T *)=NULL

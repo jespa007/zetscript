@@ -3,9 +3,9 @@ using zetscript::Vector;
 int main(){
 	Vector<int> vector;
 
-	vector.append(10);
-	vector.append(100);
-	vector.append(1000);
+	vector.push(10);
+	vector.push(100);
+	vector.push(1000);
 
 	printf("vector.get(1) => %i\n",vector.get(1));
 	

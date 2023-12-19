@@ -168,11 +168,11 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function in section xref:api_data_types.adoc#_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
+To register a constructor function it has to create and register a C&#43;&#43; function in section xref:api_data_types.adoc#\_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
 
 *Example*
 
-The following code defines two functions that accepts a xref:language_data_types.adoc#&lowbar;float[Float] value or _Number_ pointer type respectively,
+The following code defines two functions that accepts a xref:language_data_types.adoc#\_float[Float] value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----
@@ -221,12 +221,12 @@ include::../examples/api/register_type/register_instantiable_type_with_construct
 
 ===== Register member function
 
-To register a member function it has to create and register a C function explained in section xref:api_data_types.adoc#_scriptengineregistermemberfunction[ScriptEngine::registerMemberFunction].
+To register a member function it has to create and register a C function explained in section xref:api_data_types.adoc#\_scriptengineregistermemberfunction[ScriptEngine::registerMemberFunction].
+      
 
 *Example*
 
-
-The following code defines a function that returns a xref:language_data_types.adoc#&lowbar;integer[Integer] ,
+The following code defines a function that returns a xref:language_data_types.adoc#\_integer[Integer],
 
 [source,cpp]
 ----
@@ -269,7 +269,7 @@ include::../examples/api/register_type/register_member_function_out.txt[]
 
 ===== Register static member function
 
-To register a static member function it has to create and register a C function explained in section xref:api_data_types.adoc#_scriptengineregisterstaticmemberfunction[ScriptEngine::registerStaticMemberFunction].
+To register a static member function it has to create and register a C function explained in section xref:api_data_types.adoc#\_scriptengineregisterstaticmemberfunction[ScriptEngine::registerStaticMemberFunction].
 
 
 *Example*
@@ -319,7 +319,7 @@ include::../examples/api/register_type/register_static_member_function_out.txt[]
 
 ==== Inheritance
 
-To register a type and tell that is base of other type is done through xref:api_data_types#_scriptengineextends[ScriptEngine::extends].
+To register a type and tell that is base of other type is done through xref:api_data_types.adoc#\_scriptengineextends[ScriptEngine::extends].
 
 
 *Example*

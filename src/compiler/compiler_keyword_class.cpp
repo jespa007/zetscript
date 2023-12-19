@@ -66,7 +66,7 @@ namespace zetscript{
 
 		// register type
 		try{
-			sc=compiler_data->script_types_factory->registerScriptType(
+			sc=compiler_data->script_types_factory->registerType(
 				 name
 				,base_class_name
 				,0

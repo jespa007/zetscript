@@ -60,7 +60,6 @@ The number of characters written so far is stored in the pointed location.
 |%
 |====
 
-
 The format specifier can also contain sub-specifiers: flags, width, .precision and modifiers (in that order), which are optional and follow these specifications:
 
 [cols="1m,3d"]

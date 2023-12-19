@@ -43,7 +43,7 @@ int main(){
 	ScriptEngine script_engine;
 
 	// Register class Number
-	script_engine.registerScriptType<Number>("Number",NumberZs_new,NumberZs_delete);
+	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);
 
 	// Register property setter Number::x
 	script_engine.registerMemberPropertyMetamethod<Number>("value","_set",NumberZs_set_value);

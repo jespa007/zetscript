@@ -9,7 +9,7 @@ public:
 	Data(){
 		float n[]={0,1,1,10,3,4,6};
 		for(int i=0; i < ZS_ARRAY_SIZE(n); i++){
-			data.append(n[i]);
+			data.push(n[i]);
 		}
 	} 
 };
@@ -35,7 +35,7 @@ int main(){
 
 	data=new Data();
 
-	script_engine.registerScriptType<Data>("Data");
+	script_engine.registerType<Data>("Data");
 	script_engine.registerFunction("getData",getData);
 	script_engine.registerMemberFunction<Data>("_in",DataZs_in);
 

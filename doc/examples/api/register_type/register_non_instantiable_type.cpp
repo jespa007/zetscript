@@ -15,7 +15,7 @@ int main(){
 	
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.registerScriptType<Number>("Number");
+	script_engine.registerType<Number>("Number");
 	
 	// create new 'Number'
 	number=new Number();

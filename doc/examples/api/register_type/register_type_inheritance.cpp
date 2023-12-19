@@ -46,13 +46,13 @@ int main(){
 	ScriptEngine script_engine; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
-	script_engine.registerScriptType<MyCppType>("MyCppType");
+	script_engine.registerType<MyCppType>("MyCppType");
 
 	// Register MyCppType::function1
  	script_engine.registerMemberFunction<MyCppType>("function1",MyCppType_function1);
 
 	// Register MyCppTypeExtend as MyCppTypeExtend in script side as instantiable
-	script_engine.registerScriptType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
+	script_engine.registerType<MyCppTypeExtend>("MyCppTypeExtend",MyCppTypeExtend_new,MyCppTypeExtend_delete);
 
 	// Tells MyCppTypeExtends extends from MyCppType
 	script_engine.extends< MyCppTypeExtend,MyCppType >();
