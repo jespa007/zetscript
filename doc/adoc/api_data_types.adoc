@@ -2982,7 +2982,7 @@ include::../examples/api/types/script_engine_register_static_member_function_out
 
 ===== ScriptEngine::registerType()
 
-Registers a C++ type to be exposed in ZetScript. A registered types can be static (not instantiable) or instantiable if the create and destroy functions are or not defined.
+Registers a C++ type to be exposed in ZetScript. 
 
 *Syntax*
 [source,cpp]
@@ -3012,7 +3012,69 @@ T * (ScriptEngine *_script_engine);
 void RegisteredType_delete(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
-*Example*
+There's two ways to register a type,
+
+- Register a non instantiable type : Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
+
+If for example we perform the following code,
+
+[source,cpp]
+----
+#include "zetscript.h"
+// Defines  MyType
+class MyType{
+//...
+};
+
+int main(){
+	zetscript::ScriptEngine script_engine;
+
+	// Registers MyType as not instantiable
+	script_engine.registerType<MyType>("MyType");
+
+	// tries to instance t as MyType where MyType is NOT instantiable
+	script_engine.compile("var t=new MyType()");
+
+	return 0;
+}
+----
+
+Will throw the following error,
+
+  'MyType' type is not instantiable
+
+The only way to operate with a 'Number' object non instantiable is by a reference returned by a registered function as it shows in the following example,
+
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_non_instantiable_type.cpp
+----
+
+[source,cpp]
+----
+int main(){
+	// Defines  MyType
+	typedef struct{
+		//...
+	}MyType;
+
+	zetscript::ScriptEngine script_engine;
+
+	// Registers MyType as not instantiable
+	script_engine.registerType<MyType>("MyType");
+
+	// tries to instance t as MyType where MyType is NOT instantiable
+	script_engine.compile("var t=new MyType()");
+
+	return 0;
+}
+----
+
+- Register an instantiable type: Register an instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator _new_.
+
+
+*Example register a type as non instantiable*
 
 In the following example it will show an example of registered type as static (not instantiable),
 
@@ -3027,6 +3089,8 @@ Console output:
 ----
 include::../examples/api/types/script_engine_register_script_type_not_instantiable_out.txt[]
 ----
+
+*Example register a type as instantiable*
 
 In the following example it will show an example of registered type instantiable,
 

@@ -3,36 +3,10 @@
 
 In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
 
+
 ==== Register a type
 
-There's two ways to register a type,
-
-- Register a non instantiable type 
-- Register an instantiable type
-
-===== Register a type as non instantiable
-
-Register a non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
-
-To register a non instantible type it's done calling _ScriptEngine::registerType_ specifying the type in the template and passing the class name by parameter.
-
-*Syntax*
-[source,cpp]
-----
-Type * registerType<T>(const String & _class_name);
-----
-
-[.underline]#Template# 
-
-- T: C&#43;&#43; struct/class type
-
-[.underline]#Parameters# 
-
-- _class_name: Class name that will be referenced in ZetScript
-
-[.underline]#Returns# 
-
-A _ScriptType_ object
+To register a type is done by ScriptEngine::registerType. 
 
 *Example*
 
