@@ -3048,7 +3048,7 @@ The only way to operate with a 'Number' object non instantiable is by a referenc
 
 [source,cpp]
 ----
-include::../examples/api/types/script_engine_register_non_instantiable_type.cpp
+include::../examples/api/types/script_engine_register_type_non_instantiable.cpp[]
 ----
 
 [source,cpp]
