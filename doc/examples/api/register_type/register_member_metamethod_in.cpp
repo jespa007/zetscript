@@ -8,7 +8,7 @@ public:
 	zetscript::Vector<float> data;
 	Data(){
 		float n[]={0,1,1,10,3,4,6};
-		for(int i=0; i < ZS_ARRAY_SIZE(n); i++){
+		for(size_t i=0; i < ZS_ARRAY_SIZE(n); i++){
 			data.push(n[i]);
 		}
 	} 

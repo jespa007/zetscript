@@ -16,6 +16,6 @@ int main(){
    auto returnInteger=script_engine.bindScriptFunction<zs_int()>("returnInteger");
 
    // Calls ZetScript function and prints return value by console.
-   printf("result : %lld\n",returnInteger());
+   printf("result : %ld\n",(long int)returnInteger());
  	return 0;
 }
