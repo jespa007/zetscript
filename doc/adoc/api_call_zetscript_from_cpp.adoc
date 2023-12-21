@@ -17,7 +17,7 @@ This section will explain how to bind script functions that return the following
 
 ===== Return Boolean
 
-To bind a ZetScript function that returns a <<language_data_types.adoc#_boolean,Boolean>> it must specify _bool_ return type on its function signature.
+To bind a ZetScript function that returns a <<language_data_types.adoc#\_boolean,Boolean>> it must specify _bool_ return type on its function signature.
 
 *Example*
 
@@ -35,7 +35,7 @@ include::../examples/api/bind_script_function/bind_script_function_return_bool_o
 
 ===== Return Integer
 
-To bind a ZetScript function that returns a <<language_data_types.adoc#_integer,Integer>> it must specify _zetscript::zs_int_ return type on its function signature.
+To bind a ZetScript function that returns a <<language_data_types.adoc#\_integer,Integer>> it must specify _zetscript::zs_int_ return type on its function signature.
 
 *Example*
 
@@ -225,7 +225,7 @@ This section will explain how to bind script functions that accepts the followin
 
 ===== Parameter Boolean
 
-To bind a ZetScript function that accepts a <<language_data_types.adoc#_boolean,Boolean>> it must specify _bool &#42;_ as parameter type on its function signature.
+To bind a ZetScript function that accepts a <<language_data_types.adoc#\_boolean,Boolean>> it must specify _bool &#42;_ as parameter type on its function signature.
 
 *Example*
 
@@ -245,7 +245,7 @@ include::../examples/api/bind_script_function/bind_script_function_param_bool_ou
 
 ===== Parameter Integer
 
-To bind a ZetScript function that accepts a <<language_data_types.adoc#_integer,Integer>> it must specify _zs_int_ or _zs_int &#42;_ as parameter type on its function signature.
+To bind a ZetScript function that accepts a <<language_data_types.adoc#\_integer,Integer>> it must specify _zs_int_ or _zs_int &#42;_ as parameter type on its function signature.
 
 *Example*
 
@@ -315,14 +315,14 @@ To bind a ZetScript function that accepts a <<language_data_types.adoc#\_string,
 
 [source,cpp]
 ----
-include::../examples/api/bind_script_function/bind_script_function_param_String.cpp[]
+include::../examples/api/bind_script_function/bind_script_function_param_string.cpp[]
 ----
 
 Console output:
 
 [source,txt]
 ----
-include::../examples/api/bind_script_function/bind_script_function_param_String_out.txt[]
+include::../examples/api/bind_script_function/bind_script_function_param_string_out.txt[]
 ----
 
 
