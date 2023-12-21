@@ -23,7 +23,7 @@ This section will explain how to register C functions that return the following 
 
 ===== Return Boolean
 
-To register a C function that returns a <<language_data_types.adoc#&#95;boolean,Boolean>> it must specify _bool_ as return type.
+To register a C function that returns a <<language_data_types.adoc#_boolean,Boolean>> it must specify _bool_ as return type.
 
 *Example*
 
@@ -41,7 +41,7 @@ include::../examples/api/register_function/register_function_return_bool_out.txt
 
 ===== Return Integer
 
-To register a C function that returns a <<language_data_types.adoc#&#95;integer,Integer>> it must specify _zs_int_ as return type.
+To register a C function that returns a <<language_data_types.adoc#_integer,Integer>> it must specify _zs_int_ as return type.
 
 *Example*
 
