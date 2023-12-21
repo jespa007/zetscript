@@ -5,106 +5,9 @@ In this chapter will see how to to register C&#43;&#43; types, function members,
 
 
 ==== Register a type
-
-To register a type is done by ScriptEngine::registerType. 
-
-*Example*
-
-Let's define a 'Number' type in the file called 'Number.h',
-
-[source,cpp]
-----
-include::../examples/api/register_type/Number.h[]
-----
-
-<<<
-
-The code below it registers _Number_ type as non instantiable,
-
-[source,cpp]
-----
-
-#include "Number.h"
-#include "zetscript.h"
-
-using zetscript::ScriptEngine;
-
-int main()
-{
-	ScriptEngine script_engine;
-
-	script_engine.registerType<Number>("Number");
-	 	
- 	// ...
- }
-}
-----
-
-Now, let's suppose we want to instantiate a _Number_ type by evaluating the following script code,
-
-[source,cpp]
-----
-	// It throws an error that 'Number' is not instantiable
- 	script_engine.compileAndRun(
- 		"var number= new Number();"
- 	);
-----
-
-The evaluation will fail with the following output,
-
- 'Number' type is not instantiable
-
-
-The only way to operate with a 'Number' object non instantiable is by a reference returned by a registered function as it shows in the following example,
-
-
-[source,cpp]
-----
-include::../examples/api/register_type/register_non_instantiable_type.cpp[]
-----
-
-<<<
-
-===== Register a type as instantiable
-
-Register an instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator _new_.
-
-To register instantiable type its done by passing two c functions as to create and destroy native type.
-
-*Syntax*
-[source,cpp]
-----
-Type * registerType<_Type>(const String & _class_name, RegisteredType * (*_new_native_instance)(ScriptEngine *_script_engine), void (*_delete_native_instance)(ScriptEngine *_script_engine, RegisteredType * _this));
-----
-
-[.underline]#Template# 
-
-- __Type_: The struct/class to register.
-
-[.underline]#Parameters# 
-
-- __class_name_: The class name.
-- __new_native_instance_: A C function that creates an returns a new instance. This function has the following signature,
-
-[source,cpp]
-----
-RegsiteredType * RegisteredType_new(ScriptEngine *_script_engine);
-----
-
-- __delete_native_instance_: A C function that deletes native instance. The SECOND parameter it must define the current instance,
-
-[source,cpp]
-----
-void RegisteredType_delete(ScriptEngine *_script_engine, RegisteredType *_this);
-----
-
-[.underline]#Returns# 
-
-A _Type_ object
-
-*Example*
-
-Following the example of the _Number_ type and in order to compact the lines of code for the next examples of this section, it has been proposed put all registering and declaration code of all functions in a file called _NumberZs.h_. Inside _NumberZs.h_ there's a main function called  _NumberZs_register_ that will register all  those functions.
+_scriptengineregistertype
+As it can be explained in section <<api_data_types.adoc#_scriptengineregistertype,ScriptEngine::registerType>>
+Let's define a 'Number' type in the file called 'Number.h'.
 
 Let's define _NumberZs_new_ and _NumberZs_delete_ functions that creates and destroys a _Number_ type instantiation respectively,
 
@@ -142,11 +45,11 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function in section xref:api_data_types.adoc#\_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
+To register a constructor function it has to create and register a C&#43;&#43; function in section <<api_data_types.adoc#_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
 
 *Example*
 
-The following code defines two functions that accepts a xref:language_data_types.adoc#\_float[Float] value or _Number_ pointer type respectively,
+The following code defines two functions that accepts a <<language_data_types.adoc#\_float,Float>> value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----
@@ -195,12 +98,12 @@ include::../examples/api/register_type/register_instantiable_type_with_construct
 
 ===== Register member function
 
-To register a member function it has to create and register a C function explained in section xref:api_data_types.adoc#\_scriptengineregistermemberfunction[ScriptEngine::registerMemberFunction].
+To register a member function it has to create and register a C function explained in section <<api_data_types.adoc#_scriptengineregistermemberfunction[ScriptEngine::registerMemberFunction].
       
 
 *Example*
 
-The following code defines a function that returns a xref:language_data_types.adoc#\_integer[Integer],
+The following code defines a function that returns a <<language_data_types.adoc#_integer,Integer>>,
 
 [source,cpp]
 ----
@@ -243,7 +146,7 @@ include::../examples/api/register_type/register_member_function_out.txt[]
 
 ===== Register static member function
 
-To register a static member function it has to create and register a C function explained in section xref:api_data_types.adoc#\_scriptengineregisterstaticmemberfunction[ScriptEngine::registerStaticMemberFunction].
+To register a static member function it has to create and register a C function explained in section <<api_data_types.adoc#_scriptengineregisterstaticmemberfunction[ScriptEngine::registerStaticMemberFunction].
 
 
 *Example*
@@ -293,7 +196,7 @@ include::../examples/api/register_type/register_static_member_function_out.txt[]
 
 ==== Inheritance
 
-To register a type and tell that is base of other type is done through xref:api_data_types.adoc#\_scriptengineextends[ScriptEngine::extends].
+To register a type and tell that is base of other type is done through <<api_data_types.adoc#_scriptengineextends[ScriptEngine::extends].
 
 
 *Example*

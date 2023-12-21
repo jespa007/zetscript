@@ -2446,7 +2446,7 @@ StackElement	compileAndRun(const String & _expresion, const char *__invoke_file_
 
 [.underline]#Returns#
 
-xref:api_data_types.adoc#\_zetscriptstackelement[StackElement] as a result of the value returned
+<<api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
 
 *Example*
 
@@ -2530,7 +2530,7 @@ StackElement	compileFileAndRun(const String & _filename, const char *__invoke_fi
 
 [.underline]#Returns#
 
-xref:api_data_types.adoc#\_zetscriptstackelement[StackElement] as a result of the value returned
+<<api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
 
 
 *Example*

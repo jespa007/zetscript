@@ -23,7 +23,7 @@ This section will explain how to register C functions that return the following 
 
 ===== Return Boolean
 
-To register a C function that returns a xref:language_data_types.adoc#\_boolean[Boolean] it must specify _bool_ as return type.
+To register a C function that returns a <<language_data_types.adoc#&#95;boolean,Boolean>> it must specify _bool_ as return type.
 
 *Example*
 
@@ -41,7 +41,7 @@ include::../examples/api/register_function/register_function_return_bool_out.txt
 
 ===== Return Integer
 
-To register a C function that returns a xref:language_data_types.adoc#\_integer[Integer] it must specify _zs_int_ as return type.
+To register a C function that returns a <<language_data_types.adoc#&#95;integer,Integer>> it must specify _zs_int_ as return type.
 
 *Example*
 
@@ -59,7 +59,7 @@ include::../examples/api/register_function/register_function_return_zs_int_out.t
 
 ===== Return Float
 
-To register a C function that returns a xref:language_data_types.adoc#\_float[Float] it must specify _zs_float_ as return type.
+To register a C function that returns a <<language_data_types.adoc#\_float,Float>> it must specify _zs_float_ as return type.
 
 *Example*
 
@@ -77,7 +77,7 @@ include::../examples/api/register_function/register_function_return_zs_float_out
 
 ===== Return a String
 
-To register a C function that returns a xref:language_data_types.adoc#\_string[String] it can be done by specifying the following return types,
+To register a C function that returns a <<language_data_types.adoc#\_string,String>> it can be done by specifying the following return types,
 
 - _String_
 - _StringScriptObject *_
@@ -105,7 +105,7 @@ include::../examples/api/register_function/register_function_return_String_out.t
 
 ====== Return String as StringScriptObject &#42;
 
-To register a C function that returns a xref:language_data_types.adoc#\_string[String] it can specify xref:api_data_types.adoc#\_stringscriptobject[zetscript::StringScriptObject] pointer as return type. The instantiation of _StringScriptObject_ is done throught ScriptEngine instance.
+To register a C function that returns a <<language_data_types.adoc#\_string,String>> it can specify <<api_data_types.adoc#_stringscriptobject[zetscript::StringScriptObject] pointer as return type. The instantiation of _StringScriptObject_ is done throught ScriptEngine instance.
 
 *Example*
 
@@ -125,7 +125,7 @@ include::../examples/api/register_function/register_function_return_string_scrip
 
 ===== Return Array
 
-To register a C function that returns a xref:language_data_types.adoc#lowbar;array[Array] it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ScriptEngine::newArrayScriptObject_ using ScriptEngine instance.
+To register a C function that returns a <<language_data_types.adoc#\_array,Array>> it must specify _ArrayScriptObject &#42;_ as return type. The instantiation of _ArrayScriptObject &#42;_ it's done through _ScriptEngine::newArrayScriptObject_ using ScriptEngine instance.
 
 *Example*
 
@@ -299,7 +299,7 @@ include::../examples/api/register_function/register_function_param_zs_float_out.
 
 ===== Parameter String
 
-To register a C function that accepts a xref:language_data_types.adoc#\_string[String] it can specify _const char *_ , _String *_  or _StringScriptObject *_ as a parameter type,
+To register a C function that accepts a <<language_data_types.adoc#\_string,String>> it can specify _const char *_ , _String *_  or _StringScriptObject *_ as a parameter type,
 
 *Example*
 

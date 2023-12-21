@@ -900,7 +900,7 @@ None.
 
 *Example*
 
-The following code defines two functions performs an assignment from xref:language_data_types.adoc#\_float[Float] value or _Number_ object respectively,
+The following code defines two functions performs an assignment from <<language_data_types.adoc#\_float,Float>> value or _Number_ object respectively,
 
 [source,cpp]
 ----

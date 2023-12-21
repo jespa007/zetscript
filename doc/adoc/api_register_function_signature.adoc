@@ -13,20 +13,20 @@ _ReturnType_ it can be a registered type or one of the following types,
 |void
 |Returns nothing
 |bool
-|Returns xref:language_data_types.adoc#\_boolean[Boolean]
-|xref:api_data_types.adoc#\_zetscriptzs_int[zetscript::zs_int]
-|Returns xref:language_data_types.adoc#\_integer[Integer]
-|xref:api_data_types.adoc#\_zetscriptzs_float[zetscript::zs_float] 
-|Returns xref:language_data_types.adoc#\_float[Float]
-|xref:api_data_types.adoc#\_zetscriptstring[zetscript::String]
-|Returns xref:language_data_types.adoc#\_string[String]
-|xref:api_data_types.adoc#\_zetscriptstring[zetscript::StringScriptObject] *
-|Returns xref:language_data_types.adoc#\_stringscriptobject[String]
-|xref:api_data_types.adoc#\_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
-|Returns xref:language_data_types.adoc#\_array[Array]
-|xref:api_data_types.adoc#\_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
-|Returns xref:language_data_types.adoc#\_object[Object]
-|xref:api_data_types.adoc#\_zetscriptclassscriptobject[zetscript::ClassScriptObject] *
+|Returns <<language_data_types.adoc#_boolean,Boolean>>
+|<<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>>
+|Returns <<language_data_types.adoc#_integer,Integer>>
+|<<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> 
+|Returns <<language_data_types.adoc#\_float,Float>>
+|<<api_data_types.adoc#_zetscriptstring,zetscript::String>>
+|Returns <<language_data_types.adoc#\_string,String>>
+|<<api_data_types.adoc#\_zetscriptstringscriptobject,zetscript::StringScriptObject>>] *
+|Returns <<language_data_types.adoc#\_string,String>>
+|<<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+|Returns <<language_data_types.adoc#\_array,Array>>
+|<<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+|Returns <<language_data_types.adoc#\_object,Object>>
+|<<api_data_types.adoc#_zetscriptclassscriptobject,zetscript::ClassScriptObject>> *
 |Returns a pointer of register type wrapped in a script class object
 |T *
 |Returns a pointer of a register type T
@@ -38,21 +38,21 @@ As a parameters, the function must always include _zetscript::ScriptEngine *_ as
 |====
 |ParamType| Description
 |bool *
-|Calling function in script must pass xref:language_data_types.adoc#\_boolean[Boolean] type
-|Calling function in script must pass xref:api_data_types.adoc#\_zetscriptzs_int[zetscript::zs_int] *
-|Calling function in script must pass xref:language_data_types.adoc#\_integer[Integer] type
-|xref:api_data_types.adoc#\_zetscriptzs_float[zetscript::zs_float] *
-|Calling function in script must pass xref:language_data_types.adoc#\_float[Float] type
-|xref:api_data_types.adoc#\_zetscriptstring[zetscript::String] *
-|Calling function in script must pass xref:language_data_types.adoc#\_string[String] type
+|Calling function in script must pass <<language_data_types.adoc#_boolean,Boolean>> type
+|Calling function in script must pass <<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>> *
+|Calling function in script must pass <<language_data_types.adoc#_integer,Integer>> type
+|<<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> *
+|Calling function in script must pass <<language_data_types.adoc#\_float,Float>> type
+|<<api_data_types.adoc#_zetscriptstring,zetscript::String>> *
+|Calling function in script must pass <<language_data_types.adoc#\_string,String>> type
 |const char *
-|Calling function in script must pass xref:language_data_types.adoc#\_string[String]
-|xref:api_data_types.adoc#\_zetscriptstring[zetscript::StringScriptObject] *
-|Calling function in script must pass xref:language_data_types.adoc#\_stringscriptobject[String] type
-|xref:api_data_types.adoc#\_zetscriptarrayscriptobject[zetscript::ArrayScriptObject] *
-|Calling function in script must pass xref:language_data_types.adoc#\_array[Array] type
-|xref:api_data_types.adoc#\_zetscriptobjectscriptobject[zetscript::ObjectScriptObject] *
-|Calling function in script must pass xref:language_data_types.adoc#\_object[Object] type
+|Calling function in script must pass <<language_data_types.adoc#\_string,String>>
+|<<api_data_types.adoc#\_zetscriptstringscriptobject,zetscript::StringScriptObject>>] *
+|Calling function in script must pass <<language_data_types.adoc#\_string,String>> type
+|<<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+|Calling function in script must pass <<language_data_types.adoc#\_array,Array>> type
+|<<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+|Calling function in script must pass <<language_data_types.adoc#\_object,Object>> type
 |T *
 |Calling function in script must pass an instance of a register type T
 |====
