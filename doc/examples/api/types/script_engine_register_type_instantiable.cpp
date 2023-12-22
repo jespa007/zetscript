@@ -29,8 +29,8 @@ int main(){
 
 	// Instances an object of type 'MyType' and stores in 't'
 	script_engine.compileAndRun(
-		"var t=new MyType()"
-		"Console::outln(\"typeof t =>\"+(typeof t));"
+		"var t=new MyType();\n"
+		"Console::outln(\"typeof t =>\"+(typeof t));\n"
 	);
 
 	delete my_type;

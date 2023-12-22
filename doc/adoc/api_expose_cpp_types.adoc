@@ -45,7 +45,7 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function in section <<api_data_types.adoc#_scriptengineregisterconstructor[ScriptEngine::registerConstructor].
+To register a constructor function it has to create and register a C&#43;&#43; function in section <<api_data_types.adoc#_scriptengineregisterconstructor,ScriptEngine::registerConstructor>>.
 
 *Example*
 

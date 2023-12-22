@@ -23,6 +23,9 @@ int main(){
 	// Registers type 'MyType' as not instantiable
 	script_engine.registerType<MyType>("MyType");
 
+	// registers returnMyType function
+	script_engine.registerFunction("returnMyType",returnMyType);
+
 	// Gets an instance of 'MyType' and stores in 't'
 	// Instances an object of type 'MyType' and stores in 't'
 	script_engine.compileAndRun(
