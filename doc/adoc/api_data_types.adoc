@@ -3089,9 +3089,11 @@ Console output:
 include::../examples/api/types/script_engine_register_type_non_instantiable_out.txt[]
 ----
 
+<<<
+
 ====== Register type as instantiable
 
-Register as instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator _new_.
+Register as instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator __new__.
 
 *Example*
 
@@ -3124,7 +3126,7 @@ void unrefLifetimeObject(ScriptObject *_script_object);
 
 [.underline]#Parameters# 
 
-- _&#95;script_object_: Script object to be dereferenced.
+- ___script_object__: Script object to be dereferenced.
 
 [.underline]#Returns# 
 

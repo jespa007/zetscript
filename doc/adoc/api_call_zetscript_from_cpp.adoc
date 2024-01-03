@@ -1,6 +1,6 @@
 === Call ZetScript from C++
 
-To make a ZetScript function callable from C++ is done through xref:language_data_types.adoc#_scriptenginebindscriptfunction[ScriptEngine::bindScriptFunction]. 
+To make a ZetScript function callable from C++ is done through <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>. 
 
 ==== Return types
 
