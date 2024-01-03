@@ -5,11 +5,31 @@ In this chapter will see how to to register C/C++ types, function members, metam
 
 // TODO: Explain base source Number.cpp and functions related that it be show along this chapter to see the examples
 
+Along the examples will define and register functions to operate with the following class 'Number',
+
+[source,cpp]
+----
+class Number{
+public:
+
+	float value;
+
+	Number(){
+		value=0;
+	}
+
+	Number(float _value){
+		value=_value;
+	}
+
+};
+----
+
 
 ==== Register a type
-_scriptengineregistertype
+
 As it can be explained in section <<api_data_types.adoc#_scriptengineregistertype,ScriptEngine::registerType>>
-Let's define a 'Number' type in the file called 'Number.h'.
+
 
 Let's define __NumberZs_new__ and __NumberZs_delete__ functions that creates and destroys a __Number__ type instantiation respectively,
 
