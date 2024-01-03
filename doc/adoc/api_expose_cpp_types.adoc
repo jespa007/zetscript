@@ -3,6 +3,8 @@
 
 In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript.
 
+// TODO: Explain base source Number.cpp and functions related that it be show along this chapter to see the examples
+
 
 ==== Register a type
 _scriptengineregistertype
