@@ -67,7 +67,7 @@ _set(_value)
 
 [.underline]#Parameters#
 
-- __value_ :Value or variable as right operand
+- ___value__ :Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -102,7 +102,7 @@ _addassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -138,7 +138,7 @@ _subassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -173,7 +173,7 @@ _mulassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -208,7 +208,7 @@ _divassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -243,7 +243,7 @@ _modassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -278,7 +278,7 @@ _andassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -313,7 +313,7 @@ _orassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -418,7 +418,7 @@ _shlassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 

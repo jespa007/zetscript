@@ -1494,7 +1494,7 @@ _properties_ : Defines the content of value by the following mask values,
 |It tells that the _StackElement_ is a _Boolean_ representing its value as *zs_int*
 		
 |STACK_ELEMENT_PROPERTY_FLOAT
-|It tells that the _StackElement_ is a _Float_ representing its value as *zs_float &#42;*
+|It tells that the _StackElement_ is a __Float__ representing its value as *zs_float &#42;*
 
 |STACK_ELEMENT_PROPERTY_BOOL
 |It tells that the _StackElement_ is a _Boolean_ representing its value as __zetscript::zs_int__

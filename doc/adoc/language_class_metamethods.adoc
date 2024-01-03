@@ -19,7 +19,7 @@ _addassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand
+- ___value__ : Value or variable as right operand
 
 [.underline]#Returns#
 
@@ -54,7 +54,7 @@ _andassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -89,7 +89,7 @@ _divassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -124,7 +124,7 @@ _in(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as value to check whether exist or not in the containing class.
+- ___value__ : Value or variable as value to check whether exist or not in the containing class.
 
 [.underline]#Returns#
 
@@ -159,7 +159,7 @@ _modassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -194,7 +194,7 @@ _mulassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -299,7 +299,7 @@ _andassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -474,7 +474,7 @@ _set(_value)
 
 [.underline]#Parameters#
 
-- __value_ :Value or variable as right operand.
+- ___value__ :Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -509,7 +509,7 @@ _shrassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -579,7 +579,7 @@ _subassign(_value)
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as right operand.
+- ___value__ : Value or variable as right operand.
 
 [.underline]#Returns#
 

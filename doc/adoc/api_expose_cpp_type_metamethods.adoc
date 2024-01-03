@@ -19,9 +19,9 @@ void RegisteredType_addassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -29,7 +29,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs an addition and assignment to the current instance from  a _Float_ value or _Number_ object respectively,
+The following code defines two functions that performs an addition and assignment to the current instance from  a __Float__ value or __Number__ object respectively,
 
 [source,cpp]
 ----
@@ -43,7 +43,7 @@ void NumberZs_addassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_addassign_ is registered as member metamethod __addassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function __NumberZs_addassign__ is registered as member metamethod ___addassign__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -58,7 +58,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that add and assigns values from a _Float_ value and _Number_  object.
+Finally, the following code it shows an example of a script that add and assigns values from a __Float__ value and __Number__  object.
 
 [source,javascript]
 ----
@@ -87,9 +87,9 @@ void RegisteredType_andassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -97,7 +97,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a bitwise AND and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a bitwise AND and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -126,7 +126,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a bitwise AND and assignment from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that performs a bitwise AND and assignment from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -155,9 +155,9 @@ void RegisteredType_divassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -165,7 +165,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a division and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a division and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -193,7 +193,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that divides and assigns values from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that divides and assigns values from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -223,11 +223,11 @@ bool RegisteredType_in(zetscript::ScriptEngine *_script_engine, Data *_this, zs_
 
 [.underline]#Parameters#
 
-- __value_ : Value or variable as value to check whether exist or not in the containing class
+- ___value__ : Value or variable as value to check whether exist or not in the containing class
 
 [.underline]#Returns#
 
-Boolean telling whether the __value_ exist in or not.
+Boolean telling whether the ___value__ exist in or not.
 
 *Example*
 
@@ -293,9 +293,9 @@ void RegisteredType_modassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -303,7 +303,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a remainder division and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a remainder division and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -332,7 +332,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that produces the remainder division and assigns values from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that produces the remainder division and assigns values from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -361,9 +361,9 @@ void RegisteredType_mulassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -371,7 +371,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a multiplication and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a multiplication and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -398,7 +398,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that multiples and assigns values from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that multiples and assigns values from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -427,8 +427,8 @@ ClassObject *RegisteredType_neg(ScriptEngine *_script_engine, RegisteredType *_t
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -436,7 +436,7 @@ An object with its negated value
 
 *Example*
 
-The following code defines a function as a _neg_ operation by returning a new _Number_ instance with the negate value of current instance,
+The following code defines a function as a _neg_ operation by returning a new __Number__ instance with the negate value of current instance,
 
 [source,cpp]
 ----
@@ -463,7 +463,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that returns the negate of a _Number_ object.
+Finally, the following code it shows an example of a script that returns the negate of a __Number__ object.
 
 [source,javascript]
 ----
@@ -492,8 +492,8 @@ bool RegisteredType_not(ScriptEngine *_script_engine, RegisteredType *_this);
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -528,7 +528,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that evaluates not condition of a _Number_ object.
+Finally, the following code it shows an example of a script that evaluates not condition of a __Number__ object.
 
 [source,javascript]
 ----
@@ -557,9 +557,9 @@ void RegisteredType_orassign(ScriptEngine *_script_engine, RegisteredType *_this
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -567,7 +567,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a bitwise OR and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a bitwise OR and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -596,7 +596,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a bitwise OR and assignment from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that performs a bitwise OR and assignment from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -626,8 +626,8 @@ ClassObject * RegisteredType_postdec(ScriptEngine *_script_engine, RegisteredTyp
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -663,7 +663,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a post decrement operation of a _Number_ object.
+Finally, the following code it shows an example of a script that performs a post decrement operation of a __Number__ object.
 
 [source,javascript]
 ----
@@ -692,8 +692,8 @@ ClassObject * RegisteredType_postinc(ScriptEngine *_script_engine, RegisteredTyp
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -713,7 +713,7 @@ ClassObject *  NumberZs_postinc(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_postinc_ is registered as member metamethod __postinc_ through _ScriptEngine::registerMemberFunction_,
+Next, the function __NumberZs_postinc__ is registered as member metamethod ___postinc__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -729,7 +729,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a post increment operation of a _Number_ object.
+Finally, the following code it shows an example of a script that performs a post increment operation of a __Number__ object.
 
 [source,javascript]
 ----
@@ -758,8 +758,8 @@ ClassObject * RegisteredType_predec(ScriptEngine *_script_engine, RegisteredType
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -779,7 +779,7 @@ ClassObject  *NumberZs_predec(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_predec_ is registered as member metamethod __predec_ through _ScriptEngine::registerMemberFunction_,
+Next, the function __NumberZs_predec__ is registered as member metamethod ___predec__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -795,7 +795,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a pre decrement operation of a _Number_ object.
+Finally, the following code it shows an example of a script that performs a pre decrement operation of a __Number__ object.
 
 [source,javascript]
 ----
@@ -813,7 +813,7 @@ include::../examples/api/register_type/register_member_metamethod_predec_out.txt
 
 ====== _preinc()
 
-Implements _pre increment_ operator (aka ++a ) 
+Implements __pre increment__ operator (aka ++a ) 
 
 *Syntax*
 
@@ -824,8 +824,8 @@ ClassObject *RegisteredType_preinc(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 [.underline]#Returns#
 
@@ -860,7 +860,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs a pre increment operation of a _Number_ object.
+Finally, the following code it shows an example of a script that performs a pre increment operation of a __Number__ object.
 
 [source,javascript]
 ----
@@ -879,7 +879,7 @@ include::../examples/api/register_type/register_member_metamethod_preinc_out.txt
 
 
 ====== _set()
-Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+Implements __assignment__ operator (aka = ) with a value entered by parameter as right operand.
 
 *Syntax*
 
@@ -890,9 +890,9 @@ void RegisteredType_set(ScriptEngine * _script_engine, RegisteredType *_this, Pa
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : A value to be set. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : A value to be set. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -900,7 +900,7 @@ None.
 
 *Example*
 
-The following code defines two functions performs an assignment from <<language_data_types.adoc#_float,Float>> value or _Number_ object respectively,
+The following code defines two functions performs an assignment from <<language_data_types.adoc#_float,Float>> value or __Number__ object respectively,
 
 [source,cpp]
 ----
@@ -915,7 +915,7 @@ void NumberZs_set(ScriptEngine *_script_engine,Number *_this,Number *_n){
 
 ----
 
-Next, each function _NumberZs_set_ function is registered as member metamethod __set_ through _ScriptEngine::registerMemberFunction_,
+Next, each function __NumberZs_set__ function is registered as member metamethod ___set__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -933,7 +933,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that assigns  values from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that assigns  values from a __Float__ value and __Number__ object.
 
 [source,cpp]
 ----
@@ -963,9 +963,9 @@ void RegisteredType_shlassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -973,7 +973,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -1002,7 +1002,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -1031,9 +1031,9 @@ void RegisteredType_shrassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -1041,7 +1041,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -1070,7 +1070,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -1099,9 +1099,9 @@ void RegisteredType_subassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -1109,7 +1109,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a substraction and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a substraction and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -1136,7 +1136,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that substracts and assigns values from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that substracts and assigns values from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -1165,8 +1165,8 @@ String RegisteredType_tostring(ScriptEngine * _script_engine, RegisteredType *_t
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
 
 
 [.underline]#Returns#
@@ -1205,7 +1205,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that creates a type _Number_ and prints its content to the console through _Console::outln_. Because _Console::outln_ prints string information it calls __tostring_ implicitly.
+Finally, the following code it shows an example of a script that creates a type __Number__ and prints its content to the console through _Console::outln_. Because _Console::outln_ prints string information it calls __tostring_ implicitly.
 
 [source,cpp]
 ----
@@ -1234,9 +1234,9 @@ void RegisteredType_xorassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- __script_engine_ : ScriptEngine instance
-- __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -1244,7 +1244,7 @@ None.
 
 *Example*
 
-The following code defines two functions that performs a bitwise XOR and assignment to the current instance from a _Float_ value or _Number_ type respectively,
+The following code defines two functions that performs a bitwise XOR and assignment to the current instance from a __Float__ value or __Number__ type respectively,
 
 [source,cpp]
 ----
@@ -1273,7 +1273,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that perform bitwise XOR and assignment from a _Float_ value and _Number_ object.
+Finally, the following code it shows an example of a script that perform bitwise XOR and assignment from a __Float__ value and __Number__ object.
 
 [source,javascript]
 ----
@@ -1315,7 +1315,7 @@ ClassObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _add_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _add_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1350,7 +1350,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __add_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __add_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1388,7 +1388,7 @@ ClassObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _AND_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _AND_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1419,7 +1419,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __AND_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __AND_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1457,7 +1457,7 @@ ClassObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _div_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _div_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1489,7 +1489,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __div_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __div_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1528,7 +1528,7 @@ bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1561,7 +1561,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _equ_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _equ_ operation from a __Float__ and __Number__.
 
 [source,cpp]
 ----
@@ -1600,7 +1600,7 @@ bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _gt_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _gt_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1634,7 +1634,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __gt__ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __gt__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1673,7 +1673,7 @@ bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1706,7 +1706,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _gte_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _gte_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1746,7 +1746,7 @@ bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _lt_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _lt_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1777,7 +1777,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _lt_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _lt_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1816,7 +1816,7 @@ _lte(_op1,_op2)
 
 *Example*
 
-The following code defines three functions that performs _lte_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _lte_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1847,7 +1847,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _lte_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _lte_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1885,7 +1885,7 @@ ClassObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _mod_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _mod_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1916,7 +1916,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __mod_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __mod_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1955,7 +1955,7 @@ ClassObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _mul_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _mul_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1987,7 +1987,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __mul__ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __mul__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2026,7 +2026,7 @@ bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2062,7 +2062,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _nequ_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs _nequ_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2100,7 +2100,7 @@ ClassObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _OR_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _OR_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2133,7 +2133,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __OR_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __OR_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2204,7 +2204,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __shl_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __shl_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2242,7 +2242,7 @@ ClassObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _shr_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _shr_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2275,7 +2275,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __shr_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __shr_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2313,7 +2313,7 @@ ClassObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _sub_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _sub_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2348,7 +2348,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __sub_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __sub_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2386,7 +2386,7 @@ ClassObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _XOR_ operation from _Float_ value or _Number_ type,
+The following code defines three functions that performs _XOR_ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2419,7 +2419,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __XOR_ operation from a _Float_ and _Number_.
+Finally, the following code it shows an example of a script that performs __XOR_ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----

@@ -54,7 +54,7 @@ Zetscript supports the following operators for _Integer_ literals,
 
 ==== Float
 
-_Float_ literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. _Float_ values can be represented in decimal form or scientific notation form.
+__Float__ literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. __Float__ values can be represented in decimal form or scientific notation form.
 
 [source,javascript]
 ----
@@ -62,7 +62,7 @@ _Float_ literals are represented as IEEE-754 floating point numbers in 32-bit or
 2.0e-2 // cientific notation form
 ----
 
-Zetscript supports the following operators for _Float_ literals,
+Zetscript supports the following operators for __Float__ literals,
 
 [cols="1d,1m,2d,2a"]
 |====

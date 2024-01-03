@@ -103,7 +103,7 @@ parse(_value)
 
 [.underline]#Parameters#
 
-- __value_ : value to be converted as _Integer_
+- ___value__ : value to be converted as _Integer_
 
 [.underline]#Returns#
 
@@ -125,7 +125,7 @@ include::../examples/language/integer/integer_parse_out.txt[]
 
 ==== Float
 
-The type _Float_ is represented as IEEE-754 floating point numbers in 32-bit or 64 bit depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Float_ once it assigns a decimal or scientific value notation forms.
+The type __Float__ is represented as IEEE-754 floating point numbers in 32-bit or 64 bit depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as __Float__ once it assigns a decimal or scientific value notation forms.
 
 [source,javascript]
 ----
@@ -137,7 +137,7 @@ var b=2.0e-2 // cientific notation form value
 
 ===== Operators
 
-ZetScript supports the following operators for _Float_ variables,
+ZetScript supports the following operators for __Float__ variables,
 
 
 [cols="1d,1m,2d,2a"]
@@ -189,7 +189,7 @@ var j=i--;//j=0.5;i=-0.5;
 
 ====== Float::parse()
 
-Converts a given value to _Float_.
+Converts a given value to __Float__.
 
 *Syntax*
 
@@ -200,11 +200,11 @@ Float::parse(_value)
 
 [.underline]#Parameters#
 
-- __value_ : value to be converted as _Float_.
+- ___value__ : value to be converted as __Float__.
 
 [.underline]#Returns#
 
-_Float_ as a result of converted value.
+__Float__ as a result of converted value.
 
 *Example*
 
@@ -274,7 +274,7 @@ String::insertAt(_position,_value)
 [.underline]#Parameters#
 
 - __position_: Position where to insert. The position ranges within 0 to the length-1 of the string.
-- __value_: String or character value.
+- ___value__: String or character value.
 
 [.underline]#Returns#
 
@@ -501,7 +501,7 @@ String::contains(_value)
 
 [.underline]#Parameters#
 
-- __value_:  A substring to find.
+- ___value__:  A substring to find.
 
 [.underline]#Returns#
 
@@ -569,11 +569,11 @@ String::startsWith(_value)
 
 [.underline]#Parameters#
 
-- __value_ :  A _String_, representing the characters to check for.
+- ___value__ :  A _String_, representing the characters to check for.
 
 [.underline]#Returns# 
 
-A _Boolean_ as _true_ if __value_ matches starting string, otherwise it returns _false_.
+A _Boolean_ as _true_ if ___value__ matches starting string, otherwise it returns _false_.
 
 *Example*
 
@@ -602,11 +602,11 @@ String::endsWith(_value)
 
 [.underline]#Parameters#
 
-- __value_ :  A _String_, representing the characters to check for.
+- ___value__ :  A _String_, representing the characters to check for.
 
 [.underline]#Returns# 
 
-A _Boolean_ as _true_ if __value_ matches ending string, otherwise it returns _false_.
+A _Boolean_ as _true_ if ___value__ matches ending string, otherwise it returns _false_.
 
 *Example*
 
@@ -802,7 +802,7 @@ Array::push(_element)
 
 [.underline]#Parameters#
 
-- __value_ : Element to be added.
+- ___value__ : Element to be added.
 
 [.underline]#Returns# 
 

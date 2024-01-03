@@ -13,8 +13,8 @@ Console::out(_value,..._args)
 
 [.underline]#Parameters#
 
-- _&#95;value_ : value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
-- _&#95;args_ :  variable args to be replaced if __value_ is string representation.
+- _&#95;value_ : value to print. If ___value__ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
+- _&#95;args_ :  variable args to be replaced if ___value__ is string representation.
 
 [.underline]#Returns#
 
@@ -45,8 +45,8 @@ Console::outln(_value,..._args)
 
 [.underline]#Parameters#
 
-- _&#95;value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
-- _&#95;args_:  variable args to be replaced if __value_ is string representation.
+- _&#95;value_: value to print. If ___value__ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
+- _&#95;args_:  variable args to be replaced if ___value__ is string representation.
 
 [.underline]#Returns#
 
@@ -77,8 +77,8 @@ Console::out(_value,..._args)
 
 [.underline]#Parameters#
 
-- _&#95;value_: value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
-- _&#95;args_:  variable args to be replaced if __value_ is string representation.
+- _&#95;value_: value to print. If ___value__ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
+- _&#95;args_:  variable args to be replaced if ___value__ is string representation.
 
 [.underline]#Returns#
 
@@ -95,8 +95,8 @@ Console::outln(_value,..._args)
 
 [.underline]#Parameters#
 
-- _&#95;value_: Value to print. If __value_ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
-- _&#95;args_:  Variable args to be replaced if __value_ is string representation.
+- _&#95;value_: Value to print. If ___value__ is string it can be formated (see in section <<String::format()>>), else it tries to print a the value as human readable.
+- _&#95;args_:  Variable args to be replaced if ___value__ is string representation.
 
 [.underline]#Returns#
 
@@ -152,7 +152,7 @@ None
 
 [.underline]#Returns#
 
-The amount of time in seconds as _Float_ type.
+The amount of time in seconds as __Float__ type.
 
 *Example*
 
@@ -312,7 +312,7 @@ Math::sin(_radians)
 
 [.underline]#Returns#
 
-A _Float_ value as result of sinus of __radians_ between 0..1.
+A __Float__ value as result of sinus of __radians_ between 0..1.
 
 *Example*
 
@@ -343,7 +343,7 @@ Math::cos(_radians)
 
 [.underline]#Returns#
 
-A _Float_ value as result of cosinus of __radians_ between 0..1.
+A __Float__ value as result of cosinus of __radians_ between 0..1.
 
 <<<
 
@@ -376,7 +376,7 @@ Math::abs(_value)
 
 [.underline]#Returns#
 
-A _Float_ value as the absolute value.
+A __Float__ value as the absolute value.
 
 *Example*
 
@@ -408,7 +408,7 @@ Math::pow(_base,_exponent)
 
 [.underline]#Returns#
 
-A _Float_ value as the result of raising __base_ to the _&#95;power_ exponent.
+A __Float__ value as the result of raising __base_ to the _&#95;power_ exponent.
 
 *Example*
 
@@ -441,7 +441,7 @@ Math::degToRad(_degrees)
 
 [.underline]#Returns#
 
-A _Float_ value as the result of __degrees_ as radians   
+A __Float__ value as the result of __degrees_ as radians   
 
 *Example*
 
@@ -472,7 +472,7 @@ None
 
 [.underline]#Returns#
 
-A _Float_ value between [0..1)
+A __Float__ value between [0..1)
 
 *Example*
 
@@ -565,11 +565,11 @@ Math::sqrt(_value)
 
 [.underline]#Parameters#
 
-- __value_: Input value
+- ___value__: Input value
 
 [.underline]#Returns#
 
-A _Float_ value as the result of the square root of __value_
+A __Float__ value as the result of the square root of ___value__
 
 <<<
 
@@ -598,11 +598,11 @@ Math::floor(_value)
 
 [.underline]#Parameters#
 
-- __value_: Value to round down.
+- ___value__: Value to round down.
 
 [.underline]#Returns#
 
-A _Float_ value as __x_ rounded downward 
+A __Float__ value as __x_ rounded downward 
 
 *Example*
 
@@ -633,7 +633,7 @@ Math::ceil(_x)
 
 [.underline]#Returns#
 
-A _Float_ as the largest integral value that is not greater than __x_
+A __Float__ as the largest integral value that is not greater than __x_
 
 
 *Example*
@@ -665,7 +665,7 @@ Math::round(_value)
 
 [.underline]#Returns#
 
-A _Float_ value as __x_ to the nearest integral.
+A __Float__ value as __x_ to the nearest integral.
 
 *Example*
 

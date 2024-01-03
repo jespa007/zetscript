@@ -182,7 +182,7 @@ Because the function it returns a native reference the type can be registered as
 
 *Example*
 
-In the following example it registers a type __Number__ as <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>> (This is because in this example it doesn't need to instantiate any new object in the script code) and the property __Number::value__ with <<api_data_types.adoc#_scriptengineregistermemberpropertymetamethod,ScriptEngine::registerMemberPropertyMetamethod>>. Finally, it registers C function __returnNumber__ that returns a __Number *__. In the main program instantiates __Number__ object and is acceded globally, so is active during the execution of the script.
+In the following example it registers a type __Number__ as <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>> (This is because in this example it doesn't need to instantiate any new object in the script code) and property __Number::value__ (see <<api_data_types.adoc#_scriptengineregistermemberpropertymetamethod,ScriptEngine::registerMemberPropertyMetamethod>>). Finally, it registers C function __returnNumber__ that returns a __Number *__. In the main program instantiates __Number__ object and is acceded globally, so is active during the execution of the script.
 
 
 [source,cpp]

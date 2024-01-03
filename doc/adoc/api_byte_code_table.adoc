@@ -183,7 +183,7 @@
 |Load _String_ value to stack
 
 |LOAD_FLT
-|Load _Float_ value to stack
+|Load __Float__ value to stack
 
 |LOAD_BOOL
 |Load _Boolean_ value to stack
