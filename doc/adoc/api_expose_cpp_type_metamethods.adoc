@@ -1457,7 +1457,7 @@ ClassObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _div_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __div__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1489,7 +1489,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __div_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___div__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1528,7 +1528,7 @@ bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1546,7 +1546,7 @@ bool NumberZs_equ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_equ_ is registered as member metamethod __equ_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _NumberZs_equ_ is registered as member metamethod ___equ__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1561,7 +1561,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _equ_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs __equ__ operation from a __Float__ and __Number__.
 
 [source,cpp]
 ----
@@ -1600,7 +1600,7 @@ bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _gt_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __gt__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1673,7 +1673,7 @@ bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1691,7 +1691,7 @@ bool NumberZs_gte(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_gte_ is registered as member metamethod __gte_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _NumberZs_gte_ is registered as member metamethod ___gte__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1706,7 +1706,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _gte_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs __gte__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1746,7 +1746,7 @@ bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _lt_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __lt__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1777,7 +1777,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _lt_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs __lt__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1795,7 +1795,7 @@ include::../examples/api/register_type/register_member_metamethod_lt_out.txt[]
 
 ====== _lte()
 
-Implements _less than or equal_ operator (aka \<= ) between first operand and second operand
+Implements __less than or equal__ operator (aka \<= ) between first operand and second operand
 
 *Syntax*
 
@@ -1816,7 +1816,7 @@ _lte(_op1,_op2)
 
 *Example*
 
-The following code defines three functions that performs _lte_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __lte__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1847,7 +1847,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _lte_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs __lte__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1865,7 +1865,7 @@ include::../examples/api/register_type/register_member_metamethod_lte_out.txt[]
 
 ====== _mod()
 
-Implements _modulus_ operator (aka % ) between first operand and second operand
+Implements __modulus__ operator (aka % ) between first operand and second operand
 
 *Syntax*
 
@@ -1885,7 +1885,7 @@ ClassObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _mod_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __mod__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1902,7 +1902,7 @@ ClassObject * NumberZs_mod(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 }
 ----
 
-Next, each function _NumberZs_mod_ is registered as member metamethod __mod_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _NumberZs_mod_ is registered as member metamethod ___mod__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1916,7 +1916,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __mod_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___mod__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1935,7 +1935,7 @@ include::../examples/api/register_type/register_member_metamethod_mod_out.txt[]
 
 ====== _mul()
 
-Implements _multiplication_ operator (aka * ) between first operand and second operand
+Implements __multiplication__ operator (aka * ) between first operand and second operand
 
 *Syntax*
 
@@ -1955,7 +1955,7 @@ ClassObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _mul_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __mul__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1974,7 +1974,7 @@ ClassObject * NumberZs_mul(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_mul_ is registered as member metamethod __mul_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _NumberZs_mul_ is registered as member metamethod ___mul__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2005,7 +2005,7 @@ include::../examples/api/register_type/register_member_metamethod_mul_out.txt[]
 
 ====== _nequ()
 
-Implements _not equal_ operator (aka != ) between first operand and second operand
+Implements __not equal__ operator (aka != ) between first operand and second operand
 
 *Syntax*
 
@@ -2026,7 +2026,7 @@ bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _equ_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2044,7 +2044,7 @@ bool NumberZs_nequ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_nequ_ is registered as member metamethod __nequ_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _NumberZs_nequ_ is registered as member metamethod ___nequ__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2062,7 +2062,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs _nequ_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs __nequ__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2100,7 +2100,7 @@ ClassObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _OR_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __OR__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2119,7 +2119,7 @@ ClassObject * NumberZs_or(ScriptEngine *_script_engine,zs_float *_n1, Number * _
 
 ----
 
-Next, each function _NumberZs_or_ is registered as member metamethod __OR_ through __ScriptEngine::registerMemberFunction__,
+Next, each function __NumberZs_or__ is registered as member metamethod ___OR__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2133,7 +2133,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __OR_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___OR__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2151,7 +2151,7 @@ include::../examples/api/register_type/register_member_metamethod_or_out.txt[]
 
 ====== _shl()
 
-Implements _bitwise shift left_ operator (aka << ) between first operand and second operand
+Implements __bitwise shift left__ operator (aka << ) between first operand and second operand
 
 *Syntax*
 
@@ -2190,7 +2190,7 @@ ClassObject * NumberZs_shl(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_shl_ is registered as member metamethod __shl_ through __ScriptEngine::registerMemberFunction__,
+Next, each function __NumberZs_shl__ is registered as member metamethod ___shl__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2204,7 +2204,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __shl_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___shl__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2242,7 +2242,7 @@ ClassObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _shr_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __shr__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2261,7 +2261,7 @@ ClassObject * NumberZs_shr(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_shr_ is registered as member metamethod __shr_ through __ScriptEngine::registerMemberFunction__,
+Next, each function __NumberZs_shr__ is registered as member metamethod ___shr__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2275,7 +2275,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __shr_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___shr__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2313,7 +2313,7 @@ ClassObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _sub_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __sub__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2332,7 +2332,7 @@ ClassObject * NumberZs_sub(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_sub_ is registered as member metamethod __sub_ through __ScriptEngine::registerMemberFunction__,
+Next, each function _Num_berZs_sub_ is registered as member metamethod ___sub__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2348,7 +2348,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __sub_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___sub__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -2386,7 +2386,7 @@ ClassObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _XOR_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __XOR__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -2405,7 +2405,7 @@ ClassObject * NumberZs_xor(ScriptEngine *_script_engine,zs_float *_n1, Number * 
 
 ----
 
-Next, each function _NumberZs_xor_ is registered as member metamethod __XOR_ through __ScriptEngine::registerMemberFunction__,
+Next, each function __NumberZs_xor__ is registered as member metamethod ___XOR__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2419,7 +2419,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __XOR_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___XOR__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
