@@ -1,9 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_float;
-using zetscript::ClassScriptObject;
-
 // C++ class to be registered
 class Number{
 public:
@@ -15,27 +11,39 @@ public:
 };
 
 // defines new function for Number object
-Number *NumberZs_new(ScriptEngine *_script_engine){
+Number *NumberZs_new(
+	zetscript::ScriptEngine *_script_engine
+){
 	return new  Number();
 }
 
 // defines new function for Number constructor
-void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this, zs_float *_value){
+void NumberZs_constructor(
+	zetscript::ScriptEngine *_script_engine
+	,Number *_this
+	,zetscript::zs_float *_value
+){
 	_this->value=*_value;
 }
 
 // defines get negative
-zs_float NumberZs_get(ScriptEngine *_script_engine, Number *_this){
+zetscript::zs_float NumberZs_get(
+	zetscript::ScriptEngine *_script_engine
+	,Number *_this
+){
 	return _this->value;
 }
 
 // defines delete function for Number object
-void NumberZs_delete(ScriptEngine *_script_engine, Number *_this){
+void NumberZs_delete(
+	zetscript::ScriptEngine *_script_engine
+	, Number *_this
+){
 	delete _this;
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Register class Number as instanciable
 	script_engine.registerType<Number>("Number",NumberZs_new,NumberZs_delete);

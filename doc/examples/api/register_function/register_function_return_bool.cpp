@@ -1,14 +1,14 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
-bool returnBoolean(ScriptEngine *_script_engine){
+bool returnBoolean(
+    zetscript::ScriptEngine *_script_engine
+){
     return true;
 }
 
 int main(){
 
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers function
     script_engine.registerFunction("returnBoolean",returnBoolean);

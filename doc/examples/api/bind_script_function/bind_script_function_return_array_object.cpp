@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ArrayScriptObject;
-
 int main()
 {
 	zetscript::ScriptEngine script_engine;
@@ -14,7 +12,9 @@ int main()
   );
 
   // It binds 'returnArray' as 'ArrayScriptObject *(void)'
-  auto returnArray=script_engine.bindScriptFunction<ArrayScriptObject *()>("returnArray");
+  auto returnArray=script_engine.bindScriptFunction<
+    zetscript::ArrayScriptObject *()
+  >("returnArray");
 
   // Calls ZetScript function which it returns 'ArrayScriptObject *' reference
   auto array_object=returnArray();

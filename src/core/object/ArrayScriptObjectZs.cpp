@@ -55,7 +55,7 @@ namespace zetscript{
 				ptr_str->append(((ScriptObject *)stk->value)->toString());
 			}
 			else{
-				ptr_str->append(_script_engine->stackElementToString(stk));
+				ptr_str->append(_script_engine->stackElementValueToString(stk));
 			}
 		}
 

@@ -470,7 +470,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (int)dst_container_slot_id
 				, dst_container_ref->getScriptType()->name.toConstChar()
-				, data->script_engine->stackElementToStringTypeOf( stk_obj).toConstChar()
+				, data->script_engine->stackElementTypeToString( stk_obj).toConstChar()
 
 			);
 
@@ -484,7 +484,7 @@ namespace zetscript{
 				, (void*)dst_container_ref
 				, (const char*)dst_container_slot_id
 				, dst_container_ref->getScriptType()->name.toConstChar()
-				, data->script_engine->stackElementToStringTypeOf( stk_obj).toConstChar()
+				, data->script_engine->stackElementTypeToString( stk_obj).toConstChar()
 
 			);
 

@@ -343,7 +343,7 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?data->script_engine->stackElementToStringTypeOf(stk_json_element).toConstChar():"");
+						,stk_json_element!=NULL?data->script_engine->stackElementTypeToString(stk_json_element).toConstChar():"");
 				return NULL;
 			}
 

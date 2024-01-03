@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::String;
-
 int main(){
 	zetscript::ScriptEngine script_engine;
 
@@ -12,15 +10,18 @@ int main(){
         "}\n"
  	);
 
-   // It binds 'printConcat' as '(void *)(String *, String *)'
-   auto printConcat=script_engine.bindScriptFunction<void(String * _value1, String * _value2)>("printConcat");
+  // It binds 'printConcat' as '(void *)(String *, String *)'
+  auto printConcat=script_engine.bindScriptFunction<
+    void(
+    zetscript::String * _value1, zetscript::String * _value2
+  )>("printConcat");
 
-   // Prepare param values
-   String value1="Hello";
-   String value2="World";
+  // Prepare param values
+  zetscript::String value1="Hello";
+  zetscript::String value2="World";
 
-   // Calls ZetScript function by value
-   printConcat(&value1,&value2);
+  // Calls ZetScript function by value
+  printConcat(&value1,&value2);
  	return 0;
 }
 

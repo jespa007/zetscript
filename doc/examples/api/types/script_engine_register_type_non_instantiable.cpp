@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
 // Defines  MyType
 class MyType{
 //...
@@ -10,7 +8,9 @@ class MyType{
 // defines global variable my_type
 MyType *my_type=NULL;
 
-MyType *returnMyType(ScriptEngine *_script_engine){
+MyType *returnMyType(
+	zetscript::ScriptEngine *_script_engine
+){
 	return my_type;
 }
 
@@ -29,7 +29,7 @@ int main(){
 	// Gets an instance of 'MyType' and stores in 't'
 	// Instances an object of type 'MyType' and stores in 't'
 	script_engine.compileAndRun(
-		"var t=returnMyType()"
+		"var t=returnMyType();\n"
 		"Console::outln(\"typeof t =>\"+(typeof t));"
 	);
 

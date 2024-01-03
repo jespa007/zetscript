@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_float;
-
 int main(){
    zetscript::ScriptEngine script_engine;
 
@@ -12,14 +10,18 @@ int main(){
         "}\n"
  	);
 
-   // It binds 'printAdd' as '(void *)(zs_float, zs_float *)'
-   auto printAdd=script_engine.bindScriptFunction<void(zs_float *_value1, zs_float *_value2)>("printAdd");
+  // It binds 'printAdd' as '(void *)(zs_float, zs_float *)'
+  auto printAdd=script_engine.bindScriptFunction<
+    void(
+      zetscript::zs_float *_value1
+      ,zetscript::zs_float *_value2
+    )>("printAdd");
 
-   // Prepare parameter values 
-   zs_float value1=3.5;
-   zs_float value2=10.7;
+  // Prepare parameter values 
+  zetscript::zs_float value1=3.5;
+  zetscript::zs_float value2=10.7;
 
-   // Calls binded ZetScript function with parameters
+  // Calls binded ZetScript function with parameters
    printAdd(&value1,&value2);
 
  	return 0;

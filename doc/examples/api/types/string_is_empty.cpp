@@ -1,11 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::String;
-
 int main(){
 
-	String empty_string;
-	String non_empty_string="Hello World";
+	zetscript::String empty_string;
+	zetscript::String non_empty_string="Hello World";
 	
 	printf("empty_string.empty()  => '%s' \n"
 	,empty_string.isEmpty()?"true":"false");

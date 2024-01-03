@@ -57,7 +57,7 @@ namespace zetscript{
 		 }else{
 			ZS_VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
 				,SFI_GET_SYMBOL_NAME(_script_function,_instruction)
-				, data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+				, data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 			);
 		 }
 		 return	true;

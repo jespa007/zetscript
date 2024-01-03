@@ -9,7 +9,7 @@ A variable is a kind of element that can hold a variable. A variable is declared
 var i; // Declared variable
 ----
 
-By default, any declared variable is set as xref:language_data_types.adoc#\_undefined[undefined], that tells a variable was not properly initialized. 
+By default, any declared variable is set as xref:language_data_types.adoc#_undefined[undefined], that tells a variable was not properly initialized. 
 
 [source,javascript]
 ----

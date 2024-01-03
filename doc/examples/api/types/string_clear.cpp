@@ -1,5 +1,5 @@
 #include "zetscript.h"
-using zetscript::String;
+
 int main(){
 	zetscript::String string="Hello World";
 

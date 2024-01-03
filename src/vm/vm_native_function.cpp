@@ -199,7 +199,7 @@ namespace zetscript{
 				switch(current_arg->properties & MSK_STACK_ELEMENT_TYPE_PROPERTIES){
 
 				default:
-					aux_string=data->script_engine->stackElementToStringTypeOf(current_arg);
+					aux_string=data->script_engine->stackElementTypeToString(current_arg);
 					break;
 				case STACK_ELEMENT_PROPERTY_INT:
 					aux_string=k_str_int_type;

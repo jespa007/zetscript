@@ -283,7 +283,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value == 0){
@@ -295,7 +295,7 @@ namespace zetscript{
 				if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_BOOL)==0){
 					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
+						,data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value != 0){
@@ -705,7 +705,7 @@ namespace zetscript{
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
-			str1=data->script_engine->stackElementToString(_stk1);
+			str1=data->script_engine->stackElementValueToString(_stk1);
 		}
 
 
@@ -713,7 +713,7 @@ namespace zetscript{
 		if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(_stk2)){
 			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
-			str2=data->script_engine->stackElementToString( _stk2);
+			str2=data->script_engine->stackElementValueToString( _stk2);
 		}
 
 		bool result=false;
@@ -770,7 +770,7 @@ namespace zetscript{
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)
-				,data->script_engine->stackElementToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
+				,data->script_engine->stackElementValueToString(ZS_VM_STR_AUX_PARAM_0,ZS_VM_STR_AUX_MAX_LENGTH,_stk)
 			);
 			break;
 		case ZS_VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:
@@ -791,7 +791,7 @@ namespace zetscript{
 				,SFI_GET_LINE(_script_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-				,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
+				,data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,_stk) \
 				,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
 				,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 			);\
@@ -846,7 +846,7 @@ namespace zetscript{
 					,SFI_GET_LINE(_script_function,instruction)\
 					,"Symbol '%s' as type '%s' the metamethod '%s' (aka '%s') doesn't returns value to perform negate operation" \
 					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
-					,data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,_stk) \
+					,data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,_stk) \
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)\
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)\
 				);\

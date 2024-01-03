@@ -1,7 +1,7 @@
 <<<
 ==== Metamethods
 
-Metamethods are special member functions that able to define operators seen on xref:language_operators.adoc:.adoc#\_operators[section 2.6]. Metamethods can be static or member function depending whether the operation affects or not the object itself. 
+Metamethods are special member functions that able to define operators seen on xref:language_operators.adoc:.adoc#_operators[section 2.6]. Metamethods can be static or member function depending whether the operation affects or not the object itself. 
 
 ===== Member metamethods
 

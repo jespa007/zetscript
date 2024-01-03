@@ -1,10 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ArrayScriptObject;
-
-
-void checkLengthArray(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
+void checkLengthArray(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ArrayScriptObject *_array_object
+){
 	// instance new ArrayScriptObject using ScriptEngine instance
     printf("The length of array is : %i\n",_array_object->length());
 }

@@ -1,14 +1,13 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::String;
-
-String returnString(ScriptEngine *_script_engine){
+zetscript::String returnString(
+    zetscript::ScriptEngine *_script_engine
+){
     return "Hello world (String)";
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers function interface
     script_engine.registerFunction("returnString",returnString);

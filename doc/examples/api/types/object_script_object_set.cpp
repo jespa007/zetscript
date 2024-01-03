@@ -1,24 +1,21 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::ObjectScriptObject;
-using zetscript::StringScriptObject;
-
-void modifyObject(ScriptEngine *_script_engine,ObjectScriptObject *_object){
+void modifyObject(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ObjectScriptObject *_object
+){
 
 	auto keys=_object->getKeys();
 	for(int i=0; i < keys.length(); i++){
 		switch(i%3){
 		case 0: // set a integer
-			_object->set<zs_int>(keys.get(i),i);
+			_object->set<zetscript::zs_int>(keys.get(i),i);
 			break;
 		case 1: // set a random float
-			_object->set<zs_float>(keys.get(i),i*10.2);
+			_object->set<zetscript::zs_float>(keys.get(i),i*10.2);
 			break;
 		case 2: // set new string
-			_object->set<StringScriptObject *>(keys.get(i),new StringScriptObject(_script_engine,"Hello"));
+			_object->set<zetscript::StringScriptObject *>(keys.get(i),new zetscript::StringScriptObject(_script_engine,"Hello"));
 			break;
 
 		}

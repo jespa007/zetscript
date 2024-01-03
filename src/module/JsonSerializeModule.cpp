@@ -227,7 +227,7 @@ namespace zetscript{
 			case STACK_ELEMENT_PROPERTY_FLOAT:
 			case STACK_ELEMENT_PROPERTY_BOOL:
 			case STACK_ELEMENT_PROPERTY_INT:
-				_str_result.append(_script_engine->stackElementToString(&stk));
+				_str_result.append(_script_engine->stackElementValueToString(&stk));
 				break;
 			case STACK_ELEMENT_PROPERTY_NULL:
 				_str_result.append("null");

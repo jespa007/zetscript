@@ -1,25 +1,20 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::String;
-using zetscript::ArrayScriptObject;
-using zetscript::ObjectScriptObject;
-
 // Definition of the native function interface returnObject
-ObjectScriptObject *returnObject(ScriptEngine *_script_engine){
+zetscript::ObjectScriptObject *returnObject(
+	zetscript::ScriptEngine *_script_engine
+){
 	// instance new ObjectScriptObject using ScriptEngine instance
-	ObjectScriptObject *object=_script_engine->newObjectScriptObject();
+	zetscript::ObjectScriptObject *object=_script_engine->newObjectScriptObject();
 
 	// instance new ArrayScriptObject using ScriptEngine instance
-	ArrayScriptObject *array=_script_engine->newArrayScriptObject();
+	zetscript::ArrayScriptObject *array=_script_engine->newArrayScriptObject();
 
 	// set field "a" as integer 10
-	object->set<zs_int>("a",10);
+	object->set<zetscript::zs_int>("a",10);
 
 	// set field "b" as float 5.5
-	object->set<zs_float>("b",5.5);
+	object->set<zetscript::zs_float>("b",5.5);
 
 	// set field "c" as boolean true
 	object->set<bool>("c",true);
@@ -29,17 +24,17 @@ ObjectScriptObject *returnObject(ScriptEngine *_script_engine){
 
 	// initialize vector object and set as "d"
 	for(int i=0; i < 10; i++){
-		array->push<zs_int>(i);
+		array->push<zetscript::zs_int>(i);
 	}
 
-	object->set<ArrayScriptObject *>("d",array);
+	object->set<zetscript::ArrayScriptObject *>("d",array);
 
 	// return object
     return object;
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// bind native function returnObject named as 'returnObject'
     script_engine.registerFunction("returnObject",returnObject);

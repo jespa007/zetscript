@@ -1,8 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_float;
-
 // C++ class to be registered
 class Number{
 public:
@@ -21,7 +18,10 @@ public:
 // REGISTER FUNCTIONS
 
 // defines getter property for Number::value
-zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
+zetscript::zs_float NumberZs_get_value(
+	zetscript::ScriptEngine *_script_engine
+	, Number *_this
+){
 	return _this->value;
 }
 
@@ -30,7 +30,7 @@ zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
 
 int main()
 {
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
    // Register class Number
 	script_engine.registerType<Number>("Number");

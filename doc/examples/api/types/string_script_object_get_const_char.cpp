@@ -1,9 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
-
-void printString(ScriptEngine *_script_engine,StringScriptObject *_string_object){
+void printString(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::StringScriptObject *_string_object
+){
 	printf("%s\n",_string_object->getConstChar());
 }
 

@@ -69,7 +69,7 @@ namespace zetscript{
 			if(stk_src_item->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 				*(*str_dst_it)=((ScriptObject *)stk_src_item->value)->toString();
 			}else{
-				*(*str_dst_it)=_script_engine->stackElementToString( stk_src_item);
+				*(*str_dst_it)=_script_engine->stackElementValueToString( stk_src_item);
 			}
 
 			str_dst_it++;
@@ -110,7 +110,7 @@ namespace zetscript{
 			str_input=((ScriptObject *)stk.value)->toString().unescape();
 		}
 		else{
-			str_input=_script_engine->stackElementToString( &stk);
+			str_input=_script_engine->stackElementValueToString( &stk);
 		}
 
 		if(_stk_args->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -228,7 +228,7 @@ namespace zetscript{
 								if(stk_arg.properties & STACK_ELEMENT_PROPERTY_OBJECT){
 									str_format_results=((ScriptObject *)stk_arg.value)->toString();
 								}else{
-									str_format_results=_script_engine->stackElementToString(
+									str_format_results=_script_engine->stackElementValueToString(
 										&stk_arg
 										,ptr_str_format_string
 									);

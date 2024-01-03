@@ -1,4 +1,5 @@
 #include "zetscript.h"
+
 int main(){
 	zetscript::ScriptEngine script_engine;
 
@@ -7,7 +8,7 @@ int main(){
 		"Console::outln(\"Hello world!!\");\n"
 	"}");
 
-	// binds ZetScript 'printHelloWorld' to std::function
+	// binds 'printHelloWorld'
 	auto print_hello_world=script_engine.bindScriptFunction<void()>("printHelloWorld");
 
 	// invoke 'printHelloWorld'

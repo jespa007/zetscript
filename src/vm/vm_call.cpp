@@ -256,7 +256,7 @@ load_function:
 
 						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementTypeToString(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 
@@ -269,12 +269,12 @@ load_function:
 						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
-								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementTypeToString(sf_call_stk_function_ref).toConstChar()
 						);
 					}else{ // STACK CALL
 						ZS_VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
-								,data->script_engine->stackElementToString(sf_call_stk_function_ref).toConstChar()
-								,data->script_engine->stackElementToStringTypeOf(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementValueToString(sf_call_stk_function_ref).toConstChar()
+								,data->script_engine->stackElementTypeToString(sf_call_stk_function_ref).toConstChar()
 								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					}
@@ -417,7 +417,7 @@ execute_function:
 						break;
 					default:
 						ZS_VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
-							,data->script_engine->stackElementToStringTypeOf(&param->default_param_value).toConstChar()
+							,data->script_engine->stackElementTypeToString(&param->default_param_value).toConstChar()
 						);
 						break;
 

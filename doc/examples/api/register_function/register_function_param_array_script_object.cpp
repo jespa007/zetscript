@@ -1,21 +1,19 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ArrayScriptObject;
-using zetscript::zs_int;
-using zetscript::zs_float;
-
 // c function expects an array of integers
-void paramArrayScriptObject(ScriptEngine *_script_engine, ArrayScriptObject *_array){
+void paramArrayScriptObject(
+    zetscript::ScriptEngine *_script_engine
+    ,zetscript::ArrayScriptObject *_array
+){
 	printf("Values in array => ");
     for(int i=0; i < _array->length(); i++){
-        printf(" %i",(int)_array->get<zs_int>(i));
+        printf(" %i",(int)_array->get<zetscript::zs_int>(i));
     }
     printf("\n");
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
     script_engine.registerFunction("paramArrayScriptObject",paramArrayScriptObject);
 

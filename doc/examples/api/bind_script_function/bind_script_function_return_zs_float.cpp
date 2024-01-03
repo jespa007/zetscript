@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_float;
-
 int main()
 {
 	zetscript::ScriptEngine script_engine;
@@ -14,7 +12,7 @@ int main()
  	);
 
     // It binds 'returnFloat' as 'zs_float(void)'
-    auto returnFloat=script_engine.bindScriptFunction<zs_float()>("returnFloat");
+    auto returnFloat=script_engine.bindScriptFunction<zetscript::zs_float()>("returnFloat");
 
     // Calls ZetScript function and prints return value by console.
     printf("result : %f\n",returnFloat());

@@ -73,10 +73,10 @@ namespace zetscript{
 		template<typename _C>
 		_C 				stackElementTo(StackElement   _stk);
 
-		String			stackElementToString(StackElement *_stk,const String & _format="");
-		const char	*	stackElementToString(char *_str_out,int _str_out_len, StackElement *_stk,const String & _format="");
-		String			stackElementToStringTypeOf(StackElement *_stk);
-		const char	*	stackElementToStringTypeOf(char *_str_out, StackElement *_stk);
+		String			stackElementValueToString(StackElement *_stk,const String & _format="");
+		const char	*	stackElementValueToString(char *_str_out,int _str_out_len, StackElement *_stk,const String & _format="");
+		String			stackElementTypeToString(StackElement *_stk);
+		const char	*	stackElementTypeToString(char *_str_out, StackElement *_stk);
 
 
 		template<typename _C>
@@ -98,6 +98,9 @@ namespace zetscript{
 
 		template<typename _C>
 		StackElement	toStackElement( _C _val);
+
+
+		void			pushStackElement(StackElement _stk);	
 
 		//
 		// STACKELEMENT

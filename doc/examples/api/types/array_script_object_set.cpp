@@ -1,23 +1,20 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::ArrayScriptObject;
-using zetscript::StringScriptObject;
-
-void modifyArray(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
+void modifyArray(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ArrayScriptObject *_array_object
+){
 
 	for(int i=0; i < _array_object->length(); i++){
 		switch(i%3){
 		case 0: // set a integer
-			_array_object->set<zs_int>(i,i);
+			_array_object->set<zetscript::zs_int>(i,i);
 			break;
 		case 1: // set a random float
-			_array_object->set<zs_float>(i,i*10.2);
+			_array_object->set<zetscript::zs_float>(i,i*10.2);
 			break;
 		case 2: // set new string
-			_array_object->set<StringScriptObject *>(i,new StringScriptObject(_script_engine,"Hello"));
+			_array_object->set<zetscript::StringScriptObject *>(i,new zetscript::StringScriptObject(_script_engine,"Hello"));
 			break;
 
 		}

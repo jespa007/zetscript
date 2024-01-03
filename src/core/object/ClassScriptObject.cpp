@@ -188,7 +188,7 @@ namespace zetscript{
 						vm_unref_lifetime_object(this->vm,so);
 						// return
 					}else{
-						aux=script_engine->stackElementToString(&result);
+						aux=script_engine->stackElementValueToString(&result);
 					}
 				}else{ // expect return an scriptobjectstring
 					String *str=NULL;

@@ -1,20 +1,16 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::ArrayScriptObject;
-
-ArrayScriptObject *returnNewArray(ScriptEngine *_script_engine){
-
+zetscript::ArrayScriptObject *returnNewArray(
+	zetscript::ScriptEngine *_script_engine
+){
 	// instance new ArrayScriptObject using ScriptEngine instance
-	ArrayScriptObject *array_object=new ArrayScriptObject(_script_engine);
+	zetscript::ArrayScriptObject *array_object=new zetscript::ArrayScriptObject(_script_engine);
 
 	// push first value as integer 10
-	array_object->push<zs_int>(10);
+	array_object->push<zetscript::zs_int>(10);
 
 	// push second value as float 5.5
-	array_object->push<zs_float>(5.5);
+	array_object->push<zetscript::zs_float>(5.5);
 
 	// push third value as boolean true
 	array_object->push<bool>(true);

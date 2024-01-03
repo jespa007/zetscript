@@ -1,23 +1,17 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ArrayScriptObject;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::String;
-
-
 // Definition of the native function interface returnArray
-ArrayScriptObject *returnArray(ScriptEngine *_script_engine){
-
+zetscript::ArrayScriptObject *returnArray(
+	zetscript::ScriptEngine *_script_engine
+){
 	// instance new ArrayScriptObject using ScriptEngine instance
-	ArrayScriptObject *array=_script_engine->newArrayScriptObject();
+	zetscript::ArrayScriptObject *array=_script_engine->newArrayScriptObject();
 
 	// push first value as integer 10
-	array->push<zs_int>(10);
+	array->push<zetscript::zs_int>(10);
 
 	// push second value as float 5.5
-	array->push<zs_float>(5.5);
+	array->push<zetscript::zs_float>(5.5);
 
 	// push third value as boolean true
 	array->push<bool>(true);
@@ -30,7 +24,7 @@ ArrayScriptObject *returnArray(ScriptEngine *_script_engine){
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// bind native function returnArray named as 'returnArray'
     script_engine.registerFunction("returnArray",returnArray);

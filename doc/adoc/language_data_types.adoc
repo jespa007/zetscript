@@ -1355,7 +1355,7 @@ var fun=function(_a,_b){
 Console::outln(fun(5,5)); // it prints "10"
 ----
 
-For more information about _Function_ go to xref:language_function.adoc#\_the_function[section 2.9]. 
+For more information about _Function_ go to xref:language_function.adoc#_the_function[section 2.9]. 
 
 ==== Class
 
@@ -1390,5 +1390,5 @@ class B extends A{
 }
 ----
 
-For more information about _Class_ go to xref:language_class.adoc#\_the_class[section 2.10]. 
+For more information about _Class_ go to xref:language_class.adoc#_the_class[section 2.10]. 
 

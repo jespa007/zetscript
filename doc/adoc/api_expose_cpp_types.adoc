@@ -1,7 +1,7 @@
 <<<
 === Exposing C++ types to ZetScript
 
-In this chapter will see how to to register C&#43;&#43; types, function members, metamethods and properties in order to be exposed in ZetScript.
+In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript.
 
 
 ==== Register a type
@@ -45,11 +45,11 @@ include::../examples/api/register_type/register_instantiable_type.cpp[]
 ===== Register a constructor
 
 
-To register a constructor function it has to create and register a C&#43;&#43; function in section <<api_data_types.adoc#_scriptengineregisterconstructor,ScriptEngine::registerConstructor>>.
+To register a constructor function it has to create and register a C function as it explains on <<api_data_types.adoc#_scriptengineregisterconstructor,ScriptEngine::registerConstructor>>.
 
 *Example*
 
-The following code defines two functions that accepts a <<language_data_types.adoc#\_float,Float>> value or _Number_ pointer type respectively,
+The following code defines two functions that accepts a <<language_data_types.adoc#_float,Float>> value or _Number_ pointer type respectively,
 
 [source,cpp]
 ----

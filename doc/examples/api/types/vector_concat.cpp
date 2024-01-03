@@ -1,9 +1,9 @@
 #include "zetscript.h"
-using zetscript::Vector;
+
 int main(){
-	Vector<int> vector1;
-	Vector<int> vector2;
-	Vector<int> vector3;
+	zetscript::Vector<int> vector1;
+	zetscript::Vector<int> vector2;
+	zetscript::Vector<int> vector3;
 
 	for(int i=0; i < 2; i++){
 		vector1.push(i);

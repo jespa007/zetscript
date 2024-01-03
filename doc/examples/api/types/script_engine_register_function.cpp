@@ -1,14 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
 // ScriptEngine C++ interface function
-void sayHelloWorld(ScriptEngine *_script_engine){
+void sayHelloWorld(zetscript::ScriptEngine *_script_engine){
     printf("Hello world\n");
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
     script_engine.registerFunction("sayHelloWorld",sayHelloWorld);

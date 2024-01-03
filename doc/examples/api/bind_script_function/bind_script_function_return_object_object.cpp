@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ObjectScriptObject;
-
 int main()
 {
 	zetscript::ScriptEngine script_engine;
@@ -13,17 +11,19 @@ int main()
         "}\n"
  	);
 
-    // It binds 'returnObject' as 'ObjectScriptObject *(void)'
-    auto returnObject=script_engine.bindScriptFunction<ObjectScriptObject *()>("returnObject");
+   // It binds 'returnObject' as 'ObjectScriptObject *(void)'
+   auto returnObject=script_engine.bindScriptFunction<
+      zetscript::ObjectScriptObject *()
+   >("returnObject");
 
-    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
-    auto object_object=returnObject();
+   // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
+   auto object_object=returnObject();
 
-    // Prints its value by console.
-    printf("result : %s\n",object_object->toString().toConstChar());
+   // Prints its value by console.
+   printf("result : %s\n",object_object->toString().toConstChar());
 
-    // 'unrefLifetimeObject' it decreases the reference count of the script object to tell is not used anymore
-    script_engine.unrefLifetimeObject(object_object);
+   // 'unrefLifetimeObject' it decreases the reference count of the script object to tell is not used anymore
+   script_engine.unrefLifetimeObject(object_object);
 
  	return 0;
 }

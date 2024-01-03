@@ -1,13 +1,10 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ArrayScriptObject;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::String;
-
 // print array contents
-void printArray(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
+void printArray(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ArrayScriptObject *_array_object
+){
 	printf("Array contents : %s",_array_object->toString().toConstChar());
 }
 

@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_float;
-
 int main()
 {
 	zetscript::ScriptEngine script_engine;

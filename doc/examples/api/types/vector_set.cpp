@@ -1,7 +1,7 @@
 #include "zetscript.h"
-using zetscript::Vector;
+
 int main(){
-	Vector<int> vector;
+	zetscript::Vector<int> vector;
 
 	vector.push(1);
 	vector.push(100);

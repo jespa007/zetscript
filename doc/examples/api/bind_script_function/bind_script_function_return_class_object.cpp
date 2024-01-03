@@ -1,9 +1,7 @@
 #include "zetscript.h"
 
-using zetscript::ObjectScriptObject;
+int main(){
 
-int main()
-{
 	zetscript::ScriptEngine script_engine;
 
     // Evaluates ZetScript class Number and function 'newNumber' that returns a new instance of type 'Number'
@@ -20,7 +18,9 @@ int main()
  	);
 
     // It binds 'newNumber' as '(ObjectScriptObject *)(void)'
-    auto newNumber=script_engine.bindScriptFunction<ObjectScriptObject *()>("newNumber");
+  auto newNumber=script_engine.bindScriptFunction<
+    zetscript::ObjectScriptObject *()
+  >("newNumber");
 
    // Calls ZetScript function which it returns 'ObjectScriptObject *' reference
     auto number=newNumber();

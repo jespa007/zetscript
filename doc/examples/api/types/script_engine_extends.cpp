@@ -1,8 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_int;
-using zetscript::ScriptEngine;
-
 class MyCppType{
 };
 
@@ -10,16 +7,21 @@ class MyCppTypeExtend:public MyCppType{
 };
 
 
-MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_script_engine){
+MyCppTypeExtend * MyCppTypeExtend_new(
+	zetscript::ScriptEngine *_script_engine
+){
 	return new MyCppTypeExtend();
 }
 
-void MyCppTypeExtend_delete(ScriptEngine *_script_engine, MyCppTypeExtend *_this){
+void MyCppTypeExtend_delete(
+	zetscript::ScriptEngine *_script_engine
+	, MyCppTypeExtend *_this
+){
 	delete _this;
 }
 
 int main(){
-	ScriptEngine script_engine; // instance zetscript
+	zetscript::ScriptEngine script_engine; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
 	script_engine.registerType<MyCppType>("MyCppType");

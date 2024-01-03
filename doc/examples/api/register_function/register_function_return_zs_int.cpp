@@ -1,14 +1,13 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-
-zs_int returnInteger(ScriptEngine *_script_engine){
+zetscript::zs_int returnInteger(
+    zetscript::ScriptEngine *_script_engine
+){
     return 10;
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers function interface
     script_engine.registerFunction("returnInteger",returnInteger);

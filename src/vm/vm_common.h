@@ -8,9 +8,9 @@
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define ZS_PRINT_DUAL_ERROR_OP(c)\
 	ZS_VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or type implements the metamethod",\
-		data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
+		data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_0,stk_result_op1),\
 		c,\
-		data->script_engine->stackElementToStringTypeOf(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
+		data->script_engine->stackElementTypeToString(ZS_VM_STR_AUX_PARAM_1,stk_result_op2));\
 
 #define ZS_PRINT_ERROR_OP(c)\
 ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\

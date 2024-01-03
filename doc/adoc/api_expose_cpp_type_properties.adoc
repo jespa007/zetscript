@@ -1,7 +1,7 @@
 
 ==== Properties
 
-ZetScript API allows to register class properties as we could see in xref:language_class.adoc#\_properties[chapter 2 class properties].
+ZetScript API allows to register class properties as we could see in xref:language_class.adoc#_properties[chapter 2 class properties].
 
 
 ===== Register constant property
@@ -86,7 +86,7 @@ void RegisteredTypeProperty_addassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -152,7 +152,7 @@ void RegisteredTypeProperty_andassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -217,7 +217,7 @@ void RegisteredTypeProperty_divassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -349,7 +349,7 @@ void RegisteredTypeProperty_modassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -413,7 +413,7 @@ void RegisteredTypeProperty_mulassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -479,7 +479,7 @@ void RegisteredTypeProperty_orassign(ScriptEngine *_script_engine, RegisteredTyp
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -548,7 +548,7 @@ ReturnType  RegisteredType_value_postdec(ScriptEngine *_script_engine, Registere
 
 [.underline]#Returns#
 
-Return the value before perform post decrement operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#\_return_types[return types].
+Return the value before perform post decrement operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#_return_types[return types].
 
 *Example*
 
@@ -613,7 +613,7 @@ ReturnType  RegisteredType_value_postinc(ScriptEngine *_script_engine, Registere
 
 [.underline]#Returns#
 
-Return the value before perform post increment operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#\_return_types[return types].
+Return the value before perform post increment operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#_return_types[return types].
 
 *Example*
 
@@ -674,7 +674,7 @@ ReturnType  RegisteredType_value_predec(ScriptEngine *_script_engine, Registered
 
 [.underline]#Returns#
 
-Return the value before perform pre decrement operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#\_return_types[return types].
+Return the value before perform pre decrement operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#_return_types[return types].
 
 *Example*
 
@@ -738,7 +738,7 @@ ReturnType  RegisteredType_value_preinc(ScriptEngine *_script_engine, Registered
 
 [.underline]#Returns#
 
-Return the value before perform pre increment operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#\_return_types[return types].
+Return the value before perform pre increment operation. The return value can be one defined in  xref:api_call_cpp_from_zetscript.adoc#_return_types[return types].
 
 *Example*
 
@@ -798,7 +798,7 @@ void RegisteredTypeProperty_set(ScriptEngine *_script_engine, RegisteredType *_t
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 [.underline]#Returns#
 
@@ -863,7 +863,7 @@ void RegisteredTypeProperty_shlassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -928,7 +928,7 @@ void RegisteredTypeProperty_shrassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -993,7 +993,7 @@ void RegisteredTypeProperty_subassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#
@@ -1060,7 +1060,7 @@ void RegisteredTypeProperty_xorassign(ScriptEngine *_script_engine, RegisteredTy
 
 - __script_engine_ : ScriptEngine instance
 - __this_ : The current instance
-- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#\_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#\_register_a_type[registered type].
+- __value_ : Value or variable as right operand. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
 
 
 [.underline]#Returns#

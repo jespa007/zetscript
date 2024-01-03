@@ -1,11 +1,10 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ScriptFunction;
-
 // c function
-void paramFunction(ScriptEngine *_script_engine, ScriptFunction *_script_function){
-
+void paramFunction(
+    zetscript::ScriptEngine *_script_engine
+    , zetscript::ScriptFunction *_script_function
+){
 	// bind script function to be callable from C
     auto function=_script_engine->bindScriptFunction<void(void)>(_script_function);
 
@@ -14,7 +13,7 @@ void paramFunction(ScriptEngine *_script_engine, ScriptFunction *_script_functio
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
     script_engine.registerFunction("paramFunction",paramFunction);
 

@@ -66,7 +66,7 @@ void test_arithmetic_int_expression(
 				zetscript::String::format(
 					"error test '%s' expected int but it was '%s'!\n"
 					,str_expr
-					,_script_engine->stackElementToString(&stk).toConstChar()
+					,_script_engine->stackElementValueToString(&stk).toConstChar()
 				).toConstChar()
 			); \
 		} \
@@ -91,7 +91,7 @@ void test_constant_int_expression(
 					zetscript::String::format(
 							"error test '%s' expected int but it was '%s'!\n"
 							,str_expr
-							,_script_engine->stackElementToString(&stk).toConstChar()).toConstChar()
+							,_script_engine->stackElementValueToString(&stk).toConstChar()).toConstChar()
 					); \
 		} \
 	}catch(std::exception & ex){\
@@ -529,7 +529,7 @@ void test_constant_bool_expression(zetscript::ScriptEngine *_script_engine,const
 					zetscript::String::format(
 							"error test '%s' expected bool type but it was '%s'!\n"
 							,str_expr
-							,_script_engine->stackElementToString(&stk).toConstChar()
+							,_script_engine->stackElementValueToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -551,7 +551,7 @@ void test_arithmetic_bool_expression(zetscript::ScriptEngine *_script_engine,boo
 					zetscript::String::format(
 							"error test '%s' expected bool but it was '%s'!\n"
 							,str_expr
-							,_script_engine->stackElementToString(&stk).toConstChar()
+							,_script_engine->stackElementValueToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -582,7 +582,7 @@ void test_constant_string_expression(zetscript::ScriptEngine *_script_engine,con
 					zetscript::String::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
 							,str_expr
-							,_script_engine->stackElementToString(&stk).toConstChar()
+							,_script_engine->stackElementValueToString(&stk).toConstChar()
 					).toConstChar()
 			);
 		}
@@ -608,7 +608,7 @@ void test_arithmetitoConstCharing_expression(zetscript::ScriptEngine *_script_en
 			throw std::runtime_error(
 					zetscript::String::format(
 							"error test '%s' expected 'StringScriptObject' but it was '%s'!\n"
-							,str_expr,_script_engine->stackElementToString(&stk).toConstChar()
+							,str_expr,_script_engine->stackElementValueToString(&stk).toConstChar()
 					).toConstChar()
 			);
 

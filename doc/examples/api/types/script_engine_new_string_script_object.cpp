@@ -1,12 +1,11 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
-
-StringScriptObject *returnNewStringScriptObject(ScriptEngine *_script_engine){
+zetscript::StringScriptObject *returnNewStringScriptObject(
+	zetscript::ScriptEngine *_script_engine
+){
 
 	// instance new StringScriptObject using ScriptEngine instance
-	StringScriptObject *string_object=_script_engine->newStringScriptObject("Hello World!");
+	zetscript::StringScriptObject *string_object=_script_engine->newStringScriptObject("Hello World!");
 
 	// ...
 

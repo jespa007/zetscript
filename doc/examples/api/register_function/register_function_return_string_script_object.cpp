@@ -1,13 +1,12 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
-
 // ScriptEngine C++ interface function
-StringScriptObject *returnString(ScriptEngine *_script_engine){
+zetscript::StringScriptObject *returnString(
+    zetscript::ScriptEngine *_script_engine
+){
 
 	// instance new StringScriptObject using ScriptEngine instance
-	StringScriptObject *string=_script_engine->newStringScriptObject();
+	zetscript::StringScriptObject *string=_script_engine->newStringScriptObject();
 
     // set string value "Hello world (StringScriptObject)"
     string->set("Hello world (StringScriptObject)");
@@ -16,7 +15,7 @@ StringScriptObject *returnString(ScriptEngine *_script_engine){
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers function interface
     script_engine.registerFunction("returnString",returnString);

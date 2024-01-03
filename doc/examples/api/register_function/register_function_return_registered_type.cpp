@@ -1,8 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_float;
-
 // C++ class to be registered
 class Number{
 public:
@@ -14,21 +11,25 @@ public:
 };
 
 // defines getter property for Number::value
-zs_float NumberZs_get_value(ScriptEngine *_script_engine, Number *_this){
+zetscript::zs_float NumberZs_get_value(
+	zetscript::ScriptEngine *_script_engine
+	, Number *_this
+){
 	return _this->value;
 }
 
 Number *_number=NULL;
 
 // C function that returns a Number type pointer
-Number *returnNumber(ScriptEngine *_script_engine){
-
+Number *returnNumber(
+	zetscript::ScriptEngine *_script_engine
+){
 	// return global _number
     return _number;
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Creates number and init its field value
 	_number=new Number();

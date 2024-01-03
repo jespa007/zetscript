@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_int;
-
 int main(){
 	zetscript::ScriptEngine script_engine;
 
@@ -12,8 +10,13 @@ int main(){
         "}\n"
  	);
 
-    // It binds 'printAdd' as '(void *)(zs_int, zs_int)' (by value)
-    auto printAddByValue=script_engine.bindScriptFunction<void(zs_int _value1, zs_int _value2)>("printAdd");
+   // It binds 'printAdd' as '(void *)(zs_int, zs_int)' (by value)
+   auto printAddByValue=script_engine.bindScriptFunction<
+      void(
+         zetscript::zs_int _value1
+         ,zetscript::zs_int _value2
+      )
+   >("printAdd");
 
     // Calls binded ZetScript function with parameters by value
     printAddByValue(10,10);

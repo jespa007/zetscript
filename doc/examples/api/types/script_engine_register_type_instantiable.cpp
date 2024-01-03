@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
 // Defines  MyType
 class MyType{
 //...
@@ -10,11 +8,16 @@ class MyType{
 // defines global variable my_type
 MyType *my_type=NULL;
 
-MyType *MyTypeZs_new(ScriptEngine *_script_engine){
+MyType *MyTypeZs_new(
+	zetscript::ScriptEngine *_script_engine
+){
 	return new MyType();
 }
 
-void MyTypeZs_delete(ScriptEngine *_script_engine,MyType *_this){
+void MyTypeZs_delete(
+	zetscript::ScriptEngine *_script_engine
+	,MyType *_this
+){
 	delete _this;
 }
 

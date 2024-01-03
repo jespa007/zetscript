@@ -150,14 +150,13 @@ To call C++ code from ZetScript is done by defining and registering a C function
 						
 <pre lang="c++">
 #include "zetscript.h"
-using zetscript::ScriptEngine;
 
 // ZetScript C++ interface function
-void sayHelloWorld(ScriptEngine *_script_engine){
+void sayHelloWorld(zetscript::ScriptEngine *_script_engine){
 	printf("Hello world\n");
 }
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
 	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
@@ -177,10 +176,6 @@ To expose C++ type to ZetScript is done by registering C++ type. To expose membe
 <pre lang="c++">
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-
-
 class MyClass{
 public:
 	int data1;
@@ -197,31 +192,47 @@ public:
 };
 
 // define new and delete functions
-MyClass *MyClassWrap_new(ScriptEngine *_script_engine){
+MyClass *MyClassWrap_new(
+	zetscript::ScriptEngine *_script_engine
+){
 	return new MyClass;
 }
 
-void MyClassWrap_delete(ScriptEngine *_script_engine,MyClass *_this){
+void MyClassWrap_delete(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+){
 	delete _this;
 }
 
 // bind data1 member variable (read & write)
-void MyClassWrap_set_data1(ScriptEngine *_script_engine,MyClass *_this, zs_int v){
+void MyClassWrap_set_data1(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+	, zetscript::zs_int v
+){
 	_this->data1=v;
 }
 
-zs_int MyClassWrap_get_data1(ScriptEngine *_script_engine,MyClass *_this){
+zs_int MyClassWrap_get_data1(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+){
 	return _this->data1;
 }
 
 // 'MyClassWrap::setData' wrap function
-void MyClassWrap_setData(ScriptEngine *_script_engine,MyClass *_this, zs_int v){
+void MyClassWrap_setData(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+	, zetscript::zs_int v
+){
 	_this->setValue(v);
 }
 
 int main(){
 
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	// Register class type 'MyClass' as instantiable
 	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);

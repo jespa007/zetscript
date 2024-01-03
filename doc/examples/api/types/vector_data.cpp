@@ -1,9 +1,7 @@
 #include "zetscript.h"
 
-using zetscript::Vector;
-
 int main(){
-	Vector<int> vector;
+	zetscript::Vector<int> vector;
 
 	for(int i=0; i < 5; i++){
 		vector.push(i);

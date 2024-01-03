@@ -1,7 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_int;
-
 int main(){
 	zetscript::ScriptEngine script_engine;
 
@@ -13,7 +11,9 @@ int main(){
  	);
 
    // It binds 'returnInteger' as 'zs_int(void)'
-   auto returnInteger=script_engine.bindScriptFunction<zs_int()>("returnInteger");
+  auto returnInteger=script_engine.bindScriptFunction<
+    zetscript::zs_int()
+  >("returnInteger");
 
    // Calls ZetScript function and prints return value by console.
    printf("result : %ld\n",(long int)returnInteger());

@@ -1,15 +1,15 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
-
 // c function
-void paramString(ScriptEngine *_script_engine, const char *_string){
+void paramString(
+    zetscript::ScriptEngine *_script_engine
+    , const char *_string
+){
     printf("Result : '%s' (const char *)\n",_string);
 }
 
 int main(){
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
     script_engine.registerFunction("paramString",paramString);
 

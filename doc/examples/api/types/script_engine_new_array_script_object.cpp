@@ -1,22 +1,17 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::String;
-using zetscript::ArrayScriptObject;
-using zetscript::ObjectScriptObject;
-
-ArrayScriptObject *returnNewArray(ScriptEngine *_script_engine){
+zetscript::ArrayScriptObject *returnNewArray(
+	zetscript::ScriptEngine *_script_engine
+){
 
 	// instance new ArrayScriptObject using ScriptEngine instance
-	ArrayScriptObject *array_object=_script_engine->newArrayScriptObject();
+	zetscript::ArrayScriptObject *array_object=_script_engine->newArrayScriptObject();
 
 	// push first value as integer 10
-	array_object->push<zs_int>(10);
+	array_object->push<zetscript::zs_int>(10);
 
 	// push second value as float 5.5
-	array_object->push<zs_float>(5.5);
+	array_object->push<zetscript::zs_float>(5.5);
 
 	// push third value as boolean true
 	array_object->push<bool>(true);
@@ -25,20 +20,20 @@ ArrayScriptObject *returnNewArray(ScriptEngine *_script_engine){
 	array_object->push<const char *>("Hello World");
 
 	// push 5th value as an array 
-	ArrayScriptObject *new_array=_script_engine->newArrayScriptObject();
+	zetscript::ArrayScriptObject *new_array=_script_engine->newArrayScriptObject();
 	for(int i=0; i < 3; i++){
-		new_array->push<zs_int>(i+1);
+		new_array->push<zetscript::zs_int>(i+1);
 	}
-	array_object->push<ArrayScriptObject *>(new_array);
+	array_object->push<zetscript::ArrayScriptObject *>(new_array);
 
 	// push 6th value as an object 
-	ObjectScriptObject *new_object2=_script_engine->newObjectScriptObject();
+	zetscript::ObjectScriptObject *new_object2=_script_engine->newObjectScriptObject();
 
 	for(int i=0; i < 3; i++){
-		new_object2->set<zs_int>(String::format("p%i",i+1),(i+1)*2);
+		new_object2->set<zetscript::zs_int>(zetscript::String::format("p%i",i+1),(i+1)*2);
 	}
 
-	array_object->push<ObjectScriptObject *>(new_object2);
+	array_object->push<zetscript::ObjectScriptObject *>(new_object2);
 
 
 	return array_object;

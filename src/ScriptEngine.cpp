@@ -300,7 +300,7 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // STACKELEMENT
 
-	String ScriptEngine::stackElementToStringTypeOf(StackElement *_stk){
+	String ScriptEngine::stackElementTypeToString(StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
 		String result="unknow";
@@ -352,8 +352,8 @@ namespace zetscript{
 		return result;
 	}
 
-	const char *ScriptEngine::stackElementToStringTypeOf(char *_str_out, StackElement *_stk){
-		auto str=this->stackElementToStringTypeOf(_stk);
+	const char *ScriptEngine::stackElementTypeToString(char *_str_out, StackElement *_stk){
+		auto str=this->stackElementTypeToString(_stk);
 
 		strcpy(_str_out,str.toConstChar());
 
@@ -377,7 +377,7 @@ namespace zetscript{
 		return _stk;
 	}
 
-	String ScriptEngine::stackElementToString(StackElement *_stk, const String  & _format ){
+	String ScriptEngine::stackElementValueToString(StackElement *_stk, const String  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		String result="unknown";
 		StackElement stk=unwrapStackElement(*_stk);
@@ -430,7 +430,7 @@ namespace zetscript{
 		return result;
 	}
 
-	const char		*ScriptEngine::stackElementToString(char *_str_out, int _str_out_len, StackElement *_stk,const String & _format){
+	const char		*ScriptEngine::stackElementValueToString(char *_str_out, int _str_out_len, StackElement *_stk,const String & _format){
 		StackElement stk=unwrapStackElement(*_stk);
 		String result;
 		memset(_str_out,0,_str_out_len);
@@ -444,7 +444,7 @@ namespace zetscript{
 		}
 
 		if(result.isEmpty()){
-			result=stackElementToString(_stk,_format);
+			result=stackElementValueToString(_stk,_format);
 		}
 
 		strncpy(_str_out,result.toConstChar(),(result.length()<(_str_out_len-1))?result.length():_str_out_len-1);
@@ -760,7 +760,7 @@ namespace zetscript{
 			}else{
 				_error=String::format("Cannot know how to convert type '%s' from '%s'"
 					,Rtti::demangle(ZS_SCRIPT_TYPE_ID_TO_NATIVE_NAME(this->getScriptTypesFactory(),_script_type_id_to_convert)).toConstChar()
-					,this->stackElementToStringTypeOf(_stack_element).toConstChar()
+					,this->stackElementTypeToString(_stack_element).toConstChar()
 				);
 				return false;
 			}
@@ -862,6 +862,11 @@ namespace zetscript{
 				 break;
 			}
 			return stk_result;
+	}
+
+
+	void		ScriptEngine::pushStackElement(StackElement _stk){
+		vm_push_stack_element(this->virtual_machine,_stk);
 	}
 
 	 // STACKELEMENT
@@ -1075,7 +1080,7 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR(
 					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
 					,_key.toConstChar()
-					,this->stackElementToStringTypeOf(stk).toConstChar()
+					,this->stackElementTypeToString(stk).toConstChar()
 				);
 			}
 		}

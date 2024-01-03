@@ -1,13 +1,13 @@
 #include "Number.h"
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-
 // Number reference
 Number *number=NULL;
 
 // function that returns number reference
-Number *getNumber(ScriptEngine *_script_engine){
+Number *getNumber(
+	zetscript::ScriptEngine *_script_engine
+){
 	return 	number;
 }
 

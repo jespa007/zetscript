@@ -1,8 +1,8 @@
 #include "zetscript.h"
-using zetscript::String;
+
 int main(){
 
-	String s;
+	zetscript::String s;
 	
 	printf("%s\n",String::format("Characters: %c %c", 'a', 65).toConstChar());
    	printf("%s\n",String::format("Decimals: %d %ld", 1977, 650000L).toConstChar());

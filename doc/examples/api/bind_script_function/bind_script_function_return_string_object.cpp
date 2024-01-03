@@ -1,11 +1,8 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
+int main(){
 
-int main()
-{
-  ScriptEngine script_engine;
+  zetscript::ScriptEngine script_engine;
 
   // Evaluates ZetScript function 'returnString' that returns 'String' value
   script_engine.compile(
@@ -15,7 +12,9 @@ int main()
  	);
 
   // It binds 'returnString' as 'StringScriptObject *(void)'
-  auto returnString=script_engine.bindScriptFunction<StringScriptObject *()>("returnString");
+  auto returnString=script_engine.bindScriptFunction<
+    zetscript::StringScriptObject *()
+  >("returnString");
 
   // Calls ZetScript function which it returns 'StringScriptObject *' reference
   auto object=returnString();

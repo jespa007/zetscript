@@ -8,7 +8,6 @@ v2.0, December 30,2023
 :lang: en
 :language: zetscript
 :sectnums: 
-:stylesheet: css/zetscript-reference-manual.css
 :source-highlighter: rouge
 
 

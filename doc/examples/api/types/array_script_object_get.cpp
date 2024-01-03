@@ -1,25 +1,21 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::ArrayScriptObject;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::String;
-
-
 // Print contents of an array.
-void printArray(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
+void printArray(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ArrayScriptObject *_array_object
+){
 	printf("Array contents : [");
 	for(int i=0; i < _array_object->length(); i++){
 		if(i>0){
 			printf(",");
 		}
-		if(_array_object->elementInstanceOf<zs_int>(i)){
-			printf("%i",(int)_array_object->get<zs_int>(i));
-		}else if(_array_object->elementInstanceOf<zs_float>(i)){
-			printf("%f",_array_object->get<zs_float>(i));
-		}else if(_array_object->elementInstanceOf<String>(i)){
-			printf("'%s'",_array_object->get<String>(i).toConstChar());
+		if(_array_object->elementInstanceOf<zetscript::zs_int>(i)){
+			printf("%i",(int)_array_object->get<zetscript::zs_int>(i));
+		}else if(_array_object->elementInstanceOf<zetscript::zs_float>(i)){
+			printf("%f",_array_object->get<zetscript::zs_float>(i));
+		}else if(_array_object->elementInstanceOf<zetscript::String>(i)){
+			printf("'%s'",_array_object->get<zetscript::String>(i).toConstChar());
 		}else{
 			printf("N/A");
 		}
@@ -30,7 +26,7 @@ void printArray(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	// registers printString
+	// registers 'printArray' function
 	script_engine.registerFunction("printArray",printArray);
 
 	// calls printArray

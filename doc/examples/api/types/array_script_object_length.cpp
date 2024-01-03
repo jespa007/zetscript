@@ -1,10 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
-using zetscript::ArrayScriptObject;
-
-void printArrayLength(ScriptEngine *_script_engine,ArrayScriptObject *_array_object){
+void printArrayLength(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ArrayScriptObject *_array_object
+){
 	printf("The length of vector is %i\n",_array_object->length());
 }
 

@@ -1,8 +1,5 @@
 #include "zetscript.h"
 
-using zetscript::zs_int;
-using zetscript::ScriptEngine;
-
 class MyCppType{
 	public:
 	int data1;
@@ -27,33 +24,50 @@ public:
 
 // MyCppType
 
-zs_int MyCppType_function1(ScriptEngine *_script_engine, MyCppType *_this, zs_int _arg){
+zetscript::zs_int MyCppType_function1(
+	zetscript::ScriptEngine *_script_engine
+	,MyCppType *_this
+	,zetscript::zs_int _arg
+){
 	return _this->function1(_arg);
 }
 
 // MyCppTypeExtend
 
-MyCppTypeExtend * MyCppTypeExtend_new(ScriptEngine *_script_engine){
+MyCppTypeExtend * MyCppTypeExtend_new(
+	zetscript::ScriptEngine *_script_engine
+){
 	return new MyCppTypeExtend();
 }
 
-void MyCppTypeExtend_constructor(ScriptEngine *_script_engine, MyCppTypeExtend *_this, zs_int _data1){
+void MyCppTypeExtend_constructor(
+	zetscript::ScriptEngine *_script_engine
+	, MyCppTypeExtend *_this
+	, zetscript::zs_int _data1
+){
 	_this->data1=_data1;
 	_this->data2=_data1*10;
 }
 
-zs_int MyCppTypeExtend_function2(ScriptEngine *_script_engine, MyCppTypeExtend *_this, zs_int _arg){
+zetscript::zs_int MyCppTypeExtend_function2(
+	zetscript::ScriptEngine *_script_engine
+	,MyCppTypeExtend *_this
+	,zetscript::zs_int _arg
+){
 	return _this->function1(_arg);
 }
 
-void MyCppTypeExtend_delete(ScriptEngine *_script_engine, MyCppTypeExtend *_this){
+void MyCppTypeExtend_delete(
+	zetscript::ScriptEngine *_script_engine
+	,MyCppTypeExtend *_this
+){
 	delete _this;
 }
 
 //---- ZETSCRIPT-NATIVE INTERFACE FUNCTIONS
 
 int main(){
-	ScriptEngine script_engine; // instance zetscript
+	zetscript::ScriptEngine script_engine; // instance zetscript
 
 	// Register MyCppType as MyCppType in script side
 	script_engine.registerType<MyCppType>("MyCppType");

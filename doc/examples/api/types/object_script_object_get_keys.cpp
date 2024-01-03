@@ -1,12 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::zs_int;
-using zetscript::zs_float;
-using zetscript::ObjectScriptObject;
-using zetscript::StringScriptObject;
-
-void printKeys(ScriptEngine *_script_engine,ObjectScriptObject *_object){
+void printKeys(
+	zetscript::ScriptEngine *_script_engine
+	,zetscript::ObjectScriptObject *_object
+){
 
 	// instance new ObjectScriptObject using ScriptEngine instance
 	auto keys=_object->getKeys();

@@ -1,10 +1,9 @@
 #include "zetscript.h"
 
-using zetscript::ScriptEngine;
-using zetscript::StringScriptObject;
-
-StringScriptObject *returnString(ScriptEngine *_script_engine){
-	StringScriptObject *string_object = new StringScriptObject(_script_engine);
+zetscript::StringScriptObject *returnString(
+	zetscript::ScriptEngine *_script_engine
+){
+	zetscript::StringScriptObject *string_object = new zetscript::StringScriptObject(_script_engine);
 	string_object->set("Hello World!");
 	return string_object;
 }
