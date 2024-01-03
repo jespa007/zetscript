@@ -544,7 +544,7 @@ _shrassign(_value)
 
 [.underline]#Parameters#
 
-- __op1_ : Value or variable as right operand.
+- ___op1__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -649,7 +649,7 @@ _xorassign(_value)
 
 [.underline]#Parameters#
 
-- __op1_ : Value or variable as right operand.
+- ___op1__ : Value or variable as right operand.
 
 [.underline]#Returns#
 
@@ -686,8 +686,8 @@ _add(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -722,8 +722,8 @@ _and(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -758,8 +758,8 @@ _div(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -794,8 +794,8 @@ _equ(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -831,8 +831,8 @@ _gt(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -868,8 +868,8 @@ _gte(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -905,8 +905,8 @@ _lt(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -942,8 +942,8 @@ _lte(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -979,8 +979,8 @@ _mod(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1015,8 +1015,8 @@ _mul(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1051,8 +1051,8 @@ _nequ(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1088,8 +1088,8 @@ _or(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1124,8 +1124,8 @@ _shl(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1159,8 +1159,8 @@ _shr(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1196,8 +1196,8 @@ _xor(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 

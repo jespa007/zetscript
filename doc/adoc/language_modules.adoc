@@ -797,12 +797,12 @@ _sub(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_: First operand type DateTime as the minuend.
-- __op2_: Second operand type DateTime as subtrahend.
+- ___op1__: First operand type DateTime as the minuend.
+- ___op2__: Second operand type DateTime as subtrahend.
 
 [.underline]#Returns#
 
-A _TimeSpan_ a result of __op1_ - __op2_.
+A _TimeSpan_ a result of ___op1__ - ___op2__.
 
 *Example*
 

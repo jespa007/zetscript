@@ -111,7 +111,7 @@ void NumberZs_andassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_andassign_ is registered as member metamethod __andassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_andassign_ is registered as member metamethod __andassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -179,7 +179,7 @@ void NumberZs_divassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_divassign_ is registered as member metamethod __divassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_divassign_ is registered as member metamethod __divassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -317,7 +317,7 @@ void NumberZs_modassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_modassign_ is registered as member metamethod __modassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_modassign_ is registered as member metamethod __modassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -385,7 +385,7 @@ void NumberZs_mulassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_mulassign_ is registered as member metamethod __mulassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_mulassign_ is registered as member metamethod __mulassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -447,7 +447,7 @@ Number * NumberZs_neg(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_neg_ is registered as member metamethod __neg_ through _ScriptEngine::registerMemberFunction_,
+Next, the function _NumberZs_neg_ is registered as member metamethod __neg_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -512,7 +512,7 @@ bool NumberZs_not(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_not_ is registered as member metamethod __not_ through _ScriptEngine::registerMemberFunction_,
+Next, the function _NumberZs_not_ is registered as member metamethod __not_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -581,7 +581,7 @@ void NumberZs_orassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_orassign_ is registered as member metamethod __orassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_orassign_ is registered as member metamethod __orassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -647,7 +647,7 @@ ClassObject * NumberZs_postdec(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_postdec_ is registered as member metamethod __postdec_ through _ScriptEngine::registerMemberFunction_,
+Next, the function _NumberZs_postdec_ is registered as member metamethod __postdec_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -844,7 +844,7 @@ ClassObject * NumberZs_preinc(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_preinc_ is registered as member metamethod __preinc_ through _ScriptEngine::registerMemberFunction_,
+Next, the function _NumberZs_preinc_ is registered as member metamethod __preinc_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -952,7 +952,7 @@ include::../examples/api/register_type/register_member_metamethod_set_out.txt[]
 
 ====== _shlassign()
 
-Implements _bitwise shift left assignment_ operator (aka &lt;&lt;= ) with a value entered by parameter as right operand.
+Implements __bitwise shift left assignment__ operator (aka &lt;&lt;= ) with a value entered by parameter as right operand.
 
 *Syntax*
 
@@ -987,7 +987,7 @@ void NumberZs_shlassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_shlassign_ is registered as member metamethod __shlassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_shlassign_ is registered as member metamethod __shlassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1055,7 +1055,7 @@ void NumberZs_shrassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_shrassign_ is registered as member metamethod __shrassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_shrassign_ is registered as member metamethod ___shrassign__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1123,7 +1123,7 @@ void NumberZs_subassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_subassign_ is registered as member metamethod __subassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_subassign_ is registered as member metamethod __subassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1189,7 +1189,7 @@ String NumberZs_tostring(ScriptEngine *_script_engine,Number *_this){
 
 ----
 
-Next, the function _NumberZs_tostring_ is registered as member metamethod __tostring_ through _ScriptEngine::registerMemberFunction_,
+Next, the function __NumberZs_tostring__ is registered as member metamethod __tostring_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1205,7 +1205,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that creates a type __Number__ and prints its content to the console through _Console::outln_. Because _Console::outln_ prints string information it calls __tostring_ implicitly.
+Finally, the following code it shows an example of a script that creates a type __Number__ and prints its content to the console through __Console::outln__. Because __Console::outln__ prints string information it calls __tostring_ implicitly.
 
 [source,cpp]
 ----
@@ -1258,7 +1258,7 @@ void NumberZs_xorassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
 }
 ----
 
-Next, each function _NumberZs_xorassign_ is registered as member metamethod __xorassign_ through _ScriptEngine::registerMemberFunction_,
+Next, each function __NumberZs_xorassign__ is registered as member metamethod __xorassign_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1295,7 +1295,7 @@ include::../examples/api/register_type/register_member_metamethod_xorassign_out.
 
 ====== _add()
 
-Implements _add_ operator (aka + ) between first operand and second operand
+Implements __add__ operator (aka + ) between first operand and second operand
 
 *Syntax*
 
@@ -1306,8 +1306,8 @@ ClassObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1315,7 +1315,7 @@ ClassObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _add_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __add__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1334,7 +1334,7 @@ ClassObject * NumberZs_add(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_add_ is registered as member metamethod __add_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_add_ is registered as member metamethod ___add__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1350,7 +1350,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __add_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___add__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1379,8 +1379,8 @@ ClassObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1388,7 +1388,7 @@ ClassObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 
 *Example*
 
-The following code defines three functions that performs _AND_ operation from __Float__ value or __Number__ type,
+The following code defines three functions that performs __AND__ operation from __Float__ value or __Number__ type,
 
 [source,cpp]
 ----
@@ -1406,7 +1406,7 @@ ClassObject * NumberZs_and(ScriptEngine *_script_engine,zs_float *_n1, Number * 
 }
 ----
 
-Next, each function _NumberZs_and_ is registered as member metamethod __AND_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_and_ is registered as member metamethod ___AND__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1419,7 +1419,7 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 }
 ----
 
-Finally, the following code it shows an example of a script that performs __AND_ operation from a __Float__ and __Number__.
+Finally, the following code it shows an example of a script that performs ___AND__ operation from a __Float__ and __Number__.
 
 [source,javascript]
 ----
@@ -1437,7 +1437,7 @@ include::../examples/api/register_type/register_member_metamethod_and_out.txt[]
 
 ====== _div()
 
-Implements _division_ operator (aka / ) between first operand and second operand
+Implements __division__ operator (aka / ) between first operand and second operand
 
 *Syntax*
 
@@ -1448,8 +1448,8 @@ ClassObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1475,7 +1475,7 @@ ClassObject * NumberZs_div(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 }
 ----
 
-Next, each function _NumberZs_div_ is registered as member metamethod __div_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_div_ is registered as member metamethod __div_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1518,8 +1518,8 @@ bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1546,7 +1546,7 @@ bool NumberZs_equ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_equ_ is registered as member metamethod __equ_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_equ_ is registered as member metamethod __equ_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1590,8 +1590,8 @@ bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1617,7 +1617,7 @@ bool NumberZs_gt(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_gt_ is registered as member metamethod __gt__ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_gt_ is registered as member metamethod __gt__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1663,8 +1663,8 @@ bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1691,7 +1691,7 @@ bool NumberZs_gte(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_gte_ is registered as member metamethod __gte_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_gte_ is registered as member metamethod __gte_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1736,8 +1736,8 @@ bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1763,7 +1763,7 @@ bool NumberZs_lt(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_lt_ is registered as member metamethod __lt__ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_lt_ is registered as member metamethod __lt__ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1806,8 +1806,8 @@ _lte(_op1,_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1834,7 +1834,7 @@ bool NumberZs_lte(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_lte_ is registered as member metamethod __lte_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_lte_ is registered as member metamethod __lte_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1876,8 +1876,8 @@ ClassObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1902,7 +1902,7 @@ ClassObject * NumberZs_mod(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 }
 ----
 
-Next, each function _NumberZs_mod_ is registered as member metamethod __mod_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_mod_ is registered as member metamethod __mod_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -1946,8 +1946,8 @@ ClassObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -1974,7 +1974,7 @@ ClassObject * NumberZs_mul(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_mul_ is registered as member metamethod __mul_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_mul_ is registered as member metamethod __mul_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2016,8 +2016,8 @@ bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2044,7 +2044,7 @@ bool NumberZs_nequ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 }
 ----
 
-Next, each function _NumberZs_nequ_ is registered as member metamethod __nequ_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_nequ_ is registered as member metamethod __nequ_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2091,8 +2091,8 @@ ClassObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2119,7 +2119,7 @@ ClassObject * NumberZs_or(ScriptEngine *_script_engine,zs_float *_n1, Number * _
 
 ----
 
-Next, each function _NumberZs_or_ is registered as member metamethod __OR_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_or_ is registered as member metamethod __OR_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2162,8 +2162,8 @@ ClassObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2190,7 +2190,7 @@ ClassObject * NumberZs_shl(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_shl_ is registered as member metamethod __shl_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_shl_ is registered as member metamethod __shl_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2233,8 +2233,8 @@ ClassObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2261,7 +2261,7 @@ ClassObject * NumberZs_shr(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_shr_ is registered as member metamethod __shr_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_shr_ is registered as member metamethod __shr_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2304,8 +2304,8 @@ ClassObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2332,7 +2332,7 @@ ClassObject * NumberZs_sub(ScriptEngine *_script_engine,zs_float *_n1, Number *_
 
 ----
 
-Next, each function _NumberZs_sub_ is registered as member metamethod __sub_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_sub_ is registered as member metamethod __sub_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
@@ -2377,8 +2377,8 @@ ClassObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 
 [.underline]#Parameters#
 
-- __op1_ : 1st operand.
-- __op2_ : 2nd operand.
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
 
 [.underline]#Returns#
 
@@ -2405,7 +2405,7 @@ ClassObject * NumberZs_xor(ScriptEngine *_script_engine,zs_float *_n1, Number * 
 
 ----
 
-Next, each function _NumberZs_xor_ is registered as member metamethod __XOR_ through _ScriptEngine::registerMemberFunction_,
+Next, each function _NumberZs_xor_ is registered as member metamethod __XOR_ through __ScriptEngine::registerMemberFunction__,
 
 [source,cpp]
 ----
