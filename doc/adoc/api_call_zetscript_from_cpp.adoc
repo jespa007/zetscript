@@ -291,7 +291,7 @@ To bind a ZetScript function that accepts a <<language_data_types.adoc#_string,S
 
 ===== Parameter String as const char *
 
-To bind a ZetScript function that accepts a <<language_data_types.adoc#_string,String>> it can specify _const char &#42;_ as parameter type on its function signature.
+To bind a ZetScript function that accepts a <<language_data_types.adoc#_string,String>> it can specify __const char *__ as parameter type on its function signature.
 
 *Example*
 
