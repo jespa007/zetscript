@@ -253,9 +253,9 @@ int main(){
 	return 0;
 }
 </pre>
-<br>
+
 ZetScript allows inherits is that a script class can inherit c++ registered type.
-<br>
+
 <pre lang="c++">
 #include "zetscript.h"
 
