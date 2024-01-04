@@ -15,8 +15,7 @@ Main improvements:
 - Implements keywords 'const'
 - Implements operators 'in','typeof'
 - Implements builtin iterators for String, Vector and Objects
-- Implements builtin obj: 'DateTime'
-- Implements builtin modules: 'System', 'Math', 'Json' and 'String'
+- Implements builtin modules: 'System', 'Math', 'Json' and 'DateTime'
 - The use of "function" keyword on class function members are not mandatory
 - switch-case eval expressions
 - Implements builtin concatenation with vector and object types through operator '+' 
