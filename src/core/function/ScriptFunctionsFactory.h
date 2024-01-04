@@ -49,7 +49,7 @@ namespace zetscript{
 			~ScriptFunctionsFactory();
 
 		private:
-			ScriptEngine 							* 	script_engine;
+			zetscript::ScriptEngine 							* 	script_engine;
 			ScriptScopesFactory 					* 	scope_factory;
 			Vector<ScriptFunction *>				*   script_functions;
 			int idx_clear_checkpoint;

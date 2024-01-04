@@ -51,7 +51,7 @@ namespace zetscript{
 		// Functions
 
 		ScriptScope(
-			ScriptEngine * _script_engine
+			zetscript::ScriptEngine * _script_engine
 			, int _idx_script_function
 			, ScriptScope * _scope_parent=NULL
 			,uint16_t _properties=0
@@ -110,7 +110,7 @@ namespace zetscript{
 
 	private:
 
-		ScriptEngine 				*	script_engine;
+		zetscript::ScriptEngine 				*	script_engine;
 
 		Vector<ScriptScope *>		*	scopes;  // local scopes from starting block { }
 		ScriptScopesFactory 		*	scope_factory;

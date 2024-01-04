@@ -17,7 +17,7 @@
 namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
-			ScriptEngine * _script_engine
+			zetscript::ScriptEngine * _script_engine
 			,int _idx_script_function
 			,ScriptTypeId _owner_script_type_id
 			,int _idx_position
@@ -69,7 +69,7 @@ namespace zetscript{
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		ScriptEngine *script_engine=sfo->script_engine;
+		zetscript::ScriptEngine *script_engine=sfo->script_engine;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 		int req_stk;
@@ -905,7 +905,7 @@ namespace zetscript{
 		unresolved_symbols.push(instruction);
 	}
 
-	ScriptEngine *ScriptFunction::getScriptEngine(){
+	zetscript::ScriptEngine *ScriptFunction::getScriptEngine(){
 		return script_engine;
 	}
 

@@ -128,7 +128,7 @@ namespace zetscript{
 		idx_clear_checkpoint=1; // by default restore till main type.
 	}
 
-	ScriptEngine *ptrToScriptEnginePtr(ScriptEngine *_script_engine, zs_int ptr){
+	zetscript::ScriptEngine *ptrToScriptEnginePtr(ScriptEngine *_script_engine, zs_int ptr){
 		ZS_UNUSUED_PARAM(_script_engine);
 		return (ScriptEngine *)ptr;
 	}

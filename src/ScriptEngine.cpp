@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	ScriptEngine::ScriptEngine(){
+	zetscript::ScriptEngine::ScriptEngine(){
 		eval_int=0;
 		eval_float=0;
 		eval_string="";
@@ -452,7 +452,7 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	void			ScriptEngine::stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src){
+	void			zetscript::ScriptEngine::stackElementAssign(StackElement *_stk_dst, const StackElement *_stk_src){
 		*_stk_dst=*_stk_src;
 
 		if(_stk_dst->properties & STACK_ELEMENT_PROPERTY_PTR_STK){
@@ -865,7 +865,7 @@ namespace zetscript{
 	}
 
 
-	void		ScriptEngine::pushStackElement(StackElement _stk){
+	void		zetscript::ScriptEngine::pushStackElement(StackElement _stk){
 		vm_push_stack_element(this->virtual_machine,_stk);
 	}
 
@@ -1332,7 +1332,7 @@ namespace zetscript{
 		}
 	}
 
-	ScriptEngine::~ScriptEngine(){
+	zetscript::ScriptEngine::~ScriptEngine(){
 		// delete system and string...
 		clearGlobalVariables(0,0);
 

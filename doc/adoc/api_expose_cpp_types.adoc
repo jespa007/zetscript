@@ -1,6 +1,6 @@
 === Exposing C++ types to ZetScript
 
-In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in __ZetScript__ through examples.
+In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript through examples.
 
 Most of the examples show in this chapter will be related about the following class __Number__,
 
@@ -286,5 +286,5 @@ include::../examples/api/register_type/register_type_script_class_extends_from_r
 include::api_expose_cpp_type_metamethods.adoc[]
 
 <<<
-	
+
 include::api_expose_cpp_type_properties.adoc[]

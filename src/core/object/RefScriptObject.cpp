@@ -5,7 +5,7 @@
 
 namespace zetscript{
 	RefScriptObject::RefScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			, ScriptObject *_so_ref
 	):ScriptObject(_script_engine){
 		ref_object=_so_ref;

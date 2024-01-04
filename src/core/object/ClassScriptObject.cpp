@@ -14,7 +14,7 @@ namespace zetscript{
 	}
 
 	ClassScriptObject::ClassScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			, ScriptTypeId _script_type_id
 			,void *_c_object
 	):ObjectScriptObject(_script_engine){

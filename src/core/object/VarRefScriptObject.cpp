@@ -14,7 +14,7 @@ namespace zetscript{
 	}
 
 	VarRefObject::VarRefObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 	):ScriptObject(_script_engine){
 		script_type_id = SCRIPT_TYPE_ID_VAR_REF_SCRIPT_OBJECT;
 		stk_var_ref.setUndefined();

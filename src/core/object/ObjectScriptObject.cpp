@@ -49,7 +49,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ObjectScriptObject::ObjectScriptObject(
-			ScriptEngine	*_script_engine
+			zetscript::ScriptEngine	*_script_engine
 	):ContainerScriptObject(_script_engine, SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 		map_fields=new MapString();
 	}

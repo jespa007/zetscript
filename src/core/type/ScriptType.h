@@ -153,7 +153,7 @@ namespace zetscript{
 		virtual ~ScriptType();
 
 	private:
-		ScriptEngine 					*	script_engine;
+		zetscript::ScriptEngine 					*	script_engine;
 		ScriptFunctionsFactory 			*	script_function_factory;
 		ScriptTypesFactory 				*	script_types_factory;
 		ScriptScopesFactory 			*	scope_factory;	// reference scope_factory

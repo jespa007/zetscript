@@ -11,7 +11,7 @@ namespace zetscript{
 	namespace json{
 
 		void serialize_stk(
-				ScriptEngine *_script_engine
+				zetscript::ScriptEngine *_script_engine
 				,ScriptObject *_this_object
 				,String & _str_result
 				, StackElement *_stk
@@ -22,7 +22,7 @@ namespace zetscript{
 
 
 		void serialize_array(
-				ScriptEngine *_script_engine
+				zetscript::ScriptEngine *_script_engine
 				,ScriptObject *_this_object
 				,String & _str_result
 				, ArrayScriptObject * _array
@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 
 		void serialize_object(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,ScriptObject *_this_object
 			, String & _str_result
 			, ObjectScriptObject *_obj
@@ -204,7 +204,7 @@ namespace zetscript{
 		}
 
 		void serialize_stk(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			, ScriptObject *_this_object
 			,String & _str_result
 			, StackElement *_stk

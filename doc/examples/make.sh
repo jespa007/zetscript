@@ -29,7 +29,7 @@ then
 fi
 
 api_example_dirs=(types bind_script_function register_function register_type)
-#api_example_dirs=(types)
+#api_example_dirs=(register_type)
 
 dir_zs="api/types/*.zs"
 for j in $dir_zs

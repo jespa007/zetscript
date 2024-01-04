@@ -5,7 +5,7 @@ int main(){
 	
 	zetscript::Vector<zetscript::String> v=s.split(' ');
 	
-	for(size_t i=0; i < v.length();i++ ){
+	for(int i=0; i < v.length();i++ ){
 		printf("%s\n",v.get(i).toConstChar());
 	}
 }

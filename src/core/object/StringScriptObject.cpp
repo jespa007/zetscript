@@ -84,7 +84,7 @@ namespace zetscript{
 
 
 	StringScriptObject * StringScriptObject::format(
-			ScriptEngine *_script_engine,
+			zetscript::ScriptEngine *_script_engine,
 			StackElement *_stk
 			, StackElement *_stk_args
 	){
@@ -291,7 +291,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	StringScriptObject::StringScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,const String & _str
 	):ScriptObject(_script_engine,SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT){
 		default_str_value = _str;

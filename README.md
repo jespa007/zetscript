@@ -169,6 +169,34 @@ int main(){
 }
 </pre>
 
+#### Call ZetScript from c++
+Once you have evaluated the script you can call function script from c++.
+						
+<pre lang="c++">
+	
+#include "zetscript.h"
+
+int main(){
+
+	zetscript::ScriptEngine script_engine;
+
+	script_engine.compile(
+		"function sayHello(){\n"
+		"	Console::outln(\"call from 'sayHello'!\")\n"
+		"}\n"
+	);
+
+	// instance ZetScript function 'sayHello'
+	auto  say_hello=script_engine.bindScriptFunction<void ()>("sayHello");
+
+	// it calls 'say_hello' script function from C++
+	say_hello();
+
+	return 0;
+}
+   
+</pre>		
+
 #### Exposing C++ types to ZetScript
 
 To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by by defining and registering a C function.
@@ -253,121 +281,3 @@ int main(){
 	return 0;
 }
 </pre>
-
-ZetScript allows inherits is that a script class can inherit c++ registered type.
-
-<pre lang="c++">
-#include "zetscript.h"
-
-class MyClass{
-public:
-	int value;
-
-	MyClass(){
-		this->value=0;
-	}
-
-	void setValue(int _value){
-		this->value = _value;
-	}
-
-};
-
-// define new and delete functions
-MyClass *MyClassWrap_new(
-	zetscript::ScriptEngine *_script_engine
-){
-	return new MyClass;
-}
-
-void MyClassWrap_delete(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-){
-	delete _this;
-}
-
-// bind data1 member variable (read & write)
-void MyClassWrap_set_value(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-	, zetscript::zs_int _value
-){
-	_this->value=_value;
-}
-
-zetscript::zs_int MyClassWrap_get_value(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-){
-	return _this->value;
-}
-
-// 'MyClassWrap::setData' wrap function
-void MyClassWrap_setValue(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-	, zetscript::zs_int _value
-){
-	_this->setValue(_value);
-}
-
-int main(){
-
-	zetscript::ScriptEngine script_engine;
-
-	// Register class type 'MyClass' as instantiable
-	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
-
-	// Register member variable 'MyClass::value' through get/set metamethod using 'MyClassWrap_set_value'/'MyClassWrap_get_value' functions
-	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_set",&MyClassWrap_set_value);
-	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_get",&MyClassWrap_get_value);
-
-	// Register member function 'MyClass::setValue' using 'MyClassWrap_setValue' wrapper
-	script_engine.registerMemberFunction<MyClass>("setValue",&MyClassWrap_setValue);
-
-	// Compiles and runs script
-	script_engine.compileAndRun(
-		"class ScriptMyClass extends MyClass{\n"
-		"	setValue(_value){\n"
-		"		super(_value*2);\n" // it calls MyClass::setValue from C++
-		"		this.value=this.value+10;\n"
-		"   }\n"
-		"};\n"
-
-		"var myclass = new ScriptMyClass();\n" // instances ScriptMyClass and MyClass from C++
-		"myclass.setValue(5);\n"
-		"Console::outln(\"myclass.value => {0}\",myclass.value);\n" // it prints "myclass.value => 20"
-	);
-
-	return 0;
-}
-</pre>
-
-#### Call ZetScript from c++
-Once you have evaluated the script you can call function script from c++.
-						
-<pre lang="c++">
-	
-#include "zetscript.h"
-
-int main(){
-
-	zetscript::ScriptEngine script_engine;
-
-	script_engine.compile(
-		"function sayHello(){\n"
-		"	Console::outln(\"call from 'sayHello'!\")\n"
-		"}\n"
-	);
-
-	// instance ZetScript function 'sayHello'
-	auto  say_hello=script_engine.bindScriptFunction<void ()>("sayHello");
-
-	// it calls 'say_hello' script function from C++
-	say_hello();
-
-	return 0;
-}
-   
-</pre>					

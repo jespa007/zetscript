@@ -17,7 +17,7 @@ This section will explain how to bind script functions that return the following
 
 ===== Return Boolean
 
-To bind a __ZetScript__ function that returns a <<language_data_types.adoc#_boolean,Boolean>> it must specify __bool__ return type on its function signature.
+To bind a ZetScript function that returns a <<language_data_types.adoc#_boolean,Boolean>> it must specify __bool__ return type on its function signature.
 
 *Example*
 

@@ -78,7 +78,7 @@ namespace zetscript{
 
 	bool 	compiler_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,String & static_error);
 	void 	compiler_compile_and_link(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,const char * _str_code
 			,CompilerData *_compiler_data_from=NULL
 			, const char *  _filename=""

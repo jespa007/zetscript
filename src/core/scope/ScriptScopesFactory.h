@@ -28,7 +28,7 @@ namespace zetscript{
 
 		private:
 
-			ScriptEngine 							* 	script_engine;
+			zetscript::ScriptEngine 							* 	script_engine;
 
 			/**
 			 * Array of script scopes.

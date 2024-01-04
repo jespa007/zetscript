@@ -12,7 +12,7 @@ namespace zetscript{
 	}
 
 	MemberFunctionScriptObject::MemberFunctionScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			, ScriptObject *_so_ref
 			, ScriptFunction *_sf_ref
 	):RefScriptObject(_script_engine, _so_ref){

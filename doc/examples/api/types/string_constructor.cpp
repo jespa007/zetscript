@@ -6,7 +6,7 @@ int main(void){
 	zetscript::String empty_string;
 
 	// initialized string
-	zetscript::String string=String("Hello world");
+	zetscript::String string=zetscript::String("Hello world");
 
 	return 0;
 }

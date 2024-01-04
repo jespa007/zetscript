@@ -25,7 +25,7 @@ namespace zetscript{
 		uint16_t 								properties; // it tells its properties
 
 		ScriptObject(
-				ScriptEngine 		*	_script_engine
+				zetscript::ScriptEngine 		*	_script_engine
 				,ScriptTypeId _script_type_id=SCRIPT_TYPE_ID_INVALID
 		);
 
@@ -34,7 +34,7 @@ namespace zetscript{
 
 		virtual	int 							length();
 
-		ScriptEngine      						* 	getScriptEngine();
+		zetscript::ScriptEngine      						* 	getScriptEngine();
 		StackElement 						* 	getBuiltinField(const String & _key_name);
 
 		StackElement 						* 	getBuiltinField(int idx);
@@ -67,7 +67,7 @@ namespace zetscript{
 
 		StackElement 							stk_this;
 
-		ScriptEngine 						*	script_engine; // 8
+		zetscript::ScriptEngine 						*	script_engine; // 8
 		VirtualMachine 						*	vm; // 8
 		Vector<StackElement *>					stk_builtin_elements;
 		MapString    						*	map_builtin_fields; // to search faster each property by its name

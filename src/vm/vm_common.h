@@ -186,7 +186,7 @@ namespace zetscript{
 		ScriptType 							*	main_class_object;
 
 		const ScriptFunction 				*	current_call_c_function;
-		ScriptEngine 						*	script_engine;
+		zetscript::ScriptEngine 						*	script_engine;
 		ScriptFunctionsFactory 				*	script_function_factory;
 		ScriptTypesFactory 					*	script_types_factory;
 		ScriptScopesFactory 				*	scope_factory;

@@ -218,7 +218,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	vm/vm.cpp
 
 	# ScriptEngine
-	ScriptEngine.cpp
+	zetscript::ScriptEngine.cpp
 )
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -484,8 +484,8 @@ SET(
 	
 	# main
 	zetscript.h
-	ScriptEngine.h
-	ScriptEngine.tcc
+	zetscript::ScriptEngine.h
+	zetscript::ScriptEngine.tcc
 )
 	
 

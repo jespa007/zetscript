@@ -263,7 +263,7 @@ namespace zetscript{
 	}LoopBreakContinueInfo;
 
 	struct CompilerData{
-		ScriptEngine 					* 		script_engine;
+		zetscript::ScriptEngine 					* 		script_engine;
 		ScriptScopesFactory 			* 		scope_factory;
 		ScriptFunctionsFactory 			* 		script_function_factory;
 		ScriptTypesFactory 				* 		script_types_factory;

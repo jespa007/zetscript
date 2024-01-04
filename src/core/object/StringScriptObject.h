@@ -18,18 +18,18 @@ namespace zetscript{
 		// Helpers
 		//
 		static StringScriptObject * newStringScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			, const String &_str=""
 		);
 
 		static StringScriptObject * newStringScriptObjectAddStk(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,StackElement *_stk_result_op1
 			,StackElement *_stk_result_op2
 		);
 
 		static StringScriptObject * format(
-			ScriptEngine *_script_engine,StackElement *_stk
+			zetscript::ScriptEngine *_script_engine,StackElement *_stk
 			, StackElement *_args
 		);
 

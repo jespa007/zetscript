@@ -11,7 +11,7 @@ namespace zetscript{
 	// member functions
 	DateTime * 		DateTimeModule_new(ScriptEngine *_script_engine);
 	void DateTimeModule_constructor(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,DateTime * _this
 			,zs_int _year
 			,zs_int _month

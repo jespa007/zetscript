@@ -62,7 +62,7 @@ namespace zetscript{
 		Vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
-				ScriptEngine *_script_engine
+				zetscript::ScriptEngine *_script_engine
 				,int _idx_script_function
 				,ScriptTypeId _owner_script_type_id
 				,int _idx_position
@@ -143,7 +143,7 @@ namespace zetscript{
 		void clearUnresolvedSymbols();
 
 		void addUnresolvedSymbol(zs_int instruction);
-		ScriptEngine *getScriptEngine();
+		zetscript::ScriptEngine *getScriptEngine();
 
 		~ScriptFunction();
 
@@ -155,7 +155,7 @@ namespace zetscript{
 
 	private:
 
-		ScriptEngine 				*	script_engine;
+		zetscript::ScriptEngine 				*	script_engine;
 		ScriptFunctionsFactory 		*	script_function_factory;
 		ScriptTypesFactory 			*	script_types_factory;
 		ScriptScopesFactory 		*	scope_factory;	// reference scope_factory

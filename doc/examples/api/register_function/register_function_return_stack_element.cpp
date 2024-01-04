@@ -3,9 +3,9 @@
 void returnStackElement(zetscript::ScriptEngine *_script_engine){
 
     // Converts primitive type to stack element
-    zetscript::StackElement r1=_script_engine->toStackElementt<zetscript::zs_int>(10);
-    zetscript::StackElement r2=_script_engine->toStackElementt<zetscript::zs_float>(10.5);
-    zetscript::StackElement r3=_script_engine->toStackElementt<zetscript::StringScriptObject *>(
+    zetscript::StackElement r1=_script_engine->toStackElement<zetscript::zs_int>(10);
+    zetscript::StackElement r2=_script_engine->toStackElement<zetscript::zs_float>(10.5);
+    zetscript::StackElement r3=_script_engine->toStackElement<zetscript::StringScriptObject *>(
         new zetscript::StringScriptObject(_script_engine,"Hello World!!!")
     );
 

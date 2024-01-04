@@ -137,7 +137,7 @@ namespace zetscript{
 		}
 
 		template<typename _C>
-		StackElement	ScriptEngine::toStackElement( _C _val){
+		StackElement	zetscript::ScriptEngine::toStackElement( _C _val){
 			String error;
 			String native_name = typeid(_C).name();
 			ScriptTypesFactory *_script_factory=this->getScriptTypesFactory();

@@ -52,7 +52,7 @@ zetscript::zs_float NumberZs_pow(zetscript::ScriptEngine *_script_engine,zetscri
 //-------------------------------------------------------------------------------------
 // MEMBER PROPERTY METAMETHODS
 
-zetscript::String NumberZs_tostringzetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::String NumberZs_tostring(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	char output[100];
 	sprintf(output,"%0.2f",_this->value);
@@ -122,52 +122,52 @@ void NumberZs_modassign(zetscript::ScriptEngine *_script_engine, Number *_this,N
 
 void NumberZs_andassign(zetscript::ScriptEngine *_script_engine, Number *_this,zetscript::zs_float *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) & ((zs_int)*_n);
+	_this->value=((zetscript::zs_int)_this->value) & ((zetscript::zs_int)*_n);
 }
 
 void NumberZs_andassign(zetscript::ScriptEngine *_script_engine, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) & ((zs_int)_n->value);
+	_this->value=((zetscript::zs_int)_this->value) & ((zetscript::zs_int)_n->value);
 }
 
 void NumberZs_orassign(zetscript::ScriptEngine *_script_engine, Number *_this,zetscript::zs_float *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) | ((zs_int)*_n);
+	_this->value=((zetscript::zs_int)_this->value) | ((zetscript::zs_int)*_n);
 }
 
 void NumberZs_orassign(zetscript::ScriptEngine *_script_engine, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) | ((zs_int)_n->value);
+	_this->value=((zetscript::zs_int)_this->value) | ((zetscript::zs_int)_n->value);
 }
 
 void NumberZs_xorassign(zetscript::ScriptEngine *_script_engine, Number *_this, zetscript::zs_float *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) ^ ((zs_int)*_n);
+	_this->value=((zetscript::zs_int)_this->value) ^ ((zetscript::zs_int)*_n);
 }
 
 void NumberZs_xorassign(zetscript::ScriptEngine *_script_engine, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) ^ ((zs_int)_n->value);
+	_this->value=((zetscript::zs_int)_this->value) ^ ((zetscript::zs_int)_n->value);
 }
 
 void NumberZs_shrassign(zetscript::ScriptEngine *_script_engine, Number *_this,zetscript::zs_float *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) >> ((zs_int)*_n);
+	_this->value=((zetscript::zs_int)_this->value) >> ((zetscript::zs_int)*_n);
 }
 
 void NumberZs_shrassign(zetscript::ScriptEngine *_script_engine, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) >> ((zs_int)_n->value);
+	_this->value=((zetscript::zs_int)_this->value) >> ((zetscript::zs_int)_n->value);
 }
 
 void NumberZs_shlassign(zetscript::ScriptEngine *_script_engine, Number *_this,zetscript::zs_float *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) << ((zs_int)*_n);
+	_this->value=((zetscript::zs_int)_this->value) << ((zetscript::zs_int)*_n);
 }
 
 void NumberZs_shlassign(zetscript::ScriptEngine *_script_engine, Number *_this,Number *_n){
 	ZS_UNUSUED_PARAM(_script_engine);
-	_this->value=((zs_int)_this->value) << ((zs_int)_n->value);
+	_this->value=((zetscript::zs_int)_this->value) << ((zetscript::zs_int)_n->value);
 }
 
 bool NumberZs_not(zetscript::ScriptEngine *_script_engine,Number *_this){
@@ -175,24 +175,24 @@ bool NumberZs_not(zetscript::ScriptEngine *_script_engine,Number *_this){
 	return _this->value == 0;
 }
 
-ClassScriptObject * NumberZs_neg(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::ClassScriptObject * NumberZs_neg(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(-_this->value));
 }
 
-ClassScriptObject *  NumberZs_postinc(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::ClassScriptObject *  NumberZs_postinc(zetscript::ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassScriptObject(new Number(_this->value++));
 }
 
-ClassScriptObject *  NumberZs_postdec(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::ClassScriptObject *  NumberZs_postdec(zetscript::ScriptEngine *_script_engine,Number *_this){
 	return  _script_engine->newClassScriptObject(new Number(_this->value--));
 }
 
-ClassScriptObject *   NumberZs_preinc(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::ClassScriptObject *   NumberZs_preinc(zetscript::ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassScriptObject(new Number(++_this->value));
 }
 
-ClassScriptObject *   NumberZs_predec(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::ClassScriptObject *   NumberZs_predec(zetscript::ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassScriptObject(new Number(--_this->value));
 }
 
@@ -297,163 +297,163 @@ bool NumberZs_gte(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *
 }
 
 // _add (a.k.a '+')
-ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value +_n2->value));
 }
 
-ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value + *_n2));
 }
 
-ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_add(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(*_n1 + _n2->value));
 }
 
 // _sub (a.k.a '-')
-ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value - _n2->value));
 }
 
-ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value - *_n2));
 }
 
-ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
+zetscript::ClassScriptObject * NumberZs_sub(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(*_n1 - _n2->value));
 }
 
 // _mul (a.k.a '*')
-ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value * _n2->value));
 }
 
-ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value * (*_n2)));
 }
 
-ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_mul(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(*_n1 * _n2->value));
 }
 
 // _div (a.k.a '/')
-ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value / _n2->value));
 }
 
-ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(_n1->value / *_n2));
 }
 
-ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_div(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(*_n1 / _n2->value));
 }
 
 // _mod (a.k.a '%')
-ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(fmod(_n1->value,_n2->value)));
 }
 
-ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(fmod(_n1->value, *_n2)));
 }
 
-ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_mod(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _script_engine->newClassScriptObject(new Number(fmod(*_n1, _n2->value)));
 }
 
 // _and (a.k.a '&')
-ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value & (zetscript::zs_int)_n2->value));
 }
 
-ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value & (zs_int)*_n2));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value & (zetscript::zs_int)*_n2));
 }
 
-ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
+zetscript::ClassScriptObject * NumberZs_and(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)*_n1 & (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)*_n1 & (zetscript::zs_int)_n2->value));
 }
 
 // _or (a.k.a '|')
-ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value | (zetscript::zs_int)_n2->value));
 }
 
-ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value | (zs_int)*_n2));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value | (zetscript::zs_int)*_n2));
 }
 
-ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
+zetscript::ClassScriptObject * NumberZs_or(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)*_n1 | (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)*_n1 | (zetscript::zs_int)_n2->value));
 }
 
 // _xor (a.k.a '^')
-ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value ^ (zetscript::zs_int)_n2->value));
 }
 
-ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value ^ (zs_int)*_n2));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value ^ (zetscript::zs_int)*_n2));
 }
 
-ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
+zetscript::ClassScriptObject * NumberZs_xor(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number * _n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)*_n1 ^ (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)*_n1 ^ (zetscript::zs_int)_n2->value));
 }
 
 // _shr (a.k.a '>>')
-ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value >> (zetscript::zs_int)_n2->value));
 }
 
-ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value >> (zs_int)*_n2));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value >> (zetscript::zs_int)*_n2));
 }
 
-ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_shr(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)*_n1 >> (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)*_n1 >> (zetscript::zs_int)_n2->value));
 }
 
 // _shl (a.k.a '<<')
-ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value << (zetscript::zs_int)_n2->value));
 }
 
-ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
+zetscript::ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine,Number *_n1, zetscript::zs_float *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)_n1->value << (zetscript::zs_int)*_n2));
 }
 
-ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
+zetscript::ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *_n1, Number *_n2){
 	ZS_UNUSUED_PARAM(_script_engine);
-	return _script_engine->newClassScriptObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
+	return _script_engine->newClassScriptObject(new Number((zetscript::zs_int)*_n1 << (zetscript::zs_int)_n2->value));
 	
 }
 
@@ -463,7 +463,7 @@ ClassScriptObject * NumberZs_shl(zetscript::ScriptEngine *_script_engine, zetscr
 // MEMBER PROPERTY METAMETHODS
 
 // get
-zs_float NumberZs_value_get(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float NumberZs_value_get(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _this->value;
 }
@@ -536,25 +536,25 @@ void NumberZs_value_shlassign(zetscript::ScriptEngine *_script_engine,Number *_t
 }
 
 // _postinc (a.k.a 'a++')
-zs_float  NumberZs_value_postinc(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float  NumberZs_value_postinc(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _this->value++;
 }
 
 // _postdec (a.k.a 'a--')
-zs_float  NumberZs_value_postdec(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float  NumberZs_value_postdec(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return _this->value--;
 }
 
 // _preinc (a.k.a '++a')
-zs_float  NumberZs_value_preinc(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float  NumberZs_value_preinc(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return ++_this->value;
 }
 
 // _predec (a.k.a '--a')
-zs_float  NumberZs_value_predec(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float  NumberZs_value_predec(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return --_this->value;
 }
@@ -565,7 +565,7 @@ zs_float  NumberZs_value_predec(zetscript::ScriptEngine *_script_engine,Number *
 // CONST MEMBER PROPERTY
 
 // get
-zs_float NumberZs_MAX_VALUE_get(zetscript::ScriptEngine *_script_engine,Number *_this){
+zetscript::zs_float NumberZs_MAX_VALUE_get(zetscript::ScriptEngine *_script_engine,Number *_this){
 	ZS_UNUSUED_PARAM(_script_engine);
 	return FLT_MAX;
 }
@@ -697,54 +697,54 @@ void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	_script_engine->registerStaticMemberFunction<Number>("_gte",static_cast<bool (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_gte));
 
 	// _add  (a.k.a '+')
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_add));
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_add));
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_add));
 
 	// _sub  (a.k.a '-')
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_sub));
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_sub));
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_sub));
 
 	// _mul  (a.k.a '*')
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_mul));
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_mul));
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mul));
 
 	// _div  (a.k.a '/')
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_div));
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_div));
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_div));
 
 	// _mod  (a.k.a '%')
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_mod));
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_mod));
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mod));
 
 	// _shr  (a.k.a '>>')
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_shr));
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float * )>(&NumberZs_shr));
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shr));
 
 	// _shl  (a.k.a '<<')
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_shl));
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_shl));
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shl));
 
 	// _and  (a.k.a '&')
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_and));
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_and));
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_and));
 
 	// _or  (a.k.a '|')
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_or));
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_or));
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_or));
 
 	// _xor  (a.k.a '^')
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_xor));
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_xor));
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine, zetscript::zs_float *,Number * )>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *, zetscript::zs_float *)>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<zetscript::ClassScriptObject * (*)(zetscript::ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xor));
 
 
 	// STATIC MEMBER FUNCTIONS METAMETHODS

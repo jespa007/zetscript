@@ -1,7 +1,7 @@
 
 === Call C++ from ZetScript
 
-This chapter aims to explain how to call C++ from _ZetScript_ through a set examples. The examples shows each type of returning/passing parametres to/from _ZetScript_ by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
+This chapter aims to explain how to call C++ from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
 
 ==== Return types
 
@@ -177,7 +177,7 @@ To register a C function that returns a <<api_data_types.adoc#_scriptengineregis
 To register a C function that returns a <<api_data_types.adoc#_scriptengineregistertype,registered type>> it must specify its native pointer type as return.
 
 ====
-ZetScript *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of _ZetScript_ and accessible from a location where its lifetime is active during the execution of the script.
+ZetScript *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of ZetScript and accessible from a location where its lifetime is active during the execution of the script.
 ====
 
 Because the function it returns a native reference the type can be registered as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> or <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>>
@@ -205,7 +205,7 @@ include::../examples/api/register_function/register_function_return_registered_t
 
 To register a C function that returns a registered type it must return __zetscript::ClassScriptObject *__. To instantiate __zetscript::ClassScriptObject *__  is done through __ScriptEngine::newClassObject__ using ScriptEngine instance and the registered class instantiated.
 
-A difference from returning a pointer type of a registered type, when the C function returns a __zetscript::ClassScriptObject *__, __ZetScript__ is in charge to deallocate automatically when it has no more references to it. 
+A difference from returning a pointer type of a registered type, when the C function returns a __zetscript::ClassScriptObject *__, ZetScript is in charge to deallocate automatically when it has no more references to it. 
 
 ====
 The action of return a __zetscript::ClassScriptObject *__ ZetScript it considers the instance of a new object in the script code so it needs to register the type as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>>.

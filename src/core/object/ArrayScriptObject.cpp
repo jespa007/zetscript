@@ -15,7 +15,7 @@ namespace zetscript{
 	}
 
 	ArrayScriptObject * ArrayScriptObject::concat(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 			,ArrayScriptObject *v1
 			,ArrayScriptObject *v2
 	){
@@ -33,7 +33,7 @@ namespace zetscript{
 
 
 	ArrayScriptObject::ArrayScriptObject(
-			ScriptEngine *_script_engine
+			zetscript::ScriptEngine *_script_engine
 	):ContainerScriptObject(_script_engine,SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT){
 	}
 

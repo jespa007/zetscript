@@ -21,7 +21,8 @@ Data * getData(
 
 bool DataZs_in(
 	zetscript::ScriptEngine *_script_engine
-	, Data *_this, zs_float *_value
+	, Data *_this
+	, zetscript::zs_float *_value
 ){
 	for(int i=0; i < _this->data.length(); i++){
 		if(*_value == _this->data.get(i)){

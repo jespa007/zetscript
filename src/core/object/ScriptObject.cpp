@@ -141,7 +141,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptEngine      * ScriptObject::getScriptEngine() {
+	zetscript::ScriptEngine      * ScriptObject::getScriptEngine() {
 		return script_engine;
 	}
 

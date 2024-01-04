@@ -5,7 +5,7 @@ ZetScript is a script language with a syntax inspired in ECMAScript or Javascrip
 
 === Compile
 
-To install ZetScript ,first download last source code from https://zetscript.org and compile the project with the following steps,
+To install ZetScript, first download last source code from https://zetscript.org and compile the project with the following steps,
 
  . First we have to configure the project using cmake application.
 +
@@ -17,12 +17,20 @@ cmake -B build
 done through this command,
 +
 ****
-make
+make -C build
 ****
+
+The binary file will be placed at __build__ directory.
+
+Optionally, cmake configuration comes with the following options:
+
+- __-DCMAKE_BUILD_TYPE={Release|Debug}__  : Configures ZetScript project for Release or Debug.
+- __-DTESTS:BOOL={true|false}__ : Configures ZetScript to build or not tests.
+- __-DSAMPLES:BOOL={true|false}__ : Configures ZetScript to build or not samples.
 
 === Hello World
 
-Once ZetScript is installed we present a quick sample of "HelloWorld" application, 
+Once ZetScript is compiled we present a quick sample of "HelloWorld" application, 
 
 . Create a filename named helloworld.zs and type the following sentence
 +

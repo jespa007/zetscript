@@ -2,7 +2,7 @@
 
 int main(){
 
-	ScriptEngine script_engine;
+	zetscript::ScriptEngine script_engine;
 
 	NumberZs_register(&script_engine);
 	
