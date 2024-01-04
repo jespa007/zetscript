@@ -53,6 +53,8 @@ Console output:
 include::../examples/api/register_function/register_function_return_zs_int_out.txt[]
 ----
 
+<<<
+
 ===== Return Float
 
 To register a C function that returns a <<language_data_types.adoc#_float,Float>> it must specify __zetscript::zs_float__ as return type.
@@ -170,7 +172,7 @@ To register a C function that returns a <<api_data_types.adoc#_scriptengineregis
 - Return registered type by ClassScriptObject 
 
 
-===== Return registered type by its reference
+====== Return registered type by its reference
 
 To register a C function that returns a <<api_data_types.adoc#_scriptengineregistertype,registered type>> it must specify its native pointer type as return.
 
@@ -197,7 +199,9 @@ Console output:
 include::../examples/api/register_function/register_function_return_registered_type_out.txt[]
 ----
 
-===== Return registered type by ClassScriptObject *
+<<<
+
+====== Return registered type by ClassScriptObject *
 
 To register a C function that returns a registered type it must return __zetscript::ClassScriptObject *__. To instantiate __zetscript::ClassScriptObject *__  is done through __ScriptEngine::newClassObject__ using ScriptEngine instance and the registered class instantiated.
 
@@ -257,6 +261,8 @@ Console output:
 include::../examples/api/register_function/register_function_param_bool_out.txt[]
 ----
 
+<<<
+
 ===== Parameter Integer
 
 To register a C function that accepts a <<language_data_types.adoc#_integer,Integer>> it can specify __zetscript::zs_int__ or __zetscript::zs_int *__ as parameter type.
@@ -274,6 +280,8 @@ Console output:
 ----
 include::../examples/api/register_function/register_function_param_zs_int_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Float
 
@@ -312,6 +320,8 @@ Console output:
 ----
 include::../examples/api/register_function/register_function_param_string_out.txt[]
 ----
+
+<<<
 
 ===== Parameter Array
 
@@ -394,3 +404,5 @@ Console output:
 ----
 include::../examples/api/register_function/register_function_param_registered_type_out.txt[]
 ----
+
+<<<

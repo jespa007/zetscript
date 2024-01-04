@@ -3,14 +3,10 @@
 // C++ class to be registered
 class Number{
 public:
-	float value;
-
-	Number(){
-		value=0;
-	}
+	float value=0;
 };
 
-// defines getter property for Number::value
+// Defines getter property for Number::value
 zetscript::zs_float NumberZs_get_value(
 	zetscript::ScriptEngine *_script_engine
 	, Number *_this
@@ -49,7 +45,7 @@ int main(){
         "Console::outln(\"result : \"+returnNumber());"
  	);
 
-	// deletes _number
+	// Deletes _number
 	delete _number;
 
     return 0;

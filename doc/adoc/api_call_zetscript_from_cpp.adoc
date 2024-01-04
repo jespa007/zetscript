@@ -33,6 +33,8 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_return_bool_out.txt[]
 ----
 
+<<<
+
 ===== Return Integer
 
 To bind a ZetScript function that returns a <<language_data_types.adoc#_integer,Integer>> it must specify __zetscript::zs_int__ return type on its function signature.
@@ -72,6 +74,7 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_return_zs_float_out.txt[]
 ----
 
+<<<
 
 ===== Return String
 
@@ -98,7 +101,8 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_return_string_out.txt[]
 ----
 
-
+<<<
+    
 ====== Return String as zetscript::StringScriptObject *
 
 To bind a ZetScript function that returns a <<language_data_types.adoc#_string,String>> it can specify __zetscript::StringScriptObject *__ return type on its function signature.
@@ -186,6 +190,8 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_return_class_object_out.txt[]
 ----
 
+<<<
+
 ===== Return instance of registered type object
 
 To bind a ZetScript function that returns an instance of <<api_data_types.adoc#_scriptengineregistertype,registered type>> object it must specify __zetscript::ClassScriptObject *__ return type on its function signature. After returning  __zetscript::ClassScriptObject *__, it can fetch its C++ registered type by calling __ClassScriptObject::to<_T *>__, where _T is the C&#43;&#43; type.
@@ -261,6 +267,8 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_param_zs_int_out.txt[]
 ----
 
+<<<
+
 ===== Parameter Float
 
 To bind a ZetScript function that accepts a <<language_data_types.adoc#_float,Float>> it must specify or __zetscript::zs_float *__ as parameter type on its function signature.
@@ -307,7 +315,9 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_param_const_char_out.txt[]
 ----
 
-===== Parameter String as String *
+<<<
+
+===== Parameter String as zetscript::String *
 
 To bind a ZetScript function that accepts a <<language_data_types.adoc#_string,String>> it can specify __zetscript::String *__ as parameter type on its function signature.
 
@@ -325,8 +335,9 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_param_string_out.txt[]
 ----
 
+<<<
 
-===== Parameter String as StringScriptObject *
+===== Parameter String as zetscript::StringScriptObject *
 
 To bind a ZetScript function that accepts a <<language_data_types.adoc#_string,String>> it can specify __zetscript::StringScriptObject *__ as parameter type on its function signature.
 

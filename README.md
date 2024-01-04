@@ -13,7 +13,7 @@ int main(){
 
 	zetscript::ScriptEngine script_engine;
 
-	script_engine.compileAndRun("Console::outln(\"Hello World from script!\")");
+	script_engine.compileAndRun("Console::outln(\"Hello World from ZetScript!\")");
 
 	return 0;
 }
@@ -178,17 +178,16 @@ To expose C++ type to ZetScript is done by registering C++ type. To expose membe
 
 class MyClass{
 public:
-	int data1;
+	int value;
 
 	MyClass(){
-		this->data1=0;
+		this->value=0;
 	}
 
-	void setData(int _data){
-		this->data1 = _data;
-		printf("Int value as %i\n",this->data1);
+	void setValue(int _value){
+		this->value = _value;
 	}
-	
+
 };
 
 // define new and delete functions
@@ -206,28 +205,28 @@ void MyClassWrap_delete(
 }
 
 // bind data1 member variable (read & write)
-void MyClassWrap_set_data1(
+void MyClassWrap_set_value(
 	zetscript::ScriptEngine *_script_engine
 	,MyClass *_this
-	, zetscript::zs_int v
+	, zetscript::zs_int _value
 ){
-	_this->data1=v;
+	_this->value=_value;
 }
 
-zs_int MyClassWrap_get_data1(
+zetscript::zs_int MyClassWrap_get_value(
 	zetscript::ScriptEngine *_script_engine
 	,MyClass *_this
 ){
-	return _this->data1;
+	return _this->value;
 }
 
 // 'MyClassWrap::setData' wrap function
-void MyClassWrap_setData(
+void MyClassWrap_setValue(
 	zetscript::ScriptEngine *_script_engine
 	,MyClass *_this
-	, zetscript::zs_int v
+	, zetscript::zs_int _value
 ){
-	_this->setValue(v);
+	_this->setValue(_value);
 }
 
 int main(){
@@ -237,54 +236,113 @@ int main(){
 	// Register class type 'MyClass' as instantiable
 	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
-	// Register member variable 'MyClass::data1' through get/set metamethod using 'MyClassWrap_set_data1'/'MyClassWrap_get_data1' functions
-	script_engine.registerMemberPropertyMetamethod<MyClass>("_set","data1",&MyClassWrap_set_data1);
-	script_engine.registerMemberPropertyMetamethod<MyClass>("_get","data1",&MyClassWrap_get_data1);
+	// Register member variable 'MyClass::value' through get/set metamethod using 'MyClassWrap_set_value'/'MyClassWrap_get_value' functions
+	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_set",&MyClassWrap_set_value);
+	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_get",&MyClassWrap_get_value);
 
-	// Register member function 'MyClass::setData' using 'MyClassWrap_setData' wrapper
-	script_engine.registerMemberFunction<MyClass>("setData",&MyClassWrap_setData);
+	// Register member function 'MyClass::setValue' using 'MyClassWrap_setValue' wrapper
+	script_engine.registerMemberFunction<MyClass>("setValue",&MyClassWrap_setValue);
 
+	// Compiles and runs script
 	script_engine.compileAndRun(
 		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
-		"myclass.setData(5);\n" // it prints "Int value as 5"
-		"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:5"
+		"myclass.setValue(5);\n" // it prints "Int value as 5"
+		"Console::outln(\"myclass.value => {0}\",myclass.value);\n" // it prints "myclass.value => 5"
 	);
-	
+
 	return 0;
 }
-	
 </pre>
 <br>
 ZetScript allows inherits is that a script class can inherit c++ registered type.
 <br>
 <pre lang="c++">
+#include "zetscript.h"
+
+class MyClass{
+public:
+	int value;
+
+	MyClass(){
+		this->value=0;
+	}
+
+	void setValue(int _value){
+		this->value = _value;
+	}
+
+};
+
+// define new and delete functions
+MyClass *MyClassWrap_new(
+	zetscript::ScriptEngine *_script_engine
+){
+	return new MyClass;
+}
+
+void MyClassWrap_delete(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+){
+	delete _this;
+}
+
+// bind data1 member variable (read & write)
+void MyClassWrap_set_value(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+	, zetscript::zs_int _value
+){
+	_this->value=_value;
+}
+
+zetscript::zs_int MyClassWrap_get_value(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+){
+	return _this->value;
+}
+
+// 'MyClassWrap::setData' wrap function
+void MyClassWrap_setValue(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+	, zetscript::zs_int _value
+){
+	_this->setValue(_value);
+}
+
 int main(){
 
-	// ...
+	zetscript::ScriptEngine script_engine;
 
+	// Register class type 'MyClass' as instantiable
+	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+
+	// Register member variable 'MyClass::value' through get/set metamethod using 'MyClassWrap_set_value'/'MyClassWrap_get_value' functions
+	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_set",&MyClassWrap_set_value);
+	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_get",&MyClassWrap_get_value);
+
+	// Register member function 'MyClass::setValue' using 'MyClassWrap_setValue' wrapper
+	script_engine.registerMemberFunction<MyClass>("setValue",&MyClassWrap_setValue);
+
+	// Compiles and runs script
 	script_engine.compileAndRun(
 		"class ScriptMyClass extends MyClass{\n"
-		"	setData(_arg){\n"
-		"		var i=this.data1;\n"
-		"		super(this.data1+_arg);\n" // it calls MyClass::setData from C++ 
-		"		Console::outln(\"result => \"+i+\"+\"+_arg+\"=\"+this.data1);\n"
+		"	setValue(_value){\n"
+		"		super(_value*2);\n" // it calls MyClass::setValue from C++
+		"		this.value=this.value+10;\n"
 		"   }\n"
 		"};\n"
 
 		"var myclass = new ScriptMyClass();\n" // instances ScriptMyClass and MyClass from C++
-		"myclass.setData(5);\n"
+		"myclass.setValue(5);\n"
+		"Console::outln(\"myclass.value => {0}\",myclass.value);\n" // it prints "myclass.value => 20"
 	);
 
 	return 0;
 }
 </pre>
-<br>
-It prints
-<br>
-```
-Int value as 10
-result => 5+5=10
-```
 
 #### Call ZetScript from c++
 Once you have evaluated the script you can call function script from c++.
@@ -293,13 +351,13 @@ Once you have evaluated the script you can call function script from c++.
 	
 #include "zetscript.h"
 
-void test_call_script_function(){
+int main(){
 
 	zetscript::ScriptEngine script_engine;
 
 	script_engine.compile(
 		"function sayHello(){\n"
-		"	Console::outln(\"hello from 'sayHello'!\")\n"
+		"	Console::outln(\"call from 'sayHello'!\")\n"
 		"}\n"
 	);
 

@@ -3075,6 +3075,8 @@ Will throw the following error,
 include::../examples/api/types/script_engine_register_type_non_instantiable_error_out.txt[]
 ----  
 
+<<<
+
 The only way to operate with a 'MyType' object non instantiable is by a returning a reference of object 'MyType' from registered C function as it shows in the following example,
 
 [source,cpp]

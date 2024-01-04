@@ -10,14 +10,14 @@ To install ZetScript ,first download last source code from https://zetscript.org
  . First we have to configure the project using cmake application.
 +
 ****
-cmake CMakeLists.txt
+cmake -B build
 ****
 +
-. Second we have to compile and install the project. Using GNU tool chain is
+. Second we have to compile the project. Using GNU tool chain is
 done through this command,
 +
 ****
-sudo footnote:[sudo is required when the project is compiled in linux.] make install 
+make
 ****
 
 === Hello World

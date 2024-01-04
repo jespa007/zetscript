@@ -28,8 +28,8 @@ then
 	mkdir -p api/build
 fi
 
-#api_example_dirs=(types bind_script_function register_function register_type)
-api_example_dirs=(types)
+api_example_dirs=(types bind_script_function register_function register_type)
+#api_example_dirs=(types)
 
 dir_zs="api/types/*.zs"
 for j in $dir_zs
@@ -41,8 +41,8 @@ done
 for i in "${api_example_dirs[@]}"
 do
 
-	#dir_cpp="api/"$i"/*.cpp"
-	dir_cpp="api/"$i"/script_engine*.cpp"
+	dir_cpp="api/"$i"/*.cpp"
+	#dir_cpp="api/"$i"/script_engine*.cpp"
 	for j in $dir_cpp
 	do
 		base_file="$(basename $j .cpp)"
