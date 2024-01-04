@@ -151,17 +151,18 @@ To call C++ code from ZetScript is done by defining and registering a C function
 <pre lang="c++">
 #include "zetscript.h"
 
-// ZetScript C++ interface function
+// C function to register
 void sayHelloWorld(zetscript::ScriptEngine *_script_engine){
 	printf("Hello world\n");
 }
+
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	// Registers sayHelloWorld as 'sayHelloWorld' symbol name
+	// Registers 'sayHelloWorld' function
 	script_engine.registerFunction("sayHelloWorld",sayHelloWorld);
 
-	// Evaluates a script where it calls 'sayHelloWorld' function
+	// Compiles and run a script where it calls 'sayHelloWorld' function
 	script_engine.compileAndRun(
 		"sayHelloWorld();"
 	);
@@ -170,7 +171,7 @@ int main(){
 </pre>
 
 #### Call ZetScript from c++
-Once you have evaluated the script you can call function script from c++.
+To call ZetScript from C++ code is done by binding script function after compile script function.
 						
 <pre lang="c++">
 	
@@ -180,13 +181,14 @@ int main(){
 
 	zetscript::ScriptEngine script_engine;
 
+	// Compiles script function 'sayHello'
 	script_engine.compile(
 		"function sayHello(){\n"
 		"	Console::outln(\"call from 'sayHello'!\")\n"
 		"}\n"
 	);
 
-	// instance ZetScript function 'sayHello'
+	// binds script function 'sayHello'
 	auto  say_hello=script_engine.bindScriptFunction<void ()>("sayHello");
 
 	// it calls 'say_hello' script function from C++
