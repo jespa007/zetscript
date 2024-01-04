@@ -1,11 +1,8 @@
-<<<
 === Exposing C++ types to ZetScript
 
-In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript.
+In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in __ZetScript__ through examples.
 
-// TODO: Explain base source Number.cpp and functions related that it be show along this chapter to see the examples
-
-Along the examples will define and register functions to operate with the following class 'Number',
+Most of the examples show in this chapter will be related about the following class __Number__,
 
 [source,cpp]
 ----
@@ -25,13 +22,26 @@ public:
 };
 ----
 
+On each example will mention __NumberZs_register__, 
+
+[source,cpp]
+----
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	// ...
+
+}
+----
+
+This method is the place where it will add the registering functions of __Number__. 
+
+
 
 ==== Register a type
 
-As it can be explained in section <<api_data_types.adoc#_scriptengineregistertype,ScriptEngine::registerType>>
+As it can be explained in section <<api_data_types.adoc#_scriptengineregistertype,ScriptEngine::registerType>> it can register as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> type or as <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>> type. 
 
-
-Let's define __NumberZs_new__ and __NumberZs_delete__ functions that creates and destroys a __Number__ type instantiation respectively,
+This example aims to register __Number__ as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> type, so let's define __NumberZs_new__ and __NumberZs_delete__ functions that creates and destroys a __Number__ type instantiation respectively,
 
 [source,cpp]
 ----
@@ -271,5 +281,10 @@ Console output,
 include::../examples/api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
 ----
 
+<<<
+
 include::api_expose_cpp_type_metamethods.adoc[]
+
+<<<
+	
 include::api_expose_cpp_type_properties.adoc[]

@@ -404,3 +404,4 @@ Console output:
 include::../examples/api/bind_script_function/bind_script_function_param_registered_type_out.txt[]
 ----
 
+<<<

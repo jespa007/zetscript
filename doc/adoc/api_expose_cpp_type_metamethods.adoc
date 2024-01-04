@@ -1,10 +1,8 @@
-<<<
 ==== Register metamethods
 
-ZetScript can register static and member functions in order to implement metamethods seen in xref:language_class.adoc#_metamethods[chapter 2 class metamethods].
+ZetScript can register static and member functions in order to implement metamethods seen in <<language_class.adoc#_metamethods,Language Class Metamethods>>.
 
 ===== Member metamethods
-
 
 ====== _addassign()
 
@@ -19,9 +17,9 @@ void RegisteredType_addassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 [.underline]#Parameters#
 
-- ___script_engine__ : ScriptEngine instance
-- ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___script_engine__ : ScriptEngine instance.
+- ___this__ : The current instance.
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -89,7 +87,7 @@ void RegisteredType_andassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -157,7 +155,7 @@ void RegisteredType_divassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -295,7 +293,7 @@ void RegisteredType_modassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -363,7 +361,7 @@ void RegisteredType_mulassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -422,7 +420,7 @@ Implements _negate_ pre operator (aka -a )
 
 [source,javascript]
 ----
-ClassObject *RegisteredType_neg(ScriptEngine *_script_engine, RegisteredType *_this);
+ClassScriptObject *RegisteredType_neg(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -559,7 +557,7 @@ void RegisteredType_orassign(ScriptEngine *_script_engine, RegisteredType *_this
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -621,7 +619,7 @@ Implements _post decrement_ operator (aka a++ )
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_postdec(ScriptEngine *_script_engine, RegisteredType *_this);
+ClassScriptObject * RegisteredType_postdec(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -631,7 +629,7 @@ ClassObject * RegisteredType_postdec(ScriptEngine *_script_engine, RegisteredTyp
 
 [.underline]#Returns#
 
-Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value before perform post decrement operation
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value before perform post decrement operation
 
 
 *Example*
@@ -641,7 +639,7 @@ The following code defines a function as a _postdec_ operation that decrements t
 [source,cpp]
 ----
 
-ClassObject * NumberZs_postdec(ScriptEngine *_script_engine,Number *_this){
+ClassScriptObject * NumberZs_postdec(ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassObject(new Number(_this->value--));
 }
 
@@ -687,7 +685,7 @@ Implements _post increment_ operator (aka a++ )
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_postinc(ScriptEngine *_script_engine, RegisteredType *_this);
+ClassScriptObject * RegisteredType_postinc(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -697,7 +695,7 @@ ClassObject * RegisteredType_postinc(ScriptEngine *_script_engine, RegisteredTyp
 
 [.underline]#Returns#
 
-Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value before perform post increment operation
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value before perform post increment operation
 
 
 *Example*
@@ -707,7 +705,7 @@ The following code defines a function as a _postinc_ operation that increments t
 [source,cpp]
 ----
 
-ClassObject *  NumberZs_postinc(ScriptEngine *_script_engine,Number *_this){
+ClassScriptObject *  NumberZs_postinc(ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassObject(new Number(_this->value++));
 }
 
@@ -753,7 +751,7 @@ Implements _pre decrement_ operator (aka --a )
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_predec(ScriptEngine *_script_engine, RegisteredType *_this);
+ClassScriptObject * RegisteredType_predec(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -763,7 +761,7 @@ ClassObject * RegisteredType_predec(ScriptEngine *_script_engine, RegisteredType
 
 [.underline]#Returns#
 
-Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value after perform post increment operation
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value after perform post increment operation
 
 *Example*
 
@@ -773,7 +771,7 @@ The following code defines a function as a _predec_ operation that pre decrement
 [source,cpp]
 ----
 
-ClassObject  *NumberZs_predec(ScriptEngine *_script_engine,Number *_this){
+ClassScriptObject  *NumberZs_predec(ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassObject(new Number(--_this->value));
 }
 
@@ -819,7 +817,7 @@ Implements __pre increment__ operator (aka ++a )
 
 [source,javascript]
 ----
-ClassObject *RegisteredType_preinc(ScriptEngine *_script_engine, RegisteredType *_this);
+ClassScriptObject *RegisteredType_preinc(ScriptEngine *_script_engine, RegisteredType *_this);
 ----
 
 [.underline]#Parameters#
@@ -829,7 +827,7 @@ ClassObject *RegisteredType_preinc(ScriptEngine *_script_engine, RegisteredType 
 
 [.underline]#Returns#
 
-Return new type wrapped in xref:chapter_4_annex_api_types.adoc#_classscriptobject[ClassScripObject] with the value after perform post increment operation
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value after perform post increment operation
 
 *Example*
 
@@ -838,7 +836,7 @@ The following code defines a function as a _preinc_ operation that pre increment
 [source,cpp]
 ----
 
-ClassObject * NumberZs_preinc(ScriptEngine *_script_engine,Number *_this){
+ClassScriptObject * NumberZs_preinc(ScriptEngine *_script_engine,Number *_this){
 	return _script_engine->newClassObject(new Number(++_this->value));
 }
 
@@ -892,7 +890,7 @@ void RegisteredType_set(ScriptEngine * _script_engine, RegisteredType *_this, Pa
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : A value to be set. Its type can be a pointer of one defined in  xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : A value to be set. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -965,7 +963,7 @@ void RegisteredType_shlassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -1033,7 +1031,7 @@ void RegisteredType_shrassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -1101,7 +1099,7 @@ void RegisteredType_subassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -1236,7 +1234,7 @@ void RegisteredType_xorassign(ScriptEngine *_script_engine, RegisteredType *_thi
 
 - ___script_engine__ : ScriptEngine instance
 - ___this__ : The current instance
-- ___value__ : Value or variable as right operand. Its type can be a pointer of one defined in xref:api_types.adoc#_types[primitive types] or a pointer of other xref:api_expose_cpp_types.adoc#_register_a_type[registered type].
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
 
 [.underline]#Returns#
 
@@ -1301,7 +1299,7 @@ Implements __add__ operator (aka + ) between first operand and second operand
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -1320,15 +1318,15 @@ The following code defines three functions that performs __add__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value +_n2->value));
 }
 
-ClassObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value + *_n2));
 }
 
-ClassObject * NumberZs_add(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(*_n1 + _n2->value));
 }
 
@@ -1342,9 +1340,9 @@ Next, each function _NumberZs_add_ is registered as member metamethod ___add__ t
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
 
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_add));
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_add));
-	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_add));
 
 	//...
 }
@@ -1374,7 +1372,7 @@ Implements _bitwise AND_ operator (aka & ) between first operand and second oper
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -1393,15 +1391,15 @@ The following code defines three functions that performs __AND__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value & (zs_int)_n2->value));
 }
 
-ClassObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value & (zs_int)*_n2));
 }
 
-ClassObject * NumberZs_and(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
 	return _script_engine->newClassObject(new Number((zs_int)*_n1 & (zs_int)_n2->value));
 }
 ----
@@ -1412,9 +1410,9 @@ Next, each function _NumberZs_and_ is registered as member metamethod ___AND__ t
 ----
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_and));
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_and));
-	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_and));
 	//...
 }
 ----
@@ -1443,7 +1441,7 @@ Implements __division__ operator (aka / ) between first operand and second opera
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -1462,15 +1460,15 @@ The following code defines three functions that performs __div__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value / _n2->value));
 }
 
-ClassObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value / *_n2));
 }
 
-ClassObject * NumberZs_div(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(*_n1 / _n2->value));
 }
 ----
@@ -1482,9 +1480,9 @@ Next, each function _NumberZs_div_ is registered as member metamethod __div_ thr
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_div));
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_div));
-	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_div));
 	//...
 }
 ----
@@ -1871,7 +1869,7 @@ Implements __modulus__ operator (aka % ) between first operand and second operan
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -1889,15 +1887,15 @@ The following code defines three functions that performs __mod__ operation from 
 
 [source,cpp]
 ----
-ClassObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(fmod(_n1->value,_n2->value)));
 }
 
-ClassObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number(fmod(_n1->value, *_n2)));
 }
 
-ClassObject * NumberZs_mod(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(fmod(*_n1, _n2->value)));
 }
 ----
@@ -1909,9 +1907,9 @@ Next, each function _NumberZs_mod_ is registered as member metamethod ___mod__ t
 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mod));
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mod));
-	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mod));
 	//...
 }
 ----
@@ -1941,7 +1939,7 @@ Implements __multiplication__ operator (aka * ) between first operand and second
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -1960,15 +1958,15 @@ The following code defines three functions that performs __mul__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value * _n2->value));
 }
 
-ClassObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value * (*_n2)));
 }
 
-ClassObject * NumberZs_mul(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(*_n1 * _n2->value));
 }
 
@@ -1980,9 +1978,9 @@ Next, each function _NumberZs_mul_ is registered as member metamethod ___mul__ t
 ----
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mul));
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mul));
-	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mul));
 	//...
 }
 ----
@@ -2086,7 +2084,7 @@ Implements _bitwise OR_ operator (aka | ) between first operand and second opera
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -2105,15 +2103,15 @@ The following code defines three functions that performs __OR__ operation from _
 [source,cpp]
 ----
 
-ClassObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value | (zs_int)_n2->value));
 }
 
-ClassObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value | (zs_int)*_n2));
 }
 
-ClassObject * NumberZs_or(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
 	return _script_engine->newClassObject(new Number((zs_int)*_n1 | (zs_int)_n2->value));
 }
 
@@ -2126,9 +2124,9 @@ Next, each function __NumberZs_or__ is registered as member metamethod ___OR__ t
 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_or));
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_or));
-	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_or));
 	//...
 }
 ----
@@ -2157,7 +2155,7 @@ Implements __bitwise shift left__ operator (aka << ) between first operand and s
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -2176,15 +2174,15 @@ ClassObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
 
 //...
 
-ClassObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
 }
 
-ClassObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
 }
 
-ClassObject * NumberZs_shl(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
 }
 
@@ -2197,9 +2195,9 @@ Next, each function __NumberZs_shl__ is registered as member metamethod ___shl__
 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shl));
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_shl));
-	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shl));
 	//...
 }
 ----
@@ -2228,7 +2226,7 @@ Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and se
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -2247,15 +2245,15 @@ The following code defines three functions that performs __shr__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value >> (zs_int)_n2->value));
 }
 
-ClassObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value >> (zs_int)*_n2));
 }
 
-ClassObject * NumberZs_shr(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)*_n1 >> (zs_int)_n2->value));
 }
 
@@ -2268,9 +2266,9 @@ Next, each function __NumberZs_shr__ is registered as member metamethod ___shr__
 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shr));
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float * )>(&NumberZs_shr));
-	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shr));
 	//...
 }
 ----
@@ -2299,7 +2297,7 @@ Implements _subtraction_ operator (aka - ) between first operand and second oper
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -2318,15 +2316,15 @@ The following code defines three functions that performs __sub__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value +_n2->value));
 }
 
-ClassObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number(_n1->value + *_n2));
 }
 
-ClassObject * NumberZs_sub(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number(*_n1 + _n2->value));
 }
 
@@ -2340,9 +2338,9 @@ Next, each function _Num_berZs_sub_ is registered as member metamethod ___sub__ 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
 
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_sub));
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_sub));
-	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_sub));
 
 	//...
 }
@@ -2372,7 +2370,7 @@ Implements _bitwise XOR_ operator (aka ^ ) between first operand and second oper
 
 [source,javascript]
 ----
-ClassObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
+ClassScriptObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
 ----
 
 [.underline]#Parameters#
@@ -2391,15 +2389,15 @@ The following code defines three functions that performs __XOR__ operation from 
 [source,cpp]
 ----
 
-ClassObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value ^ (zs_int)_n2->value));
 }
 
-ClassObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
 	return _script_engine->newClassObject(new Number((zs_int)_n1->value ^ (zs_int)*_n2));
 }
 
-ClassObject * NumberZs_xor(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
 	return _script_engine->newClassObject(new Number((zs_int)*_n1 ^ (zs_int)_n2->value));
 }
 
@@ -2412,9 +2410,9 @@ Next, each function __NumberZs_xor__ is registered as member metamethod ___XOR__
 
 void NumberZs_register(zetscript::ScriptEngine *_script_engine){
 	//...
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_xor));
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_xor));
-	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xor));
 	//...
 }
 ----

@@ -23,6 +23,7 @@ void NumberZs_constructor(
 	,Number *_this
 	,zetscript::zs_float * _value
 ){
+	printf("Constructor value : %.02f\n",*_value);
 	_this->value=*_value;
 }
 
