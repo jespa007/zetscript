@@ -484,8 +484,8 @@ SET(
 	
 	# main
 	zetscript.h
-	zetscript::ScriptEngine.h
-	zetscript::ScriptEngine.tcc
+	ScriptEngine.h
+	ScriptEngine.tcc
 )
 	
 
