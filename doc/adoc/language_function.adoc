@@ -1,0 +1,194 @@
+<<<
+
+[id=_the_function]
+=== Function
+
+A function is a block of code to perform a particular task and is executed when in some part of the code it calls it
+
+*Syntax*
+
+[source,javascript]
+----
+function funName(arg1, arg2, ..., argn){
+	// code to be executed
+}
+----
+
+*Example*
+
+[source,javascript]
+----
+function hello(_str){
+	Console::outln("Hello "+str)
+}
+----
+
+==== Function invocation
+
+The call of a function is done when in some part of the code it calls it as follow,
+
+*Syntax*
+
+[source,javascript]
+----
+fun_name(arg1, arg2, arg3,..., argN);
+----
+
+Note: If a function is called with less than N args the rest of arguments will remain undefined as default.
+
+*Example*
+
+[source,javascript]
+----
+
+function hello(_str){
+	Console::outln("Hello "+str)
+}
+
+hello("World")  // Prints Hello World
+----
+
+==== Return statement
+
+The _return_ statement ends function execution and specifies a value to be returned to the function caller.
+
+*Example*
+
+[source,javascript]
+----
+function add(op1, op2){
+	return op1+op2;
+}
+
+add(4,5)  // returns 9
+----
+
+==== Function reference
+
+A function can be stored in variables through its reference
+
+*Example*
+
+[source,javascript]
+----
+function add(op1, op2){
+	return op1+op2;
+}
+
+var add_ref = add; // stored function add reference to fun_obj
+var j=add_ref(2,3);// calls fun_obj (aka add) function. J=5
+----
+
+<<<
+
+==== Anonymous functions
+
+An _anonymous function_ is a function without a name.
+
+*Syntax*
+
+[source,javascript]
+----
+function(arg1, arg2, ..., argN){
+	// code to be executed.
+};
+----
+
+An anonymous function is not accessible after its initial creation. Therefore, you often need to assign it to a variable.
+
+*Example*
+
+[source,javascript]
+----
+
+// Assigns anonymous function to 'add' variable
+var add=function(op1, op2){
+	return op1+op2;
+}; 
+
+// invokes function
+var j=add(2,3); // j=5
+----
+
+==== Default parameters
+
+Default function parameters allow named parameters to be initialized with default values if no value is passed.
+
+*Syntax*
+
+[source,javascript]
+----
+function fun(param_1 = default_value_1, /* ...,*/ param_n = default_value_N){
+	// ...
+};
+----
+
+*Example*
+
+[source,javascript]
+----
+function sum(a, b = 1) {
+  return a + b;
+}
+
+var j=sum(5); // j=6
+----
+
+==== Rest parameters
+
+The rest parameters is an especial argument that allows pass indefinite number of arguments in an array. The rest parameter is declared by adding three dots (...) with the variable name at the end of the function argument list.
+
+*Syntax*
+
+[source,javascript]
+----
+function var_args(a,b,...args) {
+	for(var arg in args){
+		//
+	}
+}
+----
+
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/function/function_rest_parameters.zs[]
+----
+
+<<<
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/function/function_rest_parameters_out.txt[]
+----
+
+==== Parameter by reference 
+
+Parameter by reference allows write the argument taking its reference so the content will be modified outside the function. A parameter by reference is declared by prepending _ref_ on argument. 
+
+*Syntax*
+
+[source,javascript]
+----
+function(ref arg1, arg2, ..., ref arg_n){
+	// code to be executed.
+};
+----
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/function/function_parameter_by_reference.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/function/function_parameter_by_reference_out.txt[]
+----

@@ -1,0 +1,1 @@
+Console::outln([1,"string",true,2.0].length)

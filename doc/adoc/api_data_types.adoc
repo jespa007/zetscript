@@ -1,0 +1,3258 @@
+
+=== Data types
+
+This section will describe the data types used in the ZetScript API. Some of them are used as helpers and others interops with script environment. Some of types described it has methods and fields that are used in ZetScript internally but this documentation only will explain the relevant ones needed for the user.
+
+==== zetscript::zs_int
+
+Integer data type it defines a integer variable with range from -(2^b-1^) to 2^b-1^-1 where b=32 or b=64 it depending whether ZetScript is compiled for 32bits or 64bits. 
+
+*Example*
+
+[source,cpp]
+----
+zetscript::zs_int i=10;
+----
+
+==== zetscript::zs_float
+
+__zetscript::zs_float__ type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits.
+
+*Example*
+
+[source,cpp]
+----
+zetscript::zs_float f=20.5;
+----
+
+==== zetscript::String
+
+_String_ it defines a string represented a sequence of chars
+
+===== Constructor
+
+The String constructor creates a new string as empty or initialized with other string or String.
+
+*Syntax*
+
+[source,cpp]
+----
+String();
+String(const char * _s);
+String(const String & _str);
+String(String && _str);
+----
+
+[.underline]#Parameters#
+
+- _&#95;s_ : A pointer to an array of characters.
+- _&#95;str_ : A String object.
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_constructor.cpp[]
+----
+
+<<<
+
+===== Static constants
+
+====== String::n_pos
+
+npos is a static member constant value with the greatest possible value.
+
+
+===== Static functions
+
+====== String::format()
+
+Returns a formatted string.
+
+*Syntax*
+
+[source,cpp]
+----
+String format(const char *_format,...);
+----
+
+[.underline]#Parameters#
+
+- _&#95;format_ : C string that contains the text to be returned as String. It can optionally contain embedded format specifiers that are replaced by the values specified in subsequent additional arguments and formatted as requested. 
+Format specifier follows the same prototype as C printf: 
+
+include::string_format_format_specifier.adoc[]
+
+[.underline]#Return#
+
+A formated String
+
+<<<
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_format.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_format_out.txt[]
+----
+
+<<<
+
+===== Member functions
+
+====== String::append()
+
+Appends a character o string at the end of current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+void append(char _c);
+void append(const char * _s);
+void append(const char *_s, int _len);
+void append(const String & _str);
+
+----
+
+[.underline]#Parameters#
+
+- _&#95;c_ : The character to append.
+- _&#95;s_ : A pointer to array of characters.
+- _&#95;len_ : The length of number of characters to copy.
+- _&#95;str_ : A String object.
+
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_append.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_append_out.txt[]
+----
+
+<<<
+
+====== String::at()
+
+Returns a reference to the character at position __pos_.
+
+*Syntax*
+
+[source,cpp]
+----
+char& at (int _pos);
+const char& at (int _pos) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The character at the specified position in the string.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_at.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_at_out.txt[]
+----
+
+<<<
+
+====== String::clear()
+
+Erases the contents of the string.
+
+*Syntax*
+
+[source,cpp]
+----
+void clear();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_clear.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_clear_out.txt[]
+----
+
+<<<
+
+====== String::contains()
+
+Finds out whether a string contains a substring or not.
+
+*Syntax*
+
+[source,javascript]
+----
+bool String::contains(const String & _str);
+----
+
+[.underline]#Parameters#
+
+- _&#95;str_:  A substring to find.
+
+[.underline]#Returns#
+
+true if the string _&#95;str_ exist, false otherwise.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_contains.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_contains_out.txt[]
+----
+
+<<<
+
+====== String::endsWith()
+
+Returns whether the string ends with the specified character(s).
+
+*Syntax*
+
+[source,cpp]
+----
+bool startsWith() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+true if the string ends with the specified character(s).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_ends_with.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_ends_with_out.txt[]
+----
+
+<<<
+
+====== String::erase()
+
+Erases part of the string, reducing its length.
+
+*Syntax*
+
+[source,cpp]
+----
+void erase(int _pos, int _len);
+void erase(int _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;#pos_ : Position of the first character to be erased.
+- _&#95;len_ : Number of characters to erase.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_erase.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_erase_out.txt[]
+----
+
+<<<
+
+======  String::find()
+
+Searches the string for the first occurrence of the sequence specified by its arguments.
+
+*Syntax*
+
+[source,cpp]
+----
+int find(const String & _str, int _pos = 0) const;
+int find(const char *_s, int _pos = 0) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;s_ :  A pointer to an array of characters.
+- _&#95;str_ : A String object.
+- _&#95;pos_ : Position of the first character in the string to be considered in the search.
+
+[.underline]#Return#
+
+The position of the first character of the first match. If no matches were found, the function returns String::npos
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_find.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_find_out.txt[]
+----
+
+<<<
+
+====== String::findLastOf()
+
+Searches the string for the last character that matches any of the characters specified in its arguments.
+
+
+*Syntax*
+
+[source,cpp]
+----
+int findLastOf(const char *_s, int _pos = npos) const;
+int findLastOf(const String & _str, int _pos = npos) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;str_ : A String object.
+- _&#95;s_ :  A pointer to an array of characters.
+- _&#95;pos_ : Position of the last character in the string to be considered in the search.
+
+
+[.underline]#Return#
+
+The position of the last character that matches. If no matches are found, the function returns string::npos.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_find_last_of.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_find_last_of_out.txt[]
+----
+
+<<<
+
+====== String::getSubstring()
+
+Returns a new string with its value initialized to a copy of a substring of this object.
+
+*Syntax*
+
+[source,cpp]
+----
+String  getSubstring (int _pos = 0, int _len = npos) ;
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to be copied as a substring.
+- _&#95;len_ : Number of characters to include in the substring. As default it passes String::npos that indicates it will take all characters until the end of the string.
+
+[.underline]#Return#
+
+A string with a substring of this object.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_get_substring.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_get_substring_out.txt[]
+----
+
+<<<
+
+====== String::insert()
+
+Inserts additional characters into the string right before the character indicated by _&#x5f;pos_.
+
+*Syntax*
+
+[source,cpp]
+----
+void insert(int _pos, char _char);
+void insert(int _pos, const String & _string);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to insert.
+- _&#95;c_ : The character to insert.
+- _&#95;str_ : The characters from String object to insert.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_insert.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_insert_out.txt[]
+----
+
+<<<
+
+====== String::isEmpty()
+
+Returns whether the string is empty.
+
+*Syntax*
+
+[source,cpp]
+----
+bool empty() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+true if the string length is 0, false otherwise.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_is_empty.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_is_empty_out.txt[]
+----
+
+<<<
+
+====== String::length()
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+int length() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_length.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_length_out.txt[]
+----
+
+<<<
+
+====== String::operator=()
+
+Assigns a new value to the string, replacing its current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+String& operator=(const String & _str);
+String& operator=(String && _str);
+String& operator=(const char* _s);
+----
+
+[.underline]#Parameters#
+
+- _&#95;s_ : A pointer to an array of characters.
+- _&#95;str_ : A String object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_operator_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_operator_assign_out.txt[]
+----
+
+<<<
+
+======  String::operator+=()
+
+Appends string at the end of current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+String& operator+=(const String& _string);
+String& operator+=(const char* _string);
+String& operator+=(char _char);
+----
+
+[.underline]#Parameters#
+
+- _&#95;s_ : A pointer to an array of characters.
+- _&#95;str_ : String object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_operator_add_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_operator_add_assign_out.txt[]
+----
+
+<<<
+
+====== String::operator[]()
+
+Returns a reference to the character from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+char& operator[] (int _pos);
+const char& operator[] (int _pos) const;
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The character at the specified position in the string.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_operator_access.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_operator_access_out.txt[]
+----
+
+<<<
+
+====== String::split()
+
+Splits the string into multiple strings in an array by a char or string delimiter.
+
+*Syntax*
+
+[source,cpp]
+----
+String split(char _delimiter) const;
+String split(const String & _delimiter) const;
+----
+
+[.underline]#Parameters#
+
+- delimiter : A character or string as the delimiter
+
+[.underline]#Return#
+
+A vector representing the strings split by the delimiter.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_split.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_split_out.txt[]
+----
+
+<<<
+
+====== String::startsWith()
+
+Returns whether the string starts with the specified character(s).
+
+*Syntax*
+
+[source,cpp]
+----
+bool startsWith() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+true if the string starts with the specified character(s).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_starts_with_out.txt[]
+----
+
+<<<
+
+====== String::toConstChar()
+
+Returns a pointer to an array that contains a null-terminated sequence of characters (i.e., a C-string) representing the current value of the string object.
+
+*Syntax*
+
+[source,cpp]
+----
+const char * toConstChar() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A pointer of characters of the string object's value.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_const_char.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_to_const_char_out.txt[]
+----
+
+<<<
+
+====== String::toLowerCase()
+
+Returns current string as lowe case
+
+*Syntax*
+
+[source,cpp]
+----
+String toLowerCase() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A String value, representing the new string converted to lower case
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_lower_case.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_lower_case_out.txt[]
+----
+
+<<<
+
+====== String::toUpperCase()
+
+Returns current string as upper case
+
+*Syntax*
+
+[source,cpp]
+----
+String toUpperCase() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A String value, representing the new string converted to upper case.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_upper_case.cpp[]
+----
+
+Console output:
+
+[source,cpp]
+----
+include::../examples/api/types/string_to_upper_case_out.txt[]
+----
+
+<<<
+
+====== String::setSubstring()
+
+Replaces a portion of the string.
+
+*Syntax*
+
+[source,cpp]
+----
+String & setSubstring(int _pos, int _len, const String & _to_replace);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first character to be replaced.
+- _&#95;len_ : Number of characters to replace. A value of string::npos indicates all characters until the end of the string.
+- _&#95;str_ : A String object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_set_substring.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_set_substring_out.txt[]
+----
+
+<<<
+
+===== Static functions
+
+====== String::operator+()
+
+Returns a new string object with its value being the concatenation of the characters in left operand followed by those of right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+friend String operator+(const String & _s1, const String &_s2);
+friend String operator+(const String & _s1, const char *_s2);
+friend String operator+(const char * _s1, const String & _s2);
+
+friend String operator+(const String & _s1, char _s2);
+friend String operator+(char  _s1, const String & _s2);
+----
+
+[.underline]#Parameters#
+
+- _&#95;s1_ : A char, pointer to array of characters or String object as left operand.
+- _&#95;s2_ : A char, pointer to array of characters or String object as right operand.
+
+[.underline]#Return#
+
+A string whose value is the concatenation of &#95;s1 and &#95;s2.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_operator_add.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_operator_add_out.txt[]
+----
+
+<<<
+
+====== Relational operators
+
+String implements the EQUAL (aka ==) and NOT EQUAL (aka !=) comparison operation between the left operand and right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+friend bool operator _REL_OPERATOR_(const String & _s1, const String &_s2);
+friend bool operator _REL_OPERATOR_(const String & _s1, const char *_s2);
+friend bool operator _REL_OPERATOR_(const char * _s1, const String & _s2);
+----
+
+Where &#95;REL_OPERATOR&#95; can be *==* or *!=*
+
+[.underline]#Parameters#
+
+- _&#95;s1_ : A pointer to array of characters or String object as left operand.
+- _&#95;s2_ : A pointer to array of characters or String object as right operand.
+
+[.underline]#Return#
+
+true if satisfies the condition &#95;s1 _R &#95;s2 and false otherwise.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_relational_operators.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_relational_operators_out.txt[]
+----
+
+<<<
+
+==== zetscript::Vector
+
+_Vector_ it defines a unidimensional vector of elements of type defined on its template parameter. 
+
+===== Constructor
+
+The Vector constructor creates a new Vector as empty or initialized with other Vector.
+
+[source,cpp]
+----
+Vector();
+Vector(const Vector & _vector);
+----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A vector object.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_constructor.cpp[]
+----
+
+===== Static constants
+
+====== Vector::n_pos
+
+npos is a static member constant value with the greatest possible value.
+
+<<<
+
+===== Member functions
+
+====== Vector::clear()
+
+Erases the contents of the vector.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		clear();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_clear.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_clear_out.txt[]
+----
+
+<<<
+
+====== Vector::concat()
+
+Copies all elements from other vector at the end of current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		concat(const Vector<_T>  & _vector);
+----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A vector object.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_concat.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_concat_out.txt[]
+----
+
+<<<
+
+====== Vector::data()
+
+Returns the pointer to the array of the elements.
+
+*Syntax*
+
+[source,cpp]
+----
+_T *data();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A pointer of elements of the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_data.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_data_out.txt[]
+----
+
+<<<
+
+====== Vector::erase()
+
+Erases an element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		erase( int  _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the element to be erased.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_erase.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_erase_out.txt[]
+----
+
+<<<
+
+====== Vector::get()
+
+Returns a reference to the element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+const _T &	get( int  _pos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The element at the specified position in the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_get_out.txt[]
+----
+
+<<<
+
+====== Vector::insert()        
+
+Inserts an element or copies all elements of other vector from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		insert(int _pos,const _T & _element);
+void 		insert(int _pos,const Vector<_T>  & _vector, int _len=npos);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : Position of the first element to insert.
+- _&#95;vector_ : The elements of vector source to insert.
+- _&#95;len_ : The number of elements to insert. A value of Vector::npos indicates all elements until the end of the vector.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_insert.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_insert_out.txt[]
+----
+
+<<<
+
+====== Vector::length()
+
+Returns the number of elements of the vector. 
+
+*Syntax*
+
+[source,cpp]
+----
+int	length() const;
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the vector.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_length_out.txt[]
+----
+
+<<<
+
+====== Vector::operator=()
+
+Replaces current content by the set of elements from other vector.
+
+*Syntax*
+
+[source,cpp]
+----
+Vector& operator=(const Vector& _vector);		
+----
+
+[.underline]#Parameters#
+
+- _&#95;vector_ : A vector object.
+
+[.underline]#Return#
+
+*this
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_operator_assign.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_operator_assign_out.txt[]
+----
+
+<<<
+
+====== Vector::pop()
+
+Returns the last element by copy and erases the last element.
+
+*Syntax*
+
+[source,cpp]
+----
+void    		pop();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_pop.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_pop_out.txt[]
+----
+
+<<<
+
+====== Vector::push()
+
+Appends an element at the end of current contents.
+
+*Syntax*
+
+[source,cpp]
+----
+bool 		push( const _T & _element);
+----
+
+[.underline]#Parameters#
+
+- _&#95;element_ : The element to append.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_push.cpp[]
+----
+
+<<<
+
+====== Vector::resize()
+
+Resizes the vector by a length.
+
+*Syntax*
+
+[source,cpp]
+----
+void    	resize(int _len);
+----
+
+[.underline]#Parameters#
+
+- _&#95;len_ : The new capacity of the vector.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_resize.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/vector_resize_out.txt[]
+----
+
+<<<
+
+====== Vector::set()
+
+Replaces the element from a position.
+
+*Syntax*
+
+[source,cpp]
+----
+void 		set( int  _pos_, const _T & _element);
+----
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+none
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/vector_set.cpp[]
+----
+
+
+<<<
+
+==== zetscript::ScriptType
+
+ScriptType is an type managed by ZetScript that defines a builtin or registered script type. ScriptType has the following fields.
+
+- id: The script type id
+- name: The script type name
+- native_name: Native name of script type
+- properties: A integer value composed of the following mask values,  
+
+[cols="1m,2d"]
+|====
+|Name |Description
+
+|SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF		
+|It tells script type is native
+
+|SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	
+|it tells script type is static or not instantiable
+
+|====
+
+<<<
+
+==== zetscript::Symbol
+
+_Symbol_ is a type managed internally by ZetScript that defines a symbol. The _Symbol_ type has the following fields:
+
+- scope : scope where symbol was registered
+- name: symbol name
+- ref_ptr: Pointer reference that holds information about the instance of symbol type.
+- n_params; Number of parameters in case the symbol is refers a function.
+- properties: A integer value composed of the following mask values,  
+
+[cols="1m,2d"]
+|====
+|Name |Description
+|SYMBOL_PROPERTY_NATIVE_OBJECT_REF
+|Tells that the _Symbol_ it holds a native pointer
+
+|SYMBOL_PROPERTY_STATIC
+|Tells that the _Symbol_ static
+
+|SYMBOL_PROPERTY_SCRIPT_TYPE
+|Tells that the _Symbol_ is a _ScriptType_
+
+|SYMBOL_PROPERTY_SCRIPT_FUNCTION
+|Tells that the _Symbol_ is a _ScriptFunction_
+
+|SYMBOL_PROPERTY_CONST
+|Tells that the _Symbol_ is constant
+	
+|SYMBOL_PROPERTY_MEMBER_PROPERTY
+|Tells that the _Symbol_ is a _MemberProperty_
+
+|SYMBOL_PROPERTY_ARG_BY_REF
+|Tells that the _Symbol_ refers an argument by reference
+
+|SYMBOL_PROPERTY_ALLOCATED_STK
+|Tells that the _Symbol_ an allocated StackElement
+
+|====
+
+<<<
+
+==== zetscript::StackElement
+
+_StackElement_ is the data type in the stack used by the VirtualMachine.  StackElement has the following fields:
+
+_value: The value of StackElement
+_properties_ : Defines the content of value by the following mask values,
+
+[cols="1m,2d"]
+|====
+|Value|Description
+
+|STACK_ELEMENT_PROPERTY_UNDEFINED
+|It tells that _StackElement_ is *Undefined*
+
+|STACK_ELEMENT_PROPERTY_NULL
+|It tells that _StackElement_ is *Null*
+
+|STACK_ELEMENT_PROPERTY_CHAR_PTR
+|It tells that the contents of _StackElement_ is a *const char &#42;*
+
+|STACK_ELEMENT_PROPERTY_INT
+|It tells that the _StackElement_ is a _Boolean_ representing its value as *zs_int*
+		
+|STACK_ELEMENT_PROPERTY_FLOAT
+|It tells that the _StackElement_ is a __Float__ representing its value as *zs_float &#42;*
+
+|STACK_ELEMENT_PROPERTY_BOOL
+|It tells that the _StackElement_ is a _Boolean_ representing its value as __zetscript::zs_int__
+
+|STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID
+|It tells that the _StackElement_ is a script_type_id_ of the  _ScriptType_ representing its value by a __zetscript::zs_int__ 
+
+|STACK_ELEMENT_PROPERTY_FUNCTION
+|It tells that the _StackElement_ is a _ScriptFunction_. Its value is *Symbol &#42;* as the symbol that refers a *Function &#42;* of a function in _ref_ptr_ field
+
+|STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION
+|It tells that the _StackElement_ is a _MemberFunction_. Its value is a  *Symbol &#42;* as the symbol and the _MemberFunction_ reference is get from _Symbol::ref_ptr_ field
+
+|STACK_ELEMENT_PROPERTY_MEMBER_PROPERTY
+|It tells that the contents of _StackElement_ is a _StackElementMemberProperty &#42;_
+
+|STACK_ELEMENT_PROPERTY_OBJECT
+|It tells that the contents of _StackElement_ is a *ScriptObject &#42;*
+
+|STACK_ELEMENT_PROPERTY_CONTAINER_SLOT
+|It tells that the contents of _StackElement_ is a *ContainerSlot &#42;*
+
+|STACK_ELEMENT_PROPERTY_PTR_STK
+|It tells that the contents of _StackElement_ is a *StackElement &#42;*
+		
+|STACK_ELEMENT_PROPERTY_READ_ONLY
+|It tells that the _StackElement_ is defined as read only
+
+|====
+
+
+<<<
+
+==== zetscript::ScriptObject
+
+_ScriptObject_ defines a the parent class of any object in TypeScript. This type is usually used internally by ZetScript. The _ScriptObject_ type has the following fields:
+
+- script_type_id: The script type representated by the instance of script object. ZetScript has a primitive types   which _script_type_ids_ are the following,
+
+[cols="1m,2d"]
+|====
+
+|Name|Description
+
+|SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT
+|Tells that the object is an instance of StringScriptObject
+
+|SCRIPT_TYPE_ID_ARRAY_SCRIPT_OBJECT
+|Tells that the object is an instance of ObjectArray
+
+|SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT
+|Tells that the object is an instance of ObjectScriptObject
+
+|====
+
+- properties: A integer value composed of the following mask values,  
+
+[cols="1m,2d"]
+|====
+|Value|Description
+|SCRIPT_OBJECT_PROPERTY_CONSTANT
+|Tells that _ScriptObject_ is constant
+
+|====
+
+<<<
+
+==== zetscript::StringScriptObject
+
+_StringScriptObject_ defines a string script object.
+
+===== Constructor
+
+The StringScriptObject constructor creates a new string object as empty or initialized with a string. StringScriptObject constructor requires a _ScriptEngine_ instance as a parameter.
+
+*Syntax*
+
+[source,cpp]
+----
+StringScriptObject(ScriptEngine *_script_engine, const String & _str="");
+----
+
+[.underline]#Parameters#
+
+- _&#95;script_engine_ : ScriptEngine instance.
+- _&#95;str_ : String value as a initialize value (empty by default).
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_constructor_out.txt[]
+----
+
+<<<
+
+===== Member functions
+
+====== StringScriptObject::get()
+
+Gets its current string value as String or array of characters
+
+*Syntax*
+
+[source,cpp]
+----
+const String & get();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+Its contents as string as String
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_get_out.txt[]
+----
+
+<<<
+
+====== StringScriptObject::getConstChar()
+
+Gets its current string value as array of characters
+
+*Syntax*
+
+[source,cpp]
+----
+const char *getConstChar();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+Its contents as string as array of characters
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_get_const_char.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_get_const_char_out.txt[]
+----
+
+<<<
+
+====== StringScriptObject::length()
+
+Returns the length of the string, in terms of bytes.
+
+*Syntax*
+
+[source,cpp]
+----
+virtual int length();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of bytes in the string.
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_length_out.txt[]
+----
+
+<<<
+
+====== StringScriptObject::set()
+
+Replaces current string value.
+
+*Syntax*
+
+[source,cpp]
+----
+void set(const String & _str);
+----
+
+[.underline]#Parameters#
+
+- _&#95;str_ : The string value.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_set_out.txt[]
+----
+
+<<<
+
+====== StringScriptObject::toString()
+
+Gets its current string value
+
+*Syntax*
+
+[source,cpp]
+----
+String toString();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+Its contents as string as String
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/string_script_object_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/string_script_object_to_string_out.txt[]
+----
+
+<<<
+
+==== ArrayScriptObject
+
+_ArrayScriptObject_ it defines a array script object.
+
+===== Constructor
+
+The ArrayScriptObject constructor creates a new array script object. ArrayScriptObject constructor requires a _ScriptEngine_ instance as a parameter.
+
+*Syntax*
+
+[source,cpp]
+----
+ArrayScriptObject(ScriptEngine *_script_engine);
+----
+
+[.underline]#Parameters#
+
+- _&#95;script_engine_ : ScriptEngine instance.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_constructor_out.txt[]
+----
+
+<<<
+
+===== Member functions
+
+====== ArrayScriptObject::elementInstanceOf()
+
+Says whether the element at a position is instance of zetscript data type or a registered type.
+
+*Syntax*
+
+[source,cpp]
+----
+bool 	elementInstanceOf<_T>(int _pos);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+Returns true if the element at position _&#95;pos_ it type or extends from type _&#95;T_
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_element_instance_of.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_element_instance_of_out.txt[]
+----
+
+<<<
+
+====== ArrayScriptObject::get()
+
+Returns a reference element of type _&#x5f;T_ at position __pos_.
+
+*Syntax*
+
+[source,cpp]
+----
+_T 	get(int _pos);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+
+[.underline]#Return#
+
+The element at the specified position in the array.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_get_out.txt[]
+----
+
+<<<
+
+====== ArrayScriptObject::length()
+
+Returns the number of the elements of the array.
+
+*Syntax*
+
+[source,cpp]
+----
+int length();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+The number of elements in the array.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_length.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_length_out.txt[]
+----
+
+<<<
+
+====== ArrayScriptObject::push()
+
+Appends _&#x5f;value_  of type _&#x5f;T_ at the end of array.
+
+*Syntax*
+
+[source,cpp]
+----
+void push(_T _element);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;element_ : The element to append.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_push.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_push_out.txt[]
+----
+
+<<<
+
+====== ArrayScriptObject::set()
+
+Replaces current value at position _&#x5f;pos_ by _&#x5f;value_ of type _&#x5f;T_. 
+
+*Syntax*
+
+[source,cpp]
+----
+void set<_T>(int _pos, _T _element);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;pos_ : The integer value as the position.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+None
+
+*Example*
+
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_set_out.txt[]
+----
+
+<<<
+
+====== ArrayScriptObject::toString()
+
+Returns a string as the array contents in json format.
+
+*Syntax*
+
+[source,cpp]
+----
+String toString();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A string of the array contents in json format.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/array_script_object_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/array_script_object_to_string_out.txt[]
+----
+
+<<<
+
+==== ObjectScriptObject
+
+_ObjectScriptObject_ it defines a array script object.
+
+===== Constructor
+
+The ObjectScriptObject constructor creates a new object script object. ObjectScriptObject constructor requires a _ScriptEngine_ instance.
+
+
+*Syntax*
+
+[source,cpp]
+----
+ObjectScriptObject(ScriptEngine *_script_engine);
+----
+
+[.underline]#Parameters#
+
+- _&#95;script_engine_ : ScriptEngine instance.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_constructor_out.txt[]
+----
+
+<<<
+
+===== Member functions
+
+====== ObjectScriptObject::elementInstanceOf()
+
+Says whether the element is instance of zetscript data type or a registered type.
+
+*Syntax*
+
+[source,cpp]
+----
+bool 	elementInstanceOf<_T>(const String & _key);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;key_ : The string value as the key.
+
+[.underline]#Return#
+
+Returns true if the element at key _&#95;key_ it type or extends from type _&#95;T_
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_element_instance_of.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_element_instance_of_out.txt[]
+----
+
+<<<
+
+====== ObjectScriptObject::get()
+
+Returns element of type _&#x5f;T_ at key __key_.
+
+*Syntax*
+
+[source,cpp]
+----
+_T 	get(const String & _key);
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;key_ : The string value as the key.
+
+[.underline]#Return#
+
+The element at the specified key in the object.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_get.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_get_out.txt[]
+----
+
+<<<
+
+====== ObjectScriptObject::getKeys()
+
+Returns a vector of strings as the keys of the Object.
+
+*Syntax*
+
+[source,cpp]
+----
+Vector<String> getKeys();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A vector of strings as the keys of the Object.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_get_keys.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_get_keys_out.txt[]
+----
+
+<<<
+
+====== ObjectScriptObject::set()
+
+Replaces current value at key _&#x5f;key_ by _&#x5f;value_ of type _&#x5f;T_.
+
+*Syntax*
+
+[source,cpp]
+----
+void ObjectScriptObject::set(int _key, _T _element)
+----
+
+[.underline]#Template#
+
+- _&#95;T_ : Zetscript data type or a registered type.
+
+[.underline]#Parameters#
+
+- _&#95;key_ : The string value as the key.
+- _&#95;element_ : The element to replace.
+
+[.underline]#Return#
+
+None
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_set.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_set_out.txt[]
+----
+
+<<<
+
+====== ObjectScriptObject::toString()
+
+Returns a string as the object contents in json format.
+
+*Syntax*
+
+[source,cpp]
+----
+String toString();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Return#
+
+A string of the object contents in json format.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/object_script_object_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/object_script_object_to_string_out.txt[]
+----
+
+<<<
+
+==== zetscript::ClassScriptObject
+
+_ClassScriptObject_ it a subclass of _ObjectScriptObject_ that implements the _class_ type defined in ZetScript. Also it is used as a wrapper to instance a registered type.
+
+<<<
+
+==== zetscript::ScriptFunction
+
+_ScriptFunction_ is a script function type object. _ScriptFunction_ type contains function information. 
+
+- __id__: Function id
+- __name__: function name
+- __return_script_type_id__:  return script type id.
+- __owner_script_type_id__: script type id  which script function it belongs
+- __properties__: Script function properties
+
+
+[cols="1m,3d"]
+|====
+|Value|Description
+|SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF	
+|Tells that the script function it represents a registered native function
+|SCRIPT_FUNCTION_PROPERTY_STATIC
+|Tells that the script function is static
+|SCRIPT_FUNCTION_PROPERTY_MEMBER_FUNCTION
+|Tells that script function is a member of a script type
+|SCRIPT_FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME
+|Tells that the symbol of script function is not resolved yet and it will be resolved at runtime. This situation happens only on registered functions when it registers two or more functions with the same name but different number of parameter or diferent parameter types
+|====
+
+<<<
+
+==== zetscript::ScriptEngine
+
+_ScriptEngine_ is the main type of ZetScript in order to register function, register types, compile, execute scripts and much more.
+
+
+===== ScriptEngine::bindScriptFunction()        
+
+Binds script function to be callable from C++.
+
+*Syntax*
+
+[source,cpp]
+----
+std::function<F> bindScriptFunction(const String & _script_function_name);
+
+std::function<F> bindScriptFunction(MemberFunctionScriptObject *_member_function_script_object);
+
+std::function<F> bindScriptFunction(ScriptFunction *_script_function, ScriptObject *_object);
+
+std::function<F> bindScriptFunction(ScriptFunction *_script_function);
+----
+
+[.underline]#Template#
+
+- _F_ : The template C function with the following signature,
+include::api_bind_script_function_signature.adoc[]
+
+[.underline]#Parameters#
+
+ - ___script_function_name__: Bind script function by script function name to bind
+ - ___member_function_script_object__: Script member function instance
+ - ___object__: Script object instance owner of the script member function
+ - ___script_function__: Script function instance
+
+
+[.underline]#Returns#
+
+Returns a _std::function_ with the signature provided.
+
+*Example*
+
+The following example it binds a ZetScript function _sayHelloWorld_.
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_bind_script_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_bind_script_function_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::clear()
+
+It clears all symbols, types, variables from last saved stated.
+
+*Syntax*
+
+[source,cpp]
+----
+void clear();
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_clear.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_clear_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::compile()
+
+Compiles a ZetScript expression. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
+
+*Syntax*
+
+[source,cpp]
+----
+void	compile(const String & _expresion,const char *__invoke_file__="", int __invoke_line__=-1);
+----
+
+[.underline]#Parameters#
+
+ - _&#95;expresion_: The string as expression to compile
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_compile.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_compile_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::compileAndRun()
+
+Compiles a ZetScript expression and runs generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
+
+*Syntax*
+
+[source,cpp]
+----
+StackElement	compileAndRun(const String & _expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+----
+
+[.underline]#Parameters#
+
+ - _&#95;expresion_: The string as expression to compile
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+[.underline]#Returns#
+
+<<api_data_types.adoc#_zetscriptstackelement[StackElement] as a result of the value returned
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_compile_and_run.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_compile_and_run_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::compileFile()
+
+It compiles a ZetScript file. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
+
+*Syntax*
+
+[source,cpp]
+----
+void	compileFile(const String & _filename, CompileData *_compile_data=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+----
+
+[.underline]#Parameters#
+
+ - _&#95;filename_: The file to compile.
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_compile_file.cpp[]
+----
+
+The source of file.zs is,
+
+[source,javascript]
+----
+include::../examples/api/types/file.zs[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_compile_file_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::compileFileAndRun()
+
+It compiles a ZetScript file and runs current generated code. This operation doesn't removes generated code, variables, functions,etc from last compiled code. Each compilation preserves last compiled code. If case to have a reset of everything use _ScriptEngine::clear_
+
+*Syntax*
+
+[source,cpp]
+----
+StackElement	compileFileAndRun(const String & _filename, const char *__invoke_file__="", int __invoke_line__=-1);
+----
+
+
+[.underline]#Parameters#
+
+ - _&#95;filename_: The file to compile and run.
+ - _&#95;&#95;invoke_file&#95;&#95;_: The file where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+ - _&#95;&#95;invoke_line&#95;&#95;_: The line where compile was invoked. This is used to have some traceability on the source when some error happens (optional)
+
+
+[.underline]#Returns#
+
+<<api_data_types.adoc#_zetscriptstackelement[StackElement]>> as a result of the value returned
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_compile_file_and_run.cpp[]
+----
+
+The source of 'file.zs' is,
+
+[source,javascript]
+----
+include::../examples/api/types/file.zs[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_compile_file_and_run_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::extends()
+
+Inherits methods from other registered type
+
+*Syntax*
+
+[source,cpp]
+----
+void extends<T,B>()
+----
+
+
+[.underline]#Template parameters#
+
+ - _T_: The type to be extended to.
+ - _B_: The type to be extended from.
+ 
+
+====
+*Note* : The method do not supports (by now) a forward register to an extended types when any member o property is being registered on  _B_. So, it is important to register *FIRST* all members and properties of _B_ *BEFORE* before apply the extension to _T_.
+====
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_extends.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_extends_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::printGeneratedCode()
+
+Prints information about generated code of the main and other function, script functions.
+
+*Header*
+
+The header describes the following,
+
+ - __Function__: The function name. The main function is described as @MainFunction.
+ - __Stack code__: Stack required for code
+ - __Stack local vars__: Stack required for local variables
+ - __Total stack required__: Total stack required
+ - __Scopes__: Total scopes
+
+*Instructions*
+
+Below the header it appears a list of the instructions of generated code with the following columns,
+
+- __NUM__: Instruction number
+- __RS__: Required Stack for current instruction
+- __AS__: Acumulated Stack in the current instruction
+- __BYTE CODE__: Description of the Byte code name used and operands
+
+The meaning of each byte code is described in the following table,
+
+include::api_byte_code_table.adoc[]
+
+*Syntax*
+
+[source,cpp]
+----
+void printGeneratedCode()
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_print_generated_code.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_print_generated_code_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::pushStackElement()
+
+Pushes stack element to stack to be readed later as a return function in ZetScript. The order how stack elements are pushed/popped is FIFO (First into stack First out to be processed). As a difference from register normal function seen in <<api_data_types.adoc#_scriptengineregisterfunction,ScriptEngine::registerFunction>> this operation allows return multiple values.
+											   
+*Syntax*
+
+[source,cpp]
+----
+void			pushStackElement(
+	zetscript::StackElement _stk
+);	
+----
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_push_stack_element.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_push_stack_element_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerConstant()
+
+Registers a constant value.
+
+*Syntax*
+
+[source,cpp]
+----
+void registerConstant(const String & _const_name, int _i_value, const char *registered_file="", short registered_line=-1);
+
+void registerConstant(const String & _const_name, zs_float _f_value, const char *registered_file="", short registered_line=-1);
+
+void registerConstant(const String & _const_name, bool _b_value, const char *registered_file="", short registered_line=-1);
+
+void registerConstant(const String & _const_name, const String & _str_value, const char *registered_file="", short registered_line=-1);
+
+void registerConstant(const String & _const_name, const char * _str_value, const char *registered_file="", short registered_line=-1);
+----
+
+[.underline]#Function parameters# 
+
+- ___const_name__	: Constant name
+- ___b_value__	: Constant as Boolean value
+- ___i_value__	: Constant as Integer value
+- ___f_value__	: Constant as Float value
+- ___s_value__	: Constant as String value from const char * or zetscript::String 
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_constant.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_constant_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerConstMemberProperty
+
+Registers a C function as a constant member property of a registered type.
+
+*Syntax*
+
+[source,cpp]
+----
+void	registerConstMemberProperty<T>(
+		const zetscript::String & _property_name
+		,F _c_function
+		, const char *_registered_file=""
+		,short _registered_line=-1
+);
+----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- __property_name_	: Property name
+- ___c_function__: A C function that returns a type as a value of the property with the following signature,
+
+include::api_register_const_member_property_signature.adoc[]
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+
+[.underline]#Returns#
+
+None
+
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_const_member_property.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_const_member_property_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerConstructor() 
+
+Registers C function as a constructor of a registered type.
+
+*Syntax*
+[source,cpp]
+----
+void registerConstructor<T>( F _c_function);
+----
+
+[.underline]#Types# 
+
+- _T_: The registered type
+
+[.underline]#Parameters#
+
+- ___c_function__: C function reference to be registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_constructor.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_constructor_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerFunction()
+
+Registers a C function to be callable from ZetScript.
+
+*Syntax*
+
+[source,cpp]
+----
+void registerFunction( 
+	const zetscript::String & _function_name
+	,F _c_function
+	,const char *_registered_file=""
+	,short _registered_line=-1
+);
+----
+
+[.underline]#Parameters#
+
+- ___function_name__ : Function name.
+- ___c_function__ : A C function to register with the following signature,
+
+include::api_register_function_signature.adoc[]
+
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+The following example registers a C function _sayHelloWorld_ and it is called in ZetScript.
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_function_out.txt[]
+----
+
+To see more and complete examples see <<api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript]>>
+
+<<<
+
+===== ScriptEngine::registerMemberFunction()
+
+Registers a C function as a member function of a registered type.
+
+*Syntax*
+[source,cpp]
+----
+void registerMemberFunction<T>(
+	const zetscript::String & _member_function_name
+	,F _c_function
+	,const char *_registered_file=""
+	,short _registered_line=-1
+);
+----
+
+[.underline]#Template parameters# 
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- ___member_function_name__	: Member function name
+- ___c_function__: A C function with the following signature,
+
+include::api_register_member_function_signature.adoc[]
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_member_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_member_function_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerMemberPropertyMetamethod()
+
+Registers C function as member property metamethod of a registered type
+
+*Syntax*
+
+[source,cpp]
+----
+void	registerMemberPropertyMetamethod<T>(
+	const zetscript::String & _property_name
+	,const zetscript::String & _metamethod_name
+	,F _c_function
+	,const char *_registered_file=""
+	,short _registered_line=-1
+);
+----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+[.underline]#Function parameters# 
+
+- _&#95;property_name_	: Property name has to be one of the properties seen on xref:language_class.adoc#_member_functions[Properties - Member functions]
+- _&#95;metamethod_name_ : One of the following metamethod names,
+
+- ___c_function__: A C function.
+
+include::api_register_member_property_metamethod_signature.adoc[]
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_member_property_metamethod.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_member_property_metamethod_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerStaticMemberFunction()
+
+Registers a C function as static member function of a registered type.
+
+*Syntax*
+[source,cpp]
+----
+void registerStaticMemberFunction<T>(
+	const zetscript::String & _static_member_name
+	, F _function
+);
+----
+
+[.underline]#Template parameters#
+
+- _T_: The registered type
+
+[.underline]#Function parameters#
+
+- ___function_name__ : The function name to be refered in ZetScript. A static member function can be defined as metamethod if ___function_name__ matches some of the name of the metamethod seen at xref:language_class.adoc#_static_metamethods[The language.Class.Member Functions. Static metamethods]
+
+
+- ___c_function__ : A C function to register with the following signature,
+
+include::api_register_function_signature.adoc[]
+
+- ___registered_file__ : Source file where the function was registered
+- ___registered_line__ : Line file where the function was registered
+
+[.underline]#Returns#
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_static_member_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_static_member_function_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::registerType()
+
+Registers a type in ZetScript. 
+
+*Syntax*
+[source,cpp]
+----
+ScriptType * registerType<T>(
+	const zetscript::String & _script_type_name
+	, F _new_c_function=NULL
+	, F _delete_c_function=NULL
+);
+----
+
+[.underline]#Template parameters# 
+
+- _T_: The type to register.
+
+[.underline]#Parameters# 
+
+- ___script_type_name__: The script type name.
+- ___new_c_function__ (Optional):  It defines the c function that creates the native type when an instance of this type is created in ZetScript (Optional if it's instantiable). The signature of the c function is,
+
+[source,cpp]
+----
+T * (ScriptEngine *_script_engine);
+----
+
+- ___delete_c_function__ : It defines the c function that destroys the native type when a instance of this type is destroyed in ZetScript (Optional if it's instantiable). The signature of the c function is,
+
+
+[source,cpp]
+----
+void RegisteredType_delete(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+There's two ways to register a type,
+
+ - Register as non instantiable type
+ - Register as instantiable type
+
+====== Register type as non instantiable
+
+Register as non instantiable type it means that it *CANNOT* create or instantiate new objects of that _type_ in ZetScript using the _new_ operator, so the object only can be acceded by reference returned by some registered function. This kind of register is useful when it wants to have a control of instantiated objects in the native application.
+
+If for example we perform the following code,
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_type_non_instantiable_error.cpp[]
+----
+
+Will throw the following error,
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_type_non_instantiable_error_out.txt[]
+----  
+
+<<<
+
+The only way to operate with a 'MyType' object non instantiable is by a returning a reference of object 'MyType' from registered C function as it shows in the following example,
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_type_non_instantiable.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_type_non_instantiable_out.txt[]
+----
+
+<<<
+
+====== Register type as instantiable
+
+Register as instantiable type it means that it *CAN* instantiate objects of that 'type' in ZetScript code using operator __new__.
+
+*Example*
+
+In the following example it will show an example of registered type instantiable,
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_register_type_instantiable.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_register_type_instantiable_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::unrefLifetimeObject()        
+
+Dereferences a binded script object.
+
+*Syntax*
+
+[source,cpp]
+----
+void unrefLifetimeObject(ScriptObject *_script_object);
+----
+
+[.underline]#Parameters# 
+
+- ___script_object__: Script object to be dereferenced.
+
+[.underline]#Returns# 
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_unref_lifetime_object.cpp[]
+----
+
+<<<
+
+===== ScriptEngine::saveState()
+
+Saves the current registered symbols as variables, types ot functions
+
+*Syntax*
+
+[source,cpp]
+----
+void saveState();
+----
+
+[.underline]#Parameters# 
+
+None
+
+[.underline]#Returns# 
+
+None
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_save_state.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_save_state_out.txt[]
+----
+
+<<<
+
+===== ScriptEngine::stackElementTo()
+
+Binds StackElement to a primitive or registered type
+
+*Syntax*
+
+[source,cpp]
+----
+
+template<typename C>
+C	stackElementTo(StackElement * _stack_element);
+----
+
+[.underline]#Template parameters# 
+
+- _C_ : The type to be converted as the one of the following,
+
+include::api_stack_element_to_return.adoc[]
+
+[.underline]#Parameters# 
+
+- _stack_element: Stack element to converted from
+
+[.underline]#Returns# 
+
+A _C_ type as a result of conversion
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_stack_element_to.cpp[]
+----
+
+<<<
+
+===== ScriptEngine::toStackElement()
+
+Converts primitive or registered type to StackElement.
+
+*Syntax*
+
+[source,cpp]
+----
+
+template<typename C>
+zetscript::StackElement	toStackElementTo(C _value);
+----
+
+[.underline]#Template parameters# 
+
+- _C_ : The value to be converted as the one of the following,
+
+include::api_to_stack_element_return.adoc[]
+
+[.underline]#Parameters# 
+
+- ___value_: Value to be converted from.
+
+[.underline]#Returns# 
+
+StackElement as a result of conversion
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_to_stack_element.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_to_stack_element_out.txt[]
+----
+
+<<<

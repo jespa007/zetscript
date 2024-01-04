@@ -1,0 +1,12 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
+#ifndef ZS_TEST_ALL_CONFIG_H
+#define ZS_TEST_ALL_CONFIG_H
+
+#define ZS_TEST_ALL_SCRIPT_TEST_PATH "${ZS_TEST_ALL_SCRIPT_TEST_PATH}"
+
+#endif /* ZS_TEST_ALL_CONFIG_H */
+
+

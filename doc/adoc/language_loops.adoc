@@ -1,0 +1,161 @@
+=== Loops
+
+==== The while loop
+
+The _while_ loop loops through a block of code as long as a specified condition is _true_.
+
+*Syntax*
+
+[source,javascript]
+----
+while(condition){
+	// code block to be executed
+}
+----
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_while.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/loop/loop_while_out.txt[]
+----
+
+==== do-while loop
+
+The _do-while_ execute the code block once and then it will repeat the loop as long as the condition is _true_.
+
+*Syntax*
+
+[source,javascript]
+----
+do{
+	// code block to be executed
+} while (condition);
+----
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_do_while.zs[]
+----
+
+<<<
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/loop/loop_do_while_out.txt[]
+----
+
+==== The for loop
+
+The _for_ loop executes a block of code with 3 optional statements.
+
+*Syntax*
+
+[source,javascript]
+----
+for(statement1;statement2;statement3){
+	// code block to be executed
+}
+----
+
+* Statement 1 is executed before the loop (the code block) starts. Normally you will use statement 1 to initialize the variable used in the loop (for example var i = 0).
+* Statement 2 defines the condition for running the loop.
+* Statement 3 is executed each time after the code block has been executed.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_for.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/loop/loop_for_out.txt[]
+----
+
+
+==== The for-in loop
+
+The _for-in_ loop works as for loop but simplifies the iteration over containers like string, object or arrays. On each iteration it can evaluate its value in a variable or its key and its value in a pair of variables,
+
+*Syntax*
+
+[source,javascript]
+----
+// Evaluate container value per iteration
+for(var v in array){
+	// code block to be executed
+}
+
+// Evaluate container key and value per iteration
+for(var k,v in array){
+	// code block to be executed
+}
+----
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_for_in.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/loop/loop_for_in_out.txt[]
+----
+
+==== The break and continue
+
+===== Break statement
+
+The _break_ statement is used to jump out of body loop.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_break.zs[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/language/loop/loop_break_out.txt[]
+----
+
+
+===== Continue statement
+
+The _continue_ statement breaks one iteration and continues with the next iteration in the loop.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/loop/loop_continue.zs[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/language/loop/loop_continue_out.txt[]
+----

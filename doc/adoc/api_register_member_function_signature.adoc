@@ -1,0 +1,62 @@
+[source,cpp]
+----
+ReturnType (ScriptEngine *_script_engine, T *_this, ParamType *_arg1, ..., ParamType *_arg8 ){
+	....
+}
+----
+
+Where,
+
+_ReturnType_ it can be a registered type or one of the following types,
+
+[cols="1m,2d"]
+|====
+|ReturnType| Description
+|void
+|Returns nothing
+|bool
+|Returns <<language_data_types.adoc#_boolean,Boolean>>
+|<<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>>
+|Returns <<language_data_types.adoc#_integer,Integer>>
+|<<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> 
+|Returns <<language_data_types.adoc#_float,Float>>
+|<<api_data_types.adoc#_zetscriptstring,zetscript::String>>
+|Returns <<language_data_types.adoc#_string,String>>
+|<<api_data_types.adoc#_zetscriptstringscriptobject,zetscript::StringScriptObject>>] *
+|Returns <<language_data_types.adoc#_string,String>>
+|<<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+|Returns <<language_data_types.adoc#_array,Array>>
+|<<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+|Returns <<language_data_types.adoc#_object,Object>>
+|<<api_data_types.adoc#_zetscriptclassscriptobject,zetscript::ClassScriptObject>> *
+|Returns 
+ a registered type wrapped in  <<api_data_types.adoc#_zetscriptclassscriptobject,zetscript::ClassScriptObject>>
+|====
+
+As parameters, the function must always include _zetscript::ScriptEngine *_ as the FIRST parameter,the current instance as the SECOND parameter and the THIRD till a maximmum of 8 parameters type _ParamType_ as a pointer of registered native type or one of the following types,
+
+
+[cols="1m,2d"]
+|====
+|ParamType| Description
+|bool *
+|Calling function in script must pass <<language_data_types.adoc#_boolean,Boolean>> type
+|Calling function in script must pass <<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>> *
+|Calling function in script must pass <<language_data_types.adoc#_integer,Integer>> type
+|<<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> *
+|Calling function in script must pass <<language_data_types.adoc#_float,Float>> type
+|<<api_data_types.adoc#_zetscriptstring,zetscript::String>> *
+|Calling function in script must pass <<language_data_types.adoc#_string,String>> type
+|const char *
+|Calling function in script must pass <<language_data_types.adoc#_string,String>>
+|<<api_data_types.adoc#_zetscriptstringscriptobject,zetscript::StringScriptObject>>] *
+|Calling function in script must pass <<language_data_types.adoc#_string,String>> type
+|<<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+|Calling function in script must pass <<language_data_types.adoc#_array,Array>> type
+|<<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+|Calling function in script must pass <<language_data_types.adoc#_object,Object>> type
+|T *
+|Calling function in script must pass an instance of a register type T
+|<<api_data_types.adoc#_zetscriptstackelement,zetscript::StackElement>> *
+|This paramater is declared as generic and it can pass *ANY* type from ZetScript. In the C function, StackElement has to be deduced manually
+|====

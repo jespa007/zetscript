@@ -1,0 +1,46 @@
+== Introduction
+
+ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual machine so the execution is quite fast. Because ZetScript syntax is almost less or more equal to Javascript you can edit the code with any editor that supports Javascript syntax notation. 
+
+
+=== Compile
+
+To install ZetScript, first download last source code from https://zetscript.org and compile the project with the following steps,
+
+ . First we have to configure the project using cmake application.
++
+****
+cmake -B build
+****
++
+. Second we have to compile the project. Using GNU tool chain is
+done through this command,
++
+****
+make -C build
+****
+
+The binary file will be placed at __build__ directory.
+
+Optionally, cmake configuration comes with the following options:
+
+- __-DCMAKE_BUILD_TYPE={Release|Debug}__  : Configures ZetScript project for Release or Debug.
+- __-DTESTS:BOOL={true|false}__ : Configures ZetScript to build or not tests.
+- __-DSAMPLES:BOOL={true|false}__ : Configures ZetScript to build or not samples.
+
+=== Hello World
+
+Once ZetScript is compiled we present a quick sample of "HelloWorld" application, 
+
+. Create a filename named helloworld.zs and type the following sentence
++
+[source,zetscript]
+Console::outln("Hello world!");
++	
+. Save the file and do the following at command line,
++
+ zs helloworld.zs
++
+You should see the "Hello world" message at the command line. 
+
+

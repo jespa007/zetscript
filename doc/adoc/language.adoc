@@ -1,0 +1,70 @@
+:source-highlighter: highlight.js
+:highlightjs-languages: cpp, javascript
+:sectnums:
+:stylesheet: /home/jespada/zetdev/zetscript/doc/zetscript-manual-reference.css
+
+
+== The language
+
+=== Statments
+
+ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
+
+Example of four statements,
+
+[source,javascript]
+----
+var op1,op2,res;
+op1 = 5;
+op2 = 6;
+res = 5+6;
+----
+
+The last example can be executed within one line,
+
+[source,javascript]
+----
+var op1,op2,res; op1=5; op2=6; res = 5+6;
+----
+
+=== Comments
+
+ZetScript support block and line comments.
+
+==== Block comment
+
+[source,javascript]
+----
+/*
+this is a block comment
+*/
+----
+
+==== Line comment
+
+[source,javascript]
+----
+// This is a line comment
+----
+
+
+
+include::language_literals.adoc[]
+include::language_variables_and_scopes.adoc[]
+include::language_data_types.adoc[]
+include::language_operators.adoc[]
+include::language_conditionals.adoc[]
+include::language_loops.adoc[]
+include::language_function.adoc[]
+include::language_class.adoc[]
+<<<
+include::language_modules.adoc[]
+
+
+
+
+
+
+
+
+

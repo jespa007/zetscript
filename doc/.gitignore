@@ -1,0 +1,7 @@
+*_out.txt
+*.exe
+*.obj
+*.html
+*.pdf
+examples/api/build
+

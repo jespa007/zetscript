@@ -1,0 +1,2433 @@
+==== Register metamethods
+
+ZetScript can register static and member functions in order to implement metamethods seen in <<language_class.adoc#_metamethods,Language Class Metamethods>>.
+
+===== Member metamethods
+
+====== _addassign()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_addassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance.
+- ___this__ : The current instance.
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs an addition and assignment to the current instance from  a __Float__ value or __Number__ object respectively,
+
+[source,cpp]
+----
+
+void NumberZs_addassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value+=*_n;
+}
+
+void NumberZs_addassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value+=_n->value;
+}
+----
+
+Next, each function __NumberZs_addassign__ is registered as member metamethod ___addassign__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_addassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_addassign));
+
+	_script_engine->registerMemberFunction<Number>("_addassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_addassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that add and assigns values from a __Float__ value and __Number__  object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_addassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_addassign_out.txt[]
+----
+
+<<<
+
+====== _andassign()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_andassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a bitwise AND and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_andassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_andassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_andassign_ is registered as member metamethod __andassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_andassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_andassign));
+
+	_script_engine->registerMemberFunction<Number>("_andassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_andassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a bitwise AND and assignment from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_andassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_andassign_out.txt[]
+----
+
+<<<
+
+====== _divassign()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_divassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a division and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_divassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_divassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_divassign_ is registered as member metamethod __divassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_divassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_divassign));
+
+	_script_engine->registerMemberFunction<Number>("_divassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_divassign));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that divides and assigns values from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_divassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_divassign_out.txt[]
+----
+
+<<<
+
+====== _in()
+Implements _in_ operator 
+
+*Syntax*
+
+[source,javascript]
+----
+
+bool RegisteredType_in(zetscript::ScriptEngine *_script_engine, Data *_this, zs_float *_value);
+
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as value to check whether exist or not in the containing class
+
+[.underline]#Returns#
+
+Boolean telling whether the ___value__ exist in or not.
+
+*Example*
+
+Let's define type Data as,
+
+[source,cpp]
+----
+
+class Data{
+public:
+	std::vector<float> data;
+	Data(){
+		this->data={0,1,1,10,3,4,6};
+	} 
+};
+
+----
+
+
+The following code defines a function as a _in_ operation by searching a value in the vector of current instance of _Data_ type,
+
+[source,cpp]
+----
+
+bool DataZs_in(zetscript::ScriptEngine *_script_engine, Data *_this, zs_float *_value){
+	for(auto d : _this->data){
+		if(d == *_value){
+			return true;;
+		}
+	}
+	return false;
+}
+
+----
+
+The following code shows an example of registering functions and a script that performs a _in_ operation of a _Data_ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_in.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_in_out.txt[]
+----
+
+<<<
+
+
+====== _modassign()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_modassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a remainder division and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_modassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_modassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_modassign_ is registered as member metamethod __modassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_modassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_modassign));
+
+	_script_engine->registerMemberFunction<Number>("_modassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_modassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that produces the remainder division and assigns values from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_modassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_modassign_out.txt[]
+----
+
+<<<
+
+====== _mulassign()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_mulassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a multiplication and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_mulassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_mulassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_mulassign_ is registered as member metamethod __mulassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerMemberFunction<Number>("_mulassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mulassign));
+
+	_script_engine->registerMemberFunction<Number>("_mulassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mulassign));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that multiples and assigns values from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_mulassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_mulassign_out.txt[]
+----
+
+<<<
+
+====== _neg()
+
+Implements _negate_ pre operator (aka -a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject *RegisteredType_neg(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+An object with its negated value
+
+*Example*
+
+The following code defines a function as a _neg_ operation by returning a new __Number__ instance with the negate value of current instance,
+
+[source,cpp]
+----
+
+Number * NumberZs_neg(ScriptEngine *_script_engine,Number *_this){
+	return new Number(-_this->value);
+}
+
+----
+
+Next, the function _NumberZs_neg_ is registered as member metamethod __neg_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_neg",&NumberZs_neg);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that returns the negate of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_neg.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_neg_out.txt[]
+----
+
+<<<
+
+====== _not()
+
+Implements _not_ pre operator (aka !)  
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_not(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+A boolean value as a result of not operation
+
+*Example*
+
+The following code defines a function as a _not_ operation as true when current instance has a value of 0,
+
+[source,cpp]
+----
+
+bool NumberZs_not(ScriptEngine *_script_engine,Number *_this){
+	return _this->value == 0;
+}
+
+----
+
+Next, the function _NumberZs_not_ is registered as member metamethod __not_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_not",&NumberZs_not);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that evaluates not condition of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_not.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_not_out.txt[]
+----
+
+<<<
+
+====== _orassign()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_orassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a bitwise OR and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_orassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_orassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_orassign_ is registered as member metamethod __orassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_orassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_orassign));
+
+	_script_engine->registerMemberFunction<Number>("_orassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_orassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a bitwise OR and assignment from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_orassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_orassign_out.txt[]
+----
+
+<<<
+
+
+====== _postdec()
+
+Implements _post decrement_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_postdec(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value before perform post decrement operation
+
+
+*Example*
+
+The following code defines a function as a _postdec_ operation that decrements the value of current instance and returns the object with the value before _postdec_ operation,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_postdec(ScriptEngine *_script_engine,Number *_this){
+	return _script_engine->newClassObject(new Number(_this->value--));
+}
+
+----
+
+Next, the function _NumberZs_postdec_ is registered as member metamethod __postdec_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_postdec",NumberZs_postdec);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a post decrement operation of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_postdec.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_postdec_out.txt[]
+----
+
+<<<
+
+====== _postinc()
+
+Implements _post increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_postinc(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value before perform post increment operation
+
+
+*Example*
+
+The following code defines a function as a _postinc_ operation that increments the value of current instance and returns the object with the value before _postinc_ operation,
+
+[source,cpp]
+----
+
+ClassScriptObject *  NumberZs_postinc(ScriptEngine *_script_engine,Number *_this){
+	return _script_engine->newClassObject(new Number(_this->value++));
+}
+
+----
+
+Next, the function __NumberZs_postinc__ is registered as member metamethod ___postinc__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_postinc",NumberZs_postinc);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a post increment operation of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_postinc.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_postinc_out.txt[]
+----
+
+<<<
+
+====== _predec()
+
+Implements _pre decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_predec(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value after perform post increment operation
+
+*Example*
+
+The following code defines a function as a _predec_ operation that pre decrements the value of current instance and returns the object with the value before _predec_ operation,
+
+
+[source,cpp]
+----
+
+ClassScriptObject  *NumberZs_predec(ScriptEngine *_script_engine,Number *_this){
+	return _script_engine->newClassObject(new Number(--_this->value));
+}
+
+----
+
+Next, the function __NumberZs_predec__ is registered as member metamethod ___predec__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_predec",NumberZs_predec);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a pre decrement operation of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_predec.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_predec_out.txt[]
+----
+
+<<<
+
+====== _preinc()
+
+Implements __pre increment__ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject *RegisteredType_preinc(ScriptEngine *_script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+[.underline]#Returns#
+
+Return new type wrapped in __zetscript::ClassScriptObject__ with the value after perform post increment operation
+
+*Example*
+
+The following code defines a function as a _preinc_ operation that pre increments the value of current instance and returns the object with the value before _preinc_ operation,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_preinc(ScriptEngine *_script_engine,Number *_this){
+	return _script_engine->newClassObject(new Number(++_this->value));
+}
+
+----
+
+Next, the function _NumberZs_preinc_ is registered as member metamethod __preinc_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_preinc",NumberZs_preinc);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs a pre increment operation of a __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_preinc.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_preinc_out.txt[]
+----
+
+<<<
+
+
+
+====== _set()
+Implements __assignment__ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_set(ScriptEngine * _script_engine, RegisteredType *_this, ParamType * _value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : A value to be set. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions performs an assignment from <<language_data_types.adoc#_float,Float>> value or __Number__ object respectively,
+
+[source,cpp]
+----
+
+void NumberZs_set(ScriptEngine *_script_engine,Number *_this, zs_float *_n){
+	_this->value=*_n;
+}
+
+void NumberZs_set(ScriptEngine *_script_engine,Number *_this,Number *_n){
+	 _this->value = _n->value;
+}
+
+----
+
+Next, each function __NumberZs_set__ function is registered as member metamethod ___set__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_set",static_cast<void (*)(ScriptEngine *_script_engine,Number *, zs_float *)>(&NumberZs_set));
+
+	_script_engine->registerMemberFunction<Number>("_set",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number *)>(&NumberZs_set));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that assigns  values from a __Float__ value and __Number__ object.
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_member_metamethod_set.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_set_out.txt[]
+----
+
+<<<
+
+
+====== _shlassign()
+
+Implements __bitwise shift left assignment__ operator (aka &lt;&lt;= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_shlassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_shlassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_shlassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_shlassign_ is registered as member metamethod __shlassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_shlassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_shlassign));
+
+	_script_engine->registerMemberFunction<Number>("_shlassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shlassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_shlassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_shlassign_out.txt[]
+----
+
+<<<
+
+====== _shrassign()
+
+Implements _bitwise shift right assignment_ operator (aka &gt;&gt;= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_shrassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a bitwise shift right and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_shrassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_shrassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_shrassign_ is registered as member metamethod ___shrassign__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_shrassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_shrassign));
+
+	_script_engine->registerMemberFunction<Number>("_shrassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shrassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that perform bitwise shift right and assignment from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_shrassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_shrassign_out.txt[]
+----
+
+<<<
+
+====== _subassign()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_subassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a substraction and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_subassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_subassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function _NumberZs_subassign_ is registered as member metamethod __subassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerMemberFunction<Number>("_subassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_subassign));
+
+	_script_engine->registerMemberFunction<Number>("_subassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_subassign));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that substracts and assigns values from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_subassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_subassign_out.txt[]
+----
+
+<<<
+
+====== _tostring()
+
+Returns custom string when string operation operation is invoved
+
+*Syntax*
+
+[source,cpp]
+----
+String RegisteredType_tostring(ScriptEngine * _script_engine, RegisteredType *_this);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+
+
+[.underline]#Returns#
+
+A String as a result when string operation operation is invoved
+
+*Example*
+
+The following code defines a function that converts and returns current value as string,
+
+[source,cpp]
+----
+
+String NumberZs_tostring(ScriptEngine *_script_engine,Number *_this){
+	char output[100];
+	sprintf(output,"%0.2f",_this->value);
+	return output;
+}
+
+
+----
+
+Next, the function __NumberZs_tostring__ is registered as member metamethod __tostring_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("_tostring",&NumberZs_tostring));
+
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that creates a type __Number__ and prints its content to the console through __Console::outln__. Because __Console::outln__ prints string information it calls __tostring_ implicitly.
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_member_metamethod_tostring.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_tostring_out.txt[]
+----
+
+<<<
+
+====== _xorassign()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,cpp]
+----
+void RegisteredType_xorassign(ScriptEngine *_script_engine, RegisteredType *_this,ParamType *_value);
+----
+
+[.underline]#Parameters#
+
+- ___script_engine__ : ScriptEngine instance
+- ___this__ : The current instance
+- ___value__ : Value or variable as right operand. Its type can be one defined in <<api_call_cpp_from_zetscript.adoc#_parameter_types,parameter types>>.
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+The following code defines two functions that performs a bitwise XOR and assignment to the current instance from a __Float__ value or __Number__ type respectively,
+
+[source,cpp]
+----
+
+void NumberZs_xorassign(ScriptEngine *_script_engine, Number *_this,zs_float *_n){
+	_this->value-=*_n;
+}
+
+void NumberZs_xorassign(ScriptEngine *_script_engine, Number *_this,Number *_n){
+	_this->value-=_n->value;
+}
+----
+
+Next, each function __NumberZs_xorassign__ is registered as member metamethod __xorassign_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberFunction<Number>("_xorassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_xorassign));
+
+	_script_engine->registerMemberFunction<Number>("_xorassign",static_cast<void (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xorassign));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that perform bitwise XOR and assignment from a __Float__ value and __Number__ object.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_xorassign.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_xorassign_out.txt[]
+----
+
+<<<
+
+
+===== Static metamethods
+
+
+====== _add()
+
+Implements __add__ operator (aka + ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_add(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of add operation 
+
+*Example*
+
+The following code defines three functions that performs __add__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value +_n2->value));
+}
+
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value + *_n2));
+}
+
+ClassScriptObject * NumberZs_add(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(*_n1 + _n2->value));
+}
+
+----
+
+Next, each function _NumberZs_add_ is registered as member metamethod ___add__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_add));
+	_script_engine->registerStaticMemberFunction<Number>("_add",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_add));
+
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___add__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_add.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_add_out.txt[]
+----
+
+<<<
+
+====== _and()
+
+Implements _bitwise AND_ operator (aka & ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_and(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise AND operation 
+
+*Example*
+
+The following code defines three functions that performs __AND__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value & (zs_int)_n2->value));
+}
+
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value & (zs_int)*_n2));
+}
+
+ClassScriptObject * NumberZs_and(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+	return _script_engine->newClassObject(new Number((zs_int)*_n1 & (zs_int)_n2->value));
+}
+----
+
+Next, each function _NumberZs_and_ is registered as member metamethod ___AND__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_and));
+	_script_engine->registerStaticMemberFunction<Number>("_and",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_and));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___AND__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_and.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_and_out.txt[]
+----
+
+<<<
+
+====== _div()
+
+Implements __division__ operator (aka / ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_div(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of division operation 
+
+*Example*
+
+The following code defines three functions that performs __div__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value / _n2->value));
+}
+
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value / *_n2));
+}
+
+ClassScriptObject * NumberZs_div(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(*_n1 / _n2->value));
+}
+----
+
+Next, each function _NumberZs_div_ is registered as member metamethod __div_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_div));
+	_script_engine->registerStaticMemberFunction<Number>("_div",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_div));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___div__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_div.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_div_out.txt[]
+----
+
+<<<
+
+====== _equ()
+
+Implements _equal_ operator (aka == ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_equ(RegisteredType *_op1, RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 and op2 are EQUAL
+- False if op1 and op2 are NOT EQUAL
+
+*Example*
+
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+bool  NumberZs_equ(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value ==_n2->value;
+}
+
+bool  NumberZs_equ(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value == *_n2;
+}
+
+bool NumberZs_equ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 == _n2->value;
+}
+----
+
+Next, each function _NumberZs_equ_ is registered as member metamethod ___equ__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_equ));
+	_script_engine->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_equ));
+	_script_engine->registerStaticMemberFunction<Number>("_equ",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_equ));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs __equ__ operation from a __Float__ and __Number__.
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_member_metamethod_equ.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_equ_out.txt[]
+----
+
+<<<
+
+====== _gt()
+
+Implements _greather than_ operator (aka > ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_gt(RegisteredType *_op1, RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 is GREATHER THAN op2
+- False if op1 is LESS OR EQUAL THAN op2
+
+*Example*
+
+The following code defines three functions that performs __gt__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+bool  NumberZs_gt(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value >_n2->value;
+}
+
+bool  NumberZs_gt(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value > *_n2;
+}
+
+bool NumberZs_gt(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 > _n2->value;
+}
+----
+
+Next, each function _NumberZs_gt_ is registered as member metamethod __gt__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_gt));
+	_script_engine->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_gt));
+	_script_engine->registerStaticMemberFunction<Number>("_gt",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_gt));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs __gt__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_gt.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_gt_out.txt[]
+----
+
+<<<
+
+====== _gte()
+
+Implements _greather than or equal_ operator (aka &gt;= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_gte(RegisteredType *_op1, RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 is GREATHER THAN OR EQUAL op2
+- False if op1 is LESS THAN op2
+
+*Example*
+
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+bool  NumberZs_gte(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value >=_n2->value;
+}
+
+bool  NumberZs_gte(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value >= *_n2;
+}
+
+bool NumberZs_gte(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 >= _n2->value;
+}
+----
+
+Next, each function _NumberZs_gte_ is registered as member metamethod ___gte__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+	_script_engine->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ScriptEngine *_script_engine,Number *_this, zetscript::zs_float *_value)>(&NumberZs_set));
+
+	_script_engine->registerMemberConstructor<Number>(static_cast<void (*)(zetscript::ScriptEngine *_script_engine,Number *_this, Number *_value)>(&NumberZs_set));
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs __gte__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_gte.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_gte_out.txt[]
+----
+
+<<<
+
+
+====== _lt()
+
+Implements _less than_ operator (aka < ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_lt(RegisteredType *_op1, RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 is LESS THAN op2
+- False if op1 is GRATHER EQUAL THAN op2
+
+*Example*
+
+The following code defines three functions that performs __lt__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+bool  NumberZs_lt(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value <_n2->value;
+}
+
+bool  NumberZs_lt(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value < *_n2;
+}
+
+bool NumberZs_lt(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 < _n2->value;
+}
+----
+
+Next, each function _NumberZs_lt_ is registered as member metamethod __lt__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_lt));
+	_script_engine->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_lt));
+	_script_engine->registerStaticMemberFunction<Number>("_lt",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_lt));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs __lt__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_lt.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_lt_out.txt[]
+----
+
+<<<
+
+====== _lte()
+
+Implements __less than or equal__ operator (aka \<= ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+_lte(_op1,_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 is LESS THAN OR EQUAL op2
+- False if op1 is GRATHER THAN op2
+
+*Example*
+
+The following code defines three functions that performs __lte__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+bool  NumberZs_lte(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value <=_n2->value;
+}
+
+bool  NumberZs_lte(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value <= *_n2;
+}
+
+bool NumberZs_lte(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 <= _n2->value;
+}
+----
+
+Next, each function _NumberZs_lte_ is registered as member metamethod __lte_ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_lte));
+	_script_engine->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_lte));
+	_script_engine->registerStaticMemberFunction<Number>("_lte",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_lte));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs __lte__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_lte.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_lte_out.txt[]
+----
+
+<<<
+
+====== _mod()
+
+Implements __modulus__ operator (aka % ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_mod(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of modulus operation 
+
+*Example*
+
+The following code defines three functions that performs __mod__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(fmod(_n1->value,_n2->value)));
+}
+
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number(fmod(_n1->value, *_n2)));
+}
+
+ClassScriptObject * NumberZs_mod(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(fmod(*_n1, _n2->value)));
+}
+----
+
+Next, each function _NumberZs_mod_ is registered as member metamethod ___mod__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mod));
+	_script_engine->registerStaticMemberFunction<Number>("_mod",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mod));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___mod__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_mod.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_mod_out.txt[]
+----
+
+<<<
+
+
+====== _mul()
+
+Implements __multiplication__ operator (aka * ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_mul(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of multiplication operation 
+
+*Example*
+
+The following code defines three functions that performs __mul__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value * _n2->value));
+}
+
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value * (*_n2)));
+}
+
+ClassScriptObject * NumberZs_mul(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(*_n1 * _n2->value));
+}
+
+----
+
+Next, each function _NumberZs_mul_ is registered as member metamethod ___mul__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_mul));
+	_script_engine->registerStaticMemberFunction<Number>("_mul",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_mul));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs __mul__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_mul.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_mul_out.txt[]
+----
+
+<<<
+
+====== _nequ()
+
+Implements __not equal__ operator (aka != ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+bool RegisteredType_nequ(RegisteredType *_op1, RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- True if op1 and op2 are NOT EQUAL
+- False if op1 and op2 are EQUAL
+
+*Example*
+
+The following code defines three functions that performs __equ__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+bool  NumberZs_nequ(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _n1->value !=_n2->value;
+}
+
+bool  NumberZs_nequ(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _n1->value != *_n2;
+}
+
+bool NumberZs_nequ(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return *_n1 != _n2->value;
+}
+----
+
+Next, each function _NumberZs_nequ_ is registered as member metamethod ___nequ__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_nequ));
+	_script_engine->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_nequ));
+	_script_engine->registerStaticMemberFunction<Number>("_nequ",static_cast<bool (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_nequ));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that performs __nequ__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_nequ.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_nequ_out.txt[]
+----
+
+<<<
+
+====== _or()
+
+Implements _bitwise OR_ operator (aka | ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_or(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise OR operation 
+
+*Example*
+
+The following code defines three functions that performs __OR__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value | (zs_int)_n2->value));
+}
+
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value | (zs_int)*_n2));
+}
+
+ClassScriptObject * NumberZs_or(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+	return _script_engine->newClassObject(new Number((zs_int)*_n1 | (zs_int)_n2->value));
+}
+
+----
+
+Next, each function __NumberZs_or__ is registered as member metamethod ___OR__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_or));
+	_script_engine->registerStaticMemberFunction<Number>("_or",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_or));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___OR__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_or.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_or_out.txt[]
+----
+
+<<<
+
+====== _shl()
+
+Implements __bitwise shift left__ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_shl(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise SHIFT LEFT operation 
+
+*Example*
+
+[source,cpp]
+----
+
+//...
+
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value << (zs_int)_n2->value));
+}
+
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value << (zs_int)*_n2));
+}
+
+ClassScriptObject * NumberZs_shl(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)*_n1 << (zs_int)_n2->value));
+}
+
+----
+
+Next, each function __NumberZs_shl__ is registered as member metamethod ___shl__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_shl));
+	_script_engine->registerStaticMemberFunction<Number>("_shl",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shl));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___shl__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_shl.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_shl_out.txt[]
+----
+
+<<<
+
+====== _shr()
+
+Implements _bitwise SHIFT RIGHT_ operator (aka << ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_shr(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise SHIFT RIGHT operation 
+
+*Example*
+
+The following code defines three functions that performs __shr__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value >> (zs_int)_n2->value));
+}
+
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value >> (zs_int)*_n2));
+}
+
+ClassScriptObject * NumberZs_shr(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)*_n1 >> (zs_int)_n2->value));
+}
+
+----
+
+Next, each function __NumberZs_shr__ is registered as member metamethod ___shr__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float * )>(&NumberZs_shr));
+	_script_engine->registerStaticMemberFunction<Number>("_shr",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_shr));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___shr__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_shr.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_shr_out.txt[]
+----
+
+<<<
+
+====== _sub()
+
+Implements _subtraction_ operator (aka - ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_sub(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of add operation 
+
+*Example*
+
+The following code defines three functions that performs __sub__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value +_n2->value));
+}
+
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number(_n1->value + *_n2));
+}
+
+ClassScriptObject * NumberZs_sub(ScriptEngine *_script_engine,zs_float *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number(*_n1 + _n2->value));
+}
+
+----
+
+Next, each function _Num_berZs_sub_ is registered as member metamethod ___sub__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_sub));
+	_script_engine->registerStaticMemberFunction<Number>("_sub",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_sub));
+
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___sub__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_sub.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_sub_out.txt[]
+----
+
+<<<
+
+====== _xor()
+
+Implements _bitwise XOR_ operator (aka ^ ) between first operand and second operand
+
+*Syntax*
+
+[source,javascript]
+----
+ClassScriptObject * RegisteredType_xor(RegisteredType *_op1,RegisteredType *_op2)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : 1st operand.
+- ___op2__ : 2nd operand.
+
+[.underline]#Returns#
+
+- A new object as a result of bitwise XOR operation 
+
+*Example*
+
+The following code defines three functions that performs __XOR__ operation from __Float__ value or __Number__ type,
+
+[source,cpp]
+----
+
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, Number *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value ^ (zs_int)_n2->value));
+}
+
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,Number *_n1, zs_float *_n2){
+	return _script_engine->newClassObject(new Number((zs_int)_n1->value ^ (zs_int)*_n2));
+}
+
+ClassScriptObject * NumberZs_xor(ScriptEngine *_script_engine,zs_float *_n1, Number * _n2){
+	return _script_engine->newClassObject(new Number((zs_int)*_n1 ^ (zs_int)_n2->value));
+}
+
+----
+
+Next, each function __NumberZs_xor__ is registered as member metamethod ___XOR__ through __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(zetscript::ScriptEngine *_script_engine){
+	//...
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,zs_float *,Number * )>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,zs_float *)>(&NumberZs_xor));
+	_script_engine->registerStaticMemberFunction<Number>("_xor",static_cast<ClassScriptObject * (*)(ScriptEngine *_script_engine,Number *,Number * )>(&NumberZs_xor));
+	//...
+}
+----
+
+Finally, the following code it shows an example of a script that performs ___XOR__ operation from a __Float__ and __Number__.
+
+[source,javascript]
+----
+include::../examples/api/register_type/register_member_metamethod_xor.cpp[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/api/register_type/register_member_metamethod_xor_out.txt[]
+----
+

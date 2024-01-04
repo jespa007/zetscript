@@ -1,0 +1,146 @@
+=== Conditionals
+
+==== If,else and else if statements
+
+===== The if statement
+
+The _if_ statement is used to execute a block of code when a condition is _true_.
+
+*Syntax*
+
+[source,javascript]
+----
+if(condition){
+	//Block of code to be executed if the condition is true
+}
+----
+
+*Example*
+
+[source,javascript]
+----
+if(value<10){
+	Console::outln("value is less than 10")
+}
+----
+
+===== The else statement
+
+The _else_ statement is used to execute a block of code when a condition is _false_.
+
+*Syntax*
+
+[source,javascript]
+----
+if(condition) {
+	// do something if condition is true
+}else{
+	// do something if condition is false
+} 
+----
+
+*Example*
+
+[source,javascript]
+----
+if(value<10){
+	Console::outln("value is less than 10")
+}else{
+	Console::outln("value is greather equal than 10")
+}
+----
+
+<<<
+
+===== The else if statement
+
+The _else if_ statement is used to execute a block of code if first condition is _false_.
+
+*Syntax*
+
+[source,javascript]
+----
+if(condition1) {
+ 	// do something if condition 1is true
+}else if(condition2){
+	// do something if condition 2 is true
+}else{
+	// do something if none of above conditions are true
+}
+----
+
+*Example*
+
+[source,javascript]
+----
+if(value>7){
+	Console::outln("value greather than 7")
+}else if(i>5){
+	Console::outln("value greather than 5 and less equal than 7")
+}else{
+	Console::outln("value less equal than 5")
+}
+----
+
+==== The ternary statement
+
+The ternary statement to have a short _if-else_ statement into single statement. It performs expression if the condition is _true_ or the second expression if the condition is _false_.
+
+*Syntax*
+
+[source,javascript]
+----
+(condition)?expression_if_true:expression_if_false;
+----
+
+*Example*
+
+[source,javascript]
+----
+var j = 0>1? 0:1; // j = 1
+----
+
+==== The switch statement
+
+The _switch_ statement is used to select one of many blocks of code to be executed.
+
+*Syntax*
+
+[source,javascript]
+----
+switch(expression) {
+	case value_0:
+		code block
+		break;
+	case value_1:
+		code block
+		break;
+	 	...
+		case value_n
+	default:
+		code block
+		break;
+}
+----
+
+<<<
+
+*Example*
+
+[source,javascript]
+----
+
+switch(expr) {
+	case 0:
+	case 1:
+		Console::outln("expr in [0,1]")
+		break;
+	case 2:
+		Console::outln("expr is 2")
+		break;
+	default:
+		Console::outln("expr is not in [0,1,2]")
+		break;
+}
+----
+

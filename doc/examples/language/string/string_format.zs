@@ -1,0 +1,7 @@
+Console::outln(String::format("Format first arg => {0}",1))
+Console::outln(String::format("Format first arg => {0} and second arg => {1}",1,2))
+Console::outln(String::format("Format first arg => {0} and another first arg => {0}",1))
+Console::outln(String::format("Padding 2 0s => {0:d2}",1))
+Console::outln(String::format("Padding 4 0s => {0:d4}",1))
+Console::outln(String::format("Padding 2 spaces => {0,2}",1))
+Console::outln(String::format("Padding 4 spaces => {0,4}",1))

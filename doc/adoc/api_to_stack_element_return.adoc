@@ -1,0 +1,8 @@
+** bool
+** <<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>>
+** <<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> 
+** <<api_data_types.adoc#_zetscriptstring,zetscript::String>>
+** <<api_data_types.adoc#_zetscriptstringscriptobject,zetscript::StringScriptObject>> *
+** <<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+** <<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+** A pointer of a register type

@@ -1,0 +1,581 @@
+<<<
+==== Properties
+
+A property is a kind of variable that are acceded through a metamethods.
+
+*Syntax*
+
+[source,javascript]
+----
+class Test{
+
+	// property
+	property{
+			...
+	}
+
+}
+----
+
+===== Member functions
+
+====== _get()
+
+__get_ returns the value of the property
+
+*Syntax*
+
+[source,javascript]
+----
+_get()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+Returns the value of the property
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_get.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_get_out.txt[]
+----
+
+<<<
+
+====== _set()
+
+Implements _assignment_ operator (aka = ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_set(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ :Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_set.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_set_out.txt[]
+----
+
+<<<
+
+====== _addassign()
+
+Implements _addition assignment_ operator (aka += ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_addassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_addassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_addassign_out.txt[]
+----
+
+<<<
+
+====== _subassign()
+
+Implements _substraction assignment_ operator (aka -= ) with a value entered by parameter as right operand.
+
+
+*Syntax*
+
+[source,javascript]
+----
+_subassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_subassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_subassign_out.txt[]
+----
+
+<<<
+
+====== _mulassign()
+
+Implements _multiplication assignment_ operator (aka *= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_mulassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_mulassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_mulassign_out.txt[]
+----
+
+<<<
+
+====== _divassign()
+
+Implements _division assignment_ operator (aka /= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_divassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_divassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_divassign_out.txt[]
+----
+
+<<<	
+
+====== _modassign()
+
+Implements _modulus assignment_ operator (aka %= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_modassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_modassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_modassign_out.txt[]
+----
+
+<<<
+
+====== _andassign()
+
+Implements _bitwise AND assignment_ operator (aka &= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_andassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_andassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_andassign_out.txt[]
+----
+
+<<<
+
+====== _orassign()
+
+Implements _bitwise OR assignment_ operator (aka |= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_orassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_orassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_orassign_out.txt[]
+----
+
+<<<
+
+====== _xorassign()
+
+Implements _bitwise XOR assignment_ operator (aka ^= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_xorassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_xorassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_xorassign_out.txt[]
+----
+
+<<<
+
+====== _shrassign()
+
+Implements _bitwise SHIFT RIGHT assignment_ operator (aka >>= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shrassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___op1__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_shrassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_shrassign_out.txt[]
+----
+
+<<<
+
+====== _shlassign()
+
+Implements _bitwise SHIFT LEFT assignment_ operator (aka <<= ) with a value entered by parameter as right operand.
+
+*Syntax*
+
+[source,javascript]
+----
+_shlassign(_value)
+----
+
+[.underline]#Parameters#
+
+- ___value__ : Value or variable as right operand
+
+[.underline]#Returns#
+
+None.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_shlassign.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_shlassign_out.txt[]
+----
+
+<<<
+
+====== _postinc()
+
+
+Implements _post_increment_ operator (aka a++ ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+The value before perform post increment operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_postinc.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_postinc_out.txt[]
+----
+
+<<<
+
+====== _postdec()
+
+Implements _post_decrement_ operator (aka a-- ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_postdec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+The value before perform post decrement operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_postdec.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_postdec_out.txt[]
+----
+
+<<<
+
+====== _preinc()
+
+Implements _pre_increment_ operator (aka ++a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_preinc()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+The value before perform pre increment operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_preinc.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_preinc_out.txt[]
+----
+
+<<<
+
+====== _predec()
+
+Implements _pre_decrement_ operator (aka --a ) 
+
+*Syntax*
+
+[source,javascript]
+----
+_predec()
+----
+
+[.underline]#Parameters#
+
+None
+
+[.underline]#Returns#
+
+The value before perform pre decrement operation.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/class/class_property_metamethod_predec.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/class/class_property_metamethod_predec_out.txt[]
+----
+

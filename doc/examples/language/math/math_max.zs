@@ -1,0 +1,1 @@
+Console::outln("The maximum of 20 and 30 is : "+Math::max(20,30))

@@ -1,0 +1,1 @@
+Console::outln("The minimum of 20 and 30 is : "+Math::min(20,30))

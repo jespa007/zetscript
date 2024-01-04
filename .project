@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>libzetscript</name>
+	<name>zetscript</name>
 	<comment></comment>
 	<projects>
+		<project>memmgr</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

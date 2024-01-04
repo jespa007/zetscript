@@ -1,0 +1,421 @@
+=== Operators
+
+ZetScript supports the following operator types,
+
+* Arithmetic operators
+* Bitwise operators
+* Assignment Operators
+* Relational operators
+* Logical operators
+* Type operators
+
+==== Arithmetic operators
+
+Arithmetic operators performs arithmetic operations between two values. The arithmetic operators are the following,
+
+[cols="2m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|+
+|Add 
+a|
+
+It performs _addition_ operation between two integer or float values or  
+concatenates strings, arrays or objects
+
+|
+[source,javascript]
+----
+ 1.5+6;// = 7.5
+ "string_"+"string";// ="string_string"
+ [1]+[2,3];// [1,2,3]
+ {a:1}+{b:2,c:3}; //{a:1,b:2,c:3}
+----
+
+|-
+|Subtract
+|Performs a _substraction_ operation between two integer/float values
+|
+[source,javascript]
+10-5; // = 5
+2.5-1;// = 1.5
+
+|* 
+|Multiply 
+|Performs a _multiplication_ between two integer/float values
+|
+[source,javascript]
+10*5; //= 50
+1.5*2;//= 3.0
+
+|/ 
+|Divide 
+|Performs a _division_ between two integer/float values
+|
+[source,javascript]
+10/2; // = 5
+3/2.0 // = 1.5
+
+|% 
+|Modulus 
+|Performs a _modulus_ between two integer/float values
+|
+[source,javascript]
+3%2; //it results 1.0
+23.6%2; // it results 1.6
+|====
+
+==== Bitwise operators
+
+Bitwise operators combines operations between two integer values. The bitwise operators are the following,
+
+[cols="2m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|& 
+|Bitwise And 
+|Performs _bitwise AND_ operation between two integers
+|
+[source,javascript]
+0xa & 0x2; // = 0x2
+0xff & 0xf0; // = 0xf0
+
+|\|
+|Bitwise Or
+|Performs _bitwise OR_ operation between two integers
+|
+[source,javascript]
+0xa \| 0x5; // = 0xf
+0x1 \| 0xe; // = 0xf
+
+|^ 
+|Bitwise Xor 
+|Performs _bitwise XOR_ between two integers
+|
+[source,javascript]
+0xa ^ 0xa; // = 0x0
+0xa ^ 0x5; // = 0xf
+
+|<< 
+|Bitwise shift left
+|Performs _bitwise SHIFT LEFT_ between two integers
+|
+[source,javascript]
+0x1 << 2; // = 0x4
+
+|>> 
+|Bitwise shift right
+|Performs _bitwise SHIFT RIGHT_ between two integers
+|
+[source,javascript]
+0xff >> 1; // = 0x7f
+
+|~
+|Bitwise complement
+|Performs _bitwise complement_ operation from integer value
+|
+[source,javascript]
+~0xa; // = 0x7f
+
+|====
+
+<<<
+
+==== Assigment operators
+
+Assignment operators assign values to ZetScript variables. The assigment operators are the following,
+
+[cols="2m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|=
+|Assigment
+a|
+
+It performs an assigment or multiple assigment
+
+|
+[source,javascript]
+----
+var i,j;
+// single assigment
+ i=10;
+ j=5;
+
+ // multiple assigment
+ i,j=j,i; // it does a swap ( i=5, j=10 )
+
+----
+
+|+=
+|Add assigment
+|Performs an _addition_ to a variable by the value of the right operand and assigns the result to the variable. In case of string, array or object it performs a concatenation
+|
+[source,javascript]
+----
+ var i=1.5;
+ i+=6; // i == 7.5
+
+ var s="string";
+ s+="_string";// s == "string_string"
+
+ var v=[1];
+ v+=[2,3];// v == [1,2,3]
+
+ var o={a:1};
+ o+={b:2,c:3}; // o == {a:1,b:2,c:3}
+----
+
+|-=
+|Substract assigment
+|Performs a _subtraction_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=10;
+i-=5; // i == 5
+
+|*=
+|Multiply assigment
+|Performs a _multiplication_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=10
+i*=5; // i == 50
+
+|/=
+|Divide assigment
+|Performs a _division_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=10;
+i/=2; // i == 5.0
+
+|%=
+|Modulus assigment
+|Performs _modulus_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=50
+i%=100; // i == 50.0
+
+|&=
+|Bitwise AND assigment
+|Performs _bitwise AND_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=0xff;
+i&=0xf0; // i == 0xf0
+
+|\|=
+|Bitwise OR assigment
+|Performs _bitwise OR_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=0xa
+i\|=0x5; // i == 0xf
+
+|^=
+|Bitwise XOR assigment
+|Performs _bitwise XOR_ to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=0xa
+i^=0xa; // i == 0x0
+
+|<<=
+|Bitwise SHIFT LEFT assigment
+|Performs _bitwise SHIFT LEFT to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=0x1;
+i<<=2; // i == 0x4
+
+|>>=
+|Bitwise SHIFT RIGHT assigment
+|Performs bitwise SHIFT RIGHT to a variable by the value of the right operand and assigns the result to the variable
+|
+[source,javascript]
+var i=0xff;
+i>>=1; // i == 0x7f
+
+|====
+
+==== Relational operators
+
+Relational operators evaluates relations through two values. The relational operators are the following,
+
+[cols="2m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|==
+|Equal 
+|Check whether two values are equal
+|
+[source,javascript]
+ 10==10;// = true
+"hello"=="bye"; // = false
+
+|!= 
+|Not equal 
+|Check whether two values are not equal
+|
+[source,javascript]
+10!=10; // = false
+"hello"!="bye"; // = true
+
+|< 
+|Less than 
+|Checks whether first value is less than second value
+|
+[source,javascript]
+10<20; // = true
+20<10; // = false
+
+|> 
+|Greater than 
+|Checks whether first value is greater than second value
+|
+[source,javascript]
+10>20; // = false
+20>10; // = true
+
+| \<= 
+|Less equal than 
+|Checks whether first value is less equal than second value
+|
+[source,javascript]
+10<=10; //= true
+11<=10; // = false
+
+|>= 
+|Greater equal than 
+|Checks whether first value is greater equal than second value
+|
+[source,javascript]
+10>=11; // = false
+11>=10; // = true
+
+|in 
+|in 
+a|
+Performs the following operations:
+
+* Checks if a value exist in a string or array
+* Checks a key exist in object
+|
+[source,javascript]
+'a' in "abc" // true
+'d' in "abc" // false
+"string" in [1,"string",false,10.5] // true
+10       in [1,"string",false,10.5] // false
+"a" in {a:1,b:2,c:3} // true
+"d" in {a:1,b:2,c:3} // false
+
+
+|====
+
+
+==== Logical operators
+
+Logical operators combines operations between two boolean values. The logic operators are the following,
+
+[cols="2m,2d,3d,6a"]
+|====
+|Operator |Name |Description |Example
+
+|&& 
+|Logic And 
+|Performs an AND operation between two boolean values
+|
+[source,javascript]
+true && true;// = true
+true && false;// = false
+
+| \|\|
+|Logic Or 
+|Performs an OR operation between two Boolean values
+|
+[source,javascript]
+true \|\| false;// = true
+false \|\| false;// = false
+
+|! 
+|Logic Not 
+|Negates boolean value
+|
+[source,javascript]
+!true; // = false
+!false; // = true
+!(true \|\| false) // = false 
+!(true && false) // = true
+|====
+
+<<<
+
+==== Data Type operators
+
+===== The instanceof operator
+
+The _instanceof_ operator returns _true_ whether the object is an instance of the specified type (or class or subclass).
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/type/type_instanceof.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/type/type_instanceof_out.txt[]
+----
+
+===== Typeof operator
+
+The _typeof_ operator returns the type of operand's value.
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/language/type/type_typeof.zs[]
+----
+
+Console output:
+
+[source,text]
+----
+include::../examples/language/type/type_typeof_out.txt[]
+----
+
+<<<
+
+==== Operator priority
+Each operator it has priority in a evaluation. The priority of each operator is the following,
+
+`in,instanceof,<<,>>,&,|,^,*,/,%,+,-,==,!=,>=,\<=,>,<,&&,||`
+
+Starting from left to right, the most left operator is the more priority and the most right one the less priority
+
+For example this expression,
+
+[source,javascript]
+----
+2+4*5; // will result 22
+----
+
+You can change the evaluation priority usign parenthesis.
+
+For example,
+
+[source,javascript]
+----
+(2+4)*5; // will result 36
+---- 
+

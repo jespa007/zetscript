@@ -1,0 +1,1 @@
+Console::outln(Math::PI)

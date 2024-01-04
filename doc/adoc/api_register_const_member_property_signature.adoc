@@ -1,0 +1,35 @@
+[source,cpp]
+----
+ReturnType (ScriptEngine *_script_engine){
+	....
+}
+----
+
+Where,
+
+_ReturnType_ it can be a registered type or one of the following types,
+
+[cols="1m,2d"]
+|====
+|ReturnType| Description
+|bool
+|Returns <<language_data_types.adoc#_boolean,Boolean>>
+|<<api_data_types.adoc#_zetscriptzs_int,zetscript::zs_int>>
+|Returns <<language_data_types.adoc#_integer,Integer>>
+|<<api_data_types.adoc#_zetscriptzs_float,zetscript::zs_float>> 
+|Returns <<language_data_types.adoc#_float,Float>>
+|<<api_data_types.adoc#_zetscriptstring,zetscript::String>>
+|Returns <<language_data_types.adoc#_string,String>>
+|<<api_data_types.adoc#_zetscriptstringscriptobject,zetscript::StringScriptObject>>] *
+|Returns <<language_data_types.adoc#_string,String>>
+|<<api_data_types.adoc#_zetscriptarrayscriptobject,zetscript::ArrayScriptObject>> *
+|Returns <<language_data_types.adoc#_array,Array>>
+|<<api_data_types.adoc#_zetscriptobjectscriptobject,zetscript::ObjectScriptObject>> *
+|Returns <<language_data_types.adoc#_object,Object>>
+|<<api_data_types.adoc#_zetscriptclassscriptobject,zetscript::ClassScriptObject>> *
+|Returns 
+ a registered type wrapped in  <<api_data_types.adoc#_zetscriptclassscriptobject,zetscript::ClassScriptObject>>
+|====
+
+The function always includes _zetscript::ScriptEngine *_ as FIRST parameter.
+

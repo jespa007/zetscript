@@ -1,0 +1,56 @@
+=== Evaluation
+
+ZetScript can evaluate scripts from string or from file
+
+==== Evaluation from string
+
+[source,cpp]
+----
+include::../examples/api/eval/eval_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/eval_string_out.txt[]
+----
+
+
+==== Evaluation from file
+
+Having the following script file called `file.zs` with the following content,
+[source,javascript]
+----
+include::../examples/api/eval/file.zs[]
+----
+
+Console output:
+
+At the c++ side, to eval `file.zs` file it's done through _compileFileAndRun_ function as it shows as it follows,
+
+[source,cpp]
+----
+include::../examples/api/eval/eval_file.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/eval/eval_file_out.txt[]
+----
+
+
+==== Evaluation options
+
+===== EVAL_OPTION_NO_EXECUTE
+
+In order to eval script but no execute add _EVAL_OPTION_NO_EXECUTE_ option
+
+[source,cpp]
+----
+include::../examples/api/eval/eval_file_option_no_execute.cpp[]
+----
+
+

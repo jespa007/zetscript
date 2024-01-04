@@ -1,0 +1,64 @@
+=== Variables and scopes
+
+==== Variable
+
+A variable is a kind of element that can hold a variable. A variable is declared with *var* keyword.
+
+[source,javascript]
+----
+var i; // Declared variable
+----
+
+By default, any declared variable is set as xref:language_data_types.adoc#_undefined[undefined], that tells a variable was not properly initialized. 
+
+[source,javascript]
+----
+var i; // Declared variable without initialization. Its value is set as 'undefined'
+----
+
+A variable can be initialized through operator assignment (aka =). 
+
+[source,javascript]
+----
+var i=0; // Declared variable with initialization
+----
+
+It can also declare multiple variables with or without initialization separated by comma (,).
+
+[source,javascript]
+----
+var i=10, j=5, k; // Multiple declaration with and without initialization
+----
+
+==== Constant
+
+A constant is a kind of element where its value is immutable on its in lifetime. A constant is declared as *const* and is mandatory to be initialized.
+
+[source,javascript]
+----
+const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
+----
+
+<<<
+
+==== Scope
+
+In ZetScript we have two types of basic scopes.
+
+* Global
+* Local
+
+Variables declared on the main script are global and the others declared within a block (i.e a an statement that starts with '{' and ends with '}'), are local.
+
+[source,javascript]
+----
+// Declares *i* variable as global
+var i;
+
+// block starts here 
+{	
+	// Declare *j* variable as local (you can also access to i).
+	var j;
+}
+// block ends here, so *j* variable doesn't exist anymore
+----

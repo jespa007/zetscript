@@ -1,0 +1,408 @@
+
+=== Call C++ from ZetScript
+
+This chapter aims to explain how to call C++ from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
+
+==== Return types
+
+This section will explain how to register C functions that return the following ZetScript types,
+
+- Boolean
+- Integer
+- Float
+- String
+- Array
+- Object
+- Registered type
+
+===== Return Boolean
+
+To register a C function that returns a <<language_data_types.adoc#_boolean,Boolean>> it must specify __bool__ as return type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_bool.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_bool_out.txt[]
+----
+
+<<<
+
+===== Return Integer
+
+To register a C function that returns a <<language_data_types.adoc#_integer,Integer>> it must specify __zs_int__ as return type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_zs_int.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_zs_int_out.txt[]
+----
+
+<<<
+
+===== Return Float
+
+To register a C function that returns a <<language_data_types.adoc#_float,Float>> it must specify __zetscript::zs_float__ as return type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_zs_float.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_zs_float_out.txt[]
+----
+
+<<<
+
+===== Return String
+
+To register a C function that returns a <<language_data_types.adoc#_string,String>> it can be done by specifying the following return types,
+
+- __String__
+- __StringScriptObject *__
+
+
+====== Return String as zetscript::String
+
+To register a C function that returns a <<language_data_types.adoc#_string,String>> it can specify __zetscript::String__ as return type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_string_out.txt[]
+----
+
+<<<
+
+====== Return String as zetscript::StringScriptObject *
+
+To register a C function that returns a <<language_data_types.adoc#_string,String>> it can specify <<api_data_types.adoc#_stringscriptobject,zetscript::StringScriptObject>> pointer as return type. The instantiation of __zetscript::StringScriptObject__ is done throught ScriptEngine instance.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_string_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_string_script_object_out.txt[]
+----
+
+<<<
+
+===== Return Array
+
+To register a C function that returns a <<language_data_types.adoc#_array,Array>> it must specify __zetscript::ArrayScriptObject *__ as return type. The instantiation of __zetscript::ArrayScriptObject *__ it's done through __ScriptEngine::newArrayScriptObject__ using ScriptEngine instance.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_array_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_array_script_object_out.txt[]
+----
+
+<<<
+
+===== Return Object
+
+To register a C function that returns a <<language_data_types.adoc#lowbar;object,Object>> it must specify __zetscript::ObjectScriptObject *__ as return type. The instantiation of __zetscript::ObjectScriptObject *__ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine instance.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_object_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_object_script_object_out.txt[]
+----
+
+<<<
+
+===== Return registered type
+
+
+To register a C function that returns a <<api_data_types.adoc#_scriptengineregistertype,registered type>> it can be done by specifying the following return types,
+
+- Return registered type by its reference
+- Return registered type by ClassScriptObject 
+
+
+====== Return registered type by its reference
+
+To register a C function that returns a <<api_data_types.adoc#_scriptengineregistertype,registered type>> it must specify its native pointer type as return.
+
+====
+ZetScript *NEVERS* destroy a native pointer returned from registered function. This is why it *CANNOT* allocate and return a type from the C function because this becomes a memory leak. Instead, the object  should be instantiated outside of ZetScript and accessible from a location where its lifetime is active during the execution of the script.
+====
+
+Because the function it returns a native reference the type can be registered as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> or <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>>
+
+*Example*
+
+In the following example it registers a type __Number__ as <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>> (This is because in this example it doesn't need to instantiate any new object in the script code) and property __Number::value__ (see <<api_data_types.adoc#_scriptengineregistermemberpropertymetamethod,ScriptEngine::registerMemberPropertyMetamethod>>). Finally, it registers C function __returnNumber__ that returns a __Number *__. In the main program instantiates __Number__ object and is acceded globally, so is active during the execution of the script.
+
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_registered_type.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_registered_type_out.txt[]
+----
+
+<<<
+
+====== Return registered type by ClassScriptObject *
+
+To register a C function that returns a registered type it must return __zetscript::ClassScriptObject *__. To instantiate __zetscript::ClassScriptObject *__  is done through __ScriptEngine::newClassObject__ using ScriptEngine instance and the registered class instantiated.
+
+A difference from returning a pointer type of a registered type, when the C function returns a __zetscript::ClassScriptObject *__, ZetScript is in charge to deallocate automatically when it has no more references to it. 
+
+====
+The action of return a __zetscript::ClassScriptObject *__ ZetScript it considers the instance of a new object in the script code so it needs to register the type as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>>.
+====
+
+*Example*
+
+In the following example it registers type __Number__ as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> and the property __Number::value__. Finally, it registers C function __returnNumber__ that instances and returns __ClassScriptObject__ that wraps __Number__ type. 
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_class_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_class_script_object_out.txt[]
+----
+
+<<<
+
+==== Parameter types
+
+
+This section will explain how to register C functions that accepts the following types as parameters,
+
+- Boolean
+- Integer
+- Float
+- String
+- Array
+- Object
+- Function
+- Registered type
+
+===== Parameter Boolean
+
+To register a C function that accepts a <<language_data_types.adoc#_boolean,Boolean>> it must specify __bool *__ as parameter type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_bool.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_bool_out.txt[]
+----
+
+<<<
+
+===== Parameter Integer
+
+To register a C function that accepts a <<language_data_types.adoc#_integer,Integer>> it can specify __zetscript::zs_int__ or __zetscript::zs_int *__ as parameter type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_zs_int.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_zs_int_out.txt[]
+----
+
+<<<
+
+===== Parameter Float
+
+To register a C function that accepts a <<language_data_types.adoc#_float,Float>> it must specify __zs_float *__ as parameter type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_zs_float.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_zs_float_out.txt[]
+----
+
+<<<
+
+===== Parameter String
+
+To register a C function that accepts a <<language_data_types.adoc#_string,String>> it can specify __const char *__ , __String *__  or __StringScriptObject *__ as a parameter type,
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_string_out.txt[]
+----
+
+<<<
+
+===== Parameter Array
+
+To register a C function that accepts a <<language_data_types.adoc#_array,Array>> it must specify __zetscript::ArrayScriptObject *__ as parameter type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_array_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_array_script_object_out.txt[]
+----
+
+<<<
+
+===== Parameter Object
+
+To register a C function that accepts a <<language_data_types.adoc#_object,Object>> it must specify __zetscript::ObjectScriptObject *__ as parameter type.
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_object_script_object.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_object_script_object_out.txt[]
+----
+
+<<<
+
+===== Parameter Function
+
+To register a C function that accepts a <<language_data_types.adoc#_function,Function>> it must specify __zetscript::ScriptFunction *__ as parameter type. To make  __Function__ callable from C++ must use <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>
+
+*Example*
+
+The following example it registers function __paramFunction__ that accepts a <<language_data_types.adoc#_function,Function>> as parameter. Later, it evaluates an script that calls __paramFunction__ passing anonymous function. In the calling function __paramFunction__ it binds the anonymous function and it calls.
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_script_function.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_script_function_out.txt[]
+----
+
+<<<
+
+===== Parameter Registered Type
+
+To register a C function that accepts a <<api_expose_cpp_types.adoc#_register_type,registered type>> as a parameter, it must specify native pointer type as parameter type.
+
+*Example*
+
+In the following example it registers the __Number__ type, property _Number::value_ and finally registers function __mul10Number__ that accepts a __Number *__ type as parameter. In the script execution instances a __Number__ that later it is passed as argument to __mul10Number__ and multiplies its property __value__ by 10.
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_registered_type.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_registered_type_out.txt[]
+----
+
+<<<

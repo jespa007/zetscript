@@ -1,0 +1,290 @@
+=== Exposing C++ types to ZetScript
+
+In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript through examples.
+
+Most of the examples show in this chapter will be related about the following class __Number__,
+
+[source,cpp]
+----
+class Number{
+public:
+
+	float value;
+
+	Number(){
+		value=0;
+	}
+
+	Number(float _value){
+		value=_value;
+	}
+
+};
+----
+
+On each example will mention __NumberZs_register__, 
+
+[source,cpp]
+----
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	// ...
+
+}
+----
+
+This method is the place where it will add the registering functions of __Number__. 
+
+
+
+==== Register a type
+
+As it can be explained in section <<api_data_types.adoc#_scriptengineregistertype,ScriptEngine::registerType>> it can register as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> type or as <<api_data_types.adoc#_register_type_as_non_instantiable,NON INSTANTIABLE>> type. 
+
+This example aims to register __Number__ as <<api_data_types.adoc#_register_type_as_instantiable,INSTANTIABLE>> type, so let's define __NumberZs_new__ and __NumberZs_delete__ functions that creates and destroys a __Number__ type instantiation respectively,
+
+[source,cpp]
+----
+Number *NumberZs_new(ScriptEngine *_script_engine){
+	return new Number();
+}
+
+void NumberZs_delete(ScriptEngine *_script_engine,Number *_this){
+	delete _this;
+}
+----
+
+Then, in the __NumberZs_register__ function, it registers __Number__ type as instantiable by passing  __NumberZs_new__ and __NumberZs_delete__ functions,
+
+
+[source,cpp]
+----
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	_script_engine->registerType<Number>("Number",NumberZs_new,NumberZs_delete);
+
+}
+----
+
+Finally, the following code shows an example of instantiation of a __Number__ type,
+
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_instantiable_type.cpp[]
+----
+
+===== Register a constructor
+
+
+To register a constructor function it has to create and register a C function as it explains on <<api_data_types.adoc#_scriptengineregisterconstructor,ScriptEngine::registerConstructor>>.
+
+*Example*
+
+The following code defines two functions that accepts a <<language_data_types.adoc#_float,Float>> value or __Number__ pointer type respectively,
+
+[source,cpp]
+----
+
+//...
+
+void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this,zs_float *_value){
+	_this->value=*_value;
+}
+
+void NumberZs_constructor(ScriptEngine *_script_engine,Number *_this,Number *_value){
+	_this->value=_value->value;
+}
+----
+
+Next, the functions __NumberZs_constructor__ are registered with __ScriptEngine::registerConstructor__ method,
+
+[source,cpp]
+----
+
+
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_script_engine,Number *_this, zs_float *_value)>(&NumberZs_constructor));
+
+	_script_engine->registerConstructor<Number>(static_cast<void (*)(ScriptEngine *_script_engine,Number *_this, Number *_value)>(&NumberZs_constructor));
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that creates an object __Number__ type passing a float value on its constructor,
+
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_instantiable_type_with_constructor.cpp[]
+----
+
+<<<
+
+==== Register members
+
+===== Register member function
+
+To register a member function it has to create and register a C function explained in section <<api_data_types.adoc#_scriptengineregistermemberfunction,ScriptEngine::registerMemberFunction>>.
+      
+
+*Example*
+
+The following code defines a function that returns a <<language_data_types.adoc#_integer,Integer>>,
+
+[source,cpp]
+----
+zs_int NumberZs_toInteger(ScriptEngine *_script_engine,Number *_this){
+	return _this->value;
+}
+----
+
+Next, it registers __NumberZs_toInteger__ as member function named __toInteger__ through with __ScriptEngine::registerMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerMemberFunction<Number>("toInteger",&NumberZs_toInteger);
+
+	//...
+
+}
+----
+
+<<<
+
+Finally, the following code it shows an example of a script that calls member function __Number::toInteger()__ after create object __Number__ type,
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_member_function.cpp[]
+----
+
+The ouput is the following,
+
+[source,txt]
+----
+include::../examples/api/register_type/register_member_function_out.txt[]
+----
+
+===== Register static member function
+
+To register a static member function it has to create and register a C function explained in section <<api_data_types.adoc#_scriptengineregisterstaticmemberfunction,ScriptEngine::registerStaticMemberFunction>>.
+
+
+*Example*
+
+The following code defines a function __NumberZs_pow__ that takes two arguments and, returns the power raised to the base number,
+
+[source,cpp]
+----
+
+//...
+
+zs_float NumberZs_pow(ScriptEngine *_script_engine,zs_float *_base, zs_float * _power){
+	return (*_base) * (*_power);
+}
+
+----
+
+Next, it registers __NumberZs_pow__ as static member function named __pow__ through with __ScriptEngine::registerStaticMemberFunction__,
+
+[source,cpp]
+----
+
+void NumberZs_register(ScriptEngine *_script_engine){
+
+	//...
+
+	_script_engine->registerStaticMemberFunction<Number>("pow",&NumberZs_pow);
+
+	//...
+
+}
+----
+
+Finally, the following code it shows an example of a script that calls static member function __Number::pow()__,
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_static_member_function.cpp[]
+----
+
+The ouput is the following,
+
+[source,txt]
+----
+include::../examples/api/register_type/register_static_member_function_out.txt[]
+----
+
+==== Inheritance
+
+To register a type and tell that is base of other type is done through <<api_data_types.adoc#_scriptengineextends,ScriptEngine::extends>>.
+
+
+*Example*
+
+In this example it shows an example the the registered type __MyCppTypeExtend__ is extended from registered type _MyCppType_,
+
+[source,cpp]
+----
+include::../examples/api/register_type/register_type_inheritance.cpp[]
+----
+
+Console output,
+
+[source,txt]
+----
+include::../examples/api/register_type/register_type_inheritance_out.txt[]
+----
+
+<<<
+
+A ZetScript script class can be extended from any registered type. In the following evaluates an script that a script class called __ScriptMyCppTypeExtend__ extends from registered type __MyCppTypeExtend__,
+
+[source,javascript]
+----
+
+int main(){
+
+	// ...
+
+	script_engine.compileAndRun(
+		"class ScriptMyCppTypeExtend extends MyCppTypeExtend{\n"
+		"	function1(_arg1){\n"
+		"		Console::outln("script argument is "+_arg1);\n"
+		"		super(this.data1+arg1); // calls function1\n"
+		"	}\n"
+		"};\n"
+		"var MyCppType=new ScriptMyCppTypeExtend(10);\n"
+		"MyCppType.function1(5);\n"
+	);
+	
+	return 0;
+}
+
+----
+
+Console output,
+
+[source,text]
+----
+include::../examples/api/register_type/register_type_script_class_extends_from_registered_type_out.txt[]
+----
+
+<<<
+
+include::api_expose_cpp_type_metamethods.adoc[]
+
+<<<
+
+include::api_expose_cpp_type_properties.adoc[]

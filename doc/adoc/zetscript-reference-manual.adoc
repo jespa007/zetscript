@@ -1,0 +1,25 @@
+= ZetScript 2.0.0
+Jordi Espada
+v2.0, December 30,2023
+:doctype: book
+:toc:
+:toclevels: 5
+:icons:
+:lang: en
+:language: zetscript
+:sectnums: 
+:source-highlighter: rouge
+
+
+include::introduction.adoc[]
+include::language.adoc[]
+include::api.adoc[]
+
+
+
+ifdef::backend-docbook[]
+[index]
+Index
+-----
+endif::backend-docbook[]
+
