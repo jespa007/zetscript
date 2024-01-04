@@ -1,7 +1,7 @@
 
-
+---
 Version: 2.0.0
-Date: 2023-XX-XX (Expected to finish on end of 2023)
+Date: 2024-01-04
 
 Main improvements: 
 
