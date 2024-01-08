@@ -1,7 +1,7 @@
 
-=== Call C++ from ZetScript
+=== Call C{plus}{plus} from ZetScript
 
-This chapter aims to explain how to call C++ from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
+This chapter aims to explain how to call C\+\+ from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
 
 ==== Return types
 
@@ -365,7 +365,7 @@ include::../examples/api/register_function/register_function_param_object_script
 
 ===== Parameter Function
 
-To register a C function that accepts a <<language_data_types.adoc#_function,Function>> it must specify __zetscript::ScriptFunction *__ as parameter type. To make  __Function__ callable from C++ must use <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>
+To register a C function that accepts a <<language_data_types.adoc#_function,Function>> it must specify __zetscript::ScriptFunction *__ as parameter type. To make  __Function__ callable from C{plus}{plus} must use <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>
 
 *Example*
 

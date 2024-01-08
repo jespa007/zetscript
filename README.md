@@ -206,6 +206,7 @@ To expose C++ type to ZetScript is done by registering C++ type. To expose membe
 <pre lang="c++">
 #include "zetscript.h"
 
+// Class to register
 class MyClass{
 public:
 	int value;
@@ -220,13 +221,17 @@ public:
 
 };
 
-// define new and delete functions
+//-----------------------
+// REGISTER FUNCTIONS
+
+// C function to register that returns an instance of native new 'MyClass'
 MyClass *MyClassWrap_new(
 	zetscript::ScriptEngine *_script_engine
 ){
 	return new MyClass;
 }
 
+// C function to register that deletes an instance of native new 'MyClass'
 void MyClassWrap_delete(
 	zetscript::ScriptEngine *_script_engine
 	,MyClass *_this
@@ -234,23 +239,7 @@ void MyClassWrap_delete(
 	delete _this;
 }
 
-// bind data1 member variable (read & write)
-void MyClassWrap_set_value(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-	, zetscript::zs_int _value
-){
-	_this->value=_value;
-}
-
-zetscript::zs_int MyClassWrap_get_value(
-	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-){
-	return _this->value;
-}
-
-// 'MyClassWrap::setData' wrap function
+// C function to register as 'MyClass::setValue' member function
 void MyClassWrap_setValue(
 	zetscript::ScriptEngine *_script_engine
 	,MyClass *_this
@@ -259,18 +248,38 @@ void MyClassWrap_setValue(
 	_this->setValue(_value);
 }
 
+// C function to register that implements setter metamethod for property 'value'
+void MyClassWrap_set_value(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+	, zetscript::zs_int _value
+){
+	_this->value=_value;
+}
+
+// C function to register that implements getter for property 'value'
+zetscript::zs_int MyClassWrap_get_value(
+	zetscript::ScriptEngine *_script_engine
+	,MyClass *_this
+){
+	return _this->value;
+}
+
+// REGISTER FUNCTIONS
+//-----------------------
+
 int main(){
 
 	zetscript::ScriptEngine script_engine;
 
-	// Register class type 'MyClass' as instantiable
+	// Register type 'MyClass'
 	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
-	// Register member variable 'MyClass::value' through get/set metamethod using 'MyClassWrap_set_value'/'MyClassWrap_get_value' functions
+	// Register property 'MyClass::value' with set/get metamethods through 'MyClassWrap_set_value'/'MyClassWrap_get_value' C functions
 	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_set",&MyClassWrap_set_value);
 	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_get",&MyClassWrap_get_value);
 
-	// Register member function 'MyClass::setValue' using 'MyClassWrap_setValue' wrapper
+	// Register member function 'MyClass::setValue' through 'MyClassWrap_setValue' C function
 	script_engine.registerMemberFunction<MyClass>("setValue",&MyClassWrap_setValue);
 
 	// Compiles and runs script

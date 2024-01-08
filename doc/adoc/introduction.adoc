@@ -1,6 +1,6 @@
 == Introduction
 
-ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual machine so the execution is quite fast. Because ZetScript syntax is almost less or more equal to Javascript you can edit the code with any editor that supports Javascript syntax notation. 
+ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but also it brings a easy way to bind parts of your C{plus}{plus} code. ZetScript provides a virtual machine so the execution is quite fast. Because ZetScript syntax is almost less or more equal to Javascript you can edit the code with any editor that supports Javascript syntax notation. 
 
 
 === Compile

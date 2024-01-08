@@ -2304,7 +2304,7 @@ _ScriptEngine_ is the main type of ZetScript in order to register function, regi
 
 ===== ScriptEngine::bindScriptFunction()        
 
-Binds script function to be callable from C++.
+Binds script function to be callable from C{plus}{plus}.
 
 *Syntax*
 
@@ -2861,7 +2861,7 @@ Console output:
 include::../examples/api/types/script_engine_register_function_out.txt[]
 ----
 
-To see more and complete examples see <<api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C++ from ZetScript]>>
+To see more and complete examples see <<api_call_cpp_from_zetscript.adoc#_call_c_from_zetscript[Call C{plus}{plus} from ZetScript]>>
 
 <<<
 

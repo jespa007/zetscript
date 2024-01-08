@@ -4,7 +4,7 @@
 
 == The API
 
-This section aims to explain ZetScript API. It will start explaining the types used in order to interop data native/script code and the main _ScriptEngine_ class as the core of operations in the library. Next sections will be a practical way how evaluate scripts, expose cpp code and types and call script functions from cpp code.
+This section aims to explain ZetScript API. It will start by explaining the basic data used in the API. Next sections will be like a tutorial how to call C{plus}{plus} from ZetScript, how to call ZetScript from C{plus}{plus} and finally how to expose native types in ZetScript.
 
 include::api_data_types.adoc[]
 //include::api_eval.adoc[]
