@@ -48,9 +48,9 @@ namespace zetscript{
 	}
 
 	void ScriptType::printListMemberFunctions(){
-		ScriptScope *scope=this->scope;
-		for(int i=0; i < scope->symbol_functions->length();i++){
-			Symbol *symbol = (Symbol *)scope->symbol_functions->get(i);
+		
+		for(int i=0; i < this->scope->symbol_functions->length();i++){
+			Symbol *symbol = (Symbol *)this->scope->symbol_functions->get(i);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			int start_idx=0;
 
