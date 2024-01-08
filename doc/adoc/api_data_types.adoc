@@ -3212,7 +3212,76 @@ A _C_ type as a result of conversion
 include::../examples/api/types/script_engine_stack_element_to.cpp[]
 ----
 
+===== ScriptEngine::stackElementTypeToString()
+
+Returns the type of the StackElement as String
+
+*Syntax*
+
+[source,cpp]
+----
+String	stackElementTypeToString(StackElement * _stack_element);
+----
+
+[.underline]#Parameters# 
+
+- _stack_element: Stack element pointer
+
+[.underline]#Returns# 
+
+A String as the type
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_stack_element_type_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_stack_element_type_to_string_out.txt[]
+----
+
 <<<
+
+===== ScriptEngine::stackElementValueToString()
+
+Returns the contents StackElement value as String
+
+*Syntax*
+
+[source,cpp]
+----
+String	stackElementTypeToString(StackElement * _stack_element);
+----
+
+[.underline]#Parameters# 
+
+- _stack_element: Stack element pointer
+
+[.underline]#Returns# 
+
+A String as the StackElement value
+
+*Example*
+
+[source,cpp]
+----
+include::../examples/api/types/script_engine_stack_element_value_to_string.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/types/script_engine_stack_element_value_to_string_out.txt[]
+----
+
+<<<
+
 
 ===== ScriptEngine::toStackElement()
 

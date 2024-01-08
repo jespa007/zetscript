@@ -20,13 +20,14 @@ done through this command,
 make -C build
 ****
 
-The binary file will be placed at __build__ directory.
+After the compilation, the ZetScript library (.a) and command line interpreter utility (_zs_) will be placed at __build__ directory.
 
 Optionally, cmake configuration comes with the following options:
 
-- __-DCMAKE_BUILD_TYPE={Release|Debug}__  : Configures ZetScript project for Release or Debug.
-- __-DTESTS:BOOL={true|false}__ : Configures ZetScript to build or not tests.
-- __-DSAMPLES:BOOL={true|false}__ : Configures ZetScript to build or not samples.
+- __-DCMAKE_BUILD_TYPE={Release|Debug}__  : Configures ZetScript project for _Release_ or _Debug_ (by default is _Release_).
+- __-DTESTS:BOOL={true|false}__ : Configures ZetScript to build or not tests (by default is _FALSE_).
+- __-DSAMPLES:BOOL={true|false}__ : Configures ZetScript to build or not samples (by default is _FALSE_).
+- __-DBUILD_SHARED:BOOL={true|false}__ : Configures ZetScript to build as _SHARED_ (by default is _STATIC_).
 
 === Hello World
 

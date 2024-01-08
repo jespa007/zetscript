@@ -9,10 +9,10 @@ zetscript::String returnString(
 int main(){
 	zetscript::ScriptEngine script_engine;
 
-	// Registers function interface
+	// Registers the C function
     script_engine.registerFunction("returnString",returnString);
 
-    // Evaluates a script that calls the registered function and prints its result by console
+    // // Compiles and runs a script
     script_engine.compileAndRun(
         "Console::outln(\"result : \"+returnString());"
  	);

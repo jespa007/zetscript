@@ -1,7 +1,7 @@
 
 === Call C{plus}{plus} from ZetScript
 
-This chapter aims to explain how to call C\+\+ from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
+This chapter aims to explain how to call C{plus}{plus} from ZetScript through a set examples. The examples shows each type of returning/passing parametres to/from ZetScript by defining a C function that has to be registered as it describes <<api_data_types#_scriptengineregisterfunction,ScriptEngine::registerFunction>>. 
 
 ==== Return types
 
@@ -14,6 +14,7 @@ This section will explain how to register C functions that return the following 
 - Array
 - Object
 - Registered type
+- Any
 
 ===== Return Boolean
 
@@ -145,7 +146,7 @@ include::../examples/api/register_function/register_function_return_array_script
 
 ===== Return Object
 
-To register a C function that returns a <<language_data_types.adoc#lowbar;object,Object>> it must specify __zetscript::ObjectScriptObject *__ as return type. The instantiation of __zetscript::ObjectScriptObject *__ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine instance.
+To register a C function that returns a <<language_data_types.adoc#_object,Object>> it must specify __zetscript::ObjectScriptObject *__ as return type. The instantiation of __zetscript::ObjectScriptObject *__ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine instance.
 
 *Example*
 
@@ -229,6 +230,28 @@ include::../examples/api/register_function/register_function_return_class_script
 
 <<<
 
+===== Return ANY
+
+To register a C function that returns ANY value is done through <<api_data_types.adoc#_scriptenginepushstackelement,ScriptEngine::pushStackElement>>. This method can also allow to return more than one value.
+
+*Example*
+
+In the following example it returns a <<language_data_types.adoc#_integer,Integer>>,<<language_data_types.adoc#_float,Float>> and a <<language_data_types.adoc#_string,String>>. 
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_return_any.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_return_any_out.txt[]
+----
+
+<<<
+
 ==== Parameter types
 
 
@@ -242,6 +265,7 @@ This section will explain how to register C functions that accepts the following
 - Object
 - Function
 - Registered type
+- ANY
 
 ===== Parameter Boolean
 
@@ -403,6 +427,28 @@ Console output:
 [source,txt]
 ----
 include::../examples/api/register_function/register_function_param_registered_type_out.txt[]
+----
+
+<<<
+
+===== Parameter ANY
+
+To register a C function that accepts ANY type of parameter it must specify <<api_data_types.adoc#_zetscriptstackelement,zetscript::StackElement >> pointer as parameter type.
+
+*Example*
+
+This example it calls a registered function paramAny and pass an <<language_data_types.adoc#_integer,Integer>>,<<language_data_types.adoc#_float,Float>> and a <<language_data_types.adoc#_string,String>> on the same function.
+
+[source,cpp]
+----
+include::../examples/api/register_function/register_function_param_any.cpp[]
+----
+
+Console output:
+
+[source,txt]
+----
+include::../examples/api/register_function/register_function_param_any_out.txt[]
 ----
 
 <<<
