@@ -19,6 +19,7 @@ Main improvements:
 - The use of "function" keyword on class function members are not mandatory
 - switch-case eval expressions
 - Implements builtin concatenation with vector and object types through operator '+' 
+- Full documentation and working examples
 
 Solved issues
  

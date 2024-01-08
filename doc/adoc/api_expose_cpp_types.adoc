@@ -1,6 +1,6 @@
-=== Exposing C++ types to ZetScript
+=== Exposing C{plus}{plus} types to ZetScript
 
-In this chapter will see how to to register C/C++ types, function members, metamethods and properties in order to be exposed in ZetScript through examples.
+In this chapter will see how to to register C/C{plus}{plus} types, function members, metamethods and properties in order to be exposed in ZetScript through examples.
 
 Most of the examples show in this chapter will be related about the following class __Number__,
 

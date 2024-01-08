@@ -1,6 +1,6 @@
-=== Call ZetScript from C++
+=== Call ZetScript from C{plus}{plus}
 
-To make a ZetScript function callable from C++ is done through <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>. 
+To make a ZetScript function callable from C{plus}{plus} is done through <<language_data_types.adoc#_scriptenginebindscriptfunction,ScriptEngine::bindScriptFunction>>. 
 
 ==== Return types
 
@@ -194,13 +194,13 @@ include::../examples/api/bind_script_function/bind_script_function_return_class_
 
 ===== Return instance of registered type object
 
-To bind a ZetScript function that returns an instance of <<api_data_types.adoc#_scriptengineregistertype,registered type>> object it must specify __zetscript::ClassScriptObject *__ return type on its function signature. After returning  __zetscript::ClassScriptObject *__, it can fetch its C++ registered type by calling __ClassScriptObject::to<_T *>__, where _T is the C&#43;&#43; type.
+To bind a ZetScript function that returns an instance of <<api_data_types.adoc#_scriptengineregistertype,registered type>> object it must specify __zetscript::ClassScriptObject *__ return type on its function signature. After returning  __zetscript::ClassScriptObject *__, it can fetch its C{plus}{plus} registered type by calling __ClassScriptObject::to<_T *>__, where _T is the C&#43;&#43; type.
 
 After using the object returned by the function it has to decrease its reference count by calling __ScriptEngine::unrefLifeTimeObject__.
 
 *Example*
 
-In this example, it registers the __Number__ type and the property __Number::value__ (see <<api_data_types.adoc#_scriptengineregistermemberpropertymetamethod,ScriptEngine::registerMemberPropertyMetamethod>>). In the example also, it can see the implementation of a function 'newNumber' in the ZetScript code that returns a new __Number__. After evaluate the script code, it binds the script function __newNumber__ into a in C&#x2b;&#x2b;  variable called __newNumber__.  Finally, it calls __newNumber__ from C&#x2b;&#x2b; and save the __ClassScriptObject__ type returned into C++ __class_object_number__ variable to print its content information.
+In this example, it registers the __Number__ type and the property __Number::value__ (see <<api_data_types.adoc#_scriptengineregistermemberpropertymetamethod,ScriptEngine::registerMemberPropertyMetamethod>>). In the example also, it can see the implementation of a function 'newNumber' in the ZetScript code that returns a new __Number__. After evaluate the script code, it binds the script function __newNumber__ into a in C&#x2b;&#x2b;  variable called __newNumber__.  Finally, it calls __newNumber__ from C{plus}{plus} and save the __ClassScriptObject__ type returned into C{plus}{plus} __class_object_number__ variable to print its content information.
 
 [source,cpp]
 ----

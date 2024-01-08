@@ -13,7 +13,7 @@ int main(){
 	// Registers function
     script_engine.registerFunction("returnBoolean",returnBoolean);
 
-    // Evaluates a script that calls the registered function and prints its result by console
+    // // Compiles and runs a script
     script_engine.compileAndRun(
         "Console::outln(\"result : \"+returnBoolean());"
  	);
