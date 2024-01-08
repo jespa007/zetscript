@@ -111,6 +111,11 @@ if(MSVC)
 	else()
 		set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 	endif()
+
+	# Provisional to export all symbols when shared 
+	if(BUILD_SHARED_LIBS)
+		set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	endif()
 	
 else()
 
