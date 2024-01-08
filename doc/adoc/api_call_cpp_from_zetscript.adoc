@@ -146,7 +146,7 @@ include::../examples/api/register_function/register_function_return_array_script
 
 ===== Return Object
 
-To register a C function that returns a <<language_data_types.adoc#_object,Object>> it must specify __zetscript::ObjectScriptObject *__ as return type. The instantiation of __zetscript::ObjectScriptObject *__ it's done through _ScriptEngine::newObjectScriptObject_ using ScriptEngine instance.
+To register a C function that returns a <<language_data_types.adoc#_object,Object>> it must specify __zetscript::ObjectScriptObject *__ as return type. The instantiation of __zetscript::ObjectScriptObject *__ it's done through __ScriptEngine::newObjectScriptObject__ using ScriptEngine instance.
 
 *Example*
 

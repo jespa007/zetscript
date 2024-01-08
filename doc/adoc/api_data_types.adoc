@@ -3212,6 +3212,8 @@ A _C_ type as a result of conversion
 include::../examples/api/types/script_engine_stack_element_to.cpp[]
 ----
 
+<<<
+
 ===== ScriptEngine::stackElementTypeToString()
 
 Returns the type of the StackElement as String
