@@ -185,8 +185,8 @@ namespace zetscript{
 				);\
 			}else{\
 
-				// if argument is a script object should share, because on returning
-				// it does pop and it could deallocate twice
+				// if argument is a script object, it has to increment reference counter because at returning of the function
+				// it decrements reference counter and if reference counter = 0 it could be deallocated twice
 				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT){
 					vm_share_object(_vm,(ScriptObject *)stk_arg->value);
 				}
