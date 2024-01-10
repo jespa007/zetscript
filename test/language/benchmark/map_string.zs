@@ -93,7 +93,7 @@ for (var key in keys) {
 }
 
 for (var key in keys) {
-  ScriptObject::erase(map,key)
+  Object::erase(map,key)
 }
 
 Console::outln(sum)
