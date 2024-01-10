@@ -358,12 +358,12 @@ namespace zetscript{
 				}
 				continue;
 			 case  BYTE_CODE_RET:
-				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
+				// can return something. value is +1 from stack
+				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){
 					stk_result_op1=stk_var;
 
 					// if global var...
-					// else if object ...
-					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)==STACK_ELEMENT_PROPERTY_OBJECT){
+					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
 						// ... deref
 						if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
 							return;
@@ -572,7 +572,7 @@ namespace zetscript{
 				 }
 				 continue;
 				case BYTE_CODE_LOAD_TYPE:
-					ZS_VM_PUSH_STK_TYPE(instruction->value_op2);
+					ZS_VM_PUSH_STK_SCRIPT_TYPE(instruction->value_op2);
 					continue;
 				case BYTE_CODE_PUSH_ARRAY_ITEM:
 					if(vm_push_container_item(

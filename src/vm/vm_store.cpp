@@ -185,9 +185,14 @@ namespace zetscript{
 				);\
 			}else{\
 
-				// if argument is a script object, it has to increment reference counter because at returning of the function
-				// it decrements reference counter and if reference counter = 0 it could be deallocated twice
-				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+				// in case source of stack_element (or stackement to read) contents a ScriptObject
+				if(
+					(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT)
+								&&
+				    (stk_arg->properties & STACK_ELEMENT_PROPERTY_READ_ONLY) == 0
+				){
+					// Increment reference counter because at returning of the function
+					// it decrements reference counter and if reference counter = 0 it could be deallocated twice
 					vm_share_object(_vm,(ScriptObject *)stk_arg->value);
 				}
 
@@ -252,6 +257,8 @@ namespace zetscript{
 					vm_create_shared_object(_vm,str_object);
 					// share ptr
 					vm_share_object(_vm,str_object);
+
+					// this string owns by a container
 					//-------------------------------------
 				}
 

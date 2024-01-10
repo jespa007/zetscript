@@ -4,6 +4,12 @@
  */
 namespace zetscript{
 
+#define VM_LOAD_FIELD_FOR_STORE \
+		(instruction->properties & INSTRUCTION_PROPERTY_FOR_ASSIGN) \
+		||    instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM \
+		||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE
+
+
 	bool vm_load_field(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object
@@ -20,7 +26,7 @@ namespace zetscript{
 		ScriptType					*	script_type=NULL;
 		Symbol 						*	symbol_function_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
-		bool 							instruction_store=false;
+		bool 							instruction_store=false;//VM_LOAD_FIELD_FOR_STORE;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -34,9 +40,8 @@ namespace zetscript{
 
 		instruction=(*_instruction_it)-1;
 
-		instruction_store = (instruction->properties & INSTRUCTION_PROPERTY_FOR_ASSIGN)
-			||    instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
-			||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+		// check if instruction is for store
+		instruction_store =VM_LOAD_FIELD_FOR_STORE;
 
 
 		if(
