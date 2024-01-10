@@ -41,13 +41,6 @@ namespace zetscript{
 		ByteCode byte_code = BYTE_CODE_LOAD_FUNCTION;
 		ScriptScope *scope_info=ZS_MAIN_SCOPE(compiler_data);
 
-		/*if(scope_info->scope_parent!=NULL){// is within function ?
-
-			if(scope_info->type->id != ScriptTypeId::SCRIPT_TYPE_ID_CLASS_MAIN){ // function object as function member because it will use this inside
-				byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;
-			}
-		}*/
-
 		compiler_instructions->push(compiler_instruction=new CompilerInstruction(
 				byte_code
 				, INSTRUCTION_VALUE_OP1_NOT_DEFINED
@@ -303,7 +296,7 @@ namespace zetscript{
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		String symbol_name;
-		ScriptType *type=NULL;
+		ScriptType *script_type=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
@@ -356,10 +349,10 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 
-				type=ZS_GET_OBJECT_TYPE(compiler_data->script_types_factory,symbol_name);
+				 script_type=ZS_GET_OBJECT_TYPE(compiler_data->script_types_factory,symbol_name);
 
 				// parse expression
-				if(type==NULL){
+				if(script_type==NULL){
 					char *test_str=NULL;
 					if((test_str = compiler_sub_expression(
 							compiler_data
@@ -381,23 +374,23 @@ namespace zetscript{
 							 ,expression
 						 );
 				}else{ // known type
-					is_native_type=type->isNativeType();
-					symbol_constructor_function_name=type->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
+					is_native_type=script_type->isNativeType();
+					symbol_constructor_function_name=script_type->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
-					if(!compiler_data->script_types_factory->isTypeInstanceable(type->id)){
+					if(!compiler_data->script_types_factory->isTypeInstanceable(script_type->id)){
 						EVAL_ERROR_FILE_LINE(
-								compiler_data->current_parsing_file
-								,line
-								,"Cannot create object type '%s' because it has been defined as not instantiable. "
-								"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-								,type->getScriptTypeName()
-								,type->getScriptTypeName()
-								,type->getScriptTypeName()
-								);
+							compiler_data->current_parsing_file
+							,line
+							,"Cannot create object type '%s' because it has been defined as not instantiable. "
+							"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
+							,script_type->getScriptTypeName()
+							,script_type->getScriptTypeName()
+							,script_type->getScriptTypeName()
+						);
 					}
 
 					compiler_instructions->push(compiler_instruction=new CompilerInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
-					compiler_instruction->vm_instruction.value_op1=type->id;
+					compiler_instruction->vm_instruction.value_op1=script_type->id;
 				}
 
 
@@ -472,11 +465,11 @@ namespace zetscript{
 
 				 if(compiler_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
-					 constructor_function=type->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=type->scope->symbol_functions->length()-1;
+					 constructor_function=script_type->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
+					 int start_idx_function=script_type->scope->symbol_functions->length()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
-							Symbol *symbol_member = (Symbol *)type->scope->symbol_functions->get(i);
+							Symbol *symbol_member = (Symbol *)script_type->scope->symbol_functions->get(i);
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 							if(sf_member->name== ZS_CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
@@ -490,7 +483,7 @@ namespace zetscript{
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 						 }else{// is a native constructor, find a constructor if it passes one or more args
 							 if(n_args > 0){ // we have to find our custom function to call after object is created
-								 constructor_function=type->getSymbol(symbol_name.toConstChar(),n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
+								 constructor_function=script_type->getSymbol(symbol_name.toConstChar(),n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
 								 if(constructor_function == NULL){
 									 EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",symbol_name.toConstChar(),n_args);
 								 }

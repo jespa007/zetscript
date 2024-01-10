@@ -81,7 +81,7 @@ namespace zetscript{
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
-					,stk_mp_aux->member_property->type->getScriptTypeName()
+					,stk_mp_aux->member_property->script_type->getScriptTypeName()
 					,stk_mp_aux->member_property->property_name.toConstChar()
 				);
 			}

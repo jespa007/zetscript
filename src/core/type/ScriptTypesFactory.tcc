@@ -58,7 +58,7 @@ namespace zetscript{
 		,short registered_line
 	){//, const String & base_class_name=""){
 
-		ScriptType *type=NULL;
+		ScriptType *script_type=NULL;
 		const char * native_name = typeid( T *).name();
 		//int size=types->length();
 		ScriptTypeId script_type_id=SCRIPT_TYPE_ID_INVALID;
@@ -74,107 +74,115 @@ namespace zetscript{
 			);
 		}
 
-		script_type_id=(ScriptTypeId)types->length();
+		script_type_id=(ScriptTypeId)script_types->length();
 		scope = ZS_NEW_SCOPE(this,ZS_UNDEFINED_IDX,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		ZS_MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,name);
 
-		type = new ScriptType(script_engine,script_type_id,name,scope,native_name,SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF);
-		scope->setTypeOwner(type);
+		script_type = new ScriptType(script_engine,script_type_id,name,scope,native_name,SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF);
+		scope->setTypeOwner(script_type);
 
 		// in T there's no script constructor ...
-		type->idx_constructor_member_function=ZS_UNDEFINED_IDX;
+		script_type->idx_constructor_member_function=ZS_UNDEFINED_IDX;
 		// allow dynamic constructor in function its parameters ...
-		type->new_native_instance = NULL;
-		type->delete_native_instance = NULL;
-		types->push(type);
+		script_type->new_native_instance = NULL;
+		script_type->delete_native_instance = NULL;
+		script_types->push(script_type);
 
 
 		if((_new_native_instance != NULL) && (_delete_native_instance != NULL)){ // it can instanced, not static
-			type->new_native_instance = (void *)_new_native_instance;
-			type->delete_native_instance = (void *)_delete_native_instance;
+			script_type->new_native_instance = (void *)_new_native_instance;
+			script_type->delete_native_instance = (void *)_delete_native_instance;
 
 		}else{ // Cannot be instanced so is static
-			type->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
+			script_type->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		type->id=types->length()-1;
+		script_type->id=script_types->length()-1;
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",name.toConstChar(),Rtti::demangle(native_name).toConstChar());
 
-		return type;
+		return script_type;
 	}
 
 
 	template<class T,class B>
 	void ScriptTypesFactory::extends(){
 
-		const char *base_class_name=typeid(B).name();
-		const char * base_class_name_ptr=typeid(B *).name();
-		const char * name=typeid(T).name();
-		const char * class_name_ptr=typeid(T *).name();
+		const char *base_script_type_name=typeid(B).name();
+		const char * base_script_type_name_ptr=typeid(B *).name();
+		const char * script_type_name=typeid(T).name();
+		const char * script_type_name_ptr=typeid(T *).name();
 		String error;
 
-		ScriptTypeId base_script_type_id = getScriptTypeIdFromNamePtr(base_class_name_ptr);
+		ScriptTypeId base_script_type_id = getScriptTypeIdFromNamePtr(base_script_type_name_ptr);
 		if(base_script_type_id == SCRIPT_TYPE_ID_INVALID) {
-			ZS_THROW_RUNTIME_ERROR("base native type '%s' not registered",base_class_name_ptr);
+			ZS_THROW_RUNTIME_ERROR("base native type '%s' not registered",base_script_type_name_ptr);
 		}
 
-
-		ScriptTypeId register_script_type_id = getScriptTypeIdFromNamePtr(class_name_ptr);
+		ScriptTypeId register_script_type_id = getScriptTypeIdFromNamePtr(script_type_name_ptr);
 		if(register_script_type_id == SCRIPT_TYPE_ID_INVALID) {
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",script_type_name_ptr);
 		}
 
 		if(scriptTypeInheritsFrom(register_script_type_id,base_script_type_id)){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' is already registered as base of '%s' ",Rtti::demangle(name).toConstChar(), Rtti::demangle(base_class_name).toConstChar());
+			ZS_THROW_RUNTIME_ERROR(
+				"native type '%s' is already registered as base of '%s' "
+				,Rtti::demangle(script_type_name).toConstChar()
+				, Rtti::demangle(base_script_type_name).toConstChar()
+			);
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,T>::value){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' is not base of '%s' ",Rtti::demangle(name).toConstChar(), Rtti::demangle(base_class_name).toConstChar());
+			ZS_THROW_RUNTIME_ERROR(
+				"native type '%s' is not base of '%s' "
+				,Rtti::demangle(script_type_name).toConstChar()
+				, Rtti::demangle(base_script_type_name).toConstChar()
+			);
 		}
 
 		// now only allows one inheritance!
-		ScriptType *main_class=types->get(register_script_type_id);
-
+		ScriptType *main_class=script_types->get(register_script_type_id);
 
 		for(int i=0; i < main_class->base_script_type_ids->length(); i++){
-			ScriptType *type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
-			if(type->native_name ==base_class_name_ptr){
-				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
-						,Rtti::demangle(name).toConstChar()
-						, Rtti::demangle(base_class_name).toConstChar());
+			ScriptType *script_type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
+			if(script_type->native_name ==base_script_type_name_ptr){
+				ZS_THROW_RUNTIME_ERROR(
+					"native type '%s' already extends from '%s' "
+					,Rtti::demangle(script_type_name).toConstChar()
+					, Rtti::demangle(base_script_type_name).toConstChar()
+				);
 			}
 		}
 
 
-		ScriptType *base=(ScriptType *)types->get(base_script_type_id);
+		ScriptType *base=(ScriptType *)script_types->get(base_script_type_id);
 
 		// search native types that already inherits type B
 		for(int i=0; i < main_class->base_script_type_ids->length(); i++){
-			ScriptType *type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
+			ScriptType *script_type=getScriptType(main_class->base_script_type_ids->get(i)); // get base type...
 			// check whether type inherits inheritates B
-			if(type->extendsFrom(base_script_type_id)){
+			if(script_type->extendsFrom(base_script_type_id)){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
-					,Rtti::demangle(name).toConstChar()
-					, Rtti::demangle(base_class_name).toConstChar()
-					,Rtti::demangle(name).toConstChar()
-					,Rtti::demangle(type->name.toConstChar()).toConstChar()
-					, Rtti::demangle(base_class_name).toConstChar()
+					,Rtti::demangle(script_type_name).toConstChar()
+					, Rtti::demangle(base_script_type_name).toConstChar()
+					,Rtti::demangle(script_type_name).toConstChar()
+					,Rtti::demangle(script_type->name.toConstChar()).toConstChar()
+					, Rtti::demangle(base_script_type_name).toConstChar()
 				);
 			}
 			// check the viceversa, if B inheritates inherited types of main_class
-			if(base->extendsFrom(type->id)){
+			if(base->extendsFrom(script_type->id)){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
-					,Rtti::demangle(name).toConstChar()
-					, Rtti::demangle(base_class_name).toConstChar()
-					,Rtti::demangle(name).toConstChar()
-					, Rtti::demangle(type->name.toConstChar()).toConstChar()
-					, Rtti::demangle(base_class_name).toConstChar()
+					,Rtti::demangle(script_type_name).toConstChar()
+					, Rtti::demangle(base_script_type_name).toConstChar()
+					,Rtti::demangle(script_type_name).toConstChar()
+					, Rtti::demangle(script_type->name.toConstChar()).toConstChar()
+					, Rtti::demangle(base_script_type_name).toConstChar()
 				);
 			}
 		}
 
-		ScriptType *this_class = (ScriptType *)types->get(register_script_type_id);
+		ScriptType *this_class = (ScriptType *)script_types->get(register_script_type_id);
 		this_class->base_script_type_ids->push(base_script_type_id);
 
 		//----------------------------
@@ -182,9 +190,9 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 
-		ScriptType *base_class = types->get(base_script_type_id);
-		Vector<Symbol *> *base_vars=base_class->scope->symbol_variables;
-		Vector<Symbol *> *base_functions=base_class->scope->symbol_functions;
+		ScriptType *base_script_type = script_types->get(base_script_type_id);
+		Vector<Symbol *> *base_vars=base_script_type->scope->symbol_variables;
+		Vector<Symbol *> *base_functions=base_script_type->scope->symbol_functions;
 
 		// register all c vars symbols ...
 		for(int i = 0; i < base_functions->length(); i++){
@@ -222,8 +230,8 @@ namespace zetscript{
 
 				}else{
 					ZS_THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
-							,Rtti::demangle(base_class_name).toConstChar()
-							,Rtti::demangle(base_class_name).toConstChar()
+							,Rtti::demangle(base_script_type_name).toConstChar()
+							,Rtti::demangle(base_script_type_name).toConstChar()
 							, src_symbol->name.toConstChar());
 				}
 			}
@@ -356,16 +364,16 @@ namespace zetscript{
 	){
 		String native_name = typeid( T *).name();
 
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
+		ScriptType *script_type = getScriptTypeFromNamePtr(native_name);
 
-		if(type == NULL){
+		if(script_type == NULL){
 			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,native_name.toConstChar()
 			);
 		}
 
-		type->registerConstMemberProperty<F>(
+		script_type->registerConstMemberProperty<F>(
 			 _property_name
 			 ,_ptr_function
 			,registered_file
@@ -385,16 +393,16 @@ namespace zetscript{
 	){
 		String native_name = typeid( T *).name();
 
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
+		ScriptType *script_type = getScriptTypeFromNamePtr(native_name);
 
-		if(type == NULL){
+		if(script_type == NULL){
 			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,native_name.toConstChar()
 			);
 		}
 
-		type->registerMemberPropertyMetamethod<F>(
+		script_type->registerMemberPropertyMetamethod<F>(
 			 _property_name
 			 ,_metamethod_name
 			 ,_ptr_function
@@ -402,781 +410,6 @@ namespace zetscript{
 			,registered_line
 		);
 	}
-
-	/*
-	 * register static property getter
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerStaticMemberPropertyGetter(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerStaticMemberPropertyGetter(
-				 _property_name
-				,&params
-				,params_len
-				,return_script_type_id
-				,(zs_int)_ptr_function
-				,_registered_file
-				,_registered_line
-		);
-
-
-	}*/
-
-	/*
-	 * register property member setter
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertySetter(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		String native_name = typeid( T *).name();
-		FunctionParam *params=NULL;
-		int params_len=0;
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_SET
-			 ,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}
-*/
-	/*
-	 * register property getter
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyGetter(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyGetter(
-				 _property_name
-				,&params
-				,params_len
-				,return_script_type_id
-				,(zs_int)_ptr_function
-				,_registered_file
-				,_registered_line
-		);
-
-
-	}*/
-
-
-	/*
-	 * register property neg
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyNeg(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyNeg(
-				 _property_name
-				,&params
-				,params_len
-				,return_script_type_id
-				,(zs_int)_ptr_function
-				,_registered_file
-				,_registered_line
-		);
-
-	}*/
-
-	/*
-	 * register property neg
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyBwc(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyBwc(
-				 _property_name
-				,&params
-				,params_len
-				,return_script_type_id
-				,(zs_int)_ptr_function
-				,_registered_file
-				,_registered_line
-		);
-
-	}*/
-
-	/*
-	 * register member property  post_increment
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyPostInc(
-		const String & _property_name
-		,F _ptr_function
-		,const char *_registered_file
-		,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_POST_INC
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}*/
-
-	/*
-	 * register member property  post_decrement
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyPostDec(
-			const String & _property_name
-			,F _ptr_function
-			,const char *_registered_file
-			,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_POST_DEC
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}*/
-
-	/*
-	 * register member property  pre_increment
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyPreInc(
-			const String & _property_name
-			,F _ptr_function
-			,const char *_registered_file
-			,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_PRE_INC
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}*/
-
-	/*
-	 * register member property  pre_decrement
-	 */
-	/*template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyPreDec(
-			const String & _property_name
-			,F _ptr_function
-			,const char *_registered_file
-			,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_PRE_DEC
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}
-
-	// register member property add set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyAddSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_ADD_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}
-
-	// register member property  sub set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertySubSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			, type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_SUB_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,_registered_file
-			,_registered_line
-		);
-	}
-
-	// register member property mul set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyMulSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_MUL_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property div set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyDivSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_DIV_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property mod set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyModSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_MOD_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property and set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyAndSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_AND_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property or set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyOrSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_OR_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property xor set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyXorSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_XOR_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property shl set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyShlSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_SHL_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}
-
-	// register member property shr set operation
-	template <typename T,typename F>
-	void ScriptTypesFactory::registerMemberPropertyShrSetter(
-			const String & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-		FunctionParam *params=NULL;
-		int params_len=0;
-		String native_name = typeid( T *).name();
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
-			ZS_THROW_RUNTIME_ERROR(
-				"native type '%s' not registered"
-				,native_name.toConstChar()
-			);
-		}
-
-		int return_script_type_id=getNativeFunctionRetArgsTypes(
-			this
-			,type
-			,_ptr_function
-			,&params
-			,&params_len
-		);
-
-		type->registerMemberPropertyMetamethod(
-			 _property_name
-			 ,METAMETHOD_SHR_ASSIGN
-			,&params
-			,params_len
-			,return_script_type_id
-			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
-		);
-	}*/
-
 
 	/**
 	 * Register T Member function Class
@@ -1192,18 +425,18 @@ namespace zetscript{
 	{
 		// to make compatible MSVC shared library
 		String native_name = typeid( T *).name();
+		ScriptType *script_type = getScriptTypeFromNamePtr(native_name);
 
-
-		ScriptType *type = getScriptTypeFromNamePtr(native_name);
-
-		if(type == NULL){
+		if(script_type == NULL){
 			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",native_name.toConstChar());
 		}
 
-		return type->registerStaticMemberFunction<F>(name
-				,ptr_function
-				,registered_file
-				,registered_line);
+		return script_type->registerStaticMemberFunction<F>(
+			name
+			,ptr_function
+			,registered_file
+			,registered_line
+		);
 
 	}
 

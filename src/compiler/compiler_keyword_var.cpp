@@ -30,7 +30,7 @@ namespace zetscript{
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			bool is_static=scope_info==ZS_MAIN_SCOPE(compiler_data);
-			ScriptType *type=NULL;
+			ScriptType *script_type=NULL;
 			String s_aux="",variable_name="";
 			String error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
@@ -44,7 +44,7 @@ namespace zetscript{
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // type members are defined as functions
-				type=scope_var->owner_type;
+				script_type=scope_var->owner_type;
 				is_class_scope=true;
 				is_static=true;
 			}
@@ -57,7 +57,7 @@ namespace zetscript{
 				end_var=NULL;
 				String pre_variable_name="";
 				ScriptFunction *sf_field_initializer=NULL;
-				ScriptType *sc_var_member_extension=type;
+				ScriptType *sc_var_member_extension=script_type;
 
 				if(sc_var_member_extension==NULL){
 					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
@@ -215,7 +215,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(compiler_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?String::format("::%s",type->name.toConstChar()).toConstChar():""
+							,sc_var_member_extension!=NULL?String::format("::%s",script_type->name.toConstChar()).toConstChar():""
 							,variable_name.toConstChar());
 				}
 

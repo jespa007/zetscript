@@ -195,8 +195,8 @@ namespace zetscript{
 			ScriptTypeId  id;
 		}PrimitiveType;
 
-		Vector<ScriptType *>			*	types;
-		zetscript::ScriptEngine 					*	script_engine;
+		Vector<ScriptType *>			*	script_types;
+		zetscript::ScriptEngine 		*	script_engine;
 		VirtualMachine					*	vm;
 		ScriptScopesFactory 			*	scope_factory;
 		ScriptFunctionsFactory 			*	script_function_factory;
