@@ -258,7 +258,7 @@ namespace zetscript{
 					);
 
 					if(
-							// If return value is object pass it if  >= TYPE_OBJECT_CLASS ...
+							// If return value is object pass it if its script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT ...
 							STACK_ELEMENT_IS_CLASS_OBJECT(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store

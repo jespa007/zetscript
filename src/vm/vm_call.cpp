@@ -22,6 +22,8 @@ namespace zetscript{
 		size_t					n_stk_local_symbols=0;
 
 		if(((_script_function_to_call)->properties & SCRIPT_FUNCTION_PROPERTY_NATIVE_OBJECT_REF) == 0){
+
+
 			vm_execute_script_function(
 				_vm
 				,_object
@@ -46,7 +48,7 @@ namespace zetscript{
 
 			data->vm_error_callstack_str+=String::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
-				, "_iter"
+				,_script_function->name.toConstChar()
 				,SFI_GET_FILE(_script_function,instruction)
 				,SFI_GET_LINE(_script_function,instruction)
 			);
