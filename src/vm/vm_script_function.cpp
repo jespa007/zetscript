@@ -364,9 +364,18 @@ namespace zetscript{
 
 					// if global var...
 					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
-						// ... deref
-						if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
-							return;
+						Instruction *last_instruction=instruction-1;
+
+						// It only dereferences the object if it comes from local variable. If last instruction comes from
+						// a Array or Object cannot be dereferenced.
+						if((
+							(last_instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)
+						||	(last_instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
+						 )==false){
+							// ... dereferences
+							if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
+								return;
+							}
 						}
 					}
 				}
@@ -386,21 +395,9 @@ namespace zetscript{
 			 case BYTE_CODE_POST_INC:
 				 VM_POST_OPERATION(++,METAMETHOD_POST_INC);
 				 continue;
-			 /*case BYTE_CODE_NEG_POST_INC:
-				 ZS_VM_OPERATION_NEG_POST(++,METAMETHOD_POST_INC);
-				 continue;
-			 case BYTE_CODE_BWC_POST_INC:
-				 ZS_VM_OPERATION_BWC_POST(++,METAMETHOD_POST_INC);
-				 continue;*/
 			 case BYTE_CODE_POST_DEC:
 				 VM_POST_OPERATION(--,METAMETHOD_POST_DEC);
 				 continue;
-			 /*case BYTE_CODE_NEG_POST_DEC:
-				 ZS_VM_OPERATION_NEG_POST(--,METAMETHOD_POST_DEC);
-				 continue;
-			 case BYTE_CODE_BWC_POST_DEC:
-				 ZS_VM_OPERATION_BWC_POST(--,METAMETHOD_POST_DEC);
-				 continue;*/
 			 case BYTE_CODE_PRE_INC:
 				 VM_PRE_OPERATION(++,METAMETHOD_PRE_INC);
 				 continue;
@@ -541,9 +538,6 @@ namespace zetscript{
 						_vm
 				);
 				continue;
-			/* case BYTE_CODE_CLEAR_ZERO_POINTERS:
-				 vm_remove_empty_shared_pointers(_vm,ZS_VM_CURRENT_SCOPE_BLOCK);
-				 continue;*/
 			 case BYTE_CODE_RESET_STACK:
 				 data->vm_stk_current=stk_start;
 				 continue;

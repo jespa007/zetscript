@@ -1,3 +1,9 @@
+---
+Version: 2.0.1
+Date: 2024-01-04
+
+- #360 Fix bug calling super constructor
+- Added benchmarks README.md
 
 ---
 Version: 2.0.0
