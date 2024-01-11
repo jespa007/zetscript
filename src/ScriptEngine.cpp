@@ -334,7 +334,7 @@ namespace zetscript{
 			result=String("type@")+this->getScriptTypesFactory()->getScriptTypeName((ScriptTypeId)stk->value);
 		else if(STACK_ELEMENT_IS_MEMBER_PROPERTY(stk)){
 			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk->value;
-			result="prop@"+String(ma->member_property->type->name)+"::"+String(ma->member_property->property_name);
+			result="prop@"+String(ma->member_property->script_type->name)+"::"+String(ma->member_property->property_name);
 		}else if(STACK_ELEMENT_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
@@ -396,7 +396,7 @@ namespace zetscript{
 			result= stk.value?"true":"false";
 		}else if(STACK_ELEMENT_IS_MEMBER_PROPERTY(&stk)){
 			StackElementMemberProperty *ma=(StackElementMemberProperty *)stk.value;
-			result="prop@"+String(ma->member_property->type->name)+"::"+String(ma->member_property->property_name);
+			result="prop@"+String(ma->member_property->script_type->name)+"::"+String(ma->member_property->property_name);
 		}else if(STACK_ELEMENT_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *owner_type=symbol->scope->getOwnerType();

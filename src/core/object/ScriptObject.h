@@ -40,21 +40,21 @@ namespace zetscript{
 		StackElement 						* 	getBuiltinField(int idx);
 
 		virtual StackElement 				* 	setStackElementByKeyName(
-			const String 		& 	key_name
-			,StackElement 			*	stk_element = NULL
+			const String 					& 	key_name
+			,StackElement 					*	stk_element = NULL
 		);
 
 		virtual StackElement 				* 	getStackElementByKeyName(const String & key_name);
 		virtual Symbol 						*  	getFunctionSymbol(const String & _function_member_name);
 
 
-		Vector<StackElement *> 			* 	getStkBuiltinListElements();
+		Vector<StackElement *> 				* 	getStkBuiltinListElements();
 		bool 									isNativeObject();
 		const char * 							getScriptTypeName();
 		ScriptType * 	    					getScriptType();
 		StackElement 						*	getThis();
 		virtual void						*	getNativeObject();
-		virtual String 						toString();
+		virtual String 							toString();
 
 		void 									attachRefObjectNode(ListNode<RefScriptObject *> * _ref_object_node);
 		void 									deattachRefObjectNode(ListNode<RefScriptObject *> * _ref_object_node);
@@ -67,13 +67,13 @@ namespace zetscript{
 
 		StackElement 							stk_this;
 
-		zetscript::ScriptEngine 						*	script_engine; // 8
+		zetscript::ScriptEngine 			*	script_engine; // 8
 		VirtualMachine 						*	vm; // 8
 		Vector<StackElement *>					stk_builtin_elements;
 		MapString    						*	map_builtin_fields; // to search faster each property by its name
 
 		static void 							onDettachRefObjectNode(ListNode<RefScriptObject *> *node);
-		List<RefScriptObject *>	*	ref_objects;
+		List<RefScriptObject *>				*	ref_objects;
 		ScriptTypesFactory					*	getScriptTypesFactory();
 
 		virtual StackElement 				* 	newBuiltinSlot();

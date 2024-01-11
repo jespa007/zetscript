@@ -398,12 +398,29 @@ namespace zetscript{
 						if(name == it->name){
 							if(*it->symbol==NULL){
 								*it->symbol=symbol;
+
+
+								// Member property getters SHOULD HAVE  0 parameter because in the vm it call a kind of fast call that
+								// does not controls the parameters
+								if(
+									symbol->n_params != 0
+								){
+									EVAL_ERROR_FILE_LINE(
+										compiler_data->current_parsing_file
+										,line
+										,"Member property metamethod '%s::%s@%s' SHOULD HAVE 0 parameters"
+										,class_property_name.toConstChar()
+										,property_name.toConstChar()
+										,it->name
+									);
+								}
 								break;
 							}else{
 								EVAL_ERROR_FILE_LINE(
 									compiler_data->current_parsing_file
 									,line
-									,"Property '%s' has already a '%s' implemented"
+									,"Member property metamethod '%s::%s@%s' has already a '%s' implemented"
+									,class_property_name.toConstChar()
 									,property_name.toConstChar()
 									,it->name
 								);
@@ -419,13 +436,30 @@ namespace zetscript{
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name.toConstChar());
 
 						if(_mp_info.metamethod!=METAMETHOD_INVALID){
+
+							// Member property setters SHOULD HAVE  1 parameter because in the vm it call a kind of fast call that
+							// does not controls the parameters
+							if(
+								symbol->n_params != 1
+							){
+								EVAL_ERROR_FILE_LINE(
+									compiler_data->current_parsing_file
+									,line
+									,"Member property metamethod '%s::%s@%s' SHOULD HAVE 1 parameter"
+									,class_property_name.toConstChar()
+									,property_name.toConstChar()
+									,_mp_info.metamethod_name
+								);
+							}
+
 							if(_mp_info.setters->length() == 0){
 								mp->metamethod_members.addSetter(_mp_info.metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(
 									compiler_data->current_parsing_file
 									,line
-									,"Property '%s' has already a setter '%s'"
+									,"Member property metamethod '%s::%s@%s' has already a setter '%s'"
+									,class_property_name.toConstChar()
 									,property_name.toConstChar()
 									,_mp_info.metamethod_name
 								);

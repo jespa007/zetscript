@@ -358,15 +358,24 @@ namespace zetscript{
 				}
 				continue;
 			 case  BYTE_CODE_RET:
-				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
+				// can return something. value is +1 from stack
+				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){
 					stk_result_op1=stk_var;
 
 					// if global var...
-					// else if object ...
-					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)==STACK_ELEMENT_PROPERTY_OBJECT){
-						// ... deref
-						if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
-							return;
+					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
+						Instruction *last_instruction=instruction-1;
+
+						// It only dereferences the object if it comes from local variable. If last instruction comes from
+						// a Array or Object cannot be dereferenced.
+						if((
+							(last_instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)
+						||	(last_instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
+						 )==false){
+							// ... dereferences
+							if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
+								return;
+							}
 						}
 					}
 				}
@@ -386,21 +395,9 @@ namespace zetscript{
 			 case BYTE_CODE_POST_INC:
 				 VM_POST_OPERATION(++,METAMETHOD_POST_INC);
 				 continue;
-			 /*case BYTE_CODE_NEG_POST_INC:
-				 ZS_VM_OPERATION_NEG_POST(++,METAMETHOD_POST_INC);
-				 continue;
-			 case BYTE_CODE_BWC_POST_INC:
-				 ZS_VM_OPERATION_BWC_POST(++,METAMETHOD_POST_INC);
-				 continue;*/
 			 case BYTE_CODE_POST_DEC:
 				 VM_POST_OPERATION(--,METAMETHOD_POST_DEC);
 				 continue;
-			 /*case BYTE_CODE_NEG_POST_DEC:
-				 ZS_VM_OPERATION_NEG_POST(--,METAMETHOD_POST_DEC);
-				 continue;
-			 case BYTE_CODE_BWC_POST_DEC:
-				 ZS_VM_OPERATION_BWC_POST(--,METAMETHOD_POST_DEC);
-				 continue;*/
 			 case BYTE_CODE_PRE_INC:
 				 VM_PRE_OPERATION(++,METAMETHOD_PRE_INC);
 				 continue;
@@ -541,9 +538,6 @@ namespace zetscript{
 						_vm
 				);
 				continue;
-			/* case BYTE_CODE_CLEAR_ZERO_POINTERS:
-				 vm_remove_empty_shared_pointers(_vm,ZS_VM_CURRENT_SCOPE_BLOCK);
-				 continue;*/
 			 case BYTE_CODE_RESET_STACK:
 				 data->vm_stk_current=stk_start;
 				 continue;
@@ -572,7 +566,7 @@ namespace zetscript{
 				 }
 				 continue;
 				case BYTE_CODE_LOAD_TYPE:
-					ZS_VM_PUSH_STK_TYPE(instruction->value_op2);
+					ZS_VM_PUSH_STK_SCRIPT_TYPE(instruction->value_op2);
 					continue;
 				case BYTE_CODE_PUSH_ARRAY_ITEM:
 					if(vm_push_container_item(

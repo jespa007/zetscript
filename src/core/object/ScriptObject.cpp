@@ -23,8 +23,8 @@ namespace zetscript{
 
 		// init builtin
 		if(script_type_id >= SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && script_type_id < SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT){
-			ScriptType *type=getScriptType();
-			Vector<Symbol *> *symbol_vars=type->scope->symbol_variables;
+			ScriptType *script_type=getScriptType();
+			Vector<Symbol *> *symbol_vars=script_type->scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for(int i = 0; i < symbol_vars->length(); i++){
@@ -121,8 +121,8 @@ namespace zetscript{
 	}
 
 	Symbol *ScriptObject::getGetter(){
-		ScriptType *type=this->script_engine->getScriptTypesFactory()->getScriptType(script_type_id);
-		MetamethodMembers *metamethod_members=&type->metamethod_members;
+		ScriptType *script_type=this->script_engine->getScriptTypesFactory()->getScriptType(script_type_id);
+		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
 			return metamethod_members->getter;
@@ -131,8 +131,8 @@ namespace zetscript{
 	}
 
 	Vector<StackElement *> *ScriptObject::getSetterList(Metamethod _metamethod){
-		ScriptType *type=this->script_engine->getScriptTypesFactory()->getScriptType(script_type_id);
-		MetamethodMembers *metamethod_members=&type->metamethod_members;
+		ScriptType *script_type=this->script_engine->getScriptTypesFactory()->getScriptType(script_type_id);
+		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
 			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_metamethod);
@@ -159,8 +159,8 @@ namespace zetscript{
 	}
 
 	Symbol 	* ScriptObject::getFunctionSymbol(const String & _function_member_name){
-		ScriptType *type=getScriptType();
-		Vector<Symbol *> *s=type->scope->symbol_functions;
+		ScriptType *script_type=getScriptType();
+		Vector<Symbol *> *s=script_type->scope->symbol_functions;
 		for(int i=((int)s->length())-1;i>=0;i--){
 			Symbol *symbol=(Symbol *)s->get(i);
 			if(symbol->name == _function_member_name){

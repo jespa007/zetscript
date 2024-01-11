@@ -236,6 +236,7 @@ namespace zetscript{
 		//String member_property_metamethod_name=MetamethodHelper::getMetamethodSymbolName(_metamethod)+"@"+_property_name;
 		mp_setter_info=mp->metamethod_members.getSetterInfo(_metamethod_name);
 		if(mp_setter_info.metamethod != METAMETHOD_INVALID){
+
 			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_NAME(
 				symbol_metamethod_function
 				, _property_name.toConstChar()

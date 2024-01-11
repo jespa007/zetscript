@@ -46,13 +46,13 @@ namespace zetscript{
 			_C ptr_var;
 			String native_name = typeid(_C).name();
 			ScriptTypesFactory *_script_factory=this->getScriptTypesFactory();
-			ScriptType *type = _script_factory->getScriptTypeFromNamePtr(native_name);
+			ScriptType *script_type = _script_factory->getScriptTypeFromNamePtr(native_name);
 
-			if(type == NULL){
+			if(script_type == NULL){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",Rtti::demangle(native_name.toConstChar()).toConstChar());
 			}
 
-			if(this->stackElementTo(_stk, type->id, (zs_int *)&ptr_var,error) == false){
+			if(this->stackElementTo(_stk, script_type->id, (zs_int *)&ptr_var,error) == false){
 				ZS_THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
 						,Rtti::demangle(native_name.toConstChar()).toConstChar()
 						,error.toConstChar()
@@ -69,15 +69,15 @@ namespace zetscript{
 			String error;
 			String native_name = typeid(_C).name();
 			ScriptTypesFactory *_script_factory=this->getScriptTypesFactory();
-			ScriptType *type = _script_factory->getScriptTypeFromNamePtr(native_name);
+			ScriptType *script_type = _script_factory->getScriptTypeFromNamePtr(native_name);
 
-			if(type == NULL){
+			if(script_type == NULL){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",Rtti::demangle(native_name.toConstChar()).toConstChar());
 			}
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,type->id
+				,script_type->id
 			);
 		}	
 
@@ -89,15 +89,15 @@ namespace zetscript{
 			String error;
 			String native_name = typeid(_C).name();
 			ScriptTypesFactory *_script_factory=this->getScriptTypesFactory();
-			ScriptType *type = _script_factory->getScriptTypeFromNamePtr(native_name);
+			ScriptType *script_type = _script_factory->getScriptTypeFromNamePtr(native_name);
 
-			if(type == NULL){
+			if(script_type == NULL){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",Rtti::demangle(native_name.toConstChar()).toConstChar());
 			}
 
 			return this->canStackElementCastTo(
 				_stack_element
-				,type->id
+				,script_type->id
 				,true
 			);
 		}			
@@ -141,17 +141,17 @@ namespace zetscript{
 			String error;
 			String native_name = typeid(_C).name();
 			ScriptTypesFactory *_script_factory=this->getScriptTypesFactory();
-			ScriptType *type = _script_factory->getScriptTypeFromNamePtr(native_name);
+			ScriptType *script_type = _script_factory->getScriptTypeFromNamePtr(native_name);
 
-			if(type == NULL){
+			if(script_type == NULL){
 				ZS_THROW_RUNTIME_ERROR("ScriptType '%s' not registered",Rtti::demangle(native_name.toConstChar()).toConstChar());
 			}
 
 			// particular case for zs_float
-			if(type->id == SCRIPT_TYPE_ID_FLOAT){
+			if(script_type->id == SCRIPT_TYPE_ID_FLOAT){
 				return this->toStackElement((zs_int)&_val,SCRIPT_TYPE_ID_FLOAT_PTR);
 			}
-			return this->toStackElement((zs_int)_val,type->id);
+			return this->toStackElement((zs_int)_val,script_type->id);
 		}
 
 		//--------------------------------------------------------------------------------------------------------------------

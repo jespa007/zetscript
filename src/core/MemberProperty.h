@@ -15,7 +15,7 @@
 namespace zetscript{
 	class MemberProperty{
 	public:
-		ScriptType *type;
+		ScriptType *script_type;
 		 String property_name;
 		 MetamethodMembers metamethod_members;
 
