@@ -1,8 +1,10 @@
 ---
 Version: 2.0.1
-Date: 2024-01-04
+Date: 2024-01-11
 
-- #360 Fix bug calling super constructor
+- #360 Fixed bug try to share constant script object
+- #362 Fixed Bug segfault on returning string from class
+- #363 Fixed Bug segfault on returning value from property getter with parameter
 - Added benchmarks README.md
 
 ---
@@ -17,7 +19,7 @@ Main improvements:
 - Optimize size/compile times ~x2
 - Implements multiple Return/Assignments
 - Implements arguments with options: default, variable arguments and by reference
-- Implements setter/getter for member variables
+- Implementation of properties with custom metamethods
 - Implements keywords 'const'
 - Implements operators 'in','typeof'
 - Implements builtin iterators for String, Vector and Objects
