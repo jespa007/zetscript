@@ -4,6 +4,12 @@
  */
 namespace zetscript{
 
+#define VM_LOAD_FIELD_FOR_STORE \
+		(instruction->properties & INSTRUCTION_PROPERTY_FOR_ASSIGN) \
+		||    instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM \
+		||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE
+
+
 	bool vm_load_field(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object
@@ -17,10 +23,10 @@ namespace zetscript{
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement 				*	stk_var=NULL;
 		StackElementMemberProperty 		*	stk_mp_aux=NULL;
-		ScriptType					*	type=NULL;
+		ScriptType					*	script_type=NULL;
 		Symbol 						*	symbol_function_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
-		bool 							instruction_store=false;
+		bool 							instruction_store=false;//VM_LOAD_FIELD_FOR_STORE;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -34,9 +40,8 @@ namespace zetscript{
 
 		instruction=(*_instruction_it)-1;
 
-		instruction_store = (instruction->properties & INSTRUCTION_PROPERTY_FOR_ASSIGN)
-			||    instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
-			||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+		// check if instruction is for store
+		instruction_store =VM_LOAD_FIELD_FOR_STORE;
 
 
 		if(
@@ -75,7 +80,7 @@ namespace zetscript{
 		}
 
 		if(so_aux == NULL){
-			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
+			ZS_VM_STOP_EXECUTE("variable '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
 		}
 
 	find_element_object:
@@ -84,7 +89,7 @@ namespace zetscript{
 		symbol_function_member=NULL;
 
 		//
-		type=so_aux->getScriptType();
+		script_type=so_aux->getScriptType();
 		// Because BYTE_CODE_LOAD_OBJECT_ITEM it does not use the valueop2, it's used as a cache of the script type of the object
 		if((instruction->value_op2 != ZS_UNDEFINED_IDX && instruction->value_op2!=0) && (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)){
 			symbol_function_member=(Symbol *)instruction->value_op2;
@@ -95,7 +100,7 @@ namespace zetscript{
 		}
 
 		if(symbol_function_member==NULL){
-			symbol_function_member=type->getSymbolMemberFunction(str_symbol_aux1);
+			symbol_function_member=script_type->getSymbolMemberFunction(str_symbol_aux1);
 			instruction->value_op2=(zs_int)symbol_function_member;
 		}
 
@@ -131,10 +136,10 @@ namespace zetscript{
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 						,symbol_function_member->name.toConstChar()
 						,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
-						,type->getScriptTypeName()
-						,type->getScriptTypeName()
+						,script_type->getScriptTypeName()
+						,script_type->getScriptTypeName()
 						,symbol_function_member->name.toConstChar()
-						,type->getScriptTypeName()
+						,script_type->getScriptTypeName()
 						,symbol_function_member->name.toConstChar()
 
 					);
@@ -181,7 +186,7 @@ namespace zetscript{
 			 ){
 				// if object is C
 				// exceptions
-				if(type->id < SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT || type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
+				if(script_type->id < SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT || script_type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_NATIVE_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
@@ -189,7 +194,7 @@ namespace zetscript{
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,data->script_engine->stackElementTypeToString(data->vm_stk_current).toConstChar()
-							,type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT?"Native type":"ScriptType"
+							,script_type->id > SCRIPT_TYPE_ID_OBJECT_SCRIPT_OBJECT?"Native type":"ScriptType"
 							,data->script_engine->stackElementTypeToString(data->vm_stk_current).toConstChar()
 							,str_symbol_aux1
 						);
@@ -253,7 +258,7 @@ namespace zetscript{
 					);
 
 					if(
-							// If return value is object pass it if  >= TYPE_OBJECT_CLASS ...
+							// If return value is object pass it if its script_type_id >= SCRIPT_TYPE_ID_CLASS_SCRIPT_OBJECT ...
 							STACK_ELEMENT_IS_CLASS_OBJECT(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store
@@ -291,7 +296,9 @@ namespace zetscript{
 			goto load_next_element_object;
 		}
 
-		// load its value for write
+
+		// Now we get the last field element that will be pass into stack
+		// Load its value for write
 		if(
 			// instruction indicates that stk_var will be a target to store
 			(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE)
@@ -317,8 +324,16 @@ namespace zetscript{
 				ZS_VM_PUSH_STK_PTR(stk_var);
 			}
 		}
-		else{ // only read
-			*data->vm_stk_current++=*stk_var;
+		else{ // Pass the value to read
+
+			*data->vm_stk_current=*stk_var;
+
+			// Protect script objects stored in containers from returning values (RET BYTE CODE defers all objects presented in the stack)
+			if(stk_var->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER;
+			}
+
+			data->vm_stk_current++;
 		}
 
 	lbl_exit_function_ok:
@@ -542,7 +557,7 @@ lbl_exit_function:
 
 		stk_var=NULL;
 		// determine object ...
-		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
+		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 
 			if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();

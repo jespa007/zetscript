@@ -142,6 +142,7 @@ namespace zetscript{
 									all_check=false;
 									break;*/
 								case STACK_ELEMENT_PROPERTY_OBJECT:
+								case STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER:
 
 									if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(current_arg)){
 										all_check=arg_script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT; // if string object --> direct
@@ -217,6 +218,7 @@ namespace zetscript{
 					aux_string="null";
 					break;
 				case STACK_ELEMENT_PROPERTY_OBJECT:
+				case STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER:
 					aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->native_name;
 					break;
 				}

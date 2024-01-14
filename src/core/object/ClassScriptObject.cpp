@@ -36,8 +36,8 @@ namespace zetscript{
 		vm=script_engine->getVirtualMachine();
 
 		script_type_id=_script_type_id;
-		ScriptType *type=getScriptType();
-		Vector<Symbol *> *member_vars=type->scope->symbol_variables;
+		ScriptType *script_type=getScriptType();
+		Vector<Symbol *> *member_vars=script_type->scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
 		for(int i = 0; i < member_vars->length(); i++){
@@ -72,10 +72,10 @@ namespace zetscript{
 		script_class_native=NULL;
 
 		// search native type
-		if(type->isNativeType()){
-			script_class_native=type;
+		if(script_type->isNativeType()){
+			script_class_native=script_type;
 		}else {
-			ScriptType *sc=type;
+			ScriptType *sc=script_type;
 			// get first type with c inheritance...
 			while((sc->base_script_type_ids->length()>0) && (script_class_native==NULL)){
 				sc=this->script_engine->getScriptTypesFactory()->getScriptType(sc->base_script_type_ids->get(0)); // get base type (only first in script because has single inheritance)...
@@ -93,21 +93,21 @@ namespace zetscript{
 				ZS_THROW_RUNTIME_ERROR(
 						"Cannot instantiate object '%s' because it extends from native type '%s' as not instantiable. "
 						"To solve this issue, register type '%s' as instantiable (i.e register type '%s' with new/delete functions)"
-						,type->name.toConstChar()
+						,script_type->name.toConstChar()
 						,script_class_native->name.toConstChar()
 						,script_class_native->name.toConstChar()
 						,script_class_native->name.toConstChar()
 				);
 			}
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-			created_object = CALL_CONSTRUCTOR_CLASS(_script_engine,script_class_native); // (*type->new_native_instance)();
+			created_object = CALL_CONSTRUCTOR_CLASS(_script_engine,script_class_native); // (*script_type->new_native_instance)();
 			was_created_by_constructor=true;
 			c_object = created_object;
 			delete_c_object_on_destroy=true; // destroy object when type is destroyed. It will be safe (in principle)
 		}
 
 		// execute init for variable members (not dynamic)
-		callConstructorMemberVariables(type);
+		callConstructorMemberVariables(script_type);
 	}
 
 	void ClassScriptObject::callConstructorMemberVariables(ScriptType *sc ){
@@ -126,9 +126,9 @@ namespace zetscript{
 
 	ScriptFunction *ClassScriptObject::getConstructorFunction(){
 
-		ScriptType *type=getScriptType();
-		if(type->idx_constructor_member_function != ZS_UNDEFINED_IDX){
-			return (ScriptFunction *)type->scope->symbol_functions->get(type->idx_constructor_member_function);
+		ScriptType *script_type=getScriptType();
+		if(script_type->idx_constructor_member_function != ZS_UNDEFINED_IDX){
+			return (ScriptFunction *)script_type->scope->symbol_functions->get(script_type->idx_constructor_member_function);
 		}
 
 		return NULL;

@@ -72,7 +72,6 @@ namespace zetscript{
 	){
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
-
 		if(_obj->properties  & SCRIPT_OBJECT_PROPERTY_CONSTANT){
 			ZS_THROW_EXCEPTION("Internal : try to share constant script object");
 		}

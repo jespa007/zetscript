@@ -81,7 +81,7 @@ namespace zetscript{
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				ZS_VM_STOP_EXECUTE("'%s::%s' not implements operator '=' (aka '_set')"
-					,stk_mp_aux->member_property->type->getScriptTypeName()
+					,stk_mp_aux->member_property->script_type->getScriptTypeName()
 					,stk_mp_aux->member_property->property_name.toConstChar()
 				);
 			}
@@ -185,9 +185,14 @@ namespace zetscript{
 				);\
 			}else{\
 
-				// if argument is a script object should share, because on returning
-				// it does pop and it could deallocate twice
-				if(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+				// in case source of stack_element (or stackement to read) contents a ScriptObject
+				if(
+					(stk_arg->properties & STACK_ELEMENT_PROPERTY_OBJECT)
+								&&
+				    (stk_arg->properties & STACK_ELEMENT_PROPERTY_READ_ONLY) == 0
+				){
+					// Increment reference counter because at returning of the function
+					// it decrements reference counter and if reference counter = 0 it could be deallocated twice
 					vm_share_object(_vm,(ScriptObject *)stk_arg->value);
 				}
 
@@ -209,6 +214,11 @@ namespace zetscript{
 
 			StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 			stk_src_properties=stk_src->properties;
+
+			// stk src is object in container that safely it can be read here
+			if((stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)!=0) {
+				stk_src_properties=STACK_ELEMENT_PROPERTY_OBJECT;
+			}
 
 			// init stk_dst
 
@@ -252,6 +262,8 @@ namespace zetscript{
 					vm_create_shared_object(_vm,str_object);
 					// share ptr
 					vm_share_object(_vm,str_object);
+
+					// this string owns by a container
 					//-------------------------------------
 				}
 

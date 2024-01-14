@@ -7,7 +7,7 @@ function fibR(n) {
 
 for(local i=0; i < 10; i++){
 	local start=clock();
-	print("fib: "+fibR(34)+" time: "+(clock()-start)+" ms\n");
+	print("fib: "+fibR(34)+" time: "+(clock()-start)+" s\n");
 }
 
 

@@ -1,3 +1,18 @@
+---
+Version: 2.0.2
+Date: 2024-01-14
+
+- #365 Fixed bug returning objects from containers leaves a double dereference and delete of the object itself in the container
+
+
+---
+Version: 2.0.1
+Date: 2024-01-11
+
+- #360 Fixed bug try to share constant script object
+- #362 Fixed Bug segfault on returning string from class
+- #363 Fixed Bug segfault on returning value from property getter with parameter
+- Added benchmarks README.md
 
 ---
 Version: 2.0.0
@@ -11,7 +26,7 @@ Main improvements:
 - Optimize size/compile times ~x2
 - Implements multiple Return/Assignments
 - Implements arguments with options: default, variable arguments and by reference
-- Implements setter/getter for member variables
+- Implementation of properties with custom metamethods
 - Implements keywords 'const'
 - Implements operators 'in','typeof'
 - Implements builtin iterators for String, Vector and Objects

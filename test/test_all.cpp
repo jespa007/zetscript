@@ -122,7 +122,9 @@ int main(int argc, char * argv[]) {
 		,"test_member_functions"					//30.
 		,"test_member_variables"					//31.
 		,"test_postinc"								//32.
-		,"test_cyclic_references"					//33.
+		,"test_extends"								//33.
+		,"test_returning_script_object"				//34.
+		,"test_cyclic_references"					//35.
 		,0
 	};
 
