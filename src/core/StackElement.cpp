@@ -46,8 +46,8 @@ namespace zetscript{
 			result=*stk;
 		}else if(STACK_ELEMENT_IS_CONTAINER_SLOT(stk)){
 			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->id;
-		}else if(STACK_ELEMENT_IS_OBJECT(stk)){
-			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->id;
+		}else if(stk->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
+			result.value=((ScriptObject *)stk->value)->getScriptType()->id;
 		}
 
 		return result;

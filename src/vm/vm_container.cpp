@@ -80,7 +80,7 @@ namespace zetscript{
 		}
 
 		if(so_aux == NULL){
-			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
+			ZS_VM_STOP_EXECUTE("variable '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
 		}
 
 	find_element_object:
@@ -296,7 +296,9 @@ namespace zetscript{
 			goto load_next_element_object;
 		}
 
-		// load its value for write
+
+		// Now we get the last field element that will be pass into stack
+		// Load its value for write
 		if(
 			// instruction indicates that stk_var will be a target to store
 			(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE)
@@ -322,8 +324,16 @@ namespace zetscript{
 				ZS_VM_PUSH_STK_PTR(stk_var);
 			}
 		}
-		else{ // only read
-			*data->vm_stk_current++=*stk_var;
+		else{ // Pass the value to read
+
+			*data->vm_stk_current=*stk_var;
+
+			// Protect script objects stored in containers from returning values (RET BYTE CODE defers all objects presented in the stack)
+			if(stk_var->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+				data->vm_stk_current->properties=STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER;
+			}
+
+			data->vm_stk_current++;
 		}
 
 	lbl_exit_function_ok:
@@ -547,7 +557,7 @@ lbl_exit_function:
 
 		stk_var=NULL;
 		// determine object ...
-		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
+		if(stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 
 			if(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();

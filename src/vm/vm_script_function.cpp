@@ -363,19 +363,11 @@ namespace zetscript{
 					stk_result_op1=stk_var;
 
 					// if global var...
-					if((stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)){
-						Instruction *last_instruction=instruction-1;
-
-						// It only dereferences the object if it comes from local variable. If last instruction comes from
-						// a Array or Object cannot be dereferenced.
-						if((
-							(last_instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)
-						||	(last_instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
-						 )==false){
-							// ... dereferences
-							if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
+					if(
+						(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)
+					){
+						if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
 								return;
-							}
 						}
 					}
 				}

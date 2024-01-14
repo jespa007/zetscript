@@ -215,6 +215,11 @@ namespace zetscript{
 			StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 			stk_src_properties=stk_src->properties;
 
+			// stk src is object in container that safely it can be read here
+			if((stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)!=0) {
+				stk_src_properties=STACK_ELEMENT_PROPERTY_OBJECT;
+			}
+
 			// init stk_dst
 
 			if(stk_src_properties == STACK_ELEMENT_PROPERTY_UNDEFINED){
