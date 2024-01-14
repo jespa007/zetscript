@@ -345,6 +345,8 @@ namespace zetscript{
 					// 1st. check whether compiler a keyword...
 					Keyword key_w = compiler_is_keyword(aux_p);
 
+					int line_start_property_metamethod=line;
+
 					if(key_w == KEYWORD_FUNCTION){
 						IGNORE_BLANKS(aux_p,compiler_data,aux_p+strlen(compiler_data_keywords[key_w].str),line);
 					}
@@ -362,6 +364,7 @@ namespace zetscript{
 
 					// metamethod property
 					aux_p=end_var;
+
 
 					if((aux_p = compiler_keyword_function(
 						compiler_data
@@ -407,7 +410,7 @@ namespace zetscript{
 								){
 									EVAL_ERROR_FILE_LINE(
 										compiler_data->current_parsing_file
-										,line
+										,line_start_property_metamethod
 										,"Member property metamethod '%s::%s@%s' SHOULD HAVE 0 parameters"
 										,class_property_name.toConstChar()
 										,property_name.toConstChar()
@@ -444,7 +447,7 @@ namespace zetscript{
 							){
 								EVAL_ERROR_FILE_LINE(
 									compiler_data->current_parsing_file
-									,line
+									,line_start_property_metamethod
 									,"Member property metamethod '%s::%s@%s' SHOULD HAVE 1 parameter"
 									,class_property_name.toConstChar()
 									,property_name.toConstChar()
