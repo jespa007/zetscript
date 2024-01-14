@@ -344,7 +344,7 @@ namespace zetscript{
 				stk=(StackElement *)stk->value;
 			}
 
-			if(stk->properties & STACK_ELEMENT_PROPERTY_OBJECT){
+			if(stk->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 				result=((ScriptObject *)stk->value)->getScriptTypeName();
 			}
 		}
@@ -374,6 +374,9 @@ namespace zetscript{
 			_stk.properties&=~STACK_ELEMENT_PROPERTY_READ_ONLY;
 		}
 
+		if(_stk.properties & STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER){
+			_stk.properties=STACK_ELEMENT_PROPERTY_OBJECT;
+		}
 		return _stk;
 	}
 
@@ -415,7 +418,7 @@ namespace zetscript{
 		}else if(STACK_ELEMENT_IS_TYPE(&stk)){
 			result= String("type")+"@"+this->getScriptTypesFactory()->getScriptTypeName((ScriptTypeId)stk.value);
 		}else{
-			if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
+			if(stk.properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 				ScriptObject *so=(ScriptObject *)stk.value;
 				if(so->script_type_id==SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT){
 					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
@@ -436,7 +439,7 @@ namespace zetscript{
 		memset(_str_out,0,_str_out_len);
 
 		// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
-		if(stk.properties & STACK_ELEMENT_PROPERTY_OBJECT){
+		if(stk.properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 			ScriptObject *so=(ScriptObject *)stk.value;
 			if(so->script_type_id!=SCRIPT_TYPE_ID_MEMBER_FUNCTION_SCRIPT_OBJECT){
 				result="ScriptObject::"+String(so->getScriptTypeName());
@@ -550,7 +553,7 @@ namespace zetscript{
 			break;
 		default:
 			// script variable by default ...
-			if(_stack_element->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
+			if(_stack_element->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 				ScriptObject *object=NULL;
 				if(_stack_element->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
@@ -682,7 +685,7 @@ namespace zetscript{
 			break;
 		default: // script variable by default ...
 
-			if(_stack_element->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)){
+			if(_stack_element->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){
 
 				if(_stack_element->properties & STACK_ELEMENT_PROPERTY_CONTAINER_SLOT){
 					object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
