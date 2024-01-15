@@ -228,7 +228,7 @@ namespace zetscript{
 			}
 
 			if(stk_result_op2 != NULL){
-				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
+				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)' %s%s%s"
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					,data->script_engine->stackElementTypeToString(stk_result_op1).toConstChar()

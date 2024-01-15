@@ -80,10 +80,10 @@ System::assert(returnFromFunctionParamAndAssign(returnValueFromFunctionFunction(
 System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunction(),0) == 0) // return from function param that return from function that return property a.value
 System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunctionFunction(),0) == 0) //eturn from function param that return from function in other function that return property a.value
 
-System::assert(returnFromFunctionParamAndAssign(a.__value__,{}) == 0) //  return from function param a.__value__
-System::assert(returnFromFunctionParamAndAssign(a.returnValue(),{}) == 0) // return from function param from function that return function from parameter
-System::assert(returnFromFunctionParamAndAssign(a.returnProperty(),{}) == 0) // return from function param that return function from parameter
-System::assert(returnFromFunctionParamAndAssign(returnValueFromFunction(),{}) == 0) // return from function param that return from function that return a.__value__
-System::assert(returnFromFunctionParamAndAssign(returnValueFromFunctionFunction(),{}) == 0) // return from function param that return from function from a function that return a.__value__
-System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunction(),{}) == 0) // return from function param that return from function that return property a.value
-System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunctionFunction(),{}) == 0) //eturn from function param that return from function in other function that return property a.value
+System::assert(returnFromFunctionParamAndAssign(a.__value__,{}) instanceof Object) //  return from function param a.__value__
+System::assert(returnFromFunctionParamAndAssign(a.returnValue(),{}) instanceof Object) // return from function param from function that return function from parameter
+System::assert(returnFromFunctionParamAndAssign(a.returnProperty(),{}) instanceof Object) // return from function param that return function from parameter
+System::assert(returnFromFunctionParamAndAssign(returnValueFromFunction(),{}) instanceof Object) // return from function param that return from function that return a.__value__
+System::assert(returnFromFunctionParamAndAssign(returnValueFromFunctionFunction(),{}) instanceof Object) // return from function param that return from function from a function that return a.__value__
+System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunction(),{}) instanceof Object) // return from function param that return from function that return property a.value
+System::assert(returnFromFunctionParamAndAssign(returnPropertyFromFunctionFunction(),{}) instanceof Object) //eturn from function param that return from function in other function that return property a.value

@@ -19,6 +19,22 @@ int main(){
 }
 </pre>
 
+### Building ZetScript
+
+ZetScript is straightforward configured as Release mode with cmake with the following command,  
+
+ cmake -Bbuild
+ 
+If cmake was configurated for VisualStudio open with visual studio and compile from there, or in case there's `msbuild` in the path it can be build as Release with the following command,
+
+ msbuild build\zetscript.sln /p:Configuration=Release
+
+If cmake configuration detects mingw or linux system launch make with the following command,
+
+ make -C build
+ 
+After the build, ZetScript llibrary and ZetScript command line tool with be placed at bin/ 
+
 ### Language overview
 					
 #### ZetScript types
@@ -107,39 +123,70 @@ Zetscript supports class and inheritance. Function and variables members are ref
 						
 
 <pre lang="javascript">
-// A class example
-class Test{
+var n_entity=1;
 
-	function1(_a){
-		this.data1 =_a;
-		Console::outln("calling from Test. Data1:"+this.data1);
+class Entity{
+	// Member variable initialization (this.__id__)
+	var __id__=0;
+	
+	// Member const variable (Acces by Entity::MAX_ENTITIES)
+	const MAX_ENTITIES=10;
+	
+	// Static member function
+	static entityDead(_entity){
+		return _entity.health==0;
 	}
-};
 
-// include member variable data2
-var Test::data2; 
-
-// include member function function2
-function Test::function2(){ 
-	this.data2="a string";
-}
-
-// A inheritance class example. 
-// TestExtended inherites data1,data2,function1 and function2. 
-class TestExtended extends Test{
-	function1(a){
-		super(2); // it calls Test::function1(2)
-		this.data1+=5; // Now data1=5+2 = 7
-		Console::outln("calling from TestExtended. Data1:"+this.data1);
+	// Member function metamethod _equ to make Entity comparable by '=='
+	static _nequ(_e1,_e2){
+		return _e1.id!=_e2.id;
 	}
 	
-	function3(){ // 
-		this.data3=6;
-		Console::outln("data3 is "+this.data3);
+	// constructor
+	constructor(_name="unknown",_health=0){
+		this.name=_name
+                this.__id__=n_entity++;
+                this.setHealth(_health);
 	}
-};
 
-var t=new TestExtended(); // instances TestExtended class
+	// Member function Entity::update()
+	update(){
+		Console::outln("From Entity")
+	}
+	
+	// A definition of property
+	id{
+		// Member property metamethod _get to to get the value of this.__id__
+		_get(){
+			return this.__id__;
+		}
+	}
+}
+
+class Player extends Entity{
+	constructor(){
+		super("Player",10);
+	}
+
+	// Override Entity::update
+	update(){
+		// Calls Entity::update
+		super();
+		Console::outln("From player")
+	}
+}
+
+var p=new Player();
+var e=new Entity();
+
+Console::outln("Entity::MAX_ENTITIES: {0}",Entity::MAX_ENTITIES)
+Console::outln("p.id: {0} p.name: {1} p.health: {2}",p.id,p.name,p.health)
+
+p.update();
+
+if(p!=e){
+  Console::outln("'p' and 'e' are NOT equals")
+}
 </pre>
 						
 ### API Overview

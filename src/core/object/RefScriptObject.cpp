@@ -3,6 +3,8 @@
  *  See LICENSE file for details.
  */
 
+#include "zetscript.h"
+
 namespace zetscript{
 	RefScriptObject::RefScriptObject(
 			zetscript::ScriptEngine *_script_engine
