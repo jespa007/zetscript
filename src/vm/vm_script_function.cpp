@@ -854,7 +854,7 @@ namespace zetscript{
 			stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
-			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here... remove share data
+			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here -->  unref
 
 				// deatch from list of created scope block to avoid double dealloc on pop scope
 				if(so_aux->shared_pointer->data.n_shares == 0){
