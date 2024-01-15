@@ -156,7 +156,7 @@ class Entity{
 	
 	// Member property Entity::id
 	id{
-		// Member property metamethod _get to to get the value of this.__id__
+		// Member property metamethod _get only for read
 		_get(){
 			return this.__id__;
 		}
