@@ -119,7 +119,7 @@ for(var v in array){
 
 #### Classes and inheritance
 
-Zetscript it defines custom class with inheritance like javascript. Also it can post define member functions after class declaration.
+Zetscript it defines custom class with inheritance like javascript.
 						
 
 <pre lang="javascript">
