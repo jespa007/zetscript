@@ -23,15 +23,15 @@ int main(){
 
 ZetScript is straightforward configured as Release mode with cmake with the following command,  
 
- cmake -Bbuild
+`cmake -Bbuild`
  
 If cmake was configurated for VisualStudio open with visual studio and compile from there, or in case there's `msbuild` in the path it can be build as Release with the following command,
 
- msbuild build\zetscript.sln /p:Configuration=Release
+`msbuild build\zetscript.sln /p:Configuration=Release`
 
 If cmake configuration detects mingw or linux system launch make with the following command,
 
- make -C build
+`make -C build`
  
 After the build, ZetScript llibrary and ZetScript command line tool with be placed at bin/ 
 
@@ -119,7 +119,7 @@ for(var v in array){
 
 #### Classes and inheritance
 
-Zetscript supports class and inheritance. Function and variables members are referenced through <b>this</b> keyword. Also it can define variables/functions later. Inheritance support <b>super()</b> function in order to call parent function. To instance class is done through <b>new</b> operator.
+Zetscript it defines custom class with inheritance like javascript. Also it can post define member functions after class declaration.
 						
 
 <pre lang="javascript">
@@ -154,7 +154,7 @@ class Entity{
 		Console::outln("From Entity")
 	}
 	
-	// A definition of property
+	// Member property Entity::id
 	id{
 		// Member property metamethod _get to to get the value of this.__id__
 		_get(){
