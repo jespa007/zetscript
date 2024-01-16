@@ -26,8 +26,8 @@ ZetScript has the following features:
 - MSVC++ 32/64 bits MSVC 2015/2017/2019
 - MacOS/Linux/MinGW 32/64 bits, g++ 4.8 or above
 - Dynamic Garbage collector
-- Straightforward way to bind C++ variables, functions, classes and its members
-- Implement operators in class and member properties through metamethods
+- Straightforward way to expose C++ code in ZetScript and bind ZetScript code to C++ 
+- Implement operators on types and member properties through metamethods
 
 ### Building ZetScript
 
