@@ -6,7 +6,7 @@
 
 <p>ZetScript is a programming language and comes with and API that allows bind your C++ code into script side.</p><p>A Hello World sample is shown below,</p>
 							
-<pre lang="c++">
+```cpp
 #include "zetscript.h"
 
 int main(){
@@ -17,7 +17,7 @@ int main(){
 
 	return 0;
 }
-</pre>
+```
 
 ZetScript has the following features:
 
@@ -54,7 +54,7 @@ After the build, ZetScript llibrary and the command line tool will be placed at 
 
 ZetScript has defined types as integers, numbers, booleans, arrays and objects.
 
-<pre lang="javascript">
+```javascript
 var i=10; //integer
 var f=0.5; // float
 var s="a string"; // string
@@ -70,12 +70,12 @@ var object={ // object
 	v: [1,0.5, "a string", true]
 };
  
-</pre>
+```
 						
 #### Conditionals
 
 Zetscript supports if-else, switch conditionals and more
-<pre lang="javascript">
+```javascript
 // if-else conditional
 if(number < 10){
 	Console::outln("number less than 10");
@@ -96,13 +96,13 @@ default:
 	Console::outln("number is : "+number);
 	break;
 }
-</pre>
+```
 
 #### Loops</h3>
 
 Zetscript supports while,do-while,for and for-in as loops iterators
 
-<pre lang="javascript">
+```javascript
 var i=0;
 // while loop
 while(i &lt; 10){
@@ -128,14 +128,14 @@ for(var v in array){
 	Console::outln("value:"+v);
 }
 
-</pre>						
+```						
 
 #### Classes and inheritance
 
 Zetscript it defines custom class with inheritance like javascript.
 						
 
-<pre lang="javascript">
+```javascript
 var n_entity=1;
 
 class Entity{
@@ -200,7 +200,7 @@ p.update();
 if(p!=e){
   Console::outln("'p' and 'e' are NOT equals")
 }
-</pre>
+```
 						
 ### API Overview
 				
@@ -208,7 +208,7 @@ if(p!=e){
 
 To call C++ code from ZetScript is done by defining and registering a C function. 
 						
-<pre lang="c++">
+```cpp
 #include "zetscript.h"
 
 // C function to register
@@ -228,12 +228,12 @@ int main(){
 	);
 	return 0;
 }
-</pre>
+```
 
 #### Call ZetScript from c++
 To call ZetScript from C++ code is done by binding script function after compile script function.
 						
-<pre lang="c++">
+```cpp
 	
 #include "zetscript.h"
 
@@ -256,14 +256,13 @@ int main(){
 
 	return 0;
 }
-   
-</pre>		
+```		
 
 #### Exposing C++ types to ZetScript
 
 To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by defining and registering a C function. In the following example shows and example of registering class `Entity`,
 						
-<pre lang="c++">
+```cpp
 #include "zetscript.h"
 
 int n_entity=1;
@@ -408,11 +407,11 @@ int main(){
 	return 0;
 }
 
-</pre>
+```
 
 Finally another interesting feature is that ZetScript can extend script class from C registered class. In the following example replaces the previus script with the following one that extends `Player` from `Entity`,
     
-<pre lang="c++">
+```cpp
 
 	// Compiles and runs script
 	script_engine.compileAndRun(
@@ -442,4 +441,4 @@ Finally another interesting feature is that ZetScript can extend script class fr
 		"p.update();\n"
 		"\n"
 	);
-</pre>
+```
