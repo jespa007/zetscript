@@ -342,8 +342,10 @@ namespace zetscript{
 
 		// any empty shared pointers after call main
 		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
-			vm_remove_empty_shared_pointers(_vm
-					,vm_get_scope_block_main(_vm)
+			vm_remove_empty_shared_pointers(
+				_vm
+				,vm_get_scope_block_main(_vm)
+				,stk_start
 			);
 		}
 
@@ -432,8 +434,8 @@ namespace zetscript{
 			}
 
 			if(some_registers_without_file_line==true){
-				error+="\n\nSome lifetimes objects were returned/created from unknown file/line. Tip: Pass pass the file and line to all 'eval' function that it's calling from c++ in order to give you a clue where the 'lifetime object' was returned/created. For example,\n\n\n"
-						"\tStackElement var_from_script=script_engine->compileAndRun(\"return new ScriptObject()\",__FILE__,__LINE__)\n";
+				error+="\n\nSome lifetimes objects were returned/created from unknown file/line. Tip: Pass pass the file and line to 'compileAndRun' function to give you a clue where the 'lifetime object' was returned/created. For example,\n\n\n"
+						"\tStackElement var_from_script=script_engine->compileAndRun(\"return new ClassObject()\",__FILE__,__LINE__)\n";
 			}
 
 			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";

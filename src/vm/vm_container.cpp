@@ -53,7 +53,7 @@ namespace zetscript{
 			VM_POP_STK_ONE; // get var op1 and symbol op2
 		}
 
-		if((stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT)) == 0){
+		if((stk_result_op1->properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_CONTAINER_SLOT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)) == 0){
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"

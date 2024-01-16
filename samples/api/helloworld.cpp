@@ -1,7 +1,7 @@
 #include "zetscript.h"
 
-void sayHelloWorld(){
-	printf("Say hello world\n");
+void sayHelloWorld(zetscript::ScriptEngine *_script_engine){
+	printf("Hello world from ZetScript\n");
 }
 
 int main(){
