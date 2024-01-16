@@ -487,7 +487,7 @@ namespace zetscript{
 			*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
 		}else if(stk_src_properties  &  (STACK_ELEMENT_PROPERTY_FUNCTION | STACK_ELEMENT_PROPERTY_SCRIPT_TYPE_ID | STACK_ELEMENT_PROPERTY_MEMBER_FUNCTION) ){\
 			*stk_dst=stk_src;\
-		}else if(stk_src_properties & STACK_ELEMENT_PROPERTY_OBJECT){\
+		}else if(stk_src_properties & (STACK_ELEMENT_PROPERTY_OBJECT | STACK_ELEMENT_PROPERTY_OBJECT_IN_CONTAINER)){\
 
 			if(STACK_ELEMENT_IS_STRING_SCRIPT_OBJECT(&stk_src)){\
 				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->script_engine));\
