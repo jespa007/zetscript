@@ -393,8 +393,6 @@ int main(){
 	script_engine.registerMemberPropertyMetamethod<Entity>("name","_get",Entity_name_get);
 
 	// Compiles and runs script
-	// Compiles and runs script
-	// Compiles and runs script
 	script_engine.compileAndRun(
 		"var e1=new Entity();\n"
 		"var e2=new Entity();\n"
