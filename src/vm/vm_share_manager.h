@@ -48,6 +48,7 @@ namespace zetscript{
 	void vm_remove_empty_shared_pointers(
 		VirtualMachine *vm
 		,VM_ScopeBlock *scope_block
+		,StackElement *_stack_var=NULL
 	);
 
 

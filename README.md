@@ -19,6 +19,35 @@ int main(){
 }
 </pre>
 
+ZetScript has the following features:
+
+- Virtual Machine
+- Script Language close to Javascript
+- MSVC++ 32/64 bits MSVC 2015/2017/2019
+- MacOS/Linux/MinGW 32/64 bits, g++ 4.8 or above
+- Dynamic Garbage collector
+- Straightforward way to bind C++ variables, functions, classes and its members
+- Implement operators in class and member properties through metamethods
+
+### Building ZetScript
+
+The compilation and execution of ZetScript has been tested in the following plataforms:
+
+- Linux through gcc toolchain
+- MacOS through clang toolchain
+- Windows through Mingw or VisualStudio 2015,2017/2019
+- Raspberry PI through gcc toolchain
+
+The building information is configured with cmake through the following command,
+
+`cmake -Bbuild`
+
+In Linux, MacOS and MingW environments compile the project with the following command,
+
+`make -C build`
+
+After the build, ZetScript llibrary and the command line tool will be placed at bin directory.
+
 ### Language overview
 					
 #### ZetScript types
@@ -103,43 +132,74 @@ for(var v in array){
 
 #### Classes and inheritance
 
-Zetscript supports class and inheritance. Function and variables members are referenced through <b>this</b> keyword. Also it can define variables/functions later. Inheritance support <b>super()</b> function in order to call parent function. To instance class is done through <b>new</b> operator.
+Zetscript it defines custom class with inheritance like javascript.
 						
 
 <pre lang="javascript">
-// A class example
-class Test{
+var n_entity=1;
 
-	function1(_a){
-		this.data1 =_a;
-		Console::outln("calling from Test. Data1:"+this.data1);
+class Entity{
+	// Member variable initialization (this.__id__)
+	var __id__=0;
+	
+	// Member const variable (Acces by Entity::MAX_ENTITIES)
+	const MAX_ENTITIES=10;
+	
+	// Static member function
+	static entityDead(_entity){
+		return _entity.health==0;
 	}
-};
 
-// include member variable data2
-var Test::data2; 
-
-// include member function function2
-function Test::function2(){ 
-	this.data2="a string";
-}
-
-// A inheritance class example. 
-// TestExtended inherites data1,data2,function1 and function2. 
-class TestExtended extends Test{
-	function1(a){
-		super(2); // it calls Test::function1(2)
-		this.data1+=5; // Now data1=5+2 = 7
-		Console::outln("calling from TestExtended. Data1:"+this.data1);
+	// Member function metamethod _equ to make Entity comparable by '=='
+	static _nequ(_e1,_e2){
+		return _e1.id!=_e2.id;
 	}
 	
-	function3(){ // 
-		this.data3=6;
-		Console::outln("data3 is "+this.data3);
+	// constructor
+	constructor(_name="unknown",_health=0){
+		this.name=_name
+                this.__id__=n_entity++;
+                this.setHealth(_health);
 	}
-};
 
-var t=new TestExtended(); // instances TestExtended class
+	// Member function Entity::update()
+	update(){
+		Console::outln("From Entity")
+	}
+	
+	// Member property Entity::id
+	id{
+		// Member property metamethod _get only for read
+		_get(){
+			return this.__id__;
+		}
+	}
+}
+
+class Player extends Entity{
+	constructor(){
+		super("Player",10);
+	}
+
+	// Override Entity::update
+	update(){
+		// Calls Entity::update
+		super();
+		Console::outln("From player")
+	}
+}
+
+var p=new Player();
+var e=new Entity();
+
+Console::outln("Entity::MAX_ENTITIES: {0}",Entity::MAX_ENTITIES)
+Console::outln("p.id: {0} p.name: {1} p.health: {2}",p.id,p.name,p.health)
+
+p.update();
+
+if(p!=e){
+  Console::outln("'p' and 'e' are NOT equals")
+}
 </pre>
 						
 ### API Overview
@@ -201,69 +261,105 @@ int main(){
 
 #### Exposing C++ types to ZetScript
 
-To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by by defining and registering a C function.
+To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by defining and registering a C function. In the following example shows and example of registering class `Entity`,
 						
 <pre lang="c++">
 #include "zetscript.h"
 
+int n_entity=1;
+
 // Class to register
-class MyClass{
+class Entity{
 public:
-	int value;
+	const static int MAX_ENTITIES=10;
 
-	MyClass(){
-		this->value=0;
-	}
-
-	void setValue(int _value){
-		this->value = _value;
-	}
-
+	int __id__=0;
+	int health=0;
+	std::string name="entity";
 };
 
 //-----------------------
 // REGISTER FUNCTIONS
 
-// C function to register that returns an instance of native new 'MyClass'
-MyClass *MyClassWrap_new(
+// Register function that returns a new instance of native 'Entity'
+Entity *Entity_new(
 	zetscript::ScriptEngine *_script_engine
 ){
-	return new MyClass;
+	Entity *entity=new Entity;
+	entity->__id__=n_entity++;
+	entity->name="entity_"+std::to_string(entity->__id__);
+
+	return entity;
 }
 
-// C function to register that deletes an instance of native new 'MyClass'
-void MyClassWrap_delete(
+// Register function that deletes native instance of 'Entity'
+void Entity_delete(
 	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
+	,Entity *_this
 ){
 	delete _this;
 }
 
-// C function to register as 'MyClass::setValue' member function
-void MyClassWrap_setValue(
+// Register function that implements Entity::constructor
+void Entity_constructor(
 	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-	, zetscript::zs_int _value
+	,Entity *_entity
+	,zetscript::String *_name
+	,zetscript::zs_int _health
 ){
-	_this->setValue(_value);
+	_entity->name=_name->toConstChar();
+	_entity->health=_health;
 }
 
-// C function to register that implements setter metamethod for property 'value'
-void MyClassWrap_set_value(
+// Register function that implements const member variable Entity::MAX_ENTITIES
+zetscript::zs_int Entity_MAX_ENTITIES(
 	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
-	, zetscript::zs_int _value
 ){
-	_this->value=_value;
+	return Entity::MAX_ENTITIES;
 }
 
-// C function to register that implements getter for property 'value'
-zetscript::zs_int MyClassWrap_get_value(
+// Register function that implements static member function Entity::isEntityDead
+bool Entity_isEntityDead(
 	zetscript::ScriptEngine *_script_engine
-	,MyClass *_this
+	,Entity *_entity
 ){
-	return _this->value;
+	return _entity->health==0;
 }
+
+// Register function that implements static member function metamethod Entity::_equ (aka ==)
+bool Entity_nequ(
+	zetscript::ScriptEngine *_script_engine
+	,Entity *_e1
+	,Entity *_e2
+){
+	return _e1->__id__!=_e2->__id__;
+}
+
+// Register function that implements member function metamethod Entity::update
+void Entity_update(
+	zetscript::ScriptEngine *_script_engine
+	,Entity *_this
+){
+	printf("Update from Entity\n");
+}
+
+
+// Register function that implements member property id metamethod getter
+zetscript::zs_int Entity_id_get(
+	zetscript::ScriptEngine *_script_engine
+	,Entity *_this
+){
+	return _this->__id__;
+}
+
+// Register function that implements member property name metamethod getter
+zetscript::String Entity_name_get(
+	zetscript::ScriptEngine *_script_engine
+	,Entity *_this
+){
+	return _this->name.c_str();
+}
+
 
 // REGISTER FUNCTIONS
 //-----------------------
@@ -272,23 +368,80 @@ int main(){
 
 	zetscript::ScriptEngine script_engine;
 
-	// Register type 'MyClass'
-	script_engine.registerType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+	// Register type Entity
+	script_engine.registerType<Entity>("Entity",Entity_new,Entity_delete);
 
-	// Register property 'MyClass::value' with set/get metamethods through 'MyClassWrap_set_value'/'MyClassWrap_get_value' C functions
-	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_set",&MyClassWrap_set_value);
-	script_engine.registerMemberPropertyMetamethod<MyClass>("value","_get",&MyClassWrap_get_value);
+	// Register Entity constructor
+	script_engine.registerConstructor<Entity>(Entity_constructor);
 
-	// Register member function 'MyClass::setValue' through 'MyClassWrap_setValue' C function
-	script_engine.registerMemberFunction<MyClass>("setValue",&MyClassWrap_setValue);
+	// Register constant member variable Entity::MAX_ENTITIES
+	script_engine.registerConstMemberProperty<Entity>("MAX_ENTITIES",Entity_MAX_ENTITIES);
+
+	// Register static member function Entity::isEntityDead
+	script_engine.registerStaticMemberFunction<Entity>("isEntityDead",Entity_isEntityDead);
+
+	// Register member function metamethod Entity::_equ (aka !=)
+	script_engine.registerStaticMemberFunction<Entity>("_nequ",Entity_nequ);
+
+	// Register member function Entity::update
+	script_engine.registerMemberFunction<Entity>("update",Entity_update);
+
+	// Register member property id getter
+	script_engine.registerMemberPropertyMetamethod<Entity>("id","_get",Entity_id_get);
+
+	// Register member property name getter
+	script_engine.registerMemberPropertyMetamethod<Entity>("name","_get",Entity_name_get);
 
 	// Compiles and runs script
+	// Compiles and runs script
+	// Compiles and runs script
 	script_engine.compileAndRun(
-		"var myclass = new MyClass();\n" // instances MyClassExtend from C++
-		"myclass.setValue(5);\n" // it prints "Int value as 5"
-		"Console::outln(\"myclass.value => {0}\",myclass.value);\n" // it prints "myclass.value => 5"
+		"var e1=new Entity();\n"
+		"var e2=new Entity();\n"
+		"Console::outln(\"Entity::MAX_ENTITIES: {0}\",Entity::MAX_ENTITIES);\n"
+		"Console::outln(\"e1.id: {0} e1.name: {1} \",e1.id,e1.name);\n"
+		"Console::outln(\"e2.id: {0} e2.name: {1} \",e2.id,e2.name);\n"
+		"if(e1!=e2){\n"
+		"  Console::outln(\"'e1' and 'e2' are NOT equals\")\n"
+		"}\n"
+		"e1.update();\n"
 	);
 
 	return 0;
 }
+
+</pre>
+
+Finally another interesting feature is that ZetScript can extend script class from C registered class. In the following example replaces the previus script with the following one that extends `Player` from `Entity`,
+    
+<pre lang="c++">
+
+	// Compiles and runs script
+	script_engine.compileAndRun(
+		"// Extends player from registered Entity\n"
+		"class Player extends Entity{\n"
+		"	constructor(){\n"
+		"		super(\"Player\",10);\n"
+		"	}\n"
+		"\n"
+		"	// Override Entity::update\n"
+		"	update(){\n"
+		"		// Calls Entity::update\n"
+		"		super();\n"
+		"		Console::outln(\"From player\");\n"
+		"	}\n"
+		"}\n"
+		"\n"
+		"var p=new Player();\n"
+		"var e=new Entity();\n"
+		"\n"
+		"Console::outln(\"Entity::MAX_ENTITIES: {0}\",Entity::MAX_ENTITIES)\n"
+		"Console::outln(\"p.id: {0} p.name: {1} \",p.id,p.name)\n"
+		"\n"
+		"if(p!=e){\n"
+		"  Console::outln(\"'p' and 'e' are NOT equals\")\n"
+		"}\n"
+		"p.update();\n"
+		"\n"
+	);
 </pre>

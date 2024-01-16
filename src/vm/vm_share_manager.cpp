@@ -140,7 +140,7 @@ namespace zetscript{
 		}
 
 		if(_node->next == NULL || _node->previous == NULL){
-			ZS_THROW_EXCEPTION(" Internal error: An already deattached node");
+			ZS_THROW_EXCEPTION("vm_deattach_shared_node : An already deattached node");
 		}
 
 		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...
@@ -160,7 +160,8 @@ namespace zetscript{
 		_node->previous = _node->next = NULL;
 	}
 
-	void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block){
+	void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block,StackElement *_stack_var){
+
 		InfoSharedList *list=&scope_block->unreferenced_objects;//&data->zero_shares[idx_call_stack];
 		InfoSharedPointerNode *next_node=NULL,*current=list->first;
 		//bool check_empty_shared_pointers=false;
@@ -173,7 +174,12 @@ namespace zetscript{
 
 				vm_deattach_shared_node(vm,list,current);
 
-				delete current->data.ptr_object_shared;
+				if(vm_object_in_objects_to_return(vm,_stack_var,current->data.ptr_object_shared)==true){
+					// does not deallocate the object, instead removes shared pointer information
+					current->data.ptr_object_shared->shared_pointer=NULL;
+				}else{
+					delete current->data.ptr_object_shared;
+				}
 				current->data.ptr_object_shared=NULL;
 				free(current);
 

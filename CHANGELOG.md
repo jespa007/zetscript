@@ -1,4 +1,18 @@
 ---
+Version: 2.0.3
+Date: 2024-01-14
+
+- #367 Fixed bug double detach returning objects that shares within function
+- Update README.md 
+
+---
+Version: 2.0.2
+Date: 2024-01-14
+
+- #365 Fixed bug returning objects from containers leaves a double dereference and delete of the object itself in the container
+
+
+---
 Version: 2.0.2
 Date: 2024-01-14
 

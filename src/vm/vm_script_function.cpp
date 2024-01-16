@@ -19,12 +19,12 @@
 
 namespace zetscript{
 
-
+/*
 	bool vm_unref_object_for_ret(
 			VirtualMachine *vm
 			, StackElement *stk_var
 	);
-
+*/
 	void vm_throw_error_cannot_find_symbol(
 			VirtualMachine *_vm
 			,ScriptFunction *_script_function
@@ -366,9 +366,33 @@ namespace zetscript{
 					if(
 						(stk_result_op1->properties & STACK_ELEMENT_PROPERTY_OBJECT)
 					){
-						if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
-								return;
+						so_aux = (ScriptObject *)stk_result_op1->value;
+
+						//special case for constant string object (they don't are shared elements)
+						if(so_aux->script_type_id == SCRIPT_TYPE_ID_STRING_SCRIPT_OBJECT && (so_aux->properties & SCRIPT_OBJECT_PROPERTY_CONSTANT)){
+							// if is not shared is constant...
+							so_aux=ZS_NEW_STRING_SCRIPT_OBJECT(data->script_engine,so_aux->toString());
+							stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;
+							stk_var->value=(zs_int)so_aux;
+						}else{
+							/*if(so_aux->shared_pointer->data.n_shares<=1){ // was created here -->  unref
+
+								// deatch from list of created scope block to avoid double dealloc on pop scope
+								if(so_aux->shared_pointer->data.n_shares == 0){
+									vm_deattach_shared_node(
+											_vm
+											,&so_aux->shared_pointer->data.vm_scope_block_where_created->unreferenced_objects
+											,so_aux->shared_pointer
+									);
+								}
+								free(so_aux->shared_pointer);
+								so_aux->shared_pointer=NULL;
+							}*/
+							//-------------------------------------------------------------------
 						}
+						/*if(vm_unref_object_for_ret(_vm, stk_result_op1)==false){
+								return;
+						}*/
 					}
 				}
 				goto lbl_return_function;
@@ -668,7 +692,7 @@ namespace zetscript{
 		while (
 			(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block > ZS_VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 		){
-			vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
+			vm_pop_scope(_vm,stk_start); // do not check removeEmptySharedPointers to have better performance
 		}
 		--data->vm_current_scope_function;
 
@@ -839,7 +863,7 @@ namespace zetscript{
 			break;
 		}
 	}
-
+/*
 	bool vm_unref_object_for_ret(
 			VirtualMachine *vm
 			, StackElement *stk_var
@@ -854,7 +878,7 @@ namespace zetscript{
 			stk_var->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
-			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here... remove share data
+			if(so_aux->shared_pointer->data.n_shares<=1){ // was created here -->  unref
 
 				// deatch from list of created scope block to avoid double dealloc on pop scope
 				if(so_aux->shared_pointer->data.n_shares == 0){
@@ -872,7 +896,7 @@ namespace zetscript{
 
 		return true;
 	}
-
+*/
 	void vm_delete_object(
 		VirtualMachine *_vm
 	){

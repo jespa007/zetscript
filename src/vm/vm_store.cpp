@@ -304,7 +304,7 @@ namespace zetscript{
 
 					}else{ // assign object
 
-						// unref current
+						// set current
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STACK_ELEMENT_PROPERTY_OBJECT;
 					}
