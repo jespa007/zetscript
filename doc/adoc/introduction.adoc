@@ -27,7 +27,7 @@ Optionally, cmake configuration comes with the following options:
 - __-DCMAKE_BUILD_TYPE={Release|Debug}__  : Configures ZetScript project for _Release_ or _Debug_ (by default is _Release_).
 - __-DTESTS:BOOL={true|false}__ : Configures ZetScript to build or not tests (by default is _FALSE_).
 - __-DSAMPLES:BOOL={true|false}__ : Configures ZetScript to build or not samples (by default is _FALSE_).
-- __-DBUILD_SHARED:BOOL={true|false}__ : Configures ZetScript to build as _SHARED_ (by default is _STATIC_).
+- __-DBUILD_SHARED_LIBS:BOOL={true|false}__ : Configures ZetScript to build as _SHARED_ (by default is _STATIC_).
 
 === Hello World
 

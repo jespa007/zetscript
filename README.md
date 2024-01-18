@@ -42,9 +42,21 @@ The building information is configured with cmake through the following command,
 
 `cmake -Bbuild`
 
+You can also pass the following options:
+
+- -DCMAKE_BUILD_TYPE={Release|Debug} : Configures ZetScript project for Release or Debug (by default is Release).
+- -DTESTS:BOOL={true|false} : Configures ZetScript to build or not tests (by default is FALSE).
+- -DSAMPLES:BOOL={true|false} : Configures ZetScript to build or not samples (by default is FALSE).
+- -DBUILD_SHARED_LIBS:BOOL={true|false} : Configures ZetScript to build as SHARED (by default is FALSE, i.e it builds as STATIC).
+
+
 In Linux, MacOS and MingW environments compile the project with the following command,
 
 `make -C build`
+
+In case of Visual Studio is done trougth `msbuild`,
+
+`msbuild build\msvc\zetscript.sln /property:Configuration=Release`
 
 After the build, ZetScript llibrary and the command line tool will be placed at bin directory.
 
