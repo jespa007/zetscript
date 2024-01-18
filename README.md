@@ -42,7 +42,7 @@ The building information is configured with cmake through the following command,
 
 `cmake -Bbuild`
 
-You can also pass the following options:
+Optionally, cmake configuration comes with the following options:
 
 - -DCMAKE_BUILD_TYPE={Release|Debug} : Configures ZetScript project for Release or Debug (by default is Release).
 - -DTESTS:BOOL={true|false} : Configures ZetScript to build or not tests (by default is FALSE).
