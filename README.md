@@ -38,7 +38,13 @@ The compilation and execution of ZetScript has been tested in the following plat
 - Windows through Mingw or VisualStudio 2015,2017/2019
 - Raspberry PI through gcc toolchain
 
-The building information is configured with cmake through the following command,
+Build process
+
+1. Download and decompress ZetScript project in some directory
+
+2. Open a terminal in Linux or MacOs or in Windows open a command prompt terminal ( For Windows using Visual Studio, open the terminal usign `Developer Command Prompt` )
+
+3. Go to the ZetScript project directory where was decompressed and create building information through cmake with the following command,
 
 `cmake -Bbuild`
 
@@ -50,7 +56,7 @@ Optionally, you can pass the following options in cmake parameters:
 - -DBUILD_SHARED_LIBS:BOOL={true|false} : Configures ZetScript to build as SHARED (by default is FALSE, i.e it builds as STATIC).
 
 
-In Linux, MacOS and MingW environments compile the project with the following command,
+4. In Linux, MacOS and MingW environments compile the project with the following command,
 
 `make -C build`
 
