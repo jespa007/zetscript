@@ -1,4 +1,6 @@
-=== Modules
+=== Standard Library
+
+ZetScript includes a set of builtin modules in order to facilitate management in the script environment.
 
 ==== Console
 
