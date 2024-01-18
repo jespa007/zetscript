@@ -54,7 +54,7 @@ In Linux, MacOS and MingW environments compile the project with the following co
 
 `make -C build`
 
-In case of Visual Studio is done trougth `msbuild`,
+For Windows using VisualStudio compile the project with the following command,
 
 `msbuild build\msvc\zetscript.sln /property:Configuration=Release`
 
