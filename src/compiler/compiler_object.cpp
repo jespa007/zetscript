@@ -183,7 +183,7 @@ namespace zetscript{
 			aux_p=compiler_object_identifier(compiler_data,aux_p,line,symbol_value);
 
 			if(symbol_value.isEmpty()){
-				EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error ScriptObject: expected property name");
+				EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error Object: expected property name");
 			}
 
 			 // register constant...
@@ -203,13 +203,13 @@ namespace zetscript{
 			 IGNORE_BLANKS(aux_p,compiler_data,aux_p,line);
 
 			 if(*aux_p != ':'){ // expected : ...
-				 EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error ScriptObject: expected ':' after property name");
+				 EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
 			 }
 
 			 IGNORE_BLANKS(aux_p,compiler_data,aux_p+1,line);
 
 			 if(*aux_p == '}'){
-				 EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error ScriptObject: unexpected '}' ");
+				 EVAL_ERROR_FILE_LINEF(compiler_data->current_parsing_file,line,"Syntax error Object: unexpected '}' ");
 			 }
 
 
