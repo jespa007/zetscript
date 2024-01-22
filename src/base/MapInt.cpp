@@ -5,7 +5,7 @@
 #include "@base.h"
 
 #define ZS_MAP_INT_KEY_NOT_FOUND 	-1
-#define ZS_MAP_INT_MAX_ITEMS  			16000
+#define ZS_MAP_INT_MAX_ITEMS  			1000000
 #define ZS_MAP_INT_N_SLOT_ITEMS 		10
 
 namespace zetscript{

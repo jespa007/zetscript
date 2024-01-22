@@ -150,7 +150,7 @@ for(var v in array){
 
 #### Classes and inheritance
 
-Zetscript it defines custom class with inheritance like javascript.
+Zetscript it defines a class with inheritance like javascript. 
 						
 
 ```javascript
@@ -164,7 +164,7 @@ class Entity{
 	const MAX_ENTITIES=10;
 	
 	// Static member function
-	static entityDead(_entity){
+	static isEntityDead(_entity){
 		return _entity.health==0;
 	}
 
@@ -194,6 +194,11 @@ class Entity{
 	}
 }
 
+// Post declare Entity::setHealth
+function Entity::setHealth(_health){
+	this.health = _health;
+}
+
 class Player extends Entity{
 	constructor(){
 		super("Player",10);
@@ -211,7 +216,7 @@ var p=new Player();
 var e=new Entity();
 
 Console::outln("Entity::MAX_ENTITIES: {0}",Entity::MAX_ENTITIES)
-Console::outln("p.id: {0} p.name: {1} p.health: {2}",p.id,p.name,p.health)
+Console::outln("p.id: {0} p.name: {1} p.health: {2} Entity::isEntityDead(p): {3}",p.id,p.name,p.health,Entity::isEntityDead(p))
 
 p.update();
 
@@ -278,7 +283,7 @@ int main(){
 
 #### Exposing C++ types to ZetScript
 
-To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by defining and registering a C function. In the following example shows and example of registering class `Entity`,
+To expose C++ type to ZetScript is done by registering C++ type. To expose members functions or variables is done by defining and registering a C function. In the following example shows and example of registering class `EntityNative`,
 						
 ```cpp
 #include "zetscript.h"
@@ -286,7 +291,7 @@ To expose C++ type to ZetScript is done by registering C++ type. To expose membe
 int n_entity=1;
 
 // Class to register
-class Entity{
+class EntityNative{
 public:
 	const static int MAX_ENTITIES=10;
 
@@ -298,29 +303,29 @@ public:
 //-----------------------
 // REGISTER FUNCTIONS
 
-// Register function that returns a new instance of native 'Entity'
-Entity *Entity_new(
+// Register function that returns a new instance of native 'EntityNative'
+EntityNative *EntityNative_new(
 	zetscript::ScriptEngine *_script_engine
 ){
-	Entity *entity=new Entity;
+	EntityNative *entity=new EntityNative;
 	entity->__id__=n_entity++;
 	entity->name="entity_"+std::to_string(entity->__id__);
 
 	return entity;
 }
 
-// Register function that deletes native instance of 'Entity'
-void Entity_delete(
+// Register function that deletes native instance of 'EntityNative'
+void EntityNative_delete(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_this
+	,EntityNative *_this
 ){
 	delete _this;
 }
 
-// Register function that implements Entity::constructor
-void Entity_constructor(
+// Register function that implements EntityNative::constructor
+void EntityNative_constructor(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_entity
+	,EntityNative *_entity
 	,zetscript::String *_name
 	,zetscript::zs_int _health
 ){
@@ -328,51 +333,51 @@ void Entity_constructor(
 	_entity->health=_health;
 }
 
-// Register function that implements const member variable Entity::MAX_ENTITIES
-zetscript::zs_int Entity_MAX_ENTITIES(
+// Register function that implements const member variable EntityNative::MAX_ENTITIES
+zetscript::zs_int EntityNative_MAX_ENTITIES(
 	zetscript::ScriptEngine *_script_engine
 ){
-	return Entity::MAX_ENTITIES;
+	return EntityNative::MAX_ENTITIES;
 }
 
-// Register function that implements static member function Entity::isEntityDead
-bool Entity_isEntityDead(
+// Register function that implements static member function EntityNative::isEntityDead
+bool EntityNative_isEntityDead(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_entity
+	,EntityNative *_entity
 ){
 	return _entity->health==0;
 }
 
-// Register function that implements static member function metamethod Entity::_equ (aka ==)
-bool Entity_nequ(
+// Register function that implements static member function metamethod EntityNative::_equ (aka ==)
+bool EntityNative_nequ(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_e1
-	,Entity *_e2
+	,EntityNative *_e1
+	,EntityNative *_e2
 ){
 	return _e1->__id__!=_e2->__id__;
 }
 
-// Register function that implements member function metamethod Entity::update
-void Entity_update(
+// Register function that implements member function metamethod EntityNative::update
+void EntityNative_update(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_this
+	,EntityNative *_this
 ){
-	printf("Update from Entity\n");
+	printf("Update from EntityNative\n");
 }
 
 
 // Register function that implements member property id metamethod getter
-zetscript::zs_int Entity_id_get(
+zetscript::zs_int EntityNative_id_get(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_this
+	,EntityNative *_this
 ){
 	return _this->__id__;
 }
 
 // Register function that implements member property name metamethod getter
-zetscript::String Entity_name_get(
+zetscript::String EntityNative_name_get(
 	zetscript::ScriptEngine *_script_engine
-	,Entity *_this
+	,EntityNative *_this
 ){
 	return _this->name.c_str();
 }
@@ -385,35 +390,35 @@ int main(){
 
 	zetscript::ScriptEngine script_engine;
 
-	// Register type Entity
-	script_engine.registerType<Entity>("Entity",Entity_new,Entity_delete);
+	// Register type EntityNative
+	script_engine.registerType<EntityNative>("EntityNative",EntityNative_new,EntityNative_delete);
 
-	// Register Entity constructor
-	script_engine.registerConstructor<Entity>(Entity_constructor);
+	// Register EntityNative constructor
+	script_engine.registerConstructor<EntityNative>(EntityNative_constructor);
 
-	// Register constant member variable Entity::MAX_ENTITIES
-	script_engine.registerConstMemberProperty<Entity>("MAX_ENTITIES",Entity_MAX_ENTITIES);
+	// Register constant member variable EntityNative::MAX_ENTITIES
+	script_engine.registerConstMemberProperty<EntityNative>("MAX_ENTITIES",EntityNative_MAX_ENTITIES);
 
-	// Register static member function Entity::isEntityDead
-	script_engine.registerStaticMemberFunction<Entity>("isEntityDead",Entity_isEntityDead);
+	// Register static member function EntityNative::isEntityDead
+	script_engine.registerStaticMemberFunction<EntityNative>("isEntityDead",EntityNative_isEntityDead);
 
-	// Register member function metamethod Entity::_equ (aka !=)
-	script_engine.registerStaticMemberFunction<Entity>("_nequ",Entity_nequ);
+	// Register member function metamethod EntityNative::_equ (aka !=)
+	script_engine.registerStaticMemberFunction<EntityNative>("_nequ",EntityNative_nequ);
 
-	// Register member function Entity::update
-	script_engine.registerMemberFunction<Entity>("update",Entity_update);
+	// Register member function EntityNative::update
+	script_engine.registerMemberFunction<EntityNative>("update",EntityNative_update);
 
 	// Register member property id getter
-	script_engine.registerMemberPropertyMetamethod<Entity>("id","_get",Entity_id_get);
+	script_engine.registerMemberPropertyMetamethod<EntityNative>("id","_get",EntityNative_id_get);
 
 	// Register member property name getter
-	script_engine.registerMemberPropertyMetamethod<Entity>("name","_get",Entity_name_get);
+	script_engine.registerMemberPropertyMetamethod<EntityNative>("name","_get",EntityNative_name_get);
 
 	// Compiles and runs script
 	script_engine.compileAndRun(
-		"var e1=new Entity();\n"
-		"var e2=new Entity();\n"
-		"Console::outln(\"Entity::MAX_ENTITIES: {0}\",Entity::MAX_ENTITIES);\n"
+		"var e1=new EntityNative();\n"
+		"var e2=new EntityNative();\n"
+		"Console::outln(\"EntityNative::MAX_ENTITIES: {0}\",EntityNative::MAX_ENTITIES);\n"
 		"Console::outln(\"e1.id: {0} e1.name: {1} \",e1.id,e1.name);\n"
 		"Console::outln(\"e2.id: {0} e2.name: {1} \",e2.id,e2.name);\n"
 		"if(e1!=e2){\n"
@@ -427,30 +432,30 @@ int main(){
 
 ```
 
-Finally another interesting feature is that ZetScript can extend script class from C registered class. In the following example replaces the previus script with the following one that extends `Player` from `Entity`,
+Finally another interesting feature is that ZetScript can extend script class from C registered class. In the following example replaces the previus script with the following one that extends `Player` from `EntityNative`,
     
 ```cpp
 
 	// Compiles and runs script
 	script_engine.compileAndRun(
-		"// Extends player from registered Entity\n"
-		"class Player extends Entity{\n"
+		"// Extends player from registered EntityNative\n"
+		"class Player extends EntityNative{\n"
 		"	constructor(){\n"
 		"		super(\"Player\",10);\n"
 		"	}\n"
 		"\n"
-		"	// Override Entity::update\n"
+		"	// Override EntityNative::update\n"
 		"	update(){\n"
-		"		// Calls Entity::update\n"
+		"		// Calls EntityNative::update\n"
 		"		super();\n"
 		"		Console::outln(\"From player\");\n"
 		"	}\n"
 		"}\n"
 		"\n"
 		"var p=new Player();\n"
-		"var e=new Entity();\n"
+		"var e=new EntityNative();\n"
 		"\n"
-		"Console::outln(\"Entity::MAX_ENTITIES: {0}\",Entity::MAX_ENTITIES)\n"
+		"Console::outln(\"EntityNative::MAX_ENTITIES: {0}\",EntityNative::MAX_ENTITIES)\n"
 		"Console::outln(\"p.id: {0} p.name: {1} \",p.id,p.name)\n"
 		"\n"
 		"if(p!=e){\n"
