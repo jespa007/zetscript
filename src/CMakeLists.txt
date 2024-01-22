@@ -3,18 +3,6 @@ cmake_policy(SET CMP0091 NEW)
 project(zetscript)
 
 
-IF( NOT CMAKE_BUILD_TYPE )
-   SET( CMAKE_BUILD_TYPE Release )
-ENDIF()
-
-set(POST_NAME "")
-set(IS_DEBUG FALSE)
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-	set(IS_DEBUG TRUE)
-	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
-	set( POST_NAME "_d")
-endif()
-
 MESSAGE ("-- Target: " ${CMAKE_BUILD_TYPE})
 
 file(READ "zetscript.h" zetscript_h)
@@ -88,7 +76,8 @@ message("-- Install directory: " ${CMAKE_INSTALL_PREFIX})
 set(ZETSCRIPT_LIB_SRCS "")
 
 if(MSVC)
-	MESSAGE ("-- Plataform: MSVC" )
+	MESSAGE ("-- Plataform: " msvc)
+	SET(PLATFORM "msvc")
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
@@ -119,15 +108,29 @@ if(MSVC)
 	
 else()
 
+	IF( NOT CMAKE_BUILD_TYPE )
+	   SET( CMAKE_BUILD_TYPE Release )
+	ENDIF()
+	
+	set(POST_NAME "")
+	set(IS_DEBUG FALSE)
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+		set(IS_DEBUG TRUE)
+		SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
+		set( POST_NAME "_d")
+	endif()
+
 	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -Wall -Wextra -pedantic")
-   
+	SET(PLATFORM "gcc")
+		
 	if (MINGW)
-		MESSAGE("-- Plataform: MINGW" )
+		MESSAGE("-- Plataform: mingw" )
 	else()
 		SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fPIC ")
 		
     	if(RASPBERRY)
     		MESSAGE ("-- Plataform: Raspberry" )
+    		SET(PLATFORM "rpi")
     	elseif(APPLE)
     		MESSAGE ("-- Plataform: Apple" )
 		elseif(EMSCRIPTEN)
@@ -176,14 +179,14 @@ else()
 	ENDIF()
 	
 	
-	#Redefine output dir ...
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/gcc/${CMAKE_BUILD_TYPE})
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/gcc/${CMAKE_BUILD_TYPE})
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/gcc/${CMAKE_BUILD_TYPE})
-	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})	
-	
-
 endif()
+
+
+#Redefine output dir ...
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${PLATFORM}/${CMAKE_BUILD_TYPE})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${PLATFORM}/${CMAKE_BUILD_TYPE})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${PLATFORM}/${CMAKE_BUILD_TYPE})
+LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})	
 
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)

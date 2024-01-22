@@ -58,7 +58,7 @@ include::language_loops.adoc[]
 include::language_function.adoc[]
 include::language_class.adoc[]
 <<<
-include::language_modules.adoc[]
+include::language_standard_library.adoc[]
 
 
 
