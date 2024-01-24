@@ -222,19 +222,19 @@ namespace zetscript{
 				,error_found.toConstChar()
 			);
 		}else{
-			String tip=". The operation is incompatible or its metamethod is not defined properly";
+			String tip=".";//. The operation is incompatible or its metamethod is not defined properly";
 			if(((stk_result_op2!=NULL) && STACK_ELEMENT_IS_MEMBER_PROPERTY(stk_result_op2)) || STACK_ELEMENT_IS_MEMBER_PROPERTY(stk_result_op1)){
 				tip=". Check whether any of the member property involved in the operation has defined the getter (i.e _get) properly";
 			}
 
 			if(stk_result_op2 != NULL){
-				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)' %s%s%s"
+				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,MetamethodHelper::getMetamethodSymbolName(_metamethod)
 					,data->script_engine->stackElementTypeToString(stk_result_op1).toConstChar()
 					,MetamethodHelper::getMetamethodOperatorName(_metamethod)
 					,data->script_engine->stackElementTypeToString(stk_result_op2).toConstChar()
-					,error_found.isEmpty()?"":":"
+					,error_found.isEmpty()?"":" : "
 					,error_found.toConstChar()
 					,tip.toConstChar()
 				);
