@@ -23,8 +23,6 @@ ZetScript has the following features:
 
 - Virtual Machine
 - Script Language close to Javascript
-- MSVC++ 32/64 bits MSVC 2015/2017/2019
-- MacOS/Linux/MinGW 32/64 bits, g++ 4.8 or above
 - Dynamic Garbage collector
 - Straightforward way to expose C++ code in ZetScript and bind ZetScript code to C++ 
 - Implement operators on types and member properties through metamethods
@@ -33,10 +31,10 @@ ZetScript has the following features:
 
 The compilation and execution of ZetScript has been tested in the following plataforms:
 
-- Linux through gcc toolchain
+- Linux through gcc toolchain >= 4.8
 - MacOS through clang toolchain
-- Windows through Mingw or VisualStudio 2015,2017/2019
-- Raspberry PI through gcc toolchain
+- Windows through Mingw >= 4.8 or VisualStudio 2015,2017/2019
+
 
 Build process
 
@@ -62,7 +60,7 @@ Optionally, you can pass the following options in cmake parameters:
 
 For Windows using VisualStudio compile the project with the following command,
 
-`msbuild build\msvc\zetscript.sln /property:Configuration=Release`
+`msbuild build\zetscript.sln /property:Configuration=Release`
 
 After the build, ZetScript llibrary and the command line tool will be placed at bin directory.
 
@@ -70,7 +68,7 @@ After the build, ZetScript llibrary and the command line tool will be placed at 
 					
 #### ZetScript types
 
-ZetScript has defined types as integers, numbers, booleans, arrays and objects.
+ZetScript has defined types as integers, floats, booleans, arrays and objects.
 
 ```javascript
 var i=10; //integer
@@ -148,9 +146,9 @@ for(var v in array){
 
 ```						
 
-#### Classes and inheritance
+#### Class
 
-Zetscript it defines a class with inheritance like javascript. 
+Zetscript supports custom class implementation with constants, properties, metamethods and inheritance support. Also it can implement a member function after class declaration.  
 						
 
 ```javascript
@@ -194,7 +192,7 @@ class Entity{
 	}
 }
 
-// Post declare Entity::setHealth
+// Implement Entity::setHealth
 function Entity::setHealth(_health){
 	this.health = _health;
 }
@@ -220,6 +218,7 @@ Console::outln("p.id: {0} p.name: {1} p.health: {2} Entity::isEntityDead(p): {3}
 
 p.update();
 
+// invokes operator !=, Entity::_equ member function
 if(p!=e){
   Console::outln("'p' and 'e' are NOT equals")
 }
