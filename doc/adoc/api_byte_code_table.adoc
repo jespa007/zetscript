@@ -15,10 +15,10 @@
 |Less than equal
 
 |GT
-|Greather than		
+|Greater than		
 
 |GTE
-|Greather than equal
+|Greater than equal
 
 |LOGIC_AND
 |Login AND

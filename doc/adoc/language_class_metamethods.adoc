@@ -820,7 +820,7 @@ include::../examples/language/class/class_metamethod_equ_out.txt[]
 
 ====== _gt()
 
-Implements _greather than_ operator (aka > ) between first operand and second operand
+Implements _greater than_ operator (aka > ) between first operand and second operand
 
 *Syntax*
 
@@ -857,7 +857,7 @@ include::../examples/language/class/class_metamethod_gt_out.txt[]
 
 ====== _gte(_op1,_op2)
 
-Implements _greather than or equal_ operator (aka >= ) between first operand and second operand
+Implements _greater than or equal_ operator (aka >= ) between first operand and second operand
 
 *Syntax*
 

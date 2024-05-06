@@ -2302,6 +2302,23 @@ _ScriptFunction_ is a script function type object. _ScriptFunction_ type contain
 _ScriptEngine_ is the main type of ZetScript in order to register function, register types, compile, execute scripts and much more.
 
 
+==== ScriptEngine::ScriptEngine()
+
+The ScriptEngine constructor creates a script engine
+
+*Syntax*
+
+[source,cpp]
+----
+ScriptEngine(int _stack_size);
+
+----
+
+[.underline]#Parameters#
+
+ - ___stack_size__: Set stack size used by the virtual machine (default 256)
+  
+
 ===== ScriptEngine::bindScriptFunction()        
 
 Binds script function to be callable from C{plus}{plus}.
@@ -2673,23 +2690,22 @@ include::../examples/api/types/script_engine_push_stack_element_out.txt[]
 
 <<<
 
-===== ScriptEngine::registerConstant()
+===== ScriptEngine::registerConstant[ScriptType]()
 
-Registers a constant value.
+Registers a constant script type value.
 
 *Syntax*
 
 [source,cpp]
 ----
-void registerConstant(const String & _const_name, int _i_value, const char *registered_file="", short registered_line=-1);
+void registerConstantInteger(const String & _const_name, zs_int _i_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & _const_name, zs_float _f_value, const char *registered_file="", short registered_line=-1);
+void registerConstantFloat(const String & _const_name, zs_float _f_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & _const_name, bool _b_value, const char *registered_file="", short registered_line=-1);
+void registerConstantBoolean(const String & _const_name, bool _b_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & _const_name, const String & _str_value, const char *registered_file="", short registered_line=-1);
+void registerConstantString(const String & _const_name, const String & _str_value, const char *registered_file="", short registered_line=-1);
 
-void registerConstant(const String & _const_name, const char * _str_value, const char *registered_file="", short registered_line=-1);
 ----
 
 [.underline]#Function parameters# 
@@ -2698,7 +2714,7 @@ void registerConstant(const String & _const_name, const char * _str_value, const
 - ___b_value__	: Constant as Boolean value
 - ___i_value__	: Constant as Integer value
 - ___f_value__	: Constant as Float value
-- ___s_value__	: Constant as String value from const char * or zetscript::String 
+- ___s_value__	: Constant as String value
 
 - ___registered_file__ : Source file where the function was registered
 - ___registered_line__ : Line file where the function was registered

@@ -46,7 +46,7 @@ if(condition) {
 if(value<10){
 	Console::outln("value is less than 10")
 }else{
-	Console::outln("value is greather equal than 10")
+	Console::outln("value is greater equal than 10")
 }
 ----
 
@@ -74,9 +74,9 @@ if(condition1) {
 [source,javascript]
 ----
 if(value>7){
-	Console::outln("value greather than 7")
+	Console::outln("value greater than 7")
 }else if(i>5){
-	Console::outln("value greather than 5 and less equal than 7")
+	Console::outln("value greater than 5 and less equal than 7")
 }else{
 	Console::outln("value less equal than 5")
 }

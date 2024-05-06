@@ -48,10 +48,10 @@ namespace zetscript{
 		vm_remove_empty_shared_pointers(_vm,vm_get_scope_block_main(_vm));
 	}
 
-	VirtualMachine *vm_new(ScriptEngine *_script_engine){
+	VirtualMachine *vm_new(ScriptEngine *_script_engine, size_t _stack_size){
 
 		VirtualMachine *vm = (VirtualMachine *)ZS_MALLOC(sizeof(VirtualMachine));
-		VirtualMachineData *data = new VirtualMachineData(_script_engine);
+		VirtualMachineData *data = new VirtualMachineData(_script_engine,_stack_size);
 		vm->data=data;
 
 		//-----------------------------------------------------------
@@ -189,9 +189,14 @@ namespace zetscript{
 		return data->vm_stack;
 	}
 
+	size_t vm_get_stack_size(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		return data->vm_stack_size;
+	}
+
 	void vm_push_stack_element(VirtualMachine *_vm, StackElement _stk){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		if(((data->vm_stk_current-data->vm_stack)+1)>=ZS_VM_STACK_MAX){
+		if(((data->vm_stk_current-data->vm_stack)+1) >= (int)data->vm_stack_size){
 
 			vm_set_error(_vm,"Error MAXIMUM stack size reached");
 			return;
@@ -201,7 +206,7 @@ namespace zetscript{
 
 	bool vm_set_stack_element_at(VirtualMachine *_vm,unsigned int _idx, StackElement _stk){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		if(_idx >= ZS_VM_STACK_MAX){
+		if(_idx >= data->vm_stack_size){
 			ZS_VM_SET_USER_ERRORF(_vm,"setStackElementByKeyName: out of bounds");
 			return false;
 		}

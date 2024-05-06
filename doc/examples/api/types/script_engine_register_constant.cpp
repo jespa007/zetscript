@@ -7,10 +7,10 @@ int main(){
 	zetscript::ScriptEngine script_engine;
 
 	// Registers a constant Integer, String, Boolean and Float
-	script_engine.registerConstant("MY_CONSTANT_INT",10);
-	script_engine.registerConstant("MY_CONSTANT_STR","my_string");
-	script_engine.registerConstant("MY_CONSTANT_BOOL",true);
-	script_engine.registerConstant("MY_CONSTANT_FLOAT",2.5e-3);
+	script_engine.registerConstantInteger("MY_CONSTANT_INT",10);
+	script_engine.registerConstantString("MY_CONSTANT_STR","my_string");
+	script_engine.registerConstantBoolean("MY_CONSTANT_BOOL",true);
+	script_engine.registerConstantFloat("MY_CONSTANT_FLOAT",2.5e-3);
 
 	// Prints the value of each registered constant
 	script_engine.compileAndRun(

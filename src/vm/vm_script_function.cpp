@@ -74,7 +74,7 @@ namespace zetscript{
 
 		data->vm_stk_current = stk_start;
 
-		if(((stk_start-data->vm_stack)+_script_function->min_code_stack_needed)>=ZS_VM_STACK_MAX){
+		if(((stk_start-data->vm_stack) + _script_function->min_code_stack_needed) >= (int)data->vm_stack_size ){
 			data->vm_error_max_stack_reached=true;
 			ZS_VM_STOP_EXECUTEF("Not enough Stack memory");
 		}

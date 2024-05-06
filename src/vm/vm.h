@@ -10,8 +10,8 @@
 #include "vm_scope.h"
 
 
-#define ZS_VM_STACK_MAX						250
-#define ZS_VM_FUNCTION_CALL_MAX 			100
+#define ZS_VM_DEFAULT_STACK_SIZE				256
+#define ZS_VM_FUNCTION_CALL_MAX 				100
 
 namespace zetscript{
 
@@ -19,7 +19,7 @@ namespace zetscript{
 		void *data;
 	};
 
-	VirtualMachine *vm_new(ScriptEngine *_script_engine);
+	VirtualMachine *vm_new(ScriptEngine *_script_engine, size_t _stack_size);
 
 	void			vm_init(VirtualMachine *vm, ScriptEngine *_script_engine);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
@@ -31,13 +31,17 @@ namespace zetscript{
 
 	void 			vm_set_error(VirtualMachine *vm, const char *_str_error,...);
 	void 			vm_set_file_line_error(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
-	String 		vm_get_error(VirtualMachine *vm);
+	String 			vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(
 		VirtualMachine 	*	_vm
 	);
 
 	StackElement *	vm_get_stack_elements(
+		VirtualMachine 	*	_vm
+	);
+
+	size_t	vm_get_stack_size(
 		VirtualMachine 	*	_vm
 	);
 
