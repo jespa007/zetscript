@@ -1,3 +1,12 @@
+
+---
+Version: 2.1.0
+Date: 2024-01-14
+
+- #375 Specify stack size in ScriptEngine::ScriptEngine constructor
+- #373 Change ScriptEngine::registerConstant ScriptEngine::registerConstant[Type]
+
+
 ---
 Version: 2.0.3
 Date: 2024-01-14

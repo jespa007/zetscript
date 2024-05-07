@@ -6,7 +6,9 @@
 
 namespace zetscript{
 
-	zetscript::ScriptEngine::ScriptEngine(){
+	zetscript::ScriptEngine::ScriptEngine(
+			int _vm_stack_size
+	){
 		eval_int=0;
 		eval_float=0;
 		eval_string="";
@@ -15,6 +17,10 @@ namespace zetscript{
 		idx_current_global_function_checkpoint=0;
 		idx_current_types_checkpoint=0;
 
+		if(_vm_stack_size <= 0){
+			ZS_THROW_EXCEPTION("_vm_stack_size should be greater than 0");
+		}
+
 		script_filenames_by_ref=NULL;
 
 		compiler_init();
@@ -22,7 +28,7 @@ namespace zetscript{
 		scope_factory->init();
 		script_function_factory= new ScriptFunctionsFactory(this);
 
-		virtual_machine = vm_new(this);
+		virtual_machine = vm_new(this,_vm_stack_size);
 		script_types_factory = new ScriptTypesFactory(this);
 		script_types_factory->init();
 		vm_init(virtual_machine,this);
@@ -999,7 +1005,7 @@ namespace zetscript{
 	// REGISTER CONSTANTS
 	//
 
-	void ScriptEngine::registerConstant(const String & _key, int _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstantInteger(const String & _key, zs_int _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1012,7 +1018,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_INT|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptEngine::registerConstant(const String & _key, bool _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstantBoolean(const String & _key, bool _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1026,7 +1032,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_BOOL|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptEngine::registerConstant(const String & _key, zs_float _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstantFloat(const String & _key, zs_float _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1039,7 +1045,7 @@ namespace zetscript{
 		stk->properties=STACK_ELEMENT_PROPERTY_FLOAT|STACK_ELEMENT_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptEngine::registerConstant(const String & _key, const String & _value, const char *registered_file, short registered_line){
+	void ScriptEngine::registerConstantString(const String & _key, const String & _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
@@ -1060,9 +1066,6 @@ namespace zetscript{
 		//*stk=*(this->registerStkConstantStringScriptObject(_key,_value));
 	}
 
-	void ScriptEngine::registerConstant(const String & _key, const char * _value, const char *registered_file, short registered_line){
-		registerConstant(_key, String(_value), registered_file, registered_line);
-	}
 	//
 	// REGISTER CONSTANTS
 	//-----------------------------------------------------------------------------------------
@@ -1184,7 +1187,8 @@ namespace zetscript{
 
 			// clear all garbage
 			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
-			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(ZS_VM_STACK_MAX-idx_start_variable));
+			size_t vm_stack_size=vm_get_stack_size(virtual_machine);
+			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(vm_stack_size - idx_start_variable));
 
 			// erase global elements that they weren't saved...
 			int resize=local_variables->length()-(local_variables->length()-idx_start_variable);

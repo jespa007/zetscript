@@ -1577,7 +1577,7 @@ include::../examples/api/register_type/register_member_metamethod_equ_out.txt[]
 
 ====== _gt()
 
-Implements _greather than_ operator (aka > ) between first operand and second operand
+Implements _greater than_ operator (aka > ) between first operand and second operand
 
 *Syntax*
 
@@ -1650,7 +1650,7 @@ include::../examples/api/register_type/register_member_metamethod_gt_out.txt[]
 
 ====== _gte()
 
-Implements _greather than or equal_ operator (aka &gt;= ) between first operand and second operand
+Implements _greater than or equal_ operator (aka &gt;= ) between first operand and second operand
 
 *Syntax*
 

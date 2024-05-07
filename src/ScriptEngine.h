@@ -29,7 +29,7 @@ namespace zetscript{
 		// PRINT  INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
 
-		ScriptEngine();
+		ScriptEngine(int _vm_stack_size=ZS_VM_DEFAULT_STACK_SIZE);
 
 		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
 		inline ScriptScopesFactory * getScriptScopesFactory() { return scope_factory;}
@@ -122,11 +122,10 @@ namespace zetscript{
 		 * Register constants
 		 */
 
-		void registerConstant(const String & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const String & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+		void registerConstantInteger(const String & var_name, zs_int value, const char *registered_file="", short registered_line=-1);
+		void registerConstantFloat(const String & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void registerConstantBoolean(const String & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void registerConstantString(const String & var_name, const String & v, const char *registered_file="", short registered_line=-1);
 
 		// register object
 		StackElement * registerStkConstantStringScriptObject(const String & _key,const String & _value);

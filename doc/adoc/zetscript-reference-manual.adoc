@@ -1,6 +1,6 @@
-= ZetScript 2.0.0
+= ZetScript 2.1.0
 Jordi Espada
-v2.0, January 08,2024
+v2.0, May 2024
 :doctype: book
 :toc:
 :toclevels: 5

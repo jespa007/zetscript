@@ -129,7 +129,7 @@ namespace zetscript{
 
 	template<typename _T>
 	void Vector<_T>::resize(int _new_size){
-		// the new length is greather (do not copy, only decrease the number of elements)
+		// the new length is greater (do not copy, only decrease the number of elements)
 		if( _new_size <= _size){
 			count=_new_size;
 			return;

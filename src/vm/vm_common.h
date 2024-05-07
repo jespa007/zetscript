@@ -177,7 +177,8 @@ namespace zetscript{
 		 VM_ScopeFunction						vm_scope_function[ZS_VM_FUNCTION_CALL_MAX];
 
 
-		 StackElement     						vm_stack[ZS_VM_STACK_MAX];
+		 StackElement     					*	vm_stack;
+		 size_t									vm_stack_size;
 		 Vector<InfoLifetimeObject *>			lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
@@ -186,14 +187,16 @@ namespace zetscript{
 		ScriptType 							*	main_class_object;
 
 		const ScriptFunction 				*	current_call_c_function;
-		zetscript::ScriptEngine 						*	script_engine;
+		zetscript::ScriptEngine 			*	script_engine;
 		ScriptFunctionsFactory 				*	script_function_factory;
 		ScriptTypesFactory 					*	script_types_factory;
 		ScriptScopesFactory 				*	scope_factory;
 		MapInt									cyclic_container_instances;
 
-		VirtualMachineData(ScriptEngine *_script_engine){
-			memset(&vm_stack,0,sizeof(vm_stack));
+		VirtualMachineData(ScriptEngine *_script_engine, size_t _vm_stack_size){
+
+			vm_stack_size=_vm_stack_size;
+			vm_stack=(StackElement *)ZS_MALLOC(sizeof(StackElement)*vm_stack_size);
 
 			vm_stk_current=NULL;
 			vm_current_scope_function = vm_scope_function;
@@ -214,13 +217,17 @@ namespace zetscript{
 			// each push scope from main is done from block scope 1
 			vm_scope_function[0].first_scope_block=&vm_scope_function[0].scope_block[1];
 		}
+
+		~VirtualMachineData(){
+			free(vm_stack);
+		}
 	};
 
 	bool vm_call_metamethod(
 		VirtualMachine			*		_vm
 		,ScriptFunction 		*		_script_function
 		,Instruction 			*		_instruction
-		,Metamethod 		_metamethod
+		,Metamethod 					_metamethod
 		,StackElement 			*		_stk_result_op1
 		,StackElement 			*		_stk_result_op2
 		, bool 							_is_static=true
